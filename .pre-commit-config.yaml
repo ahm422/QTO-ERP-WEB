@@ -1,0 +1,35 @@
+repos:
+  - repo: local
+    hooks:
+      - id: check-gitignore
+        name: Ensure .gitignore exists and is not empty
+        entry: scripts/check-gitignore.sh
+        language: system
+        stages: [commit, push]
+
+      - id: block-env-files
+        name: Block committing environment files (.env*)
+        entry: scripts/block-env.sh
+        language: system
+        stages: [commit, push]
+
+      - id: check-large-files
+        name: Block large tracked files (>5MB)
+        entry: scripts/check-large-files.sh
+        language: system
+        stages: [commit, push]
+
+      - id: eslint
+        name: Run ESLint via npm
+        entry: npm run lint
+        language: system
+        pass_filenames: false
+        stages: [commit]
+
+      - id: typescript-typecheck
+        name: TypeScript type check (npx tsc --noEmit)
+        entry: npx tsc --noEmit
+        language: system
+        pass_filenames: false
+        stages: [push]
+
