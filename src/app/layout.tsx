@@ -4,6 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
+export const runtime = "edge";
+
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -18,7 +20,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "QTO ERP",
-  description: "A comprehensive ERP solution tailored for the construction industry, offering modules for project management, procurement, inventory, finance, and more to streamline operations and enhance productivity.",
+  description:
+    "A comprehensive ERP solution tailored for the construction industry, offering modules for project management, procurement, inventory, finance, and more to streamline operations and enhance productivity.",
 };
 
 export default function RootLayout({
