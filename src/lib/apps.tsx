@@ -157,19 +157,19 @@ export const apps: PlatformsType = [
     ],
     faqs: [
       {
-        question: "Can employees clock in from their phones?",
+        question: "Can employees clock in from their mobile devices?",
         answer:
-          "Yes. Our mobile app supports GPS-verified clock-ins from any smartphone.",
+          "Yes. Employees can securely clock in and clock out using their smartphones. The system supports GPS-based verification to ensure accurate and location-aware attendance tracking.",
       },
       {
         question: "Does it integrate with payroll software?",
         answer:
-          "Absolutely. We integrate with major payroll providers and offer CSV/API export.",
+          "Yes. The Attendance module integrates with payroll systems and supports secure data export via CSV and API to ensure seamless payroll processing.",
       },
       {
-        question: "How does it handle overtime?",
+        question: "How does the system handle overtime?",
         answer:
-          "You define custom overtime rules, and the system automatically calculates and flags overtime hours.",
+          "You can define custom overtime rules based on your company policies. The system automatically calculates and highlights overtime hours for accurate compensation and reporting.",
       },
     ],
   },
