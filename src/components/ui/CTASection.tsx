@@ -3,7 +3,28 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Play } from 'lucide-react';
 import { Button } from './button';
-export function CTASection() {
+
+const defaultHeadline = 'Ready to Transform Your Operations?';
+const defaultPrimaryLabel = 'Book a Demo';
+const defaultPrimaryHref = '/demo';
+const defaultSecondaryLabel = 'See Pricing';
+const defaultSecondaryHref = '/pricing';
+
+export interface CTASectionProps {
+  headline?: string;
+  primaryLabel?: string;
+  primaryHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+}
+
+export function CTASection({
+  headline = defaultHeadline,
+  primaryLabel = defaultPrimaryLabel,
+  primaryHref = defaultPrimaryHref,
+  secondaryLabel = defaultSecondaryLabel,
+  secondaryHref = defaultSecondaryHref,
+}: CTASectionProps = {}) {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
       {/* Gradient Background */}
@@ -65,7 +86,7 @@ export function CTASection() {
                 transition={{ delay: 0.3, duration: 0.6 }}
                 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-10 leading-tight"
               >
-                Ready to Transform Your Operations?
+                {headline}
               </motion.h2>
 
               {/* Two Buttons */}
@@ -84,8 +105,8 @@ export function CTASection() {
                     size="lg"
                     icon={ArrowRight}
                     iconPosition="right">
-                   <Link href="/demo">
-                      Book a Demo
+                   <Link href={primaryHref}>
+                      {primaryLabel}
                     </Link>
                   </Button>                    
                 </motion.div>
@@ -93,14 +114,13 @@ export function CTASection() {
                 {/* Secondary Button */}
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
-                    
                     variant="outline"
                     size="lg"
                     icon={Play}
                     iconPosition="left"
                   >
-                   <Link href="/pricing">
-                      See Pricing
+                   <Link href={secondaryHref}>
+                      {secondaryLabel}
                     </Link>
                   </Button>
                 </motion.div>

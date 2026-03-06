@@ -28,7 +28,13 @@ export default function PlatformDetailPage() {
       <TestimonialsSection app={app} />
       <FAQSection app={app} />
       <AllAppsSection apps={apps} />
-      <CTASection />
+      <CTASection
+        headline="Ready to Simplify Your Operations with QTO ERP?"
+        primaryLabel="Schedule a Demo"
+        primaryHref="/demo"
+        secondaryLabel="View Pricing"
+        secondaryHref="/pricing"
+      />
       <VideoModal isOpen={videoOpen} onClose={() => setVideoOpen(false)} />
     </>
   );
