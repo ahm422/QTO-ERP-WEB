@@ -117,11 +117,11 @@ export default function FeaturesSection({
         >
           <div>
             <h4 className="text-xl font-bold text-foreground mb-1">
-              See {app.name} in action
+              {app.videoCtaTitle ?? `See ${app.name} in action`}
             </h4>
             <p className="text-sm text-muted-foreground">
-              Watch a quick overview of all key features and how they work
-              together seamlessly.
+              {app.videoCtaDescription ??
+                "Watch a quick overview of all key features and how they work together seamlessly."}
             </p>
           </div>
           <button
@@ -131,7 +131,7 @@ export default function FeaturesSection({
             <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/20">
               <Play className="h-4 w-4 fill-current" />
             </span>
-            Watch Overview
+            Watch Demo
           </button>
         </motion.div>
       </div>

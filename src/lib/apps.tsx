@@ -27,6 +27,9 @@ export const apps: PlatformsType = [
     bestFor: "Perfect for teams in Lahore or anywhere in Pakistan",
     icon: Clock,
     videoUrl: "#",
+    videoCtaTitle: "See Attendance in Action",
+    videoCtaDescription:
+      "Discover how our Attendance module simplifies time tracking, leave management, and overtime control — all in one seamless workflow.",
     heroHeadline: "Welcome to QTO ERP Attendance Module",
     heroSubheadline:
       "Automate timesheets, manage shifts, and track attendance in real time — all from one dashboard.",
@@ -64,39 +67,39 @@ export const apps: PlatformsType = [
     ],
     features: [
       {
-        title: "Easy Check-In and Check-Out",
+        title: "Smart Check-In & Check-Out",
         description:
-          "Start and end your day with a single click on any device.\nThe system records exact time and validates against your schedule.\nIncludes grace periods for late arrivals to handle real-life situations.\nWorks seamlessly on mobile or web for office and remote workers.",
+          "Record work hours from any device with one action. The system captures accurate in/out times and automatically calculates total working hours. Support grace periods and validation against schedules. Works on mobile and web for office and remote workers.",
         icon: "clock",
       },
       {
-        title: "Break Tracking",
+        title: "Intelligent Break Tracking",
         description:
-          "Submit leave requests digitally with required documentation.\nTrack leave balances for different types like sick and annual leave.\nManagers approve requests with comments and instant notifications.\nHandles advance notice requirements and emergency situations.",
+          "Monitor break durations in one place. Employees start and end breaks with simple actions; break time is automatically deducted from total hours so daily and monthly timesheets stay accurate and compliant. Prevent overlapping breaks and keep a clear audit of break time.",
         icon: "calendar",
       },
       {
-        title: "Automated Timesheets",
+        title: "Automated Time Calculations",
         description:
-          "Track lunch or prayer breaks with simple start/end clicks.\nAutomatically subtracts break time from total working hours.\nPrevents break overlaps and ensures fair time management.\nMaintains accurate records for compliance and payroll accuracy.",
+          "Generate precise daily and monthly timesheets without manual entry. Working hours, overtime, and exceptions are calculated automatically. Reduce errors and save time for payroll and reporting.",
         icon: "pause",
       },
       {
-        title: "Leave Management",
+        title: "Digital Leave Management",
         description:
-          "Submit leave requests digitally with required documentation.\nTrack leave balances for different types like sick and annual leave.\nManagers approve requests with comments and instant notifications.\nHandles advance notice requirements and emergency situations.",
+          "Submit, approve, and track leave through structured workflows. Leave balances update in real time for full transparency. Support different leave types (e.g. sick, annual), manager approvals with comments and notifications, and advance-notice or emergency leave where needed.",
         icon: "calendar-off",
       },
       {
-        title: "Overtime Handling",
+        title: "Overtime & Undertime Control",
         description:
-          "Request corrections for late arrivals with supporting evidence.\nManagers review and approve changes with full audit trails.\nMaintains record accuracy while tracking all modifications.\nEnsures transparency and prevents unauthorized changes.",
+          "Automatically calculate extra hours and short hours based on company policies. Ensure fair compensation and accurate payroll. Support configurable rules and clear reporting of overtime and undertime.",
         icon: "alert-triangle",
       },
       {
-        title: "Corrections for Mistakes",
+        title: "Attendance Adjustments",
         description:
-          "Request corrections for late arrivals with supporting evidence.\nManagers review and approve changes with full audit trails.\nMaintains record accuracy while tracking all modifications.\nEnsures transparency and prevents unauthorized changes.",
+          "Let employees request corrections for missed or incorrect clock-in/out entries. Managers review and approve changes with a full audit trail. Keep records accurate while tracking who changed what and when.",
         icon: "edit",
       },
     ],

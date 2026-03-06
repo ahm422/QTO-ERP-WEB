@@ -13,6 +13,8 @@ export type PlatformType = {
   bestFor: string;
   icon: any;
   videoUrl: string;
+  videoCtaTitle?: string;
+  videoCtaDescription?: string;
   image?: string;
   heroHeadline: string;
   heroSubheadline: string;
