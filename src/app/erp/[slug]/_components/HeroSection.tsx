@@ -140,7 +140,7 @@ export default function HeroSection({ app, onVideoOpen }: HeroSectionProps){
                   className=""
                 >
                   <Button className="group" size={'lg'} icon={ArrowRight}>
-                    Book a Demo
+                    Schedule a Demo
                       
                   </Button>
                 </Link>
