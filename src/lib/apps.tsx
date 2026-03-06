@@ -322,9 +322,9 @@ export const apps: PlatformsType = [
     cardTagline: "Plan, track, and deliver projects efficiently — from estimation to execution.",
     icon: FolderKanban,
     videoUrl: "#",
-    heroHeadline: "Project Management That Delivers Results",
+    heroHeadline: "Project Management That Drives Performance",
     heroSubheadline:
-      "Plan sprints, allocate resources, track milestones — and ship projects on time, every time.",
+      "Plan projects, allocate resources, track milestones, and deliver on time — with complete visibility and control.",
     aboutTitle: "About Project Management",
     aboutDescription: [
       "Our Project Management module gives teams complete visibility into every project, task, and deadline. Whether you run agile sprints or waterfall timelines, the tools adapt to your workflow.",
