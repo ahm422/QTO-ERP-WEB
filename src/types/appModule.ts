@@ -11,6 +11,7 @@ export type PlatformType = {
   shortDescription: string;
   highlights: string[];
   bestFor: string;
+  cardTagline?: string;
   icon: any;
   videoUrl: string;
   videoCtaTitle?: string;
