@@ -12,9 +12,9 @@ export default function TestimonialsSection({ app }: TestimonialsSectionProps) {
     <section id='testimonials' className='section-padding'>
       <div className='container-main'>
         <HeaderSections
-          tag='Testimonials'
-          title='What Our Users Say'
-          description='See how organizations are transforming their operations with our platform.'
+          tag='Client Testimonials'
+          title='Trusted by Growing Organizations'
+          description='Discover how businesses improve efficiency, accuracy, and workforce visibility using QTO ERP.'
         />
         <TestimonialCarousel testimonials={app.testimonials} autoPlay={true} />
       </div>

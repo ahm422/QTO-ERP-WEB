@@ -38,9 +38,9 @@ const Customers = () => {
           <ClientsMarquee />
           </div>
           <HeaderSections
-            tag='Testimonials'
-            title='Loved by Teams Worldwide'
-            description='See how organizations are transforming their operations with our platform.'
+            tag='Client Testimonials'
+            title='Trusted by Growing Organizations'
+            description='Discover how businesses improve efficiency, accuracy, and workforce visibility using QTO ERP.'
           />
           <TestimonialCarousel
             testimonials={testimonials}
