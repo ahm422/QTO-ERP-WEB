@@ -31,11 +31,36 @@ export const apps: PlatformsType = [
     heroSubheadline:
       "Automate timesheets, manage shifts, and track attendance in real time — all from one dashboard.",
     aboutTitle:
-      "Streamline attendance, leave, and overtime with QTO ERP. Track work hours, approve requests, and ensure accurate records — anytime, anywhere, on any device.",
-    aboutDescription: [
-      "QTO Attendance Module transforms how teams manage time tracking. Say goodbye to paper sheets and manual calculations. Our system handles everything digitally with one-click check-ins, automatic overtime calculations, and smart leave management. Whether you're in Lahore or anywhere in Pakistan, the platform adapts to local needs including Eid holidays and Pakistani labor regulations.",
-      "Employees love the simplicity — check in with one tap and focus on work. Managers get instant visibility into team attendance without chasing updates. HR teams save hours on payroll preparation with automated reports. Executives see trends that help improve productivity and reduce costs.",
-      "Built for reliability, QTO Attendance works on any device — Android phones, iPhones, or computers. With secure data protection and daily backups, your attendance records are always safe and accessible. Join thousands of Pakistani businesses already simplifying their workday.",
+      "Effortless attendance tracking. Manage hours, shifts, and leave with real-time insights — all in one secure system.",
+    aboutDescription: [],
+    aboutContents: [
+      {
+        id: 1,
+        tag: "Overview",
+        title: "Effortless Attendance Management for Every Organization",
+        description:
+          "QTO Attendance simplifies tracking of employee hours, shifts, and leave requests. Employees can check in and out with a single click, while managers get real-time insights into attendance patterns and productivity. The system ensures accuracy, compliance, and seamless workflow management.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "Attendance - Overview",
+      },
+      {
+        id: 2,
+        tag: "Problem",
+        title: "Traditional Attendance Systems Waste Time and Cause Errors",
+        description:
+          "Manual time tracking and paper-based processes create inefficiencies, delays in approvals, and errors in payroll calculations. Managers and HR teams spend excessive time chasing attendance updates instead of focusing on strategic tasks.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "Attendance - Problem",
+      },
+      {
+        id: 3,
+        tag: "Solution",
+        title: "Smart, Automated, and Secure Attendance",
+        description:
+          "QTO Attendance digitizes all attendance workflows. Employees can clock in/out from any device, submit correction requests, and apply for leave digitally. Managers receive instant dashboards, while HR teams save hours with automated reports. All records are secure, backed up daily, and accessible anytime.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "Attendance - Solution",
+      },
     ],
     features: [
       {

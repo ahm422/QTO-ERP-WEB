@@ -15,11 +15,11 @@ const featureImages = [
   "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1000&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1460925895917-adf4198c838f?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1516534775068-bb57a52f4fee?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1000&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1460925895917-adf4198c838f?q=80&w=1000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
 ];
 
 export default function FeaturesSection({
