@@ -82,7 +82,7 @@ export default function AboutSection({ app }: AboutSectionProps) {
                   >
                     <div className="relative w-full h-full">
                       <Image
-                        src="/assets/images/clockin-out.png"
+                        src={content.image || app.image || "/assets/images/attendance.png"}
                         alt={content.imageAlt || `${app.name} image`}
                         fill
                         className="object-contain object-center"
