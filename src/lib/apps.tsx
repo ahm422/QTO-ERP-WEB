@@ -325,10 +325,36 @@ export const apps: PlatformsType = [
     heroHeadline: "Project Management That Drives Performance",
     heroSubheadline:
       "Plan projects, allocate resources, track milestones, and deliver on time — with complete visibility and control.",
-    aboutTitle: "About Project Management",
-    aboutDescription: [
-      "Our Project Management module gives teams complete visibility into every project, task, and deadline. Whether you run agile sprints or waterfall timelines, the tools adapt to your workflow.",
-      "With built-in resource allocation and time tracking, you'll always know who's working on what, what's at risk, and how to keep things on track.",
+    aboutTitle: "A Complete Solution for Every Project",
+    aboutDescription: [],
+    aboutContents: [
+      {
+        id: 1,
+        tag: "Overview",
+        title: "Streamline Projects from Planning to Delivery",
+        description:
+          "QTO Project Management solution gives organizations full visibility and control over projects, tasks, and deadlines. Flexible enough to fit any workflow, it helps teams plan efficiently, allocate resources, track progress, and deliver on time across all departments.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "Project Management - Overview",
+      },
+      {
+        id: 2,
+        tag: "Problem",
+        title: "Lack of Visibility and Control Can Derail Projects",
+        description:
+          "Without clear visibility into resources and timelines, organizations often struggle to know who is working on what, identify at-risk tasks, and keep projects on track.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "Project Management - Problem",
+      },
+      {
+        id: 3,
+        tag: "Solution",
+        title: "Empower Teams to Deliver Projects on Time",
+        description:
+          "Our Project Management solution addresses visibility and control challenges by providing built-in resource allocation, task tracking, and progress monitoring. Teams can see who is working on what, identify potential risks early, and take proactive actions to keep projects on schedule—across all departments and industries.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "Project Management - Solution",
+      },
     ],
     features: [
       {
