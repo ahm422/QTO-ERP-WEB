@@ -33,7 +33,7 @@ export default function FeaturesSection({
         <div className="text-center mb-16">
           <HeaderSections
             tag="Features"
-            title={`${app.name} Features`}
+            title={app.featuresSectionTitle ?? `${app.name} Features`}
             description="A powerful set of tools built to give your team full control and visibility."
           />
         </div>

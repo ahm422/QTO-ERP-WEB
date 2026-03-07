@@ -17,9 +17,9 @@ export default function TestimonialsSection({ app }: TestimonialsSectionProps) {
     <section id='testimonials' className='section-padding'>
       <div className='container-main'>
         <HeaderSections
-          tag={TESTIMONIALS_SECTION_TAG}
-          title={TESTIMONIALS_SECTION_TITLE}
-          description={TESTIMONIALS_SECTION_DESCRIPTION}
+          tag={app.testimonialsSectionTag ?? TESTIMONIALS_SECTION_TAG}
+          title={app.testimonialsSectionTitle ?? TESTIMONIALS_SECTION_TITLE}
+          description={app.testimonialsSectionDescription ?? TESTIMONIALS_SECTION_DESCRIPTION}
         />
         <TestimonialCarousel testimonials={app.testimonials} autoPlay={true} />
       </div>

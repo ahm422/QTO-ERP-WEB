@@ -24,8 +24,12 @@ export type PlatformType = {
   aboutTag?: string;
   aboutDescription: string[];
   aboutContents?: AboutContentsType;
+  featuresSectionTitle?: string;
   features: FeaturesType;
   problems: ProblemsType;
+  testimonialsSectionTag?: string;
+  testimonialsSectionTitle?: string;
+  testimonialsSectionDescription?: string;
   useCases: UseCasesType;
   testimonials: TestimonialsType;
   faqs: FAQsType;
