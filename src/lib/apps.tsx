@@ -481,9 +481,10 @@ export const apps: PlatformsType = [
     cardTagline: "Manage client relationships, leads, and project pipelines in one system.",
     icon: Building2,
     videoUrl: "#",
-    heroHeadline: "From Lead to Completed Construction Project",
+    heroHeadline: "From Opportunity to Completion",
     heroSubheadline:
-      "Track opportunities, generate accurate estimations, manage proposals, and convert winning deals into active construction projects — all in one unified CRM.",
+      "Track leads, manage proposals, monitor progress, and turn opportunities into successful projects — all in one unified CRM platform.",
+    heroCtaLabel: "Book a Demo",
     aboutTitle: "About Construction CRM & Estimation",
     aboutDescription: [
       "Our Construction CRM is built specifically for companies that handle project estimation before execution. From the first inquiry to final handover, every stage is tracked and optimized.",

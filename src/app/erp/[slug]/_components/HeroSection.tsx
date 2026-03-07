@@ -11,6 +11,7 @@ interface HeroSectionProps {
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     heroHeadline: string;
     heroSubheadline: string;
+    heroCtaLabel?: string;
   };
   onVideoOpen: () => void;
 }
@@ -140,8 +141,7 @@ export default function HeroSection({ app, onVideoOpen }: HeroSectionProps){
                   className=""
                 >
                   <Button className="group" size={'lg'} icon={ArrowRight}>
-                    Schedule a Demo
-                      
+                    {app.heroCtaLabel ?? "Schedule a Demo"}
                   </Button>
                 </Link>
                   {/* <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform -translate-x-60 group-hover:translate-x-60 transition-transform duration-1000" /> */}

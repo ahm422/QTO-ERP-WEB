@@ -19,6 +19,7 @@ export type PlatformType = {
   image?: string;
   heroHeadline: string;
   heroSubheadline: string;
+  heroCtaLabel?: string;
   aboutTitle: string;
   aboutTag?: string;
   aboutDescription: string[];
