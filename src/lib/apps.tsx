@@ -322,6 +322,9 @@ export const apps: PlatformsType = [
     cardTagline: "Plan, track, and deliver projects efficiently — from estimation to execution.",
     icon: FolderKanban,
     videoUrl: "#",
+    videoCtaTitle: "See Project Management in Action",
+    videoCtaDescription:
+      "Explore a quick overview of all key features and see how they work together seamlessly to streamline projects, boost productivity, and keep teams on track.",
     heroHeadline: "Project Management That Drives Performance",
     heroSubheadline:
       "Plan projects, allocate resources, track milestones, and deliver on time — with complete visibility and control.",
@@ -360,37 +363,37 @@ export const apps: PlatformsType = [
       {
         title: "Kanban Boards",
         description:
-          "Visual task management with drag-and-drop cards and custom statuses.",
+          "Visualize tasks with intuitive drag-and-drop cards and customizable statuses for effortless workflow management.",
         icon: "columns",
       },
       {
         title: "Gantt Charts",
         description:
-          "Timeline view with dependencies, milestones, and critical path analysis.",
+          "Track project timelines, dependencies, milestones, and critical paths to ensure projects stay on schedule.",
         icon: "gantt-chart",
       },
       {
         title: "Resource Allocation",
         description:
-          "See team capacity and assign work to avoid burnout or bottlenecks.",
+          "Monitor team capacity and assign work efficiently to prevent bottlenecks and avoid employee burnout.",
         icon: "users",
       },
       {
         title: "Time Tracking",
         description:
-          "Log hours against tasks and projects for accurate billing and reporting.",
+          "Log hours for tasks and projects to support accurate reporting, billing, and productivity analysis.",
         icon: "clock",
       },
       {
         title: "Sprint Planning",
         description:
-          "Plan sprints, set velocity targets, and run retrospectives.",
+          "Plan agile sprints, set velocity targets, and conduct retrospectives to continuously improve team performance.",
         icon: "zap",
       },
       {
         title: "Client Portal",
         description:
-          "Share project progress with clients through a branded read-only view.",
+          "Provide clients with a branded, read-only view to share project progress and enhance transparency.",
         icon: "globe",
       },
     ],
