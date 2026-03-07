@@ -485,10 +485,36 @@ export const apps: PlatformsType = [
     heroSubheadline:
       "Track leads, manage proposals, monitor progress, and turn opportunities into successful projects — all in one unified CRM platform.",
     heroCtaLabel: "Book a Demo",
-    aboutTitle: "About Construction CRM & Estimation",
-    aboutDescription: [
-      "Our Construction CRM is built specifically for companies that handle project estimation before execution. From the first inquiry to final handover, every stage is tracked and optimized.",
-      "Manage leads, create BOQs, calculate costs, send professional proposals, and convert approved estimations into active project management workflows without losing data or context.",
+    aboutTitle: "From Leads to Successful Outcomes",
+    aboutDescription: [],
+    aboutContents: [
+      {
+        id: 1,
+        tag: "Overview",
+        title: "From Leads to Completed Projects, Effortlessly",
+        description:
+          "Our CRM is designed to manage the entire lifecycle of opportunities and projects. From initial inquiry to project completion, every stage is tracked, organized, and optimized to help teams to close deals efficiently and deliver successful outcomes.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "CRM - Overview",
+      },
+      {
+        id: 2,
+        tag: "Problem",
+        title: "Lost Context Leads to Missed Opportunities",
+        description:
+          "Organizations often struggle to manage leads, generate accurate proposals, track costs, and transition approved opportunities into active projects—without losing data, context, or workflow continuity.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "CRM - Problem",
+      },
+      {
+        id: 3,
+        tag: "Solution",
+        title: "Seamlessly Manage Opportunities from Start to Finish",
+        description:
+          "Our CRM streamlines the entire process—from lead management and cost calculations to professional proposals and project handovers. Teams can track every stage, maintain full context, and transition approved opportunities into active projects effortlessly, ensuring accuracy, efficiency, and continuity across all workflows.",
+        image: "/assets/images/attendance.png",
+        imageAlt: "CRM - Solution",
+      },
     ],
 
     features: [
