@@ -517,41 +517,41 @@ export const apps: PlatformsType = [
       },
     ],
 
+    featuresSectionTitle: "Everything You Need in One CRM",
+    testimonialsSectionTag: "Client Testimonials",
+    testimonialsSectionTitle: "Trusted by Growing Organizations",
+    testimonialsSectionDescription:
+      "Discover how businesses improve efficiency, accuracy, and workforce visibility using QTO ERP.",
+
     features: [
       {
         title: "Lead & Inquiry Management",
         description:
-          "Capture, assign, and track incoming construction inquiries with pipeline visibility.",
+          "Effortlessly capture, assign, and track all incoming leads with complete visibility across your sales pipeline, ensuring no opportunity is overlooked.",
         icon: "users",
       },
       {
         title: "Company & Contact Profiles",
         description:
-          "Maintain structured records of clients, contractors, consultants, and decision-makers.",
+          "Maintain structured, centralized records of clients, partners, and key stakeholders for streamlined communication and relationship management.",
         icon: "building",
       },
       {
         title: "Opportunity & Deal Tracking",
         description:
-          "Move deals across pipeline stages from qualification to negotiation and closure.",
+          "Manage opportunities from initial qualification to negotiation and closure, keeping every stage organized and transparent for your team.",
         icon: "trending-up",
-      },
-      {
-        title: "Project Estimation & BOQ",
-        description:
-          "Prepare detailed BOQs, material costing, labor calculations, and profit margins.",
-        icon: "calculator",
       },
       {
         title: "Proposal Management",
         description:
-          "Generate, send, revise, and track proposal approvals digitally.",
+          "Generate, send, revise, and track proposals digitally, enabling faster approvals and reducing administrative overhead.",
         icon: "file-text",
       },
       {
-        title: "Finance & Payment Sync",
+        title: "Finance & Payment Integration",
         description:
-          "Track payment status, milestones, and project-related financial data.",
+          "Monitor payment milestones, track project-related financial data, and ensure accurate reporting for seamless financial management.",
         icon: "credit-card",
       },
     ],
