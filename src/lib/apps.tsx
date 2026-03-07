@@ -451,19 +451,19 @@ export const apps: PlatformsType = [
     ],
     faqs: [
       {
-        question: "Does it support agile and waterfall?",
+        question: "Is the platform suitable for all types of organizations?",
         answer:
-          "Yes. Switch between Kanban, Gantt, and hybrid views per project.",
+          "Yes. Our solution is flexible and adapts to workflows across industries and departments.",
       },
       {
         question: "Can clients see project progress?",
         answer:
-          "Yes. Share a branded client portal with customizable visibility settings.",
+          "Yes. Share a branded client portal with customizable visibility settings to keep clients informed without compromising internal data.",
       },
       {
-        question: "Does it integrate with GitHub or Jira?",
+        question: "Can I track resources and deadlines in real time?",
         answer:
-          "We offer integrations with popular development and project tools via API.",
+          "Absolutely. You can monitor tasks, projects, and team workloads in real time to ensure efficiency and timely delivery.",
       },
     ],
   },
