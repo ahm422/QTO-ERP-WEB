@@ -1,3 +1,8 @@
+import {
+  TESTIMONIALS_SECTION_DESCRIPTION,
+  TESTIMONIALS_SECTION_TAG,
+  TESTIMONIALS_SECTION_TITLE,
+} from '@/lib/copy';
 import { globalTestimonials } from '@/lib/testimonials';
 import React from 'react';
 import ClientsMarquee from './Clientsmarquee';
@@ -38,9 +43,9 @@ const Customers = () => {
           <ClientsMarquee />
           </div>
           <HeaderSections
-            tag='Client Testimonials'
-            title='Trusted by Growing Organizations'
-            description='Discover how businesses improve efficiency, accuracy, and workforce visibility using QTO ERP.'
+            tag={TESTIMONIALS_SECTION_TAG}
+            title={TESTIMONIALS_SECTION_TITLE}
+            description={TESTIMONIALS_SECTION_DESCRIPTION}
           />
           <TestimonialCarousel
             testimonials={testimonials}

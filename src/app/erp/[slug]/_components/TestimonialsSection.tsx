@@ -1,6 +1,11 @@
 'use client';
 import TestimonialCarousel from '@/components/common/TestimonialSection';
 import { HeaderSections } from '@/components/ui/HeaderSections';
+import {
+  TESTIMONIALS_SECTION_DESCRIPTION,
+  TESTIMONIALS_SECTION_TAG,
+  TESTIMONIALS_SECTION_TITLE,
+} from '@/lib/copy';
 import { PlatformType } from '@/types';
 
 interface TestimonialsSectionProps {
@@ -12,9 +17,9 @@ export default function TestimonialsSection({ app }: TestimonialsSectionProps) {
     <section id='testimonials' className='section-padding'>
       <div className='container-main'>
         <HeaderSections
-          tag='Client Testimonials'
-          title='Trusted by Growing Organizations'
-          description='Discover how businesses improve efficiency, accuracy, and workforce visibility using QTO ERP.'
+          tag={TESTIMONIALS_SECTION_TAG}
+          title={TESTIMONIALS_SECTION_TITLE}
+          description={TESTIMONIALS_SECTION_DESCRIPTION}
         />
         <TestimonialCarousel testimonials={app.testimonials} autoPlay={true} />
       </div>
