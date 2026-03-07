@@ -130,7 +130,7 @@ export default function AllAppsPage() {
                       {/* Description */}
                       <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2 min-h-[2.5rem]">
                         {" "}
-                        {app.shortDescription}
+                        {app.cardTagline ?? app.shortDescription}
                       </p>
 
                       {/* Highlights */}
@@ -178,7 +178,13 @@ export default function AllAppsPage() {
         </div>
       </section>
 
-      <CTASection />
+      <CTASection
+        headline="Ready to Simplify Your Operations with QTO ERP?"
+        primaryLabel="Schedule a Demo"
+        primaryHref="/demo"
+        secondaryLabel="View Pricing"
+        secondaryHref="/pricing"
+      />
     </>
   );
 }
