@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ExternalLink } from "lucide-react";
+import { QTO_DEV_URL } from "@/lib/constants";
 
 const footerLinks = {
   Platform: [
@@ -17,6 +18,7 @@ const footerLinks = {
     { label: "FAQ", href: "/resourcesfaq" },
     { label: "Blog", href: "/blog" },
     { label: "About", href: "/about" },
+    { label: "QTO Dev", href: QTO_DEV_URL, external: true },
   ],
   Company: [
     { label: "Pricing", href: "/pricing" },
@@ -41,7 +43,7 @@ export default function Footer() {
               Modern ERP for growing teams. Attendance, HR, and projects — all in one place.
             </p>
             <a
-              href="https://build-stellar-portfolios.lovable.app"
+              href={QTO_DEV_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 mt-4 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -56,9 +58,21 @@ export default function Footer() {
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                      {link.label}
-                    </Link>
+                    {"external" in link && link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+                      >
+                        {link.label}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : (
+                      <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

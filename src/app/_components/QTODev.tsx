@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
+import { QTO_DEV_URL } from "@/lib/constants";
 
 const QTODev = () => {
   return (
@@ -22,7 +23,7 @@ const QTODev = () => {
               QTO Dev builds modern, scalable SaaS solutions for growing businesses. We're passionate about creating tools that simplify complex workflows and empower teams worldwide.
             </p>
              <a
-              href="https://build-stellar-portfolios.lovable.app"
+              href={QTO_DEV_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"

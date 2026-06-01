@@ -28,6 +28,7 @@ import {
 import { solutions as realSolutions } from "@/lib/solutions";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { QTO_DEV_URL } from "@/lib/constants";
 
 // Color palette for nav apps
 const navAppColors = [
@@ -185,9 +186,9 @@ const resourcesItems = [
   },
   {
     label: "QTO Dev",
-    href: "https://build-stellar-portfolios.lovable.app",
+    href: QTO_DEV_URL,
     external: true,
-    description: "External link",
+    description: "Web development partner",
     icon: ExternalLink,
     color: "from-rose-500 to-pink-500",
     textColor: "text-rose-600 dark:text-rose-400",
@@ -891,7 +892,7 @@ export default function NavbarV3() {
                 className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
               >
                 <div className="w-12 h-12 rounded-xl bg-linear-to-br from-slate-500 to-slate-600 flex items-center justify-center text-white shadow-lg">
-                  <span className="text-lg font-bold">$</span>
+                  <DollarSign className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900 dark:text-white">

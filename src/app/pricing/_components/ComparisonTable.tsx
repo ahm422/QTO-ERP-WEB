@@ -1,5 +1,16 @@
 'use client';
 import { HeaderSections } from '@/components/ui/HeaderSections';
+import { Check, Minus } from 'lucide-react';
+
+function ComparisonCell({ value }: { value: string }) {
+  if (value === '✓') {
+    return <Check className='w-4 h-4 mx-auto text-accent' aria-hidden />;
+  }
+  if (value === '—') {
+    return <Minus className='w-4 h-4 mx-auto text-muted-foreground/60' aria-hidden />;
+  }
+  return <>{value}</>;
+}
 
 interface ComparisonFeature {
   feature: string;
@@ -47,13 +58,13 @@ export default function ComparisonTable({
                 <tr key={i} className='border-b border-border last:border-0'>
                   <td className='p-4 text-foreground'>{row.feature}</td>
                   <td className='p-4 text-center text-muted-foreground'>
-                    {row.starter}
+                    <ComparisonCell value={row.starter} />
                   </td>
                   <td className='p-4 text-center text-muted-foreground'>
-                    {row.growth}
+                    <ComparisonCell value={row.growth} />
                   </td>
                   <td className='p-4 text-center text-muted-foreground'>
-                    {row.enterprise}
+                    <ComparisonCell value={row.enterprise} />
                   </td>
                 </tr>
               ))}

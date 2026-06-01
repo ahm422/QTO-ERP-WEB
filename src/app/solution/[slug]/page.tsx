@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft, Check } from "lucide-react";
 import { getSolutionBySlug } from "@/lib/solutions";
 import { notFound } from "next/navigation";
 import SolutionTabsContent from "./_components/SolutionTabsContent";
@@ -146,7 +147,8 @@ export default async function HRSoftwareLandingFullWidth({ params, searchParams 
                     href={`/solution/${slug}`}
                     className="inline-flex items-center gap-2 text-sm text-[#EE7D2B] hover:underline"
                   >
-                    ← Back to {solution.title}
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to {solution.title}
                   </Link>
                 </div>
               )}
@@ -163,7 +165,7 @@ export default async function HRSoftwareLandingFullWidth({ params, searchParams 
                   <ul className="grid grid-flow-col ">
                     {selectedUseCase.specificNeeds.map((need, idx) => (
                       <li key={idx} className="flex items-center gap-2 text-[13px] text-black/60">
-                        <span className="text-[#EE7D2B]">✓</span>
+                        <Check className="h-4 w-4 shrink-0 text-[#EE7D2B]" aria-hidden />
                         {need}
                       </li>
                     ))}
