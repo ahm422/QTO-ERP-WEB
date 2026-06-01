@@ -4,11 +4,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 PostgreSQL, Prisma, and admin credentials login (NextAuth) are documented in [docs/database.md](docs/database.md).
 
+Form submissions (demo, contact, newsletter) and transactional email (Resend) are documented in [docs/email.md](docs/email.md).
+
 Quick start after Postgres is running:
 
 ```bash
 cp .env.example .env
-# edit .env (DATABASE_URL, AUTH_SECRET, ADMIN_*)
+# edit .env (DATABASE_URL, AUTH_SECRET, ADMIN_*, RESEND_*)
 npm install
 npm run db:migrate
 npm run db:seed
