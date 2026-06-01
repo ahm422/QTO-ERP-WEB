@@ -82,7 +82,7 @@ export default function AllAppsPage() {
       {/* Apps Grid */}
       <section className="pb-20 sm:pb-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <HeaderSections tag="Platforms" title="Explore All Apps" />
+          <HeaderSections tag="Platforms" title="Explore More" />
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6 mt-10">
             {apps.map((app, idx) => {

@@ -310,7 +310,7 @@ export const apps: PlatformsType = [
   },
   {
     slug: "project-management",
-    name: "PM",
+    name: "Project Management (PM)",
     shortDescription:
       "Plan, track, and deliver projects on time with visual .",
     highlights: [
@@ -658,30 +658,30 @@ export const apps: PlatformsType = [
 
     faqs: [
       {
-        question: "Can we convert an approved proposal into a live project?",
+        question: "Can approved proposals be converted into active projects?",
         answer:
-          "Yes. Once approved, the system converts the estimation and proposal into a structured project ready for execution tracking.",
+          "Yes. Once a proposal is approved, the system seamlessly converts it into a structured project ready for execution and tracking.",
       },
       {
-        question: "Does it support BOQ and material-level costing?",
+        question: "Does the system support detailed cost tracking?",
         answer:
-          "Absolutely. You can create detailed BOQs including material, labor, overhead, and margin calculations.",
+          "Yes. You can track costs, budgets, and expenses for projects or opportunities, helping teams manage resources efficiently and maintain financial oversight.",
       },
       {
         question: "Can finance track milestone-based payments?",
         answer:
-          "Yes. The finance module tracks milestone invoices, partial payments, and outstanding balances.",
+          "Yes. The finance module allows tracking of milestone invoices, partial payments, and outstanding balances to ensure accurate financial oversight.",
       },
       {
-        question: "Does it support sales performance reports?",
+        question: "Are sales performance and reporting features available?",
         answer:
-          "Yes. Sales, lead conversion, revenue forecasting, and deal performance reports are available in the reports module.",
+          "Yes. The platform provides reports on sales, lead conversion, revenue forecasting, and overall deal performance to support informed decision-making.",
       },
     ],
   },
    {
     slug: "salary",
-    name: "Salary",
+    name: "Salary / Payroll",
     image: "/assets/images/salary.png",
     shortDescription:
       "Automate payroll and manage salaries (Coming Soon).",
