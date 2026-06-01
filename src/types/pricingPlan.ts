@@ -1,4 +1,5 @@
 export type PricingPlan = {
+  slug: string;
   name: string;
   monthlyPrice: number;
   yearlyPrice: number;

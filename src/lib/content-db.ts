@@ -1,9 +1,10 @@
 import { BlogPostStatus } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import {
   serializeBlogDetail,
   serializeBlogSummary,
   serializeComparisonRow,
+  serializePricingPlan,
   serializeModuleDetail,
   serializeModuleSummary,
   serializeSolutionDetail,
@@ -11,7 +12,7 @@ import {
 } from "@/lib/content-serializers";
 
 export async function listPublishedModules() {
-  const rows = await prisma.erpModule.findMany({
+  const rows = await getPrisma().erpModule.findMany({
     where: { published: true },
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
   });
@@ -20,7 +21,7 @@ export async function listPublishedModules() {
 
 export async function listPublishedModulesBySlugs(slugs: string[]) {
   if (slugs.length === 0) return [];
-  const rows = await prisma.erpModule.findMany({
+  const rows = await getPrisma().erpModule.findMany({
     where: { published: true, slug: { in: slugs } },
     orderBy: [{ sortOrder: "asc" }],
   });
@@ -31,7 +32,7 @@ export async function listPublishedModulesBySlugs(slugs: string[]) {
 }
 
 export async function listPublishedModulesFull() {
-  const rows = await prisma.erpModule.findMany({
+  const rows = await getPrisma().erpModule.findMany({
     where: { published: true },
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
   });
@@ -39,14 +40,14 @@ export async function listPublishedModulesFull() {
 }
 
 export async function getPublishedModuleBySlug(slug: string) {
-  const row = await prisma.erpModule.findFirst({
+  const row = await getPrisma().erpModule.findFirst({
     where: { slug, published: true },
   });
   return row ? serializeModuleDetail(row) : null;
 }
 
 export async function listPublishedModuleSlugs() {
-  const rows = await prisma.erpModule.findMany({
+  const rows = await getPrisma().erpModule.findMany({
     where: { published: true },
     select: { slug: true },
     orderBy: [{ sortOrder: "asc" }],
@@ -55,7 +56,7 @@ export async function listPublishedModuleSlugs() {
 }
 
 export async function listPublishedSolutions() {
-  const rows = await prisma.solution.findMany({
+  const rows = await getPrisma().solution.findMany({
     where: { published: true },
     orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
   });
@@ -63,7 +64,7 @@ export async function listPublishedSolutions() {
 }
 
 export async function listPublishedSolutionsFull() {
-  const rows = await prisma.solution.findMany({
+  const rows = await getPrisma().solution.findMany({
     where: { published: true },
     orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
   });
@@ -71,14 +72,14 @@ export async function listPublishedSolutionsFull() {
 }
 
 export async function getPublishedSolutionBySlug(slug: string) {
-  const row = await prisma.solution.findFirst({
+  const row = await getPrisma().solution.findFirst({
     where: { slug, published: true },
   });
   return row ? serializeSolutionDetail(row) : null;
 }
 
 export async function listPublishedSolutionSlugs() {
-  const rows = await prisma.solution.findMany({
+  const rows = await getPrisma().solution.findMany({
     where: { published: true },
     select: { slug: true },
     orderBy: [{ sortOrder: "asc" }],
@@ -87,7 +88,7 @@ export async function listPublishedSolutionSlugs() {
 }
 
 export async function listPublishedBlogPosts() {
-  const rows = await prisma.blogPost.findMany({
+  const rows = await getPrisma().blogPost.findMany({
     where: {
       status: BlogPostStatus.PUBLISHED,
       publishedAt: { not: null },
@@ -98,7 +99,7 @@ export async function listPublishedBlogPosts() {
 }
 
 export async function getPublishedBlogPostBySlug(slug: string) {
-  const row = await prisma.blogPost.findFirst({
+  const row = await getPrisma().blogPost.findFirst({
     where: {
       slug,
       status: BlogPostStatus.PUBLISHED,
@@ -109,7 +110,7 @@ export async function getPublishedBlogPostBySlug(slug: string) {
 }
 
 export async function listPublishedBlogSlugs() {
-  const rows = await prisma.blogPost.findMany({
+  const rows = await getPrisma().blogPost.findMany({
     where: {
       status: BlogPostStatus.PUBLISHED,
       publishedAt: { not: null },
@@ -121,9 +122,24 @@ export async function listPublishedBlogSlugs() {
 }
 
 export async function listPublishedComparison() {
-  const rows = await prisma.comparisonFeature.findMany({
+  const rows = await getPrisma().comparisonFeature.findMany({
     where: { published: true },
     orderBy: { sortOrder: "asc" },
   });
   return rows.map(serializeComparisonRow);
+}
+
+export async function listPublishedPricingPlans() {
+  const rows = await getPrisma().pricingPlan.findMany({
+    where: { published: true },
+    orderBy: { sortOrder: "asc" },
+  });
+  return rows.map(serializePricingPlan);
+}
+
+export async function getPublishedPricingPlanBySlug(slug: string) {
+  const row = await getPrisma().pricingPlan.findFirst({
+    where: { slug, published: true },
+  });
+  return row ?? null;
 }

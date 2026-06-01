@@ -12,7 +12,9 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
-    "resend:domains": "tsx --env-file=.env scripts/resend-domains.ts"
+    "resend:domains": "tsx --env-file=.env scripts/resend-domains.ts",
+    "stripe:check": "tsx --env-file=.env scripts/stripe-check.ts",
+    "stripe:webhook-test": "tsx --env-file=.env scripts/stripe-webhook-test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -34,6 +36,7 @@
     "react-dom": "19.2.3",
     "react-email": "^6.5.0",
     "resend": "^6.12.4",
+    "stripe": "^22.2.0",
     "tailwind-merge": "^3.5.0",
     "zod": "^4.4.3"
   },

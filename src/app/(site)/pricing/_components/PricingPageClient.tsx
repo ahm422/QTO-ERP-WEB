@@ -1,19 +1,24 @@
 "use client";
-import { useState } from "react";
-import { plans, pricingFaqs } from "@/lib/pricing";
+
+import { Suspense, useState } from "react";
+import { pricingFaqs } from "@/lib/pricing";
 import { HeaderSections } from "@/components/ui/HeaderSections";
 import { FAQAccordion } from "@/components/ui/faq";
 import PricingToggle from "./PricingToggle";
 import PricingCards from "./PricingCards";
 import ComparisonTable from "./ComparisonTable";
+import CheckoutBanner from "./CheckoutBanner";
 import type { ComparisonRow } from "@/types/content";
+import type { PricingPlan } from "@/types/pricingPlan";
 
 type PricingPageClientProps = {
   comparisonFeatures: ComparisonRow[];
+  plans: PricingPlan[];
 };
 
 export default function PricingPageClient({
   comparisonFeatures,
+  plans,
 }: PricingPageClientProps) {
   const [yearly, setYearly] = useState(false);
 
@@ -26,6 +31,9 @@ export default function PricingPageClient({
             title="Simple, Transparent Pricing"
             description="Start free. Scale as you grow. No hidden fees."
           />
+          <Suspense fallback={null}>
+            <CheckoutBanner />
+          </Suspense>
           <PricingToggle yearly={yearly} onToggle={setYearly} />
           <PricingCards plans={plans} yearly={yearly} />
         </div>
@@ -39,7 +47,6 @@ export default function PricingPageClient({
           <FAQAccordion faqs={pricingFaqs} />
         </div>
       </section>
-
     </>
   );
 }
