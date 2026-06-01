@@ -8,14 +8,17 @@ Form submissions (demo, contact, newsletter) and transactional email (Resend) ar
 
 Marketing content (modules, solutions, blog, pricing comparison) and public read APIs are documented in [docs/content-api.md](docs/content-api.md).
 
+Stripe Checkout for pricing plans (Phase 4) is documented in [docs/payments.md](docs/payments.md).
+
 Quick start after Postgres is running:
 
 ```bash
 cp .env.example .env
-# edit .env (DATABASE_URL, AUTH_SECRET, ADMIN_*, RESEND_*)
+# edit .env (DATABASE_URL, AUTH_SECRET, ADMIN_*, RESEND_*, STRIPE_*)
 npm install
 npm run db:migrate
 npm run db:seed
+npm run stripe:check   # optional: verify Stripe price IDs
 ```
 
 Admin login: `/admin/login` (seeded user from `ADMIN_EMAIL` / `ADMIN_PASSWORD`).

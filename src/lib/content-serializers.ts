@@ -1,4 +1,10 @@
-import type { ErpModule, Solution, ComparisonFeature, BlogPost } from "@prisma/client";
+import type {
+  ErpModule,
+  Solution,
+  ComparisonFeature,
+  BlogPost,
+  PricingPlan,
+} from "@prisma/client";
 import type {
   ModuleDetail,
   ModuleSummary,
@@ -8,6 +14,7 @@ import type {
   BlogPostSummary,
   ComparisonRow,
 } from "@/types/content";
+import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
 
 export function serializeModuleSummary(m: ErpModule): ModuleSummary {
   return {
@@ -91,5 +98,18 @@ export function serializeComparisonRow(r: ComparisonFeature): ComparisonRow {
     starter: r.starter,
     growth: r.growth,
     enterprise: r.enterprise,
+  };
+}
+
+export function serializePricingPlan(p: PricingPlan): PricingPlanPublic {
+  return {
+    slug: p.slug,
+    name: p.name,
+    monthlyPrice: p.monthlyPriceDisplay,
+    yearlyPrice: p.yearlyPriceDisplay,
+    description: p.description,
+    popular: p.popular,
+    features: p.features,
+    cta: p.cta,
   };
 }
