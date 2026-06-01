@@ -1,7 +1,7 @@
 'use client';
 import DemoForm from './_components/DemoForm';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Clock, Users, Zap } from 'lucide-react';
+import { Check, CheckCircle2, Clock, Users, Zap } from 'lucide-react';
 
 const features = [
   {
@@ -72,7 +72,10 @@ export default function Demopage() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className='px-6 py-2 bg-accent/20 rounded-lg text-primary-foreground'
               >
-                <p className='text-sm font-medium'>✓ No credit card required</p>
+                <p className='text-sm font-medium flex items-center justify-center gap-1.5'>
+                  <Check className='w-4 h-4 shrink-0' />
+                  No credit card required
+                </p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -80,7 +83,10 @@ export default function Demopage() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className='px-6 py-2 bg-accent/20 rounded-lg text-primary-foreground'
               >
-                <p className='text-sm font-medium'>✓ 15 minutes to book</p>
+                <p className='text-sm font-medium flex items-center justify-center gap-1.5'>
+                  <Check className='w-4 h-4 shrink-0' />
+                  15 minutes to book
+                </p>
               </motion.div>
             </div>
           </motion.div>

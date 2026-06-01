@@ -12,6 +12,9 @@ import {
   Briefcase,
   MessageCircle,
   Tag,
+  PhoneCall,
+  Zap,
+  type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -195,23 +198,27 @@ const ContactForm = () => {
             </div>
             {/* Contact Methods */}
             <div className='space-y-4'>
-              {[
-                {
-                  icon: '✉️',
-                  title: 'Email Support',
-                  desc: 'support@erpqto.com',
-                },
-                {
-                  icon: '☎️',
-                  title: 'Phone Support',
-                  desc: '+1 (800) 123-4567',
-                },
-                {
-                  icon: '💭',
-                  title: 'Live Chat',
-                  desc: 'Real-time assistance',
-                },
-              ].map((item, i) => (
+              {(
+                [
+                  {
+                    icon: Mail,
+                    title: 'Email Support',
+                    desc: 'support@erpqto.com',
+                  },
+                  {
+                    icon: PhoneCall,
+                    title: 'Phone Support',
+                    desc: '+1 (800) 123-4567',
+                  },
+                  {
+                    icon: MessageCircle,
+                    title: 'Live Chat',
+                    desc: 'Real-time assistance',
+                  },
+                ] satisfies { icon: LucideIcon; title: string; desc: string }[]
+              ).map((item, i) => {
+                const Icon = item.icon;
+                return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, x: -10 }}
@@ -220,7 +227,9 @@ const ContactForm = () => {
                   transition={{ duration: 0.4, delay: i * 0.1 }}
                   className='flex gap-3 items-start p-3 rounded-lg bg-accent/5 border border-accent/20 hover:border-accent/40 hover:bg-accent/10 transition-all'
                 >
-                  <div className='text-2xl shrink-0'>{item.icon}</div>{' '}
+                  <div className='w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0'>
+                    <Icon className='w-4 h-4 text-accent' />
+                  </div>
                   <div>
                     {' '}
                     <p className='font-semibold text-foreground text-sm'>
@@ -231,7 +240,8 @@ const ContactForm = () => {
                     {' '}
                   </div>
                 </motion.div>
-              ))}
+              );
+              })}
             </div>
             {/* Response Time Card */}
             <motion.div
@@ -242,10 +252,10 @@ const ContactForm = () => {
               className='p-4 rounded-xl bg-linear-to-br from-accent/15 to-accent-dark/10 border border-accent/30 backdrop-blur-sm'
             >
               {' '}
-              <p className='text-sm text-foreground font-semibold mb-2'>
-                {' '}
-                ⚡ Response Times{' '}
-              </p>{' '}
+              <p className='text-sm text-foreground font-semibold mb-2 flex items-center gap-1.5'>
+                <Zap className='w-4 h-4 shrink-0 text-accent' />
+                Response Times
+              </p>
               <p className='text-xs text-muted-foreground mb-1'>
                 {' '}
                 <span className='font-semibold text-foreground'>

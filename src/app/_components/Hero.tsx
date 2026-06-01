@@ -3,6 +3,7 @@
 import { motion, type Variants, type Easing } from 'framer-motion';
 import { ArrowRight, CheckCircle, ExternalLink, Sparkles, Users, Clock, Briefcase } from 'lucide-react';
 import Link from 'next/link';
+import { QTO_DEV_URL } from '@/lib/constants';
 
 // Custom easing
 const easeOutQuad: Easing = [0.25, 0.46, 0.45, 0.94];
@@ -309,7 +310,7 @@ const Hero = () => {
               {/* Product By Link */}
               <motion.a
                 variants={fadeUpVariants}
-                href="https://build-stellar-portfolios.lovable.app"
+                href={QTO_DEV_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-sm text-white/60 hover:text-white transition-colors"

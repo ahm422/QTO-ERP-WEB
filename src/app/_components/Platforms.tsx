@@ -3,7 +3,7 @@
 import { HeaderSections } from '@/components/ui/HeaderSections';
 import { apps } from '@/lib/apps';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, Play } from 'lucide-react';
+import { ArrowRight, CheckCircle, Play, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 const Platforms = () => {
@@ -115,9 +115,10 @@ const Platforms = () => {
                 </h3>
                 <button
                   onClick={() => setImageOpen(false)}
-                  className='text-muted-foreground hover:text-foreground transition-colors text-2xl'
+                  className='text-muted-foreground hover:text-foreground transition-colors p-1'
+                  aria-label='Close preview'
                 >
-                  ✕
+                  <X className='w-6 h-6' />
                 </button>
               </div>
               <div className='w-full bg-muted rounded-xl overflow-hidden'>

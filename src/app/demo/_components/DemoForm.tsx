@@ -11,6 +11,10 @@ import {
   Globe,
   Building2,
   Briefcase,
+  Zap,
+  Users,
+  Target,
+  type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -192,23 +196,27 @@ const DemoForm = () => {
 
             {/* Benefits List */}
             <div className='space-y-4'>
-              {[
-                {
-                  icon: '⚡',
-                  title: '30-minute demo',
-                  desc: 'Tailored to your needs',
-                },
-                {
-                  icon: '👥',
-                  title: 'Expert guidance',
-                  desc: 'From our product team',
-                },
-                {
-                  icon: '🎯',
-                  title: 'Custom insights',
-                  desc: 'For your industry',
-                },
-              ].map((item, i) => (
+              {(
+                [
+                  {
+                    icon: Zap,
+                    title: '30-minute demo',
+                    desc: 'Tailored to your needs',
+                  },
+                  {
+                    icon: Users,
+                    title: 'Expert guidance',
+                    desc: 'From our product team',
+                  },
+                  {
+                    icon: Target,
+                    title: 'Custom insights',
+                    desc: 'For your industry',
+                  },
+                ] satisfies { icon: LucideIcon; title: string; desc: string }[]
+              ).map((item, i) => {
+                const Icon = item.icon;
+                return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, x: -10 }}
@@ -217,7 +225,9 @@ const DemoForm = () => {
                   transition={{ duration: 0.4, delay: i * 0.1 }}
                   className='flex gap-3 items-start'
                 >
-                  <div className='text-2xl shrink-0'>{item.icon}</div>
+                  <div className='w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0'>
+                    <Icon className='w-4 h-4 text-accent' />
+                  </div>
                   <div>
                     <p className='font-semibold text-foreground text-sm'>
                       {item.title}
@@ -225,7 +235,8 @@ const DemoForm = () => {
                     <p className='text-xs text-muted-foreground'>{item.desc}</p>
                   </div>
                 </motion.div>
-              ))}
+              );
+              })}
             </div>
 
             {/* Testimonial Card */}

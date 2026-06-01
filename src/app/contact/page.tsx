@@ -2,7 +2,17 @@
 import { Button } from '@/components/ui/button';
 import ContactForm from './_components/ContactForm';
 import { motion } from 'framer-motion';
-import { MessageCircle, Zap, Clock, Shield, ArrowRightIcon } from 'lucide-react';
+import {
+  MessageCircle,
+  Zap,
+  Clock,
+  Shield,
+  ArrowRightIcon,
+  Mail,
+  Phone,
+  Building2,
+  type LucideIcon,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const features = [
@@ -75,7 +85,10 @@ export default function ContactPage() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className='px-6 py-2 bg-accent/15 rounded-lg text-foreground border border-accent/20'
               >
-                <p className='text-sm font-medium'>💬 Multiple channels</p>
+                <p className='text-sm font-medium flex items-center justify-center gap-1.5'>
+                  <MessageCircle className='w-4 h-4 shrink-0' />
+                  Multiple channels
+                </p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -83,7 +96,10 @@ export default function ContactPage() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className='px-6 py-2 bg-purple-500/15 rounded-lg text-foreground border border-purple-500/20'
               >
-                <p className='text-sm font-medium'>⚡ Fast response</p>
+                <p className='text-sm font-medium flex items-center justify-center gap-1.5'>
+                  <Zap className='w-4 h-4 shrink-0' />
+                  Fast response
+                </p>
               </motion.div>
             </div>
           </motion.div>
@@ -224,29 +240,39 @@ export default function ContactPage() {
             transition={{ duration: 0.5 }}
             className='grid grid-cols-1 md:grid-cols-3 gap-8'
           >
-            {[
-              {
-                icon: '📧',
-                title: 'Email',
-                details: ['support@erpqto.com', 'sales@erpqto.com'],
-                color: 'from-accent/20 to-accent/5',
-                border: 'border-accent/30',
-              },
-              {
-                icon: '📞',
-                title: 'Phone',
-                details: ['+1 (800) 123-4567', '+1 (800) 987-6543'],
-                color: 'from-purple-500/20 to-purple-500/5',
-                border: 'border-purple-500/30',
-              },
-              {
-                icon: '🏢',
-                title: 'Office',
-                details: ['123 Business St', 'New York, NY 10001'],
-                color: 'from-pink-500/20 to-pink-500/5',
-                border: 'border-pink-500/30',
-              },
-            ].map((contact, i) => (
+            {(
+              [
+                {
+                  icon: Mail,
+                  title: 'Email',
+                  details: ['support@erpqto.com', 'sales@erpqto.com'],
+                  color: 'from-accent/20 to-accent/5',
+                  border: 'border-accent/30',
+                },
+                {
+                  icon: Phone,
+                  title: 'Phone',
+                  details: ['+1 (800) 123-4567', '+1 (800) 987-6543'],
+                  color: 'from-purple-500/20 to-purple-500/5',
+                  border: 'border-purple-500/30',
+                },
+                {
+                  icon: Building2,
+                  title: 'Office',
+                  details: ['123 Business St', 'New York, NY 10001'],
+                  color: 'from-pink-500/20 to-pink-500/5',
+                  border: 'border-pink-500/30',
+                },
+              ] satisfies {
+                icon: LucideIcon;
+                title: string;
+                details: string[];
+                color: string;
+                border: string;
+              }[]
+            ).map((contact, i) => {
+              const Icon = contact.icon;
+              return (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
@@ -255,7 +281,7 @@ export default function ContactPage() {
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 className={`p-6 rounded-xl bg-linear-to-br ${contact.color} border ${contact.border} text-center hover:shadow-lg transition-all duration-300`}
               >
-                <p className='text-3xl mb-3'>{contact.icon}</p>
+                <Icon className='w-8 h-8 mx-auto mb-3 text-foreground' />
                 <h3 className='text-lg font-semibold text-foreground mb-3'>
                   {contact.title}
                 </h3>
@@ -265,7 +291,8 @@ export default function ContactPage() {
                   </p>
                 ))}
               </motion.div>
-            ))}
+            );
+            })}
           </motion.div>
         </div>
       </section>

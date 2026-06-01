@@ -1,7 +1,8 @@
 'use client';
 import { HeaderSections } from '@/components/ui/HeaderSections';
 import { motion } from 'framer-motion';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Lightbulb } from 'lucide-react';
+import { QTO_DEV_URL } from '@/lib/constants';
 
 export default function StorySection() {
   return (
@@ -48,13 +49,15 @@ export default function StorySection() {
                 
                 <div className="bg-background border border-border rounded-xl p-6 mt-8 shadow-sm">
                   <h4 className="font-semibold text-foreground flex items-center gap-2 mb-2">
-                    <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">💡</span>
+                    <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                      <Lightbulb className="w-4 h-4" />
+                    </span>
                     A Product of Passion
                   </h4>
                   <p className="text-base text-muted-foreground">
                     QTO-ERP is proudly built by{' '}
                     <a
-                      href="https://build-stellar-portfolios.lovable.app"
+                      href={QTO_DEV_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline font-semibold inline-flex items-center gap-1 transition-colors"
