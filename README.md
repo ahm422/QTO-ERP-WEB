@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Database and admin auth
+
+PostgreSQL, Prisma, and admin credentials login (NextAuth) are documented in [docs/database.md](docs/database.md).
+
+Quick start after Postgres is running:
+
+```bash
+cp .env.example .env
+# edit .env (DATABASE_URL, AUTH_SECRET, ADMIN_*)
+npm install
+npm run db:migrate
+npm run db:seed
+```
+
+Admin login: `/admin/login` (seeded user from `ADMIN_EMAIL` / `ADMIN_PASSWORD`).
+
 ## Getting Started
 
 First, run the development server:
