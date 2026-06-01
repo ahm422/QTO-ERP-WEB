@@ -141,8 +141,22 @@ const ContactForm = () => {
     setStatus('idle');
 
     try {
-      // Simulate API call - replace with your actual endpoint
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setStatus('error');
+        setStatusMessage(
+          data.error ?? 'Something went wrong. Please try again.',
+        );
+        return;
+      }
 
       setStatus('success');
       setStatusMessage(
