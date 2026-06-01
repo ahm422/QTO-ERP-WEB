@@ -1,0 +1,80 @@
+import type { AboutContentsType } from "./about";
+import type { FAQsType } from "./faq";
+import type { FeaturesType } from "./feature";
+import type { ProblemsType } from "./problem";
+import type { TestimonialsType } from "./testimonial";
+import type { UseCasesType } from "./useCase";
+import type {
+  SolutionFAQType,
+  SolutionProblem,
+  SolutionUseCase,
+} from "./solution";
+import type { TestimonialType } from "./testimonial";
+
+export type ModuleSummary = {
+  slug: string;
+  name: string;
+  shortDescription: string;
+  image?: string;
+  iconKey: string;
+  cardTagline?: string;
+  highlights: string[];
+  bestFor: string;
+};
+
+export type ModuleDetail = ModuleSummary & {
+  videoUrl: string;
+  videoCtaTitle?: string;
+  videoCtaDescription?: string;
+  heroHeadline: string;
+  heroSubheadline: string;
+  heroCtaLabel?: string;
+  aboutTitle: string;
+  aboutTag?: string;
+  aboutDescription: string[];
+  aboutContents?: AboutContentsType;
+  featuresSectionTitle?: string;
+  features: FeaturesType;
+  problems: ProblemsType;
+  testimonialsSectionTag?: string;
+  testimonialsSectionTitle?: string;
+  testimonialsSectionDescription?: string;
+  useCases: UseCasesType;
+  testimonials: TestimonialsType;
+  faqs: FAQsType;
+};
+
+export type SolutionSummary = {
+  slug: string;
+  title: string;
+  audience: string;
+  heroHeadline: string;
+  heroSubheadline: string;
+};
+
+export type SolutionDetail = SolutionSummary & {
+  problems: SolutionProblem[];
+  recommendedModules: string[];
+  testimonial: TestimonialType;
+  solutionFaqs: SolutionFAQType[];
+  useCases?: SolutionUseCase[];
+};
+
+export type BlogPostSummary = {
+  slug: string;
+  title: string;
+  category: string;
+  excerpt?: string;
+  publishedAt: string;
+};
+
+export type BlogPostDetail = BlogPostSummary & {
+  content: string;
+};
+
+export type ComparisonRow = {
+  feature: string;
+  starter: string;
+  growth: string;
+  enterprise: string;
+};
