@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/common/Navbar";
-import Footer from "@/components/common/Footer";
-
 export const runtime = "edge";
 
 const poppins = Poppins({
@@ -35,9 +32,7 @@ export default function RootLayout({
         className={`${poppins.variable} ${inter.variable} antialiased`}
         suppressHydrationWarning
       >
-        <Navbar />
         {children}
-        <Footer />
       </body>
     </html>
   );

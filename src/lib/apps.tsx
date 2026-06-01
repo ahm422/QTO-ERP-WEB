@@ -780,12 +780,3 @@ export const apps: PlatformsType = [
 ];
 
 export const getAppBySlug = (slug: string) => apps.find((a) => a.slug === slug);
-
-export const platformDeepLinks = [
-  { label: "Overview", anchor: "#about" },
-  { label: "Features", anchor: "#features" },
-  // { label: "Problems & Solutions", anchor: "#problems-solutions" },
-  // { label: "Use Cases", anchor: "#use-cases" },
-  { label: "Testimonials", anchor: "#testimonials" },
-  { label: "FAQ", anchor: "#faq" },
-];

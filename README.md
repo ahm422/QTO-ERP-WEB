@@ -6,6 +6,8 @@ PostgreSQL, Prisma, and admin credentials login (NextAuth) are documented in [do
 
 Form submissions (demo, contact, newsletter) and transactional email (Resend) are documented in [docs/email.md](docs/email.md).
 
+Marketing content (modules, solutions, blog, pricing comparison) and public read APIs are documented in [docs/content-api.md](docs/content-api.md).
+
 Quick start after Postgres is running:
 
 ```bash

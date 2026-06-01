@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Menu,
   X,
@@ -8,27 +8,24 @@ import {
   ExternalLink,
   ArrowRight,
   Sparkles,
-  Users,
   Briefcase,
   TrendingUp,
   BookOpen,
   Info,
   Mail,
-   Clock,
+  Clock,
   Building2,
   DollarSign,
   FolderKanban,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
-import {
-  apps as realApps,
-  platformDeepLinks as realDeepLinks,
-} from "@/lib/apps";
-import { solutions as realSolutions } from "@/lib/solutions";
+import { platformDeepLinks } from "@/lib/platform-nav";
+import { getModuleIcon } from "@/lib/icon-map";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { QTO_DEV_URL } from "@/lib/constants";
+import type { ModuleDetail, SolutionDetail } from "@/types/content";
 
 // Color palette for nav apps
 const navAppColors = [
@@ -54,21 +51,21 @@ const navAppColors = [
   },
 ];
 
-// Build nav-ready apps from real data
-const apps = realApps.map((app, idx) => ({
-  slug: app.slug,
-  name: app.name,
-  icon: app.icon,
-  description: app.shortDescription,
-  features: app.features.slice(0, 6).map((f) => ({
-    label: f.title,
-    description: f.description,
-  })),
-  ...navAppColors[idx % navAppColors.length],
-}));
+const sectionLinks = platformDeepLinks;
 
-// Shared section links from lib
-const sectionLinks = realDeepLinks;
+function buildNavApps(modules: ModuleDetail[]) {
+  return modules.map((app, idx) => ({
+    slug: app.slug,
+    name: app.name,
+    icon: getModuleIcon(app.iconKey),
+    description: app.shortDescription,
+    features: app.features.slice(0, 6).map((f) => ({
+      label: f.title,
+      description: f.description,
+    })),
+    ...navAppColors[idx % navAppColors.length],
+  }));
+}
 
 const navItems = [
   { label: "Platform", href: "/allApps", hasMega: true },
@@ -77,87 +74,96 @@ const navItems = [
   { label: "Resources", href: "#", hasDropdown: true },
 ];
 
-const solutionsItems = [
-  {
-    slug: "hr-teams",
-    label: "Attendance",
-    href: "/solution/hr-teams",
-    shortDescription: "Streamline people operations",
-    description:
-      "Centralize HR workflows with attendance tracking, performance management, and compliance.",
-    icon: Clock, 
-    color: "from-blue-500 to-indigo-500",
-    bgColor: "bg-blue-50 dark:bg-blue-950/30",
-    textColor: "text-blue-600 dark:text-blue-400",
-    useCases: realSolutions.find((s) => s.slug === "hr-teams")?.useCases || [],
-  },
-  {
-    slug: "project-teams",
-    label: "HRMS",
-    href: "/solution/project-teams",
-    shortDescription: "Deliver projects on time",
-    description:
-      "Manage projects end-to-end with planning, tracking, and resource allocation tools.",
-    icon: Briefcase,
-    color: "from-purple-500 to-violet-500",
-    bgColor: "bg-purple-50 dark:bg-purple-950/30",
-    textColor: "text-purple-600 dark:text-purple-400",
-    useCases:
-      realSolutions.find((s) => s.slug === "project-teams")?.useCases || [],
-  },
-  {
-    slug: "business-owners",
-    label: "PM",
-    href: "/solution/owners",
-    shortDescription: "Scale with confidence",
-    description:
-      "Unified platform for operations, people, projects, and financials across your organization.",
-    icon: TrendingUp,
-    color: "from-emerald-500 to-teal-500",
-    bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
-    textColor: "text-emerald-600 dark:text-emerald-400",
-    useCases: realSolutions.find((s) => s.slug === "owners")?.useCases || [],
-  },
+function buildSolutionsItems(
+  solutions: SolutionDetail[],
+  modules: ModuleDetail[],
+) {
+  const solutionUseCases = (slug: string) =>
+    solutions.find((s) => s.slug === slug)?.useCases ?? [];
+  const moduleUseCases = (slug: string) =>
+    modules.find((m) => m.slug === slug)?.useCases ?? [];
+
+  return [
     {
-    slug: "crms",
-    label: "CRM",
-    href: "/erp/crms",
-    shortDescription: "Track leads and manage deals",
-    description:
-      "Manage leads, generate proposals, estimate projects, and track deals from inquiry to completion.",
-    icon: Building2,
-    color: "from-amber-500 to-orange-500",
-    bgColor: "bg-amber-50 dark:bg-amber-950/30",
-    textColor: "text-amber-600 dark:text-amber-400",
-    useCases: realApps.find((a) => a.slug === "crms")?.useCases || [],
-  },
-  {
-    slug: "salary",
-    label: "Salary",
-    href: "/erp/salary",
-    shortDescription: "Automate payroll (Coming Soon)",
-    description:
-      "Automate payroll processing, manage salary structures, and streamline approvals seamlessly.",
-    icon: DollarSign,
-    color: "from-rose-500 to-pink-500",
-    bgColor: "bg-rose-50 dark:bg-rose-950/30",
-    textColor: "text-rose-600 dark:text-rose-400",
-    useCases: realApps.find((a) => a.slug === "salary")?.useCases || [],
-  },
-  {
-    slug: "finance",
-    label: "Finance",
-    href: "/erp/finance",
-    shortDescription: "Manage finances (Coming Soon)",
-    description:
-      "Track accounts, manage budgets, and generate financial reports efficiently.",
-    icon: FolderKanban,
-    color: "from-cyan-500 to-blue-500",
-    bgColor: "bg-cyan-50 dark:bg-cyan-950/30",
-    textColor: "text-cyan-600 dark:text-cyan-400",
-    useCases: realApps.find((a) => a.slug === "finance")?.useCases || [],
-  },
-];
+      slug: "hr-teams",
+      label: "Attendance",
+      href: "/solution/hr-teams",
+      shortDescription: "Streamline people operations",
+      description:
+        "Centralize HR workflows with attendance tracking, performance management, and compliance.",
+      icon: Clock,
+      color: "from-blue-500 to-indigo-500",
+      bgColor: "bg-blue-50 dark:bg-blue-950/30",
+      textColor: "text-blue-600 dark:text-blue-400",
+      useCases: solutionUseCases("hr-teams"),
+    },
+    {
+      slug: "project-teams",
+      label: "HRMS",
+      href: "/solution/project-teams",
+      shortDescription: "Deliver projects on time",
+      description:
+        "Manage projects end-to-end with planning, tracking, and resource allocation tools.",
+      icon: Briefcase,
+      color: "from-purple-500 to-violet-500",
+      bgColor: "bg-purple-50 dark:bg-purple-950/30",
+      textColor: "text-purple-600 dark:text-purple-400",
+      useCases: solutionUseCases("project-teams"),
+    },
+    {
+      slug: "business-owners",
+      label: "PM",
+      href: "/solution/owners",
+      shortDescription: "Scale with confidence",
+      description:
+        "Unified platform for operations, people, projects, and financials across your organization.",
+      icon: TrendingUp,
+      color: "from-emerald-500 to-teal-500",
+      bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
+      textColor: "text-emerald-600 dark:text-emerald-400",
+      useCases: solutionUseCases("owners"),
+    },
+    {
+      slug: "crms",
+      label: "CRM",
+      href: "/erp/crms",
+      shortDescription: "Track leads and manage deals",
+      description:
+        "Manage leads, generate proposals, estimate projects, and track deals from inquiry to completion.",
+      icon: Building2,
+      color: "from-amber-500 to-orange-500",
+      bgColor: "bg-amber-50 dark:bg-amber-950/30",
+      textColor: "text-amber-600 dark:text-amber-400",
+      useCases: moduleUseCases("crms"),
+    },
+    {
+      slug: "salary",
+      label: "Salary",
+      href: "/erp/salary",
+      shortDescription: "Automate payroll (Coming Soon)",
+      description:
+        "Automate payroll processing, manage salary structures, and streamline approvals seamlessly.",
+      icon: DollarSign,
+      color: "from-rose-500 to-pink-500",
+      bgColor: "bg-rose-50 dark:bg-rose-950/30",
+      textColor: "text-rose-600 dark:text-rose-400",
+      useCases: moduleUseCases("salary"),
+    },
+    {
+      slug: "finance",
+      label: "Finance",
+      href: "/erp/finance",
+      shortDescription: "Manage finances (Coming Soon)",
+      description:
+        "Track accounts, manage budgets, and generate financial reports efficiently.",
+      icon: FolderKanban,
+      color: "from-cyan-500 to-blue-500",
+      bgColor: "bg-cyan-50 dark:bg-cyan-950/30",
+      textColor: "text-cyan-600 dark:text-cyan-400",
+      useCases: moduleUseCases("finance"),
+    },
+  ];
+}
 
 const resourcesItems = [
   {
@@ -195,12 +201,23 @@ const resourcesItems = [
   },
 ];
 
-export default function NavbarV3() {
+type NavbarProps = {
+  modules: ModuleDetail[];
+  solutions: SolutionDetail[];
+};
+
+export default function NavbarV3({ modules, solutions }: NavbarProps) {
+  const apps = useMemo(() => buildNavApps(modules), [modules]);
+  const solutionsItems = useMemo(
+    () => buildSolutionsItems(solutions, modules),
+    [solutions, modules],
+  );
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [hoveredApp, setHoveredApp] = useState<string>(apps[0].slug);
+  const [hoveredApp, setHoveredApp] = useState<string>(modules[0]?.slug ?? "");
   const [hoveredSolution, setHoveredSolution] = useState<string>(
-    solutionsItems[0].slug,
+    "hr-teams",
   );
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
