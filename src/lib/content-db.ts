@@ -1,4 +1,9 @@
-import { BlogPostStatus } from "@prisma/client";
+import {
+  BlogPostStatus,
+  type BlogPost,
+  type ComparisonFeature,
+  type PricingPlan,
+} from "@prisma/client";
 import { getPrisma } from "@/lib/prisma";
 import {
   serializeBlogDetail,
@@ -142,4 +147,116 @@ export async function getPublishedPricingPlanBySlug(slug: string) {
     where: { slug, published: true },
   });
   return row ?? null;
+}
+
+// --- Admin helpers ---
+
+export async function listAllBlogPostsAdmin() {
+  return getPrisma().blogPost.findMany({
+    orderBy: { updatedAt: "desc" },
+    include: { author: { select: { email: true, name: true } } },
+  });
+}
+
+export async function getBlogPostByIdAdmin(id: string) {
+  return getPrisma().blogPost.findUnique({
+    where: { id },
+    include: { author: { select: { email: true, name: true } } },
+  });
+}
+
+export async function createBlogPostAdmin(data: {
+  slug: string;
+  title: string;
+  category: string;
+  excerpt?: string | null;
+  content: string;
+  status: BlogPostStatus;
+  authorId: string;
+  publishedAt?: Date | null;
+}) {
+  return getPrisma().blogPost.create({ data });
+}
+
+export async function updateBlogPostAdmin(
+  id: string,
+  data: Partial<
+    Pick<
+      BlogPost,
+      | "slug"
+      | "title"
+      | "category"
+      | "excerpt"
+      | "content"
+      | "status"
+      | "publishedAt"
+    >
+  >,
+) {
+  return getPrisma().blogPost.update({ where: { id }, data });
+}
+
+export async function deleteBlogPostAdmin(id: string) {
+  return getPrisma().blogPost.delete({ where: { id } });
+}
+
+export async function listAllComparisonAdmin() {
+  return getPrisma().comparisonFeature.findMany({
+    orderBy: { sortOrder: "asc" },
+  });
+}
+
+export async function createComparisonAdmin(
+  data: Omit<ComparisonFeature, "id" | "createdAt" | "updatedAt">,
+) {
+  return getPrisma().comparisonFeature.create({ data });
+}
+
+export async function updateComparisonAdmin(
+  id: string,
+  data: Partial<
+    Pick<
+      ComparisonFeature,
+      | "feature"
+      | "starter"
+      | "growth"
+      | "enterprise"
+      | "sortOrder"
+      | "published"
+    >
+  >,
+) {
+  return getPrisma().comparisonFeature.update({ where: { id }, data });
+}
+
+export async function deleteComparisonAdmin(id: string) {
+  return getPrisma().comparisonFeature.delete({ where: { id } });
+}
+
+export async function listAllPricingPlansAdmin() {
+  return getPrisma().pricingPlan.findMany({
+    orderBy: { sortOrder: "asc" },
+  });
+}
+
+export async function updatePricingPlanAdmin(
+  slug: string,
+  data: Partial<
+    Pick<
+      PricingPlan,
+      | "name"
+      | "description"
+      | "monthlyPriceDisplay"
+      | "yearlyPriceDisplay"
+      | "popular"
+      | "features"
+      | "cta"
+      | "stripePriceIdMonthly"
+      | "stripePriceIdYearly"
+      | "sortOrder"
+      | "published"
+    >
+  >,
+) {
+  return getPrisma().pricingPlan.update({ where: { slug }, data });
 }
