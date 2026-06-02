@@ -31,6 +31,10 @@ export const authConfig = {
         return false;
       }
 
+      if (auth.user.role !== "ADMIN") {
+        return false;
+      }
+
       return true;
     },
     jwt({ token, user }) {

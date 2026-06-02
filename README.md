@@ -12,6 +12,8 @@ Stripe Checkout for pricing plans (Phase 4) is documented in [docs/payments.md](
 
 Demo video object storage (Garage / S3) is documented in [docs/storage.md](docs/storage.md).
 
+The admin panel (Phase 6) is documented in [docs/admin.md](docs/admin.md).
+
 Quick start after Postgres is running:
 
 ```bash

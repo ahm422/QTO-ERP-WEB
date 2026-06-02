@@ -64,7 +64,8 @@ export function getGarageClient(): S3Client | null {
   const config = getGarageConfig();
   if (!config) return null;
 
-  const configKey = `${config.endpoint}|${config.region}|${config.accessKeyId}|${config.bucket}`;
+  // Include checksum mode in cache key so dev HMR does not reuse a pre-fix client.
+  const configKey = `${config.endpoint}|${config.region}|${config.accessKeyId}|${config.bucket}|crc-when-required`;
 
   if (
     globalForGarage.garageClient &&
@@ -81,6 +82,10 @@ export function getGarageClient(): S3Client | null {
       secretAccessKey: config.secretAccessKey,
     },
     forcePathStyle: true,
+    // SDK 3.729+ adds CRC32 to presigned PUTs by default; browsers cannot
+    // satisfy that without computing the checksum. Garage then returns 400.
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
   });
 
   globalForGarage.garageConfigKey = configKey;
