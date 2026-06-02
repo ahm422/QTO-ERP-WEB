@@ -14,6 +14,8 @@ Demo video object storage (Garage / S3) is documented in [docs/storage.md](docs/
 
 The admin panel (Phase 6) is documented in [docs/admin.md](docs/admin.md).
 
+Production deployment on Coolify (Docker, PostgreSQL, Garage) is documented in [docs/deployment-coolify.md](docs/deployment-coolify.md).
+
 Quick start after Postgres is running:
 
 ```bash
