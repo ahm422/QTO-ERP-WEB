@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+node_modules
+.next
+.wrangler
+*.MOV
+IMG_*.MOV
+coverage
+.cursor
