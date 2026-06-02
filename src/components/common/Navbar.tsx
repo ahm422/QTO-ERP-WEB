@@ -237,7 +237,7 @@ export default function NavbarV3({ modules, solutions }: NavbarProps) {
   const closeDropdown = () => {
     timeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-      setHoveredApp(apps[0].slug);
+      setHoveredApp(apps[0]?.slug);
     }, 200);
   };
 
@@ -381,30 +381,30 @@ export default function NavbarV3({ modules, solutions }: NavbarProps) {
                         <div className="p-6 relative overflow-hidden">
                           {/* Background glow */}
                           <div
-                            className={`absolute top-0 right-0 w-64 h-64 bg-linear-to-br ${currentApp.color} opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2`}
+                            className={`absolute top-0 right-0 w-64 h-64 bg-linear-to-br ${currentApp?.color} opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2`}
                           />
 
                           {/* Header */}
                           <div className="flex items-center justify-between mb-5 relative z-10">
                             <div className="flex items-center gap-3">
                               <div
-                                className={`w-10 h-10 rounded-xl bg-linear-to-br ${currentApp.color} flex items-center justify-center text-white shadow-lg`}
+                                className={`w-10 h-10 rounded-xl bg-linear-to-br ${currentApp?.color} flex items-center justify-center text-white shadow-lg`}
                               >
-                                <currentApp.icon className="w-5 h-5" />
+                                {currentApp?.icon && <currentApp.icon className="w-5 h-5" />}
                               </div>
                               <div>
                                 <p className="text-sm font-bold text-slate-900 dark:text-white">
-                                  {currentApp.name}
+                                  {currentApp?.name}
                                 </p>
                                 <p className="text-xs text-slate-500">
-                                  {currentApp.features.length} features
+                                  {currentApp?.features.length} features
                                 </p>
                               </div>
                             </div>
                             <Link
-                              href={`/erp/${currentApp.slug}`}
+                              href={`/erp/${currentApp?.slug}`}
                               onClick={() => setActiveDropdown(null)}
-                              className={`text-xs font-semibold ${currentApp.textColor} hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors`}
+                              className={`text-xs font-semibold ${currentApp?.textColor} hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors`}
                             >
                               View module <ArrowRight className="w-3 h-3" />
                             </Link>
@@ -426,7 +426,7 @@ export default function NavbarV3({ modules, solutions }: NavbarProps) {
                                 >
                                   <Link
                                     key={links.anchor}
-                                    href={`/erp/${currentApp.slug}${links.anchor}`}
+                                    href={`/erp/${currentApp?.slug}${links.anchor}`}
                                     onClick={() => setActiveDropdown(null)}
                                     className="group block p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 bg-white dark:bg-slate-800/30 hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-md hover:shadow-slate-200/50 dark:hover:shadow-black/20 transition-all duration-200"
                                   >
