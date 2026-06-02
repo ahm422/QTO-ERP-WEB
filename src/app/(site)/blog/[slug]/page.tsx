@@ -7,14 +7,20 @@ import {
 } from "@/lib/content-db";
 
 export const runtime = "nodejs";
+export const dynamicParams = true; // serve unknown slugs dynamically
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  const slugs = await listPublishedBlogSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await listPublishedBlogSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    // graceful fallback — build succeeds without DB
+    return [];
+  }
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
