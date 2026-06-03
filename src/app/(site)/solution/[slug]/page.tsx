@@ -3,7 +3,6 @@ import { ArrowLeft, Check } from "lucide-react";
 import {
   getPublishedSolutionBySlug,
   listPublishedModulesBySlugs,
-  listPublishedSolutionSlugs,
 } from "@/lib/content-db";
 import { notFound } from "next/navigation";
 import SolutionTabsContent from "./_components/SolutionTabsContent";
@@ -18,17 +17,8 @@ type PageProps = {
 };
 
 export const runtime = "nodejs";
-export const dynamicParams = true; // serve unknown slugs dynamically
-
-export async function generateStaticParams() {
-  try {
-    const slugs = await listPublishedSolutionSlugs();
-    return slugs.map((slug) => ({ slug }));
-  } catch {
-    // graceful fallback — build succeeds without DB
-    return [];
-  }
-}
+export const dynamicParams = true;
+export const revalidate = 3600;
 
 export default async function HRSoftwareLandingFullWidth({ params, searchParams }: PageProps) {
   const { slug } = await params;

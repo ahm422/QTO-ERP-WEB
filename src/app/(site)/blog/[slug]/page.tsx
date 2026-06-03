@@ -1,27 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import {
-  getPublishedBlogPostBySlug,
-  listPublishedBlogSlugs,
-} from "@/lib/content-db";
+import { getPublishedBlogPostBySlug } from "@/lib/content-db";
 
 export const runtime = "nodejs";
-export const dynamicParams = true; // serve unknown slugs dynamically
+export const dynamicParams = true;
+export const revalidate = 3600; // ISR: revalidate every hour
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
-
-export async function generateStaticParams() {
-  try {
-    const slugs = await listPublishedBlogSlugs();
-    return slugs.map((slug) => ({ slug }));
-  } catch {
-    // graceful fallback — build succeeds without DB
-    return [];
-  }
-}
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;

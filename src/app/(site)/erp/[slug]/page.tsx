@@ -1,27 +1,17 @@
 import { notFound } from "next/navigation";
 import {
   getPublishedModuleBySlug,
-  listPublishedModuleSlugs,
   listPublishedModules,
 } from "@/lib/content-db";
 import ErpPageClient from "./_components/ErpPageClient";
 
 export const runtime = "nodejs";
-export const dynamicParams = true; // serve unknown slugs dynamically
+export const dynamicParams = true;
+export const revalidate = 3600;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
-
-export async function generateStaticParams() {
-  try {
-    const slugs = await listPublishedModuleSlugs();
-    return slugs.map((slug) => ({ slug }));
-  } catch {
-    // graceful fallback — build succeeds without DB
-    return [];
-  }
-}
 
 export default async function PlatformDetailPage({ params }: PageProps) {
   const { slug } = await params;
