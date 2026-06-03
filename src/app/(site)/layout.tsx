@@ -6,6 +6,7 @@ import {
 } from "@/lib/content-db";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export default async function SiteLayout({
   children,
