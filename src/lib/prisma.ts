@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 /** Bump when adding Prisma models so dev clears a stale `globalThis` client. */
-const PRISMA_CLIENT_VERSION = 1;
+const PRISMA_CLIENT_VERSION = 2;
 
 type PrismaGlobal = typeof globalThis & {
   prisma?: PrismaClient;
@@ -20,7 +20,8 @@ function assertClientHasAllModels(client: PrismaClient): void {
   if (
     typeof client.erpModule?.findMany === "function" &&
     typeof client.pricingPlan?.findMany === "function" &&
-    typeof client.subscription?.findMany === "function"
+    typeof client.subscription?.findMany === "function" &&
+    typeof client.siteSetting?.findMany === "function"
   ) {
     return;
   }

@@ -9,6 +9,7 @@ import {
   DollarSign,
   Video,
   Table2,
+  Settings2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
   { href: "/admin/demo-videos", label: "Demo videos", icon: Video },
   { href: "/admin/comparison", label: "Comparison", icon: Table2 },
+  { href: "/admin/site-settings", label: "Site settings", icon: Settings2 },
 ];
 
 export function AdminSidebar() {

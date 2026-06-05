@@ -204,9 +204,22 @@ const resourcesItems = [
 type NavbarProps = {
   modules: ModuleDetail[];
   solutions: SolutionDetail[];
+  siteName?: string;
+  logoUrl?: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  ctaVisible?: boolean;
 };
 
-export default function NavbarV3({ modules, solutions }: NavbarProps) {
+export default function NavbarV3({
+  modules,
+  solutions,
+  siteName,
+  logoUrl,
+  ctaLabel,
+  ctaUrl,
+  ctaVisible = true,
+}: NavbarProps) {
   const apps = useMemo(() => buildNavApps(modules), [modules]);
   const solutionsItems = useMemo(
     () => buildSolutionsItems(solutions, modules),
@@ -250,15 +263,30 @@ export default function NavbarV3({ modules, solutions }: NavbarProps) {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-linear-to-br from-orange-500 via-amber-500 to-yellow-500 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 group-hover:scale-105 transition-all duration-300">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tight">
-            <span className="bg-linear-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-              QTO
-            </span>
-            <span className="text-slate-800 dark:text-slate-100">-ERP</span>
-          </span>
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoUrl}
+              alt={siteName ?? "QTO-ERP"}
+              className="h-9 w-auto object-contain"
+            />
+          ) : (
+            <>
+              <div className="w-9 h-9 rounded-xl bg-linear-to-br from-orange-500 via-amber-500 to-yellow-500 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 group-hover:scale-105 transition-all duration-300">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xl font-bold tracking-tight">
+                <span className="bg-linear-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+                  {(siteName ?? "QTO-ERP").split("-")[0]}
+                </span>
+                <span className="text-slate-800 dark:text-slate-100">
+                  {(siteName ?? "QTO-ERP").includes("-")
+                    ? `-${(siteName ?? "QTO-ERP").split("-").slice(1).join("-")}`
+                    : ""}
+                </span>
+              </span>
+            </>
+          )}
         </Link>
 
         {/* Desktop Nav */}
@@ -736,9 +764,11 @@ export default function NavbarV3({ modules, solutions }: NavbarProps) {
 
         {/* Right side */}
         <div className="hidden lg:flex items-center gap-3">
-          <Link href="/demo">
-            <Button>Book Demo</Button>
-          </Link>
+          {ctaVisible && (
+            <Link href={ctaUrl ?? "/demo"}>
+              <Button>{ctaLabel ?? "Book Demo"}</Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -922,16 +952,18 @@ export default function NavbarV3({ modules, solutions }: NavbarProps) {
             </div>
 
             {/* Sticky bottom CTA */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 lg:hidden">
-              <Link
-                href="/demo"
-                className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-white bg-linear-to-r from-orange-500 to-amber-500 px-4 py-3.5 rounded-xl shadow-lg shadow-orange-500/20"
-              >
-                <Button>
-                  Book a Demo <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
+            {ctaVisible && (
+              <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 lg:hidden">
+                <Link
+                  href={ctaUrl ?? "/demo"}
+                  className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-white bg-linear-to-r from-orange-500 to-amber-500 px-4 py-3.5 rounded-xl shadow-lg shadow-orange-500/20"
+                >
+                  <Button>
+                    {ctaLabel ?? "Book Demo"} <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
