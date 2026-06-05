@@ -44,7 +44,7 @@ const LogoCard = ({ item }:{ item: { name: string; bg?: string; color?: string; 
       background: item.bg || "#fff",
       borderRadius: 12,
       boxShadow: "0 2px 16px rgba(0,0,0,0.07)",
-      border: "1px solid #f0f0f0",
+      border: "1px solid var(--border)",
       flexShrink: 0,
       userSelect: "none",
     }}

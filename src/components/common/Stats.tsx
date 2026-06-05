@@ -69,7 +69,7 @@ function StatsStrip({ stats }: { stats: { value: number; suffix?: string; label:
                 top: "20%",
                 height: "60%",
                 width: 1,
-                background: "linear-gradient(to bottom, transparent, #cbd5e1, transparent)",
+                background: "linear-gradient(to bottom, transparent, var(--border), transparent)",
                 transformOrigin: "center",
               }}
             />
@@ -113,7 +113,7 @@ function StatsStrip({ stats }: { stats: { value: number; suffix?: string; label:
             style={{
               fontSize: 15,
               fontWeight: 600,
-              color: "#475569",
+              color: "var(--muted-foreground)",
               letterSpacing: 0.5,
               textTransform: "uppercase",
             }}

@@ -26,6 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { QTO_DEV_URL } from "@/lib/constants";
 import type { ModuleDetail, SolutionDetail } from "@/types/content";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 // Color palette for nav apps
 const navAppColors = [
@@ -764,6 +765,7 @@ export default function NavbarV3({
 
         {/* Right side */}
         <div className="hidden lg:flex items-center gap-3">
+          <ThemeToggle />
           {ctaVisible && (
             <Link href={ctaUrl ?? "/demo"}>
               <Button>{ctaLabel ?? "Book Demo"}</Button>
@@ -772,17 +774,20 @@ export default function NavbarV3({
         </div>
 
         {/* Mobile toggle */}
-        <button
-          className="lg:hidden p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
-        </button>
+        <div className="lg:hidden flex items-center gap-1">
+          <ThemeToggle />
+          <button
+            className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile Drawer */}
