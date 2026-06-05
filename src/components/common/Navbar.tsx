@@ -26,6 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { QTO_DEV_URL } from "@/lib/constants";
 import type { ModuleDetail, SolutionDetail } from "@/types/content";
+import type { LucideIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 // Color palette for nav apps
@@ -166,6 +167,35 @@ function buildSolutionsItems(
   ];
 }
 
+type PublicNavResource = {
+  id: string;
+  label: string;
+  href: string;
+  iconKey: string;
+  subtitle: string | null;
+  external: boolean;
+};
+
+const NAV_RESOURCE_ICON_MAP: Record<string, LucideIcon> = {
+  newspaper:       BookOpen,
+  info:            Info,
+  mail:            Mail,
+  code:            ExternalLink,
+  link:            ExternalLink,
+  "external-link": ExternalLink,
+};
+
+function getNavResourceIcon(key: string): LucideIcon {
+  return NAV_RESOURCE_ICON_MAP[key] ?? BookOpen;
+}
+
+const navResourceColors = [
+  { color: "from-blue-500 to-indigo-500",  textColor: "text-blue-600 dark:text-blue-400" },
+  { color: "from-amber-500 to-orange-500", textColor: "text-amber-600 dark:text-amber-400" },
+  { color: "from-rose-500 to-pink-500",    textColor: "text-rose-600 dark:text-rose-400" },
+  { color: "from-emerald-500 to-teal-500", textColor: "text-emerald-600 dark:text-emerald-400" },
+];
+
 const resourcesItems = [
   {
     label: "Blog",
@@ -210,6 +240,7 @@ type NavbarProps = {
   ctaLabel?: string;
   ctaUrl?: string;
   ctaVisible?: boolean;
+  navResources?: PublicNavResource[];
 };
 
 export default function NavbarV3({
@@ -220,11 +251,24 @@ export default function NavbarV3({
   ctaLabel,
   ctaUrl,
   ctaVisible = true,
+  navResources,
 }: NavbarProps) {
   const apps = useMemo(() => buildNavApps(modules), [modules]);
   const solutionsItems = useMemo(
     () => buildSolutionsItems(solutions, modules),
     [solutions, modules],
+  );
+  const resourceItems = useMemo(
+    () =>
+      navResources && navResources.length > 0
+        ? navResources.map((r, idx) => ({
+            ...r,
+            description: r.subtitle,
+            icon: getNavResourceIcon(r.iconKey),
+            ...navResourceColors[idx % navResourceColors.length],
+          }))
+        : resourcesItems,
+    [navResources],
   );
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -694,7 +738,7 @@ export default function NavbarV3({
                     >
                       <div className="w-72 rounded-2xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-300/30 dark:shadow-black/50 ring-1 ring-slate-200 dark:ring-slate-700 p-2 overflow-hidden">
                         <div className="h-0.5 bg-linear-to-r from-orange-500 to-amber-500 mb-2" />
-                        {resourcesItems.map((r, idx) => {
+                        {resourceItems.map((r, idx) => {
                           const Icon = r.icon;
                           return r.external ? (
                             <motion.a
@@ -877,7 +921,7 @@ export default function NavbarV3({
               <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-3 pt-6">
                 Resources
               </p>
-              {resourcesItems.map((r, idx) => {
+              {resourceItems.map((r, idx) => {
                 const Icon = r.icon;
                 return (
                   <motion.div
