@@ -260,3 +260,11 @@ export async function updatePricingPlanAdmin(
 ) {
   return getPrisma().pricingPlan.update({ where: { slug }, data });
 }
+
+export async function listPublishedNavResources() {
+  return getPrisma().navResource.findMany({
+    where: { visible: true },
+    orderBy: { sortOrder: "asc" },
+    select: { id: true, label: true, href: true, iconKey: true, subtitle: true, external: true },
+  });
+}

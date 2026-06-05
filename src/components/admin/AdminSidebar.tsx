@@ -10,6 +10,7 @@ import {
   Video,
   Table2,
   Settings2,
+  Link2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/admin/demo-videos", label: "Demo videos", icon: Video },
   { href: "/admin/comparison", label: "Comparison", icon: Table2 },
   { href: "/admin/site-settings", label: "Site settings", icon: Settings2 },
+  { href: "/admin/nav-resources", label: "Nav resources", icon: Link2 },
 ];
 
 export function AdminSidebar() {

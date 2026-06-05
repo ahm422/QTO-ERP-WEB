@@ -3,6 +3,7 @@ import Footer from "@/components/common/Footer";
 import {
   listPublishedModulesFull,
   listPublishedSolutionsFull,
+  listPublishedNavResources,
 } from "@/lib/content-db";
 import { getSiteSettings } from "@/lib/site-settings";
 
@@ -14,10 +15,11 @@ export default async function SiteLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [modules, solutions, settings] = await Promise.all([
+  const [modules, solutions, settings, navResources] = await Promise.all([
     listPublishedModulesFull(),
     listPublishedSolutionsFull(),
     getSiteSettings(),
+    listPublishedNavResources(),
   ]);
 
   return (
@@ -30,6 +32,7 @@ export default async function SiteLayout({
         ctaLabel={settings.cta_label}
         ctaUrl={settings.cta_url}
         ctaVisible={settings.cta_visible !== "false"}
+        navResources={navResources}
       />
       {children}
       <Footer />
