@@ -1,0 +1,89 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID",
+	"name": "qto-erp-web",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-02-24",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			// Self-reference service binding; service name must match the worker name
+			// see https://opennext.js.org/cloudflare/caching
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "qto-erp-web"
+		}
+	],
+	"images": {
+		"binding": "IMAGES"
+	},
+
+	// Default / production
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "qto-erp-production",
+			"database_id": "YOUR_D1_DATABASE_ID"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA_BUCKET",
+			"bucket_name": "qto-erp-media-production"
+		},
+		{
+			"binding": "NEXT_CACHE_R2",
+			"bucket_name": "qto-erp-next-cache-production"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "NEXT_TAG_CACHE_KV",
+			"id": "YOUR_KV_NAMESPACE_ID"
+		}
+	],
+
+	"env": {
+		"staging": {
+			"name": "qto-erp-web-staging",
+			"images": {
+				"binding": "IMAGES"
+			},
+			"services": [
+				{
+					"binding": "WORKER_SELF_REFERENCE",
+					"service": "qto-erp-web-staging"
+				}
+			],
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "qto-erp-staging",
+					"database_id": "YOUR_D1_DATABASE_ID"
+				}
+			],
+			"r2_buckets": [
+				{
+					"binding": "MEDIA_BUCKET",
+					"bucket_name": "qto-erp-media-staging"
+				},
+				{
+					"binding": "NEXT_CACHE_R2",
+					"bucket_name": "qto-erp-next-cache-staging"
+				}
+			],
+			"kv_namespaces": [
+				{
+					"binding": "NEXT_TAG_CACHE_KV",
+					"id": "YOUR_KV_PREVIEW_ID"
+				}
+			]
+		}
+	}
+}
