@@ -6,8 +6,10 @@ import { users } from "@/db/schema";
 import { getDb } from "@/lib/db";
 import { authConfig } from "@/auth.config";
 
+const { providers: _edgeProviders, ...authOptions } = authConfig;
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  ...authConfig,
+  ...authOptions,
   providers: [
     Credentials({
       credentials: {

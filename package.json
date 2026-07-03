@@ -12,6 +12,9 @@
     "db:migrate:remote": "wrangler d1 migrations apply qto-erp-db-production --remote",
     "db:migrate:staging": "wrangler d1 migrations apply qto-erp-db-staging --remote --env staging",
     "db:seed": "tsx --env-file=.env scripts/seed.ts",
+    "db:create-admin": "tsx --env-file=.env scripts/create-admin.ts local",
+    "db:create-admin:staging": "tsx --env-file=.env scripts/create-admin.ts staging",
+    "db:create-admin:remote": "tsx --env-file=.env scripts/create-admin.ts production",
     "db:seed:staging": "tsx --env-file=.env scripts/seed-remote.ts staging",
     "db:seed:remote": "tsx --env-file=.env scripts/seed-remote.ts production",
     "resend:domains": "tsx --env-file=.env scripts/resend-domains.ts",
@@ -19,7 +22,10 @@
     "stripe:webhook-test": "tsx --env-file=.env scripts/stripe-webhook-test.ts",
     "cf:types": "wrangler types --env-interface CloudflareEnv",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "deploy:wrangler": "OPEN_NEXT_DEPLOY=true CLOUDFLARE_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID WRANGLER_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID wrangler deploy",
+    "deploy:wrangler:staging": "OPEN_NEXT_DEPLOY=true CLOUDFLARE_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID WRANGLER_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID wrangler deploy --env staging",
+    "deploy": "opennextjs-cloudflare build && npm run deploy:wrangler",
+    "deploy:staging": "opennextjs-cloudflare build && npm run deploy:wrangler:staging"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.1",
