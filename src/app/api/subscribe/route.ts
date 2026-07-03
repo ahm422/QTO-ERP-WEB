@@ -1,9 +1,10 @@
-import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { NewsletterWelcomeEmail } from "@/emails/newsletter-welcome";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { logEmailResults, sendEmail } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
+import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
+import { newsletterSubscribers } from "@/db/schema";
 import { subscribeSchema } from "@/lib/validations/subscribe";
 
 
@@ -23,9 +24,10 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
 
   try {
-    const subscriber = await prisma.newsletterSubscriber.create({
-      data: { email },
-    });
+    const [subscriber] = await getDb()
+      .insert(newsletterSubscribers)
+      .values({ email })
+      .returning();
 
     const emailResults = await Promise.allSettled([
       sendEmail({
@@ -38,10 +40,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, id: subscriber.id }, { status: 201 });
   } catch (err) {
-    if (
-      err instanceof Prisma.PrismaClientKnownRequestError &&
-      err.code === "P2002"
-    ) {
+    if (isSqliteUniqueConstraintError(err)) {
       return jsonError("Already subscribed", 409);
     }
 

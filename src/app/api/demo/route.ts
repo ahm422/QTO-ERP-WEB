@@ -7,7 +7,8 @@ import {
   logEmailResults,
   sendEmail,
 } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
+import { demoRequests } from "@/db/schema";
 import { demoSchema } from "@/lib/validations/demo";
 
 
@@ -27,16 +28,17 @@ export async function POST(request: Request) {
   const data = parsed.data;
 
   try {
-    const demoRequest = await prisma.demoRequest.create({
-      data: {
+    const [demoRequest] = await getDb()
+      .insert(demoRequests)
+      .values({
         name: data.name,
         email: data.email,
         phone: data.phone,
         country: data.country,
         company: data.company,
         businessType: data.businessType,
-      },
-    });
+      })
+      .returning();
 
     const adminEmail = getAdminNotificationEmail();
     const emailTasks = [

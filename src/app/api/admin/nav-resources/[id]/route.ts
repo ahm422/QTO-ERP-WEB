@@ -1,7 +1,9 @@
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { navResources } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateNavResourceSchema } from "@/lib/validations/admin-nav-resources";
 
@@ -31,16 +33,28 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const existing = await getPrisma().navResource.findUnique({ where: { id } });
+    const [existing] = await getDb()
+      .select()
+      .from(navResources)
+      .where(eq(navResources.id, id))
+      .limit(1);
     if (!existing) return jsonError("Nav resource not found", 404);
 
-    const item = await getPrisma().navResource.update({ where: { id }, data: parsed.data });
+    const [item] = await getDb()
+      .update(navResources)
+      .set(parsed.data)
+      .where(eq(navResources.id, id))
+      .returning();
 
     revalidatePath("/", "layout");
 
     return NextResponse.json({
       ok: true,
-      item: { ...item, createdAt: item.createdAt.toISOString(), updatedAt: item.updatedAt.toISOString() },
+      item: {
+        ...item,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString(),
+      },
     });
   } catch (err) {
     console.error("[api/admin/nav-resources/[id] PATCH] Error:", err);
@@ -55,10 +69,14 @@ export async function DELETE(_request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   try {
-    const existing = await getPrisma().navResource.findUnique({ where: { id } });
+    const [existing] = await getDb()
+      .select()
+      .from(navResources)
+      .where(eq(navResources.id, id))
+      .limit(1);
     if (!existing) return jsonError("Nav resource not found", 404);
 
-    await getPrisma().navResource.delete({ where: { id } });
+    await getDb().delete(navResources).where(eq(navResources.id, id));
 
     revalidatePath("/", "layout");
 

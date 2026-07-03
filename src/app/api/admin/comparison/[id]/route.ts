@@ -1,10 +1,12 @@
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { comparisonFeatures } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import {
   deleteComparisonAdmin,
   updateComparisonAdmin,
 } from "@/lib/content-db";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateComparisonSchema } from "@/lib/validations/admin-comparison";
 
@@ -34,9 +36,11 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const existing = await getPrisma().comparisonFeature.findUnique({
-      where: { id },
-    });
+    const [existing] = await getDb()
+      .select()
+      .from(comparisonFeatures)
+      .where(eq(comparisonFeatures.id, id))
+      .limit(1);
     if (!existing) {
       return jsonError("Comparison row not found", 404);
     }
@@ -63,9 +67,11 @@ export async function DELETE(_request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   try {
-    const existing = await getPrisma().comparisonFeature.findUnique({
-      where: { id },
-    });
+    const [existing] = await getDb()
+      .select()
+      .from(comparisonFeatures)
+      .where(eq(comparisonFeatures.id, id))
+      .limit(1);
     if (!existing) {
       return jsonError("Comparison row not found", 404);
     }

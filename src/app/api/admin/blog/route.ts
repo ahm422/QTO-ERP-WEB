@@ -1,11 +1,15 @@
-import { BlogPostStatus } from "@prisma/client";
+import type { BlogPostStatus } from "@/db/enums";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { users } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import {
   createBlogPostAdmin,
+  getBlogPostByIdAdmin,
   listAllBlogPostsAdmin,
 } from "@/lib/content-db";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
+import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { createBlogPostSchema } from "@/lib/validations/admin-blog";
 
@@ -60,16 +64,17 @@ export async function POST(request: Request) {
     return validationErrorResponse(parsed.error);
   }
 
-  const user = await getPrisma().user.findUnique({
-    where: { email: admin.session.user.email! },
-  });
+  const [user] = await getDb()
+    .select()
+    .from(users)
+    .where(eq(users.email, admin.session.user.email!))
+    .limit(1);
   if (!user) {
     return jsonError("Admin user not found", 404);
   }
 
-  const status = parsed.data.status ?? BlogPostStatus.DRAFT;
-  const publishedAt =
-    status === BlogPostStatus.PUBLISHED ? new Date() : null;
+  const status = (parsed.data.status ?? "DRAFT") as BlogPostStatus;
+  const publishedAt = status === "PUBLISHED" ? new Date() : null;
 
   try {
     const post = await createBlogPostAdmin({
@@ -83,10 +88,7 @@ export async function POST(request: Request) {
       publishedAt,
     });
 
-    const withAuthor = await getPrisma().blogPost.findUnique({
-      where: { id: post.id },
-      include: { author: { select: { email: true, name: true } } },
-    });
+    const withAuthor = await getBlogPostByIdAdmin(post.id);
 
     return NextResponse.json(
       { ok: true, post: serializePost(withAuthor!) },
@@ -94,12 +96,7 @@ export async function POST(request: Request) {
     );
   } catch (err) {
     console.error("[api/admin/blog] POST Error:", err);
-    if (
-      err &&
-      typeof err === "object" &&
-      "code" in err &&
-      err.code === "P2002"
-    ) {
+    if (isSqliteUniqueConstraintError(err)) {
       return jsonError("Slug already exists", 409);
     }
     return jsonError("Something went wrong.", 500);

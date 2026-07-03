@@ -1,9 +1,10 @@
-import { LeadStatus } from "@prisma/client";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { DemoReplyEmail } from "@/emails/demo-reply";
+import { demoRequests } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { sendEmail } from "@/lib/email";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { demoRequestReplySchema } from "@/lib/validations/admin-demo-request";
 
@@ -28,7 +29,11 @@ export async function POST(request: Request, context: RouteContext) {
     return validationErrorResponse(parsed.error);
   }
 
-  const demoRequest = await getPrisma().demoRequest.findUnique({ where: { id } });
+  const [demoRequest] = await getDb()
+    .select()
+    .from(demoRequests)
+    .where(eq(demoRequests.id, id))
+    .limit(1);
   if (!demoRequest) {
     return jsonError("Demo request not found", 404);
   }
@@ -50,10 +55,11 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const updated = await getPrisma().demoRequest.update({
-      where: { id },
-      data: { status: LeadStatus.READ },
-    });
+    const [updated] = await getDb()
+      .update(demoRequests)
+      .set({ status: "READ" })
+      .where(eq(demoRequests.id, id))
+      .returning();
 
     return NextResponse.json({
       ok: true,

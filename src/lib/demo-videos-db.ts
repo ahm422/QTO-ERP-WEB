@@ -1,6 +1,10 @@
-import type { DemoVideo, DemoVideoStatus } from "@prisma/client";
-import { DemoVideoStatus as DemoVideoStatusEnum } from "@prisma/client";
-import { getPrisma } from "@/lib/prisma";
+import { and, asc, desc, eq, isNotNull } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
+import type { DemoVideoStatus } from "@/db/enums";
+import { demoVideos } from "@/db/schema";
+import { getDb } from "@/lib/db";
+
+export type DemoVideo = InferSelectModel<typeof demoVideos>;
 
 export type DemoVideoPublic = {
   id: string;
@@ -46,30 +50,45 @@ function serializeAdmin(row: DemoVideo): DemoVideoAdmin {
 export async function listPublishedDemoVideos(options?: {
   moduleSlug?: string;
 }) {
-  const rows = await getPrisma().demoVideo.findMany({
-    where: {
-      status: DemoVideoStatusEnum.PUBLISHED,
-      publishedAt: { not: null },
-      ...(options?.moduleSlug ? { moduleSlug: options.moduleSlug } : {}),
-    },
-    orderBy: [{ sortOrder: "asc" }, { publishedAt: "desc" }],
-  });
-  return rows;
+  const conditions = [
+    eq(demoVideos.status, "PUBLISHED"),
+    isNotNull(demoVideos.publishedAt),
+  ];
+  if (options?.moduleSlug) {
+    conditions.push(eq(demoVideos.moduleSlug, options.moduleSlug));
+  }
+
+  return getDb()
+    .select()
+    .from(demoVideos)
+    .where(and(...conditions))
+    .orderBy(asc(demoVideos.sortOrder), desc(demoVideos.publishedAt));
 }
 
 export async function listAllDemoVideos() {
-  const rows = await getPrisma().demoVideo.findMany({
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-  });
+  const rows = await getDb()
+    .select()
+    .from(demoVideos)
+    .orderBy(asc(demoVideos.sortOrder), desc(demoVideos.createdAt));
   return rows.map(serializeAdmin);
 }
 
 export async function getDemoVideoById(id: string) {
-  return getPrisma().demoVideo.findUnique({ where: { id } });
+  const [row] = await getDb()
+    .select()
+    .from(demoVideos)
+    .where(eq(demoVideos.id, id))
+    .limit(1);
+  return row ?? null;
 }
 
 export async function getDemoVideoBySlug(slug: string) {
-  return getPrisma().demoVideo.findUnique({ where: { slug } });
+  const [row] = await getDb()
+    .select()
+    .from(demoVideos)
+    .where(eq(demoVideos.slug, slug))
+    .limit(1);
+  return row ?? null;
 }
 
 export type CreateDemoVideoDraftInput = {
@@ -81,38 +100,41 @@ export type CreateDemoVideoDraftInput = {
 };
 
 export async function createDemoVideoDraft(data: CreateDemoVideoDraftInput) {
-  const row = await getPrisma().demoVideo.create({
-    data: {
+  const [row] = await getDb()
+    .insert(demoVideos)
+    .values({
       slug: data.slug,
       title: data.title,
       objectKey: data.objectKey,
       contentType: data.contentType,
       moduleSlug: data.moduleSlug ?? null,
-      status: DemoVideoStatusEnum.DRAFT,
-    },
-  });
+      status: "DRAFT",
+    })
+    .returning();
   return row;
 }
 
 export async function publishDemoVideo(id: string) {
-  const row = await getPrisma().demoVideo.update({
-    where: { id },
-    data: {
-      status: DemoVideoStatusEnum.PUBLISHED,
+  const [row] = await getDb()
+    .update(demoVideos)
+    .set({
+      status: "PUBLISHED",
       publishedAt: new Date(),
-    },
-  });
+    })
+    .where(eq(demoVideos.id, id))
+    .returning();
   return serializeAdmin(row);
 }
 
 export async function unpublishDemoVideo(id: string) {
-  const row = await getPrisma().demoVideo.update({
-    where: { id },
-    data: {
-      status: DemoVideoStatusEnum.DRAFT,
+  const [row] = await getDb()
+    .update(demoVideos)
+    .set({
+      status: "DRAFT",
       publishedAt: null,
-    },
-  });
+    })
+    .where(eq(demoVideos.id, id))
+    .returning();
   return serializeAdmin(row);
 }
 
@@ -127,10 +149,11 @@ export async function updateDemoVideo(
   id: string,
   fields: UpdateDemoVideoFields,
 ) {
-  const row = await getPrisma().demoVideo.update({
-    where: { id },
-    data: fields,
-  });
+  const [row] = await getDb()
+    .update(demoVideos)
+    .set(fields)
+    .where(eq(demoVideos.id, id))
+    .returning();
   return serializeAdmin(row);
 }
 

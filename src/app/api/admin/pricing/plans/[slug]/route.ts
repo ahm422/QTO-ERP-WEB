@@ -1,7 +1,9 @@
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { pricingPlans } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { updatePricingPlanAdmin } from "@/lib/content-db";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updatePricingPlanSchema } from "@/lib/validations/admin-pricing";
 
@@ -31,9 +33,11 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const existing = await getPrisma().pricingPlan.findUnique({
-      where: { slug },
-    });
+    const [existing] = await getDb()
+      .select()
+      .from(pricingPlans)
+      .where(eq(pricingPlans.slug, slug))
+      .limit(1);
     if (!existing) {
       return jsonError("Pricing plan not found", 404);
     }

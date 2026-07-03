@@ -1,11 +1,14 @@
-import { LeadStatus } from "@prisma/client";
+import { desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import type { LeadStatus } from "@/db/enums";
+import { leadStatuses } from "@/db/enums";
+import { demoRequests } from "@/db/schema";
 import { jsonError } from "@/lib/api-errors";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 
 
-const validStatuses = new Set<string>(Object.values(LeadStatus));
+const validStatuses = new Set<string>(leadStatuses);
 
 export async function GET(request: Request) {
   const admin = await requireAdminApi();
@@ -14,16 +17,19 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const statusParam = searchParams.get("status");
 
-  const where =
+  const statusFilter =
     statusParam && validStatuses.has(statusParam)
-      ? { status: statusParam as LeadStatus }
-      : {};
+      ? (statusParam as LeadStatus)
+      : null;
 
   try {
-    const requests = await getPrisma().demoRequest.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
+    const requests = await getDb()
+      .select()
+      .from(demoRequests)
+      .where(
+        statusFilter ? eq(demoRequests.status, statusFilter) : undefined,
+      )
+      .orderBy(desc(demoRequests.createdAt));
     return NextResponse.json({
       ok: true,
       requests: requests.map((r) => ({

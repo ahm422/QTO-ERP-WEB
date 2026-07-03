@@ -1,9 +1,11 @@
-import { Prisma } from "@prisma/client";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { erpModules } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { createDemoVideoDraft } from "@/lib/demo-videos-db";
 import { presignPutObject } from "@/lib/garage";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
+import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { requireGarage } from "@/lib/require-garage";
 import {
@@ -34,9 +36,11 @@ export async function POST(request: Request) {
   const { slug, title, contentType, fileName, moduleSlug } = parsed.data;
 
   if (moduleSlug) {
-    const erpModule = await getPrisma().erpModule.findUnique({
-      where: { slug: moduleSlug },
-    });
+    const [erpModule] = await getDb()
+      .select()
+      .from(erpModules)
+      .where(eq(erpModules.slug, moduleSlug))
+      .limit(1);
     if (!erpModule) {
       return jsonError("ERP module not found", 400);
     }
@@ -73,10 +77,7 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (err) {
-    if (
-      err instanceof Prisma.PrismaClientKnownRequestError &&
-      err.code === "P2002"
-    ) {
+    if (isSqliteUniqueConstraintError(err)) {
       return jsonError("Slug already in use", 409);
     }
 

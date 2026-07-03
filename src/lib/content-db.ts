@@ -1,10 +1,15 @@
+import { and, asc, desc, eq, inArray, isNotNull } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
+import type { BlogPostStatus } from "@/db/enums";
 import {
-  BlogPostStatus,
-  type BlogPost,
-  type ComparisonFeature,
-  type PricingPlan,
-} from "@prisma/client";
-import { getPrisma } from "@/lib/prisma";
+  blogPosts,
+  comparisonFeatures,
+  erpModules,
+  navResources,
+  pricingPlans,
+  solutions,
+} from "@/db/schema";
+import { getDb } from "@/lib/db";
 import {
   serializeBlogDetail,
   serializeBlogSummary,
@@ -16,20 +21,26 @@ import {
   serializeSolutionSummary,
 } from "@/lib/content-serializers";
 
+export type BlogPostRow = InferSelectModel<typeof blogPosts>;
+export type ComparisonFeatureRow = InferSelectModel<typeof comparisonFeatures>;
+export type PricingPlanRow = InferSelectModel<typeof pricingPlans>;
+
 export async function listPublishedModules() {
-  const rows = await getPrisma().erpModule.findMany({
-    where: { published: true },
-    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-  });
+  const rows = await getDb()
+    .select()
+    .from(erpModules)
+    .where(eq(erpModules.published, true))
+    .orderBy(asc(erpModules.sortOrder), asc(erpModules.name));
   return rows.map(serializeModuleSummary);
 }
 
 export async function listPublishedModulesBySlugs(slugs: string[]) {
   if (slugs.length === 0) return [];
-  const rows = await getPrisma().erpModule.findMany({
-    where: { published: true, slug: { in: slugs } },
-    orderBy: [{ sortOrder: "asc" }],
-  });
+  const rows = await getDb()
+    .select()
+    .from(erpModules)
+    .where(and(eq(erpModules.published, true), inArray(erpModules.slug, slugs)))
+    .orderBy(asc(erpModules.sortOrder));
   const bySlug = new Map(rows.map((r) => [r.slug, serializeModuleSummary(r)]));
   return slugs
     .map((slug) => bySlug.get(slug))
@@ -37,131 +48,159 @@ export async function listPublishedModulesBySlugs(slugs: string[]) {
 }
 
 export async function listPublishedModulesFull() {
-  const rows = await getPrisma().erpModule.findMany({
-    where: { published: true },
-    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-  });
+  const rows = await getDb()
+    .select()
+    .from(erpModules)
+    .where(eq(erpModules.published, true))
+    .orderBy(asc(erpModules.sortOrder), asc(erpModules.name));
   return rows.map(serializeModuleDetail);
 }
 
 export async function getPublishedModuleBySlug(slug: string) {
-  const row = await getPrisma().erpModule.findFirst({
-    where: { slug, published: true },
-  });
+  const [row] = await getDb()
+    .select()
+    .from(erpModules)
+    .where(and(eq(erpModules.slug, slug), eq(erpModules.published, true)))
+    .limit(1);
   return row ? serializeModuleDetail(row) : null;
 }
 
 export async function listPublishedModuleSlugs() {
-  const rows = await getPrisma().erpModule.findMany({
-    where: { published: true },
-    select: { slug: true },
-    orderBy: [{ sortOrder: "asc" }],
-  });
+  const rows = await getDb()
+    .select({ slug: erpModules.slug })
+    .from(erpModules)
+    .where(eq(erpModules.published, true))
+    .orderBy(asc(erpModules.sortOrder));
   return rows.map((r) => r.slug);
 }
 
 export async function listPublishedSolutions() {
-  const rows = await getPrisma().solution.findMany({
-    where: { published: true },
-    orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
-  });
+  const rows = await getDb()
+    .select()
+    .from(solutions)
+    .where(eq(solutions.published, true))
+    .orderBy(asc(solutions.sortOrder), asc(solutions.title));
   return rows.map(serializeSolutionSummary);
 }
 
 export async function listPublishedSolutionsFull() {
-  const rows = await getPrisma().solution.findMany({
-    where: { published: true },
-    orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
-  });
+  const rows = await getDb()
+    .select()
+    .from(solutions)
+    .where(eq(solutions.published, true))
+    .orderBy(asc(solutions.sortOrder), asc(solutions.title));
   return rows.map(serializeSolutionDetail);
 }
 
 export async function getPublishedSolutionBySlug(slug: string) {
-  const row = await getPrisma().solution.findFirst({
-    where: { slug, published: true },
-  });
+  const [row] = await getDb()
+    .select()
+    .from(solutions)
+    .where(and(eq(solutions.slug, slug), eq(solutions.published, true)))
+    .limit(1);
   return row ? serializeSolutionDetail(row) : null;
 }
 
 export async function listPublishedSolutionSlugs() {
-  const rows = await getPrisma().solution.findMany({
-    where: { published: true },
-    select: { slug: true },
-    orderBy: [{ sortOrder: "asc" }],
-  });
+  const rows = await getDb()
+    .select({ slug: solutions.slug })
+    .from(solutions)
+    .where(eq(solutions.published, true))
+    .orderBy(asc(solutions.sortOrder));
   return rows.map((r) => r.slug);
 }
 
 export async function listPublishedBlogPosts() {
-  const rows = await getPrisma().blogPost.findMany({
-    where: {
-      status: BlogPostStatus.PUBLISHED,
-      publishedAt: { not: null },
-    },
-    orderBy: { publishedAt: "desc" },
-  });
+  const rows = await getDb()
+    .select()
+    .from(blogPosts)
+    .where(
+      and(
+        eq(blogPosts.status, "PUBLISHED"),
+        isNotNull(blogPosts.publishedAt),
+      ),
+    )
+    .orderBy(desc(blogPosts.publishedAt));
   return rows.map(serializeBlogSummary);
 }
 
 export async function getPublishedBlogPostBySlug(slug: string) {
-  const row = await getPrisma().blogPost.findFirst({
-    where: {
-      slug,
-      status: BlogPostStatus.PUBLISHED,
-      publishedAt: { not: null },
-    },
-  });
+  const [row] = await getDb()
+    .select()
+    .from(blogPosts)
+    .where(
+      and(
+        eq(blogPosts.slug, slug),
+        eq(blogPosts.status, "PUBLISHED"),
+        isNotNull(blogPosts.publishedAt),
+      ),
+    )
+    .limit(1);
   return row ? serializeBlogDetail(row) : null;
 }
 
 export async function listPublishedBlogSlugs() {
-  const rows = await getPrisma().blogPost.findMany({
-    where: {
-      status: BlogPostStatus.PUBLISHED,
-      publishedAt: { not: null },
-    },
-    select: { slug: true },
-    orderBy: { publishedAt: "desc" },
-  });
+  const rows = await getDb()
+    .select({ slug: blogPosts.slug })
+    .from(blogPosts)
+    .where(
+      and(
+        eq(blogPosts.status, "PUBLISHED"),
+        isNotNull(blogPosts.publishedAt),
+      ),
+    )
+    .orderBy(desc(blogPosts.publishedAt));
   return rows.map((r) => r.slug);
 }
 
 export async function listPublishedComparison() {
-  const rows = await getPrisma().comparisonFeature.findMany({
-    where: { published: true },
-    orderBy: { sortOrder: "asc" },
-  });
+  const rows = await getDb()
+    .select()
+    .from(comparisonFeatures)
+    .where(eq(comparisonFeatures.published, true))
+    .orderBy(asc(comparisonFeatures.sortOrder));
   return rows.map(serializeComparisonRow);
 }
 
 export async function listPublishedPricingPlans() {
-  const rows = await getPrisma().pricingPlan.findMany({
-    where: { published: true },
-    orderBy: { sortOrder: "asc" },
-  });
+  const rows = await getDb()
+    .select()
+    .from(pricingPlans)
+    .where(eq(pricingPlans.published, true))
+    .orderBy(asc(pricingPlans.sortOrder));
   return rows.map(serializePricingPlan);
 }
 
 export async function getPublishedPricingPlanBySlug(slug: string) {
-  const row = await getPrisma().pricingPlan.findFirst({
-    where: { slug, published: true },
-  });
+  const [row] = await getDb()
+    .select()
+    .from(pricingPlans)
+    .where(and(eq(pricingPlans.slug, slug), eq(pricingPlans.published, true)))
+    .limit(1);
   return row ?? null;
 }
 
 // --- Admin helpers ---
 
 export async function listAllBlogPostsAdmin() {
-  return getPrisma().blogPost.findMany({
-    orderBy: { updatedAt: "desc" },
-    include: { author: { select: { email: true, name: true } } },
+  return getDb().query.blogPosts.findMany({
+    orderBy: (posts, { desc }) => [desc(posts.updatedAt)],
+    with: {
+      author: {
+        columns: { email: true, name: true },
+      },
+    },
   });
 }
 
 export async function getBlogPostByIdAdmin(id: string) {
-  return getPrisma().blogPost.findUnique({
-    where: { id },
-    include: { author: { select: { email: true, name: true } } },
+  return getDb().query.blogPosts.findFirst({
+    where: (posts, { eq }) => eq(posts.id, id),
+    with: {
+      author: {
+        columns: { email: true, name: true },
+      },
+    },
   });
 }
 
@@ -175,14 +214,18 @@ export async function createBlogPostAdmin(data: {
   authorId: string;
   publishedAt?: Date | null;
 }) {
-  return getPrisma().blogPost.create({ data });
+  const [row] = await getDb()
+    .insert(blogPosts)
+    .values(data)
+    .returning();
+  return row;
 }
 
 export async function updateBlogPostAdmin(
   id: string,
   data: Partial<
     Pick<
-      BlogPost,
+      BlogPostRow,
       | "slug"
       | "title"
       | "category"
@@ -193,30 +236,44 @@ export async function updateBlogPostAdmin(
     >
   >,
 ) {
-  return getPrisma().blogPost.update({ where: { id }, data });
+  const [row] = await getDb()
+    .update(blogPosts)
+    .set(data)
+    .where(eq(blogPosts.id, id))
+    .returning();
+  return row;
 }
 
 export async function deleteBlogPostAdmin(id: string) {
-  return getPrisma().blogPost.delete({ where: { id } });
+  const [row] = await getDb()
+    .delete(blogPosts)
+    .where(eq(blogPosts.id, id))
+    .returning();
+  return row;
 }
 
 export async function listAllComparisonAdmin() {
-  return getPrisma().comparisonFeature.findMany({
-    orderBy: { sortOrder: "asc" },
-  });
+  return getDb()
+    .select()
+    .from(comparisonFeatures)
+    .orderBy(asc(comparisonFeatures.sortOrder));
 }
 
 export async function createComparisonAdmin(
-  data: Omit<ComparisonFeature, "id" | "createdAt" | "updatedAt">,
+  data: Omit<ComparisonFeatureRow, "id" | "createdAt" | "updatedAt">,
 ) {
-  return getPrisma().comparisonFeature.create({ data });
+  const [row] = await getDb()
+    .insert(comparisonFeatures)
+    .values(data)
+    .returning();
+  return row;
 }
 
 export async function updateComparisonAdmin(
   id: string,
   data: Partial<
     Pick<
-      ComparisonFeature,
+      ComparisonFeatureRow,
       | "feature"
       | "starter"
       | "growth"
@@ -226,24 +283,34 @@ export async function updateComparisonAdmin(
     >
   >,
 ) {
-  return getPrisma().comparisonFeature.update({ where: { id }, data });
+  const [row] = await getDb()
+    .update(comparisonFeatures)
+    .set(data)
+    .where(eq(comparisonFeatures.id, id))
+    .returning();
+  return row;
 }
 
 export async function deleteComparisonAdmin(id: string) {
-  return getPrisma().comparisonFeature.delete({ where: { id } });
+  const [row] = await getDb()
+    .delete(comparisonFeatures)
+    .where(eq(comparisonFeatures.id, id))
+    .returning();
+  return row;
 }
 
 export async function listAllPricingPlansAdmin() {
-  return getPrisma().pricingPlan.findMany({
-    orderBy: { sortOrder: "asc" },
-  });
+  return getDb()
+    .select()
+    .from(pricingPlans)
+    .orderBy(asc(pricingPlans.sortOrder));
 }
 
 export async function updatePricingPlanAdmin(
   slug: string,
   data: Partial<
     Pick<
-      PricingPlan,
+      PricingPlanRow,
       | "name"
       | "description"
       | "monthlyPriceDisplay"
@@ -258,13 +325,25 @@ export async function updatePricingPlanAdmin(
     >
   >,
 ) {
-  return getPrisma().pricingPlan.update({ where: { slug }, data });
+  const [row] = await getDb()
+    .update(pricingPlans)
+    .set(data)
+    .where(eq(pricingPlans.slug, slug))
+    .returning();
+  return row;
 }
 
 export async function listPublishedNavResources() {
-  return getPrisma().navResource.findMany({
-    where: { visible: true },
-    orderBy: { sortOrder: "asc" },
-    select: { id: true, label: true, href: true, iconKey: true, subtitle: true, external: true },
-  });
+  return getDb()
+    .select({
+      id: navResources.id,
+      label: navResources.label,
+      href: navResources.href,
+      iconKey: navResources.iconKey,
+      subtitle: navResources.subtitle,
+      external: navResources.external,
+    })
+    .from(navResources)
+    .where(eq(navResources.visible, true))
+    .orderBy(asc(navResources.sortOrder));
 }
