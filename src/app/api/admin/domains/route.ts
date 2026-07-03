@@ -5,7 +5,6 @@ import { requireResend } from "@/lib/require-resend";
 import { resendErrorResponse } from "@/lib/resend-api-error";
 import { createDomainSchema } from "@/lib/validations/domain";
 
-export const runtime = "nodejs";
 
 export async function GET() {
   const admin = await requireAdminApi();

@@ -3,7 +3,6 @@ import { requireAdminApi } from "@/lib/require-admin-api";
 import { requireResend } from "@/lib/require-resend";
 import { resendErrorResponse } from "@/lib/resend-api-error";
 
-export const runtime = "nodejs";
 
 type RouteContext = {
   params: Promise<{ id: string }>;

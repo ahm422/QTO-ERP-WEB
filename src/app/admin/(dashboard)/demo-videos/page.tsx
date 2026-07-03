@@ -67,8 +67,10 @@ export default function DemoVideosAdminPage() {
           "/api/demo-videos/admin",
         ),
         fetch("/api/modules")
-          .then((r) => r.json())
-          .catch(() => ({ modules: [] })),
+          .then((r) =>
+            r.json() as Promise<{ modules?: { slug: string }[] }>,
+          )
+          .catch(() => ({ modules: [] as { slug: string }[] })),
       ]);
       setVideos(videoData.videos);
       const slugs = (modulesData.modules ?? []).map(

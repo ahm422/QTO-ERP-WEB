@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { AdminToaster } from "@/components/admin/AdminToaster";
 
-export const runtime = "nodejs";
 
 export default async function AdminDashboardLayout({
   children,

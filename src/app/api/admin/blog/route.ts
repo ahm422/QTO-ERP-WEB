@@ -9,7 +9,6 @@ import { getPrisma } from "@/lib/prisma";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { createBlogPostSchema } from "@/lib/validations/admin-blog";
 
-export const runtime = "nodejs";
 
 function serializePost(
   post: Awaited<ReturnType<typeof listAllBlogPostsAdmin>>[number],

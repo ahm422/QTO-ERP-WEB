@@ -14,7 +14,6 @@ import {
 import Stripe from "stripe";
 import { pricingCheckoutSchema } from "@/lib/validations/pricing-checkout";
 
-export const runtime = "nodejs";
 
 function getAppBaseUrl(): string | null {
   const url = process.env.AUTH_URL?.trim();

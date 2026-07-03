@@ -5,7 +5,6 @@ import { requireResend } from "@/lib/require-resend";
 import { resendErrorResponse } from "@/lib/resend-api-error";
 import { updateDomainSchema } from "@/lib/validations/domain";
 
-export const runtime = "nodejs";
 
 type RouteContext = {
   params: Promise<{ id: string }>;

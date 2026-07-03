@@ -5,7 +5,6 @@ import { requireAdminApi } from "@/lib/require-admin-api";
 import { getSiteSettings, setSiteSetting } from "@/lib/site-settings";
 import { updateSiteSettingsSchema } from "@/lib/validations/admin-site-settings";
 
-export const runtime = "nodejs";
 
 export async function GET() {
   const admin = await requireAdminApi();

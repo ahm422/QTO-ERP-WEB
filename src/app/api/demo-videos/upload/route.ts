@@ -11,7 +11,6 @@ import {
   uploadDemoVideoSchema,
 } from "@/lib/validations/demo-video";
 
-export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const admin = await requireAdminApi();

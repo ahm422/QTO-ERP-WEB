@@ -16,7 +16,6 @@ type PageProps = {
   searchParams: Promise<{ industry?: string }>;
 };
 
-export const runtime = "nodejs";
 export const dynamicParams = true;
 export const revalidate = 3600;
 

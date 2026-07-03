@@ -23,6 +23,11 @@
 			"binding": "DB",
 			"database_name": "qto-erp-db-production",
 			"database_id": "YOUR_D1_DATABASE_ID"
+		},
+		{
+			"binding": "NEXT_TAG_CACHE_D1",
+			"database_name": "qto-erp-db-production",
+			"database_id": "YOUR_D1_DATABASE_ID"
 		}
 	],
 	"r2_buckets": [
@@ -31,15 +36,22 @@
 			"bucket_name": "qto-erp-media-production"
 		},
 		{
-			"binding": "NEXT_CACHE_R2",
+			"binding": "NEXT_INC_CACHE_R2_BUCKET",
 			"bucket_name": "qto-erp-next-cache-production"
 		}
 	],
-	"kv_namespaces": [
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "NEXT_CACHE_DO_QUEUE",
+				"class_name": "DOQueueHandler"
+			}
+		]
+	},
+	"migrations": [
 		{
-			"binding": "NEXT_TAG_CACHE_KV",
-			"id": "YOUR_KV_NAMESPACE_ID",
-			"preview_id": "YOUR_KV_PREVIEW_ID"
+			"tag": "v1",
+			"new_sqlite_classes": ["DOQueueHandler"]
 		}
 	],
 	"env": {
@@ -59,6 +71,11 @@
 					"binding": "DB",
 					"database_name": "qto-erp-db-staging",
 					"database_id": "YOUR_D1_DATABASE_ID"
+				},
+				{
+					"binding": "NEXT_TAG_CACHE_D1",
+					"database_name": "qto-erp-db-staging",
+					"database_id": "YOUR_D1_DATABASE_ID"
 				}
 			],
 			"r2_buckets": [
@@ -67,15 +84,22 @@
 					"bucket_name": "qto-erp-media-staging"
 				},
 				{
-					"binding": "NEXT_CACHE_R2",
+					"binding": "NEXT_INC_CACHE_R2_BUCKET",
 					"bucket_name": "qto-erp-next-cache-staging"
 				}
 			],
-			"kv_namespaces": [
+			"durable_objects": {
+				"bindings": [
+					{
+						"name": "NEXT_CACHE_DO_QUEUE",
+						"class_name": "DOQueueHandler"
+					}
+				]
+			},
+			"migrations": [
 				{
-					"binding": "NEXT_TAG_CACHE_KV",
-					"id": "YOUR_KV_PREVIEW_ID",
-					"preview_id": "YOUR_KV_PREVIEW_ID"
+					"tag": "v1",
+					"new_sqlite_classes": ["DOQueueHandler"]
 				}
 			]
 		}

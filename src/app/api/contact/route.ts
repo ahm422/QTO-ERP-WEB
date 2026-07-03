@@ -9,7 +9,6 @@ import {
 import { prisma } from "@/lib/prisma";
 import { contactSchema } from "@/lib/validations/contact";
 
-export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   let body: unknown;

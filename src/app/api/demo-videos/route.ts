@@ -7,7 +7,6 @@ import {
 import { presignGetObject } from "@/lib/garage";
 import { requireGarage } from "@/lib/require-garage";
 
-export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   const garageResult = requireGarage();

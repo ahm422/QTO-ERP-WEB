@@ -7,7 +7,6 @@ import {
 } from "@/lib/content-db";
 import { getSiteSettings } from "@/lib/site-settings";
 
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export default async function SiteLayout({

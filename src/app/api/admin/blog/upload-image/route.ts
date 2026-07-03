@@ -9,7 +9,6 @@ import {
   buildBlogImageKey,
 } from "@/lib/validations/admin-blog";
 
-export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const admin = await requireAdminApi();

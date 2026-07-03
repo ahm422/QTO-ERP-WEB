@@ -9,7 +9,6 @@ import {
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateBlogPostSchema } from "@/lib/validations/admin-blog";
 
-export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
