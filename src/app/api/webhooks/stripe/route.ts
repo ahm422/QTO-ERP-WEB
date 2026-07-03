@@ -29,7 +29,11 @@ export async function POST(request: Request) {
   let event: Stripe.Event;
   try {
     const stripe = getStripe();
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    event = await stripe.webhooks.constructEventAsync(
+      body,
+      signature,
+      webhookSecret,
+    );
   } catch (err) {
     console.error("[api/webhooks/stripe] Signature verification failed:", err);
     return jsonError("Invalid signature.", 400);
