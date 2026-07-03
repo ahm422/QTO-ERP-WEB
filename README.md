@@ -1,65 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QTO ERP Web
 
-## Database and admin auth
+Next.js marketing site and admin panel deployed on **Cloudflare Workers** (OpenNext + D1 + R2).
 
-PostgreSQL, Prisma, and admin credentials login (NextAuth) are documented in [docs/database.md](docs/database.md).
+## Documentation
 
-Form submissions (demo, contact, newsletter) and transactional email (Resend) are documented in [docs/email.md](docs/email.md).
+| Topic | Doc |
+|-------|-----|
+| Database (Drizzle + D1) | [docs/database.md](docs/database.md) |
+| Media storage (R2) | [docs/storage.md](docs/storage.md) |
+| Deployment (Workers, CI/CD) | [docs/deployment-cloudflare.md](docs/deployment-cloudflare.md) |
+| E2E testing checklist | [docs/testing-cloudflare.md](docs/testing-cloudflare.md) |
+| Admin panel | [docs/admin.md](docs/admin.md) |
+| Email (Resend) | [docs/email.md](docs/email.md) |
+| Content APIs | [docs/content-api.md](docs/content-api.md) |
+| Stripe payments | [docs/payments.md](docs/payments.md) |
 
-Marketing content (modules, solutions, blog, pricing comparison) and public read APIs are documented in [docs/content-api.md](docs/content-api.md).
-
-Stripe Checkout for pricing plans (Phase 4) is documented in [docs/payments.md](docs/payments.md).
-
-Demo video and blog image storage (Cloudflare R2) is documented in [docs/storage.md](docs/storage.md).
-
-The admin panel (Phase 6) is documented in [docs/admin.md](docs/admin.md).
-
-Production deployment on Coolify (Docker, PostgreSQL, Garage) is documented in [docs/deployment-coolify.md](docs/deployment-coolify.md).
-
-Quick start after Postgres is running:
+## Quick start
 
 ```bash
-cp .env.example .env
-# edit .env (DATABASE_URL, AUTH_SECRET, ADMIN_*, RESEND_*, STRIPE_*)
 npm install
-npm run db:migrate
+cp .env.example .env
+# Edit .env: AUTH_SECRET, AUTH_URL, ADMIN_*, RESEND_*, STRIPE_*
+
+# For wrangler dev (dev:workers / preview) — create .dev.vars (gitignored) with the same
+# secrets plus NEXTJS_ENV=development. Use AUTH_URL=http://localhost:8787 for dev:workers.
+
+npm run db:migrate:local
 npm run db:seed
-npm run stripe:check   # optional: verify Stripe price IDs
+npm run dev                    # fast UI/API on :3000 (D1 only)
+# npm run dev:workers          # full bindings on :8787 (D1 + R2 + ISR)
 ```
 
-Admin login: `/admin/login` (seeded user from `ADMIN_EMAIL` / `ADMIN_PASSWORD`).
+Admin login: [http://localhost:3000/admin/login](http://localhost:3000/admin/login) (or `:8787` when using `dev:workers`).
 
-## Getting Started
+Optional: `npm run stripe:check` to verify Stripe price IDs.
 
-First, run the development server:
+## Development commands
+
+| Script | Port | Use when |
+|--------|------|----------|
+| `npm run dev` | 3000 | Daily UI/API work (D1 via `initOpenNextCloudflareForDev`) |
+| `npm run dev:workers` | 8787 | Media uploads, ISR, full production binding parity |
+| `npm run preview` | 8787 | One-shot smoke after OpenNext build |
+
+## Deploy
+
+Production and staging deploy via Jenkins (`main` → production, `staging` → staging) or manually:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run deploy:staging   # staging Worker
+npm run deploy           # production Worker
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [docs/deployment-cloudflare.md](docs/deployment-cloudflare.md) for secrets, migrations, and DNS cutover.
