@@ -10,7 +10,7 @@ Marketing content (modules, solutions, blog, pricing comparison) and public read
 
 Stripe Checkout for pricing plans (Phase 4) is documented in [docs/payments.md](docs/payments.md).
 
-Demo video object storage (Garage / S3) is documented in [docs/storage.md](docs/storage.md).
+Demo video and blog image storage (Cloudflare R2) is documented in [docs/storage.md](docs/storage.md).
 
 The admin panel (Phase 6) is documented in [docs/admin.md](docs/admin.md).
 
@@ -20,7 +20,7 @@ Quick start after Postgres is running:
 
 ```bash
 cp .env.example .env
-# edit .env (DATABASE_URL, AUTH_SECRET, ADMIN_*, RESEND_*, STRIPE_*, GARAGE_*)
+# edit .env (DATABASE_URL, AUTH_SECRET, ADMIN_*, RESEND_*, STRIPE_*)
 npm install
 npm run db:migrate
 npm run db:seed

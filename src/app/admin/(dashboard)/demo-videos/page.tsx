@@ -213,7 +213,7 @@ export default function DemoVideosAdminPage() {
       <div>
         <h1 className="text-2xl font-semibold">Demo videos</h1>
         <p className="text-sm text-muted-foreground">
-          Upload videos to Garage via presigned URLs. See docs/storage.md.
+          Upload videos to R2 via server upload. See docs/storage.md.
         </p>
       </div>
 

@@ -3,11 +3,10 @@ import { NextResponse } from "next/server";
 import { erpModules } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { createDemoVideoDraft } from "@/lib/demo-videos-db";
-import { presignPutObject } from "@/lib/garage";
 import { getDb } from "@/lib/db";
 import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
 import { requireAdminApi } from "@/lib/require-admin-api";
-import { requireGarage } from "@/lib/require-garage";
+import { requireMediaBucket } from "@/lib/require-media-bucket";
 import {
   buildObjectKey,
   uploadDemoVideoSchema,
@@ -18,8 +17,8 @@ export async function POST(request: Request) {
   const admin = await requireAdminApi();
   if ("error" in admin) return admin.error;
 
-  const garageResult = requireGarage();
-  if ("error" in garageResult) return garageResult.error;
+  const mediaResult = requireMediaBucket();
+  if ("error" in mediaResult) return mediaResult.error;
 
   let body: unknown;
   try {
@@ -57,12 +56,6 @@ export async function POST(request: Request) {
       moduleSlug: moduleSlug ?? null,
     });
 
-    const presigned = await presignPutObject(objectKey, contentType);
-    if (!presigned) {
-      console.error("[api/demo-videos/upload] Failed to presign PUT");
-      return jsonError("Something went wrong.", 500);
-    }
-
     return NextResponse.json(
       {
         ok: true,
@@ -71,8 +64,6 @@ export async function POST(request: Request) {
           slug: video.slug,
           objectKey: video.objectKey,
         },
-        uploadUrl: presigned.uploadUrl,
-        expiresIn: presigned.expiresIn,
       },
       { status: 201 },
     );

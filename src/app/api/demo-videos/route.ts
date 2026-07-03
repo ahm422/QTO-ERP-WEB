@@ -4,13 +4,13 @@ import {
   listPublishedDemoVideos,
   serializeDemoVideoPublic,
 } from "@/lib/demo-videos-db";
-import { presignGetObject } from "@/lib/garage";
-import { requireGarage } from "@/lib/require-garage";
+import { mediaUrl } from "@/lib/media";
+import { requireMediaBucket } from "@/lib/require-media-bucket";
 
 
 export async function GET(request: Request) {
-  const garageResult = requireGarage();
-  if ("error" in garageResult) return garageResult.error;
+  const mediaResult = requireMediaBucket();
+  if ("error" in mediaResult) return mediaResult.error;
 
   const { searchParams } = new URL(request.url);
   const moduleSlug = searchParams.get("moduleSlug")?.trim() || undefined;
@@ -20,18 +20,10 @@ export async function GET(request: Request) {
       moduleSlug ? { moduleSlug } : undefined,
     );
 
-    const videos = await Promise.all(
-      rows.map(async (row) => {
-        const presigned = await presignGetObject(row.objectKey);
-        if (!presigned) {
-          throw new Error("Failed to presign GET");
-        }
-        return {
-          ...serializeDemoVideoPublic(row),
-          playbackUrl: presigned.playbackUrl,
-        };
-      }),
-    );
+    const videos = rows.map((row) => ({
+      ...serializeDemoVideoPublic(row),
+      playbackUrl: mediaUrl(row.objectKey),
+    }));
 
     return NextResponse.json({ videos });
   } catch (err) {

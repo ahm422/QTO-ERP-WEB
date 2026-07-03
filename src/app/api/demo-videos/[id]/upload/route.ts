@@ -1,11 +1,8 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 import { jsonError } from "@/lib/api-errors";
 import { getDemoVideoById } from "@/lib/demo-videos-db";
-import { getGarageClient, getGarageConfig } from "@/lib/garage";
 import { requireAdminApi } from "@/lib/require-admin-api";
-import { requireGarage } from "@/lib/require-garage";
-
+import { requireMediaBucket } from "@/lib/require-media-bucket";
 
 const MAX_BYTES = 500 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["video/mp4", "video/webm"]);
@@ -16,8 +13,9 @@ export async function POST(request: Request, context: RouteContext) {
   const admin = await requireAdminApi();
   if ("error" in admin) return admin.error;
 
-  const garageResult = requireGarage();
-  if ("error" in garageResult) return garageResult.error;
+  const mediaResult = requireMediaBucket();
+  if ("error" in mediaResult) return mediaResult.error;
+  const { bucket } = mediaResult;
 
   const { id } = await context.params;
 
@@ -53,22 +51,10 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
-  const config = getGarageConfig();
-  const client = getGarageClient();
-  if (!config || !client) {
-    return jsonError("Object storage not configured", 500);
-  }
-
   try {
-    const body = Buffer.from(await file.arrayBuffer());
-    await client.send(
-      new PutObjectCommand({
-        Bucket: config.bucket,
-        Key: video.objectKey,
-        Body: body,
-        ContentType: video.contentType,
-      }),
-    );
+    await bucket.put(video.objectKey, file.stream(), {
+      httpMetadata: { contentType: video.contentType },
+    });
 
     return NextResponse.json({ ok: true, objectKey: video.objectKey });
   } catch (err) {
