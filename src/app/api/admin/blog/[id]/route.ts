@@ -1,4 +1,4 @@
-import { BlogPostStatus } from "@prisma/client";
+import type { BlogPostStatus } from "@/db/enums";
 import { NextResponse } from "next/server";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import {
@@ -6,6 +6,7 @@ import {
   getBlogPostByIdAdmin,
   updateBlogPostAdmin,
 } from "@/lib/content-db";
+import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateBlogPostSchema } from "@/lib/validations/admin-blog";
 
@@ -78,13 +79,13 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const data: Parameters<typeof updateBlogPostAdmin>[1] = { ...parsed.data };
 
-    if (parsed.data.status === BlogPostStatus.PUBLISHED) {
-      data.status = BlogPostStatus.PUBLISHED;
+    if (parsed.data.status === "PUBLISHED") {
+      data.status = "PUBLISHED" as BlogPostStatus;
       if (!existing.publishedAt) {
         data.publishedAt = new Date();
       }
-    } else if (parsed.data.status === BlogPostStatus.DRAFT) {
-      data.status = BlogPostStatus.DRAFT;
+    } else if (parsed.data.status === "DRAFT") {
+      data.status = "DRAFT" as BlogPostStatus;
     }
 
     const post = await updateBlogPostAdmin(id, data);
@@ -95,12 +96,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     });
   } catch (err) {
     console.error("[api/admin/blog/[id]] PATCH Error:", err);
-    if (
-      err &&
-      typeof err === "object" &&
-      "code" in err &&
-      err.code === "P2002"
-    ) {
+    if (isSqliteUniqueConstraintError(err)) {
       return jsonError("Slug already exists", 409);
     }
     return jsonError("Something went wrong.", 500);

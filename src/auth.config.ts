@@ -1,4 +1,4 @@
-import type { Role } from "@prisma/client";
+import type { Role } from "@/db/enums";
 import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {

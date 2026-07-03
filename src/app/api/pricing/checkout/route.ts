@@ -1,7 +1,9 @@
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { getPublishedPricingPlanBySlug } from "@/lib/content-db";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
+import { pricingPlans } from "@/db/schema";
 import { getStripe } from "@/lib/stripe";
 import {
   isStripePriceId,
@@ -94,10 +96,10 @@ export async function POST(request: Request) {
       persist.stripePriceIdYearly = fromEnv.yearly;
     }
     if (Object.keys(persist).length > 0) {
-      await getPrisma().pricingPlan.update({
-        where: { id: plan.id },
-        data: persist,
-      });
+      await getDb()
+        .update(pricingPlans)
+        .set(persist)
+        .where(eq(pricingPlans.id, plan.id));
     }
 
     let stripe;

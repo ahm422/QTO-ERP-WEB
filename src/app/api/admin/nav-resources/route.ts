@@ -1,7 +1,9 @@
+import { asc, eq, max } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { navResources } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { createNavResourceSchema } from "@/lib/validations/admin-nav-resources";
 
@@ -11,9 +13,10 @@ export async function GET() {
   if ("error" in admin) return admin.error;
 
   try {
-    const items = await getPrisma().navResource.findMany({
-      orderBy: { sortOrder: "asc" },
-    });
+    const items = await getDb()
+      .select()
+      .from(navResources)
+      .orderBy(asc(navResources.sortOrder));
     return NextResponse.json({
       ok: true,
       items: items.map((i) => ({
@@ -47,28 +50,35 @@ export async function POST(request: Request) {
   try {
     let { sortOrder } = parsed.data;
     if (sortOrder === undefined) {
-      const max = await getPrisma().navResource.aggregate({ _max: { sortOrder: true } });
-      sortOrder = (max._max.sortOrder ?? -1) + 1;
+      const [result] = await getDb()
+        .select({ maxSort: max(navResources.sortOrder) })
+        .from(navResources);
+      sortOrder = (result?.maxSort ?? -1) + 1;
     }
 
-    const item = await getPrisma().navResource.create({
-      data: {
-        label:     parsed.data.label,
-        href:      parsed.data.href,
-        iconKey:   parsed.data.iconKey,
-        subtitle:  parsed.data.subtitle ?? null,
-        visible:   parsed.data.visible ?? true,
-        external:  parsed.data.external ?? false,
+    const [item] = await getDb()
+      .insert(navResources)
+      .values({
+        label: parsed.data.label,
+        href: parsed.data.href,
+        iconKey: parsed.data.iconKey,
+        subtitle: parsed.data.subtitle ?? null,
+        visible: parsed.data.visible ?? true,
+        external: parsed.data.external ?? false,
         sortOrder,
-      },
-    });
+      })
+      .returning();
 
     revalidatePath("/", "layout");
 
     return NextResponse.json(
       {
         ok: true,
-        item: { ...item, createdAt: item.createdAt.toISOString(), updatedAt: item.updatedAt.toISOString() },
+        item: {
+          ...item,
+          createdAt: item.createdAt.toISOString(),
+          updatedAt: item.updatedAt.toISOString(),
+        },
       },
       { status: 201 },
     );

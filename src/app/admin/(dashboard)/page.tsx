@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { getPrisma } from "@/lib/prisma";
+import { count } from "drizzle-orm";
+import { getDb } from "@/lib/db";
+import {
+  blogPosts,
+  comparisonFeatures,
+  demoRequests,
+  demoVideos,
+  pricingPlans,
+} from "@/db/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 
@@ -12,22 +20,27 @@ const sections = [
 ];
 
 export default async function AdminDashboardPage() {
-  const prisma = getPrisma();
-  const [demoRequests, blogPosts, pricingPlans, demoVideos, comparisonRows] =
-    await Promise.all([
-      prisma.demoRequest.count(),
-      prisma.blogPost.count(),
-      prisma.pricingPlan.count(),
-      prisma.demoVideo.count(),
-      prisma.comparisonFeature.count(),
-    ]);
+  const db = getDb();
+  const [
+    [{ value: demoRequestCount }],
+    [{ value: blogPostCount }],
+    [{ value: pricingPlanCount }],
+    [{ value: demoVideoCount }],
+    [{ value: comparisonRowCount }],
+  ] = await Promise.all([
+    db.select({ value: count() }).from(demoRequests),
+    db.select({ value: count() }).from(blogPosts),
+    db.select({ value: count() }).from(pricingPlans),
+    db.select({ value: count() }).from(demoVideos),
+    db.select({ value: count() }).from(comparisonFeatures),
+  ]);
 
   const counts = [
-    { label: "Demo requests", value: demoRequests },
-    { label: "Blog posts", value: blogPosts },
-    { label: "Pricing plans", value: pricingPlans },
-    { label: "Demo videos", value: demoVideos },
-    { label: "Comparison rows", value: comparisonRows },
+    { label: "Demo requests", value: demoRequestCount },
+    { label: "Blog posts", value: blogPostCount },
+    { label: "Pricing plans", value: pricingPlanCount },
+    { label: "Demo videos", value: demoVideoCount },
+    { label: "Comparison rows", value: comparisonRowCount },
   ];
 
   return (

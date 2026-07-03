@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { SubscriptionAdminNotificationEmail } from "@/emails/subscription-admin-notification";
@@ -7,7 +8,8 @@ import {
   logEmailResults,
   sendEmail,
 } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
+import { subscriptions } from "@/db/schema";
 import { getStripe } from "@/lib/stripe";
 
 
@@ -84,24 +86,24 @@ async function handleCheckoutSessionCompleted(
       ? session.subscription
       : session.subscription?.id ?? null;
 
-  const existing = await prisma.subscription.findUnique({
-    where: { stripeCheckoutSessionId: session.id },
-  });
+  const [existing] = await getDb()
+    .select()
+    .from(subscriptions)
+    .where(eq(subscriptions.stripeCheckoutSessionId, session.id))
+    .limit(1);
 
   if (existing) {
     return;
   }
 
-  await prisma.subscription.create({
-    data: {
-      stripeCustomerId,
-      stripeSubscriptionId,
-      stripeCheckoutSessionId: session.id,
-      customerEmail,
-      planSlug,
-      billingInterval: interval,
-      status: "active",
-    },
+  await getDb().insert(subscriptions).values({
+    stripeCustomerId,
+    stripeSubscriptionId,
+    stripeCheckoutSessionId: session.id,
+    customerEmail,
+    planSlug,
+    billingInterval: interval,
+    status: "active",
   });
 
   const adminEmail = getAdminNotificationEmail();

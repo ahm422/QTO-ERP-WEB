@@ -1,6 +1,8 @@
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { demoRequests } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateDemoRequestStatusSchema } from "@/lib/validations/admin-demo-request";
 
@@ -26,15 +28,20 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const existing = await getPrisma().demoRequest.findUnique({ where: { id } });
+    const [existing] = await getDb()
+      .select()
+      .from(demoRequests)
+      .where(eq(demoRequests.id, id))
+      .limit(1);
     if (!existing) {
       return jsonError("Demo request not found", 404);
     }
 
-    const updated = await getPrisma().demoRequest.update({
-      where: { id },
-      data: { status: parsed.data.status },
-    });
+    const [updated] = await getDb()
+      .update(demoRequests)
+      .set({ status: parsed.data.status })
+      .where(eq(demoRequests.id, id))
+      .returning();
 
     return NextResponse.json({
       ok: true,

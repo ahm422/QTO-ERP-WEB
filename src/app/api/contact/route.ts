@@ -6,7 +6,8 @@ import {
   logEmailResults,
   sendEmail,
 } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
+import { contactInquiries } from "@/db/schema";
 import { contactSchema } from "@/lib/validations/contact";
 
 
@@ -26,8 +27,9 @@ export async function POST(request: Request) {
   const data = parsed.data;
 
   try {
-    const inquiry = await prisma.contactInquiry.create({
-      data: {
+    const [inquiry] = await getDb()
+      .insert(contactInquiries)
+      .values({
         name: data.name,
         email: data.email,
         phone: data.phone,
@@ -35,8 +37,8 @@ export async function POST(request: Request) {
         subject: data.subject,
         companySize: data.companySize,
         message: data.message,
-      },
-    });
+      })
+      .returning();
 
     const adminEmail = getAdminNotificationEmail();
     if (adminEmail) {

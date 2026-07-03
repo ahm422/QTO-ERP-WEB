@@ -22,12 +22,14 @@
 		{
 			"binding": "DB",
 			"database_name": "qto-erp-db-production",
-			"database_id": "YOUR_D1_DATABASE_ID"
+			"database_id": "YOUR_D1_DATABASE_ID",
+			"migrations_dir": "drizzle/migrations"
 		},
 		{
 			"binding": "NEXT_TAG_CACHE_D1",
 			"database_name": "qto-erp-db-production",
-			"database_id": "YOUR_D1_DATABASE_ID"
+			"database_id": "YOUR_D1_DATABASE_ID",
+			"migrations_dir": "drizzle/migrations"
 		}
 	],
 	"r2_buckets": [
@@ -70,12 +72,14 @@
 				{
 					"binding": "DB",
 					"database_name": "qto-erp-db-staging",
-					"database_id": "YOUR_D1_DATABASE_ID"
+					"database_id": "YOUR_D1_DATABASE_ID",
+					"migrations_dir": "drizzle/migrations"
 				},
 				{
 					"binding": "NEXT_TAG_CACHE_D1",
 					"database_name": "qto-erp-db-staging",
-					"database_id": "YOUR_D1_DATABASE_ID"
+					"database_id": "YOUR_D1_DATABASE_ID",
+					"migrations_dir": "drizzle/migrations"
 				}
 			],
 			"r2_buckets": [

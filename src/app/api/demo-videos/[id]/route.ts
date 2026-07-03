@@ -1,4 +1,6 @@
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { erpModules } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import {
   getDemoVideoById,
@@ -7,7 +9,7 @@ import {
   unpublishDemoVideo,
   updateDemoVideo,
 } from "@/lib/demo-videos-db";
-import { getPrisma } from "@/lib/prisma";
+import { getDb } from "@/lib/db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateDemoVideoSchema } from "@/lib/validations/demo-video";
 
@@ -40,9 +42,11 @@ export async function PATCH(request: Request, context: RouteContext) {
   const { title, description, sortOrder, moduleSlug, status } = parsed.data;
 
   if (moduleSlug !== undefined && moduleSlug !== null) {
-    const erpModule = await getPrisma().erpModule.findUnique({
-      where: { slug: moduleSlug },
-    });
+    const [erpModule] = await getDb()
+      .select()
+      .from(erpModules)
+      .where(eq(erpModules.slug, moduleSlug))
+      .limit(1);
     if (!erpModule) {
       return jsonError("ERP module not found", 400);
     }
