@@ -87,7 +87,7 @@ function main() {
     }
 
     console.log(`Step 3/3: importing into remote ${databaseName}...`);
-    run("npx", [
+    const executeArgs = [
       "wrangler",
       "d1",
       "execute",
@@ -95,7 +95,11 @@ function main() {
       "--remote",
       "--file",
       sqlPath,
-    ]);
+    ];
+    if (target === "staging") {
+      executeArgs.push("--env", "staging");
+    }
+    run("npx", executeArgs);
 
     console.log(`Done. Remote D1 seeded: ${databaseName}`);
   } finally {

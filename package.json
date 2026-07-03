@@ -5,6 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:workers": "opennextjs-cloudflare build && wrangler dev --persist-to=./.wrangler/state --ip 127.0.0.1",
     "start": "next start",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "db:generate": "drizzle-kit generate",

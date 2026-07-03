@@ -5,6 +5,10 @@
 	"main": ".open-next/worker.js",
 	"compatibility_date": "2026-07-03",
 	"compatibility_flags": ["nodejs_compat"],
+	"routes": [
+		{ "pattern": "qto-erp.com/*", "zone_name": "qto-erp.com" },
+		{ "pattern": "www.qto-erp.com/*", "zone_name": "qto-erp.com" }
+	],
 	"assets": {
 		"directory": ".open-next/assets",
 		"binding": "ASSETS"
