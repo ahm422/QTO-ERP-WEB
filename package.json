@@ -19,7 +19,8 @@
     "stripe:webhook-test": "tsx --env-file=.env scripts/stripe-webhook-test.ts",
     "cf:types": "wrangler types --env-interface CloudflareEnv",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "deploy": "opennextjs-cloudflare build && CLOUDFLARE_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID opennextjs-cloudflare deploy",
+    "deploy:staging": "opennextjs-cloudflare build && CLOUDFLARE_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID opennextjs-cloudflare deploy -- --env staging"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.1",
