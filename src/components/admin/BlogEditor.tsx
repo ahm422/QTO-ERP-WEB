@@ -6,7 +6,6 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
 import { Button } from "@/components/ui/button";
 
 type BlogEditorProps = {
@@ -45,38 +44,37 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
       if (!file) return;
 
       try {
-        const presign = await adminFetch<{
-          ok: true;
-          uploadUrl: string;
-          imageUrl: string;
-        }>("/api/admin/blog/upload-image", {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("postId", postId);
+
+        const uploadRes = await fetch("/api/admin/blog/upload-image", {
           method: "POST",
-          json: {
-            postId,
-            contentType: file.type,
-            fileName: file.name,
-          },
+          body: formData,
+          credentials: "include",
         });
 
-        const putRes = await fetch(presign.uploadUrl, {
-          method: "PUT",
-          body: file,
-          headers: { "Content-Type": file.type },
-        });
-
-        if (!putRes.ok) {
-          throw new Error(`Image upload failed (${putRes.status})`);
+        if (!uploadRes.ok) {
+          let message = `Image upload failed (${uploadRes.status})`;
+          try {
+            const errBody = (await uploadRes.json()) as { error?: string };
+            if (errBody.error) message = errBody.error;
+          } catch {
+            /* ignore */
+          }
+          throw new Error(message);
         }
 
-        editor.chain().focus().setImage({ src: presign.imageUrl }).run();
+        const result = (await uploadRes.json()) as {
+          ok: true;
+          imageUrl: string;
+        };
+
+        editor.chain().focus().setImage({ src: result.imageUrl }).run();
         toast.success("Image inserted");
       } catch (err) {
         toast.error(
-          err instanceof AdminFetchError
-            ? err.message
-            : err instanceof Error
-              ? err.message
-              : "Image upload failed",
+          err instanceof Error ? err.message : "Image upload failed",
         );
       }
     };
