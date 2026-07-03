@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   reactCompiler: true,
   allowedDevOrigins: ["localhost"],
   // Use the generated client from node_modules (avoids a bundled client missing new models).
@@ -16,12 +18,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // limit static generation to 1 retry and 1 concurrent worker, to avoid overloading the database with too many requests at once during development. In production, these limits can be increased or removed as needed.
-  experimental: {
-  staticGenerationRetryCount: 1,
-  staticGenerationMaxConcurrency: 1,
-  staticGenerationMinPagesPerWorker: 100,
-}
 };
 
 export default nextConfig;

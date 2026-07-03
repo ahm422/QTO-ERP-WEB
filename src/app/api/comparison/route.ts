@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { jsonError } from "@/lib/api-errors";
 import { listPublishedComparison } from "@/lib/content-db";
 
-export const runtime = "nodejs";
 
 export async function GET() {
   try {

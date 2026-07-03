@@ -10,7 +10,6 @@ import {
 import { prisma } from "@/lib/prisma";
 import { demoSchema } from "@/lib/validations/demo";
 
-export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   let body: unknown;

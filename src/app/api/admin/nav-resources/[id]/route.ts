@@ -5,7 +5,6 @@ import { getPrisma } from "@/lib/prisma";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateNavResourceSchema } from "@/lib/validations/admin-nav-resources";
 
-export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

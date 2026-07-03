@@ -10,7 +10,6 @@ import {
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 
-export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim();

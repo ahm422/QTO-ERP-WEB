@@ -8,7 +8,6 @@ import { getPrisma } from "@/lib/prisma";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateComparisonSchema } from "@/lib/validations/admin-comparison";
 
-export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

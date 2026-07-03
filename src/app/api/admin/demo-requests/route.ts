@@ -4,7 +4,6 @@ import { jsonError } from "@/lib/api-errors";
 import { getPrisma } from "@/lib/prisma";
 import { requireAdminApi } from "@/lib/require-admin-api";
 
-export const runtime = "nodejs";
 
 const validStatuses = new Set<string>(Object.values(LeadStatus));
 

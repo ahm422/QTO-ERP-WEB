@@ -3,7 +3,6 @@ import { jsonError } from "@/lib/api-errors";
 import { listAllDemoVideos } from "@/lib/demo-videos-db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 
-export const runtime = "nodejs";
 
 export async function GET() {
   const admin = await requireAdminApi();

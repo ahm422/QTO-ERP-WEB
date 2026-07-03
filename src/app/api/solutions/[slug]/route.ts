@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { jsonError } from "@/lib/api-errors";
 import { getPublishedSolutionBySlug } from "@/lib/content-db";
 
-export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 

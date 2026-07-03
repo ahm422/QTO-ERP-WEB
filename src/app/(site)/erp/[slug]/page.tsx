@@ -5,7 +5,6 @@ import {
 } from "@/lib/content-db";
 import ErpPageClient from "./_components/ErpPageClient";
 
-export const runtime = "nodejs";
 export const dynamicParams = true;
 export const revalidate = 3600;
 

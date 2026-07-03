@@ -6,7 +6,6 @@ import { logEmailResults, sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import { subscribeSchema } from "@/lib/validations/subscribe";
 
-export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   let body: unknown;

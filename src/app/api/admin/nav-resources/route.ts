@@ -5,7 +5,6 @@ import { getPrisma } from "@/lib/prisma";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { createNavResourceSchema } from "@/lib/validations/admin-nav-resources";
 
-export const runtime = "nodejs";
 
 export async function GET() {
   const admin = await requireAdminApi();

@@ -6,7 +6,6 @@ import { getGarageClient, getGarageConfig } from "@/lib/garage";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { requireGarage } from "@/lib/require-garage";
 
-export const runtime = "nodejs";
 
 const MAX_BYTES = 500 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["video/mp4", "video/webm"]);

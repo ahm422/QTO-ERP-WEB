@@ -7,7 +7,6 @@ import {
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { createComparisonSchema } from "@/lib/validations/admin-comparison";
 
-export const runtime = "nodejs";
 
 export async function GET() {
   const admin = await requireAdminApi();

@@ -11,7 +11,6 @@ import { getPrisma } from "@/lib/prisma";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updateDemoVideoSchema } from "@/lib/validations/demo-video";
 
-export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

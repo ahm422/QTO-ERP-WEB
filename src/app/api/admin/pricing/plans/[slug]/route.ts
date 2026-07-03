@@ -5,7 +5,6 @@ import { getPrisma } from "@/lib/prisma";
 import { requireAdminApi } from "@/lib/require-admin-api";
 import { updatePricingPlanSchema } from "@/lib/validations/admin-pricing";
 
-export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 

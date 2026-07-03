@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getPrisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const runtime = "nodejs";
 
 const sections = [
   { href: "/admin/demo-requests", label: "Demo requests" },

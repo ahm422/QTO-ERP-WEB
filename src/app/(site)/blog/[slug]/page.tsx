@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getPublishedBlogPostBySlug } from "@/lib/content-db";
 
-export const runtime = "nodejs";
 export const dynamicParams = true;
 export const revalidate = 3600; // ISR: revalidate every hour
 

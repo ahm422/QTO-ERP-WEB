@@ -42,6 +42,7 @@ coverage/
 .vercel
 .wrangler/
 .open-next/
+.dev.vars
 
 # Misc
 *.log
