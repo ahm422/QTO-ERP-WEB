@@ -3,19 +3,14 @@
 	"account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID",
 	"name": "qto-erp-web",
 	"main": ".open-next/worker.js",
-	"compatibility_date": "2026-02-24",
-	"compatibility_flags": [
-		"nodejs_compat",
-		"global_fetch_strictly_public"
-	],
+	"compatibility_date": "2026-07-03",
+	"compatibility_flags": ["nodejs_compat"],
 	"assets": {
 		"directory": ".open-next/assets",
 		"binding": "ASSETS"
 	},
 	"services": [
 		{
-			// Self-reference service binding; service name must match the worker name
-			// see https://opennext.js.org/cloudflare/caching
 			"binding": "WORKER_SELF_REFERENCE",
 			"service": "qto-erp-web"
 		}
@@ -23,12 +18,10 @@
 	"images": {
 		"binding": "IMAGES"
 	},
-
-	// Default / production
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "qto-erp-production",
+			"database_name": "qto-erp-db-production",
 			"database_id": "YOUR_D1_DATABASE_ID"
 		}
 	],
@@ -45,26 +38,26 @@
 	"kv_namespaces": [
 		{
 			"binding": "NEXT_TAG_CACHE_KV",
-			"id": "YOUR_KV_NAMESPACE_ID"
+			"id": "YOUR_KV_NAMESPACE_ID",
+			"preview_id": "YOUR_KV_PREVIEW_ID"
 		}
 	],
-
 	"env": {
 		"staging": {
 			"name": "qto-erp-web-staging",
-			"images": {
-				"binding": "IMAGES"
-			},
 			"services": [
 				{
 					"binding": "WORKER_SELF_REFERENCE",
 					"service": "qto-erp-web-staging"
 				}
 			],
+			"images": {
+				"binding": "IMAGES"
+			},
 			"d1_databases": [
 				{
 					"binding": "DB",
-					"database_name": "qto-erp-staging",
+					"database_name": "qto-erp-db-staging",
 					"database_id": "YOUR_D1_DATABASE_ID"
 				}
 			],
@@ -81,7 +74,8 @@
 			"kv_namespaces": [
 				{
 					"binding": "NEXT_TAG_CACHE_KV",
-					"id": "YOUR_KV_PREVIEW_ID"
+					"id": "YOUR_KV_PREVIEW_ID",
+					"preview_id": "YOUR_KV_PREVIEW_ID"
 				}
 			]
 		}

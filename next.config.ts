@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   reactCompiler: true,
+  allowedDevOrigins: ["localhost"],
   // Use the generated client from node_modules (avoids a bundled client missing new models).
   serverExternalPackages: ["@prisma/client", "prisma"],
   images: {
