@@ -1,4 +1,4 @@
-import { csrfHeaders, getCsrfTokenFromDocument } from "@/lib/csrf-client";
+import { getAccessToken, setAccessToken } from "@/lib/access-token";
 
 export class AdminFetchError extends Error {
   status: number;
@@ -21,8 +21,6 @@ type AdminFetchOptions = Omit<RequestInit, "body" | "credentials"> & {
   _retry?: boolean;
 };
 
-const MUTATING_METHODS = new Set(["POST", "PATCH", "PUT", "DELETE"]);
-
 let refreshInFlight: Promise<boolean> | null = null;
 
 async function tryRefreshSession(): Promise<boolean> {
@@ -33,7 +31,14 @@ async function tryRefreshSession(): Promise<boolean> {
           method: "POST",
           credentials: "include",
         });
-        return response.ok;
+        if (!response.ok) {
+          return false;
+        }
+        const data = (await response.json()) as { accessToken?: string };
+        if (data.accessToken) {
+          setAccessToken(data.accessToken);
+        }
+        return true;
       } catch {
         return false;
       } finally {
@@ -50,13 +55,17 @@ function redirectToLogin(): void {
   }
 }
 
+function authHeaders(): Record<string, string> {
+  const token = getAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export async function adminFetch<T>(
   url: string,
   options: AdminFetchOptions = {},
 ): Promise<T> {
   const { json, headers, _retry, method = "GET", ...rest } = options;
   const normalizedMethod = method.toUpperCase();
-  const isMutating = MUTATING_METHODS.has(normalizedMethod);
 
   const response = await fetch(url, {
     ...rest,
@@ -64,7 +73,7 @@ export async function adminFetch<T>(
     credentials: "include",
     headers: {
       ...(json !== undefined ? { "Content-Type": "application/json" } : {}),
-      ...(isMutating ? csrfHeaders() : {}),
+      ...authHeaders(),
       ...headers,
     },
     body: json !== undefined ? JSON.stringify(json) : undefined,
@@ -106,9 +115,8 @@ export async function adminLogout(): Promise<void> {
   await fetch("/api/auth/logout", {
     method: "POST",
     credentials: "include",
-    headers: csrfHeaders(),
+    headers: authHeaders(),
   });
+  setAccessToken(null);
   redirectToLogin();
 }
-
-export { getCsrfTokenFromDocument };

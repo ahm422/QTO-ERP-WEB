@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import type { Role } from "@/db/enums";
 import { verifyUserCredentials } from "@/lib/auth-credentials";
+import { ACCESS_TOKEN_TTL_SECONDS } from "@/lib/jwt";
 import { createRefreshSession } from "@/lib/refresh-session";
-import { setAuthCookies } from "@/lib/session-cookies";
+import { setRefreshCookie } from "@/lib/session-cookies";
 
 function getClientMeta(request: Request) {
   return {
@@ -52,9 +53,11 @@ export async function POST(request: Request) {
   );
 
   const response = NextResponse.json({
+    accessToken: tokens.accessToken,
+    expiresIn: ACCESS_TOKEN_TTL_SECONDS,
     email: user.email,
     role: user.role,
   });
-  setAuthCookies(response, tokens, request);
+  setRefreshCookie(response, tokens.refreshToken, request);
   return response;
 }

@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { getAccessToken, setAccessToken } from "@/lib/access-token";
 
 type AuthUser = {
   email: string;
@@ -27,8 +28,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refetch = useCallback(async () => {
+    const token = getAccessToken();
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
     try {
-      const response = await fetch("/api/auth/me", { credentials: "include" });
+      const response = await fetch("/api/auth/me", {
+        credentials: "include",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!response.ok) {
         setUser(null);
         return;
@@ -43,10 +53,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     void (async () => {
       setLoading(true);
-      await refetch();
-      setLoading(false);
+      try {
+        const response = await fetch("/api/auth/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = (await response.json()) as AuthUser & {
+            accessToken: string;
+          };
+          setAccessToken(data.accessToken);
+          setUser({ email: data.email, role: data.role });
+        } else {
+          setAccessToken(null);
+          setUser(null);
+        }
+      } catch {
+        setAccessToken(null);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     })();
-  }, [refetch]);
+  }, []);
 
   const value = useMemo(
     () => ({ user, loading, refetch }),

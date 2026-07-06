@@ -10,7 +10,6 @@ import {
 } from "@/lib/jwt";
 import {
   COOKIE_REFRESH,
-  generateCsrfToken,
   readCookie,
   readCookieFromHeader,
 } from "@/lib/session-cookies";
@@ -27,7 +26,6 @@ export type RefreshResult =
       user: AuthUser;
       accessToken: string;
       refreshToken: string;
-      csrfToken: string;
     }
   | { ok: false; reason: "missing" | "invalid" | "reuse" };
 
@@ -91,7 +89,6 @@ export async function rotateRefreshSession(
   const now = new Date();
   const newRawRefresh = generateRefreshToken();
   const newHash = await hashRefreshToken(newRawRefresh);
-  const csrfToken = generateCsrfToken();
 
   await db
     .update(refreshTokens)
@@ -113,7 +110,6 @@ export async function rotateRefreshSession(
     user,
     accessToken,
     refreshToken: newRawRefresh,
-    csrfToken,
   };
 }
 
@@ -123,11 +119,9 @@ export async function createRefreshSession(
 ): Promise<{
   accessToken: string;
   refreshToken: string;
-  csrfToken: string;
 }> {
   const rawRefresh = generateRefreshToken();
   const tokenHash = await hashRefreshToken(rawRefresh);
-  const csrfToken = generateCsrfToken();
 
   await getDb().insert(refreshTokens).values({
     userId: user.id,
@@ -142,7 +136,6 @@ export async function createRefreshSession(
   return {
     accessToken,
     refreshToken: rawRefresh,
-    csrfToken,
   };
 }
 

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { ACCESS_TOKEN_TTL_SECONDS } from "@/lib/jwt";
 import {
   getRefreshTokenFromRequest,
   rotateRefreshSession,
 } from "@/lib/refresh-session";
-import { clearAuthCookies, setAuthCookies } from "@/lib/session-cookies";
+import { clearRefreshCookie, setRefreshCookie } from "@/lib/session-cookies";
 
 function getClientMeta(request: Request) {
   return {
@@ -25,22 +26,16 @@ export async function POST(request: Request) {
 
   if (!result.ok) {
     const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    clearAuthCookies(response, request);
+    clearRefreshCookie(response, request);
     return response;
   }
 
   const response = NextResponse.json({
+    accessToken: result.accessToken,
+    expiresIn: ACCESS_TOKEN_TTL_SECONDS,
     email: result.user.email,
     role: result.user.role,
   });
-  setAuthCookies(
-    response,
-    {
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
-      csrfToken: result.csrfToken,
-    },
-    request,
-  );
+  setRefreshCookie(response, result.refreshToken, request);
   return response;
 }
