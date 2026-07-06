@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { setAccessToken } from "@/lib/access-token";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 
 export default function AdminLoginPage() {
+  const { login } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,24 +18,12 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        setError("Invalid email or password.");
+      const result = await login(email, password);
+      if (!result.ok) {
+        setError(result.error);
         return;
       }
-
-      const data = (await response.json()) as { accessToken?: string };
-      if (data.accessToken) {
-        setAccessToken(data.accessToken);
-      }
-
-      window.location.href = "/admin";
+      router.replace("/admin");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
