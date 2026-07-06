@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { setAccessToken } from "@/lib/access-token";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -24,6 +25,11 @@ export default function AdminLoginPage() {
       if (!response.ok) {
         setError("Invalid email or password.");
         return;
+      }
+
+      const data = (await response.json()) as { accessToken?: string };
+      if (data.accessToken) {
+        setAccessToken(data.accessToken);
       }
 
       window.location.href = "/admin";
