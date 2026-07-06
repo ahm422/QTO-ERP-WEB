@@ -66,6 +66,8 @@
 	"env": {
 		"staging": {
 			"name": "qto-erp-web-staging",
+			"workers_dev": true,
+			"routes": [],
 			"triggers": {
 				"crons": ["0 3 * * *"]
 			},
