@@ -14,7 +14,7 @@ import { updateComparisonSchema } from "@/lib/validations/admin-comparison";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi();
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;
@@ -60,8 +60,8 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 }
 
-export async function DELETE(_request: Request, context: RouteContext) {
-  const admin = await requireAdminApi();
+export async function DELETE(request: Request, context: RouteContext) {
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;

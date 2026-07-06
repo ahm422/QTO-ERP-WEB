@@ -12,7 +12,7 @@ import { demoRequestReplySchema } from "@/lib/validations/admin-demo-request";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi();
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;

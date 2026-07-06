@@ -11,7 +11,7 @@ import { requireAdminApi } from "@/lib/require-admin-api";
 const validStatuses = new Set<string>(leadStatuses);
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi();
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const { searchParams } = new URL(request.url);

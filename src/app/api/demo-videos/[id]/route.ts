@@ -17,7 +17,7 @@ import { updateDemoVideoSchema } from "@/lib/validations/demo-video";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi();
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;

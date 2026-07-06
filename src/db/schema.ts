@@ -40,6 +40,30 @@ export const users = sqliteTable(
   (t) => [index("users_email_idx").on(t.email)],
 );
 
+export const refreshTokens = sqliteTable(
+  "refresh_tokens",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+    revokedAt: integer("revoked_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    userAgent: text("user_agent"),
+    ip: text("ip"),
+  },
+  (t) => [
+    index("refresh_tokens_user_id_idx").on(t.userId),
+    index("refresh_tokens_token_hash_idx").on(t.tokenHash),
+  ],
+);
+
 export const blogPosts = sqliteTable(
   "blog_posts",
   {

@@ -4,8 +4,8 @@ import { listAllPricingPlansAdmin } from "@/lib/content-db";
 import { requireAdminApi } from "@/lib/require-admin-api";
 
 
-export async function GET() {
-  const admin = await requireAdminApi();
+export async function GET(request: Request) {
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   try {

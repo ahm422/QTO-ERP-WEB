@@ -1,7 +1,7 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { adminLogout } from "@/lib/admin-fetch";
 
 type AdminHeaderProps = {
   email: string;
@@ -18,7 +18,7 @@ export function AdminHeader({ email }: AdminHeaderProps) {
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => signOut({ callbackUrl: "/admin/login" })}
+        onClick={() => void adminLogout()}
       >
         Sign out
       </Button>
