@@ -1,5 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
-import type { Role } from "@/db/enums";
+import { roles, type Role } from "@/db/enums";
 
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 const REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
@@ -41,7 +41,11 @@ export async function verifyAccessToken(
     const { payload } = await jwtVerify(token, getAccessSecret());
     const sub = payload.sub;
     const role = payload.role;
-    if (typeof sub !== "string" || typeof role !== "string") {
+    if (
+      typeof sub !== "string" ||
+      typeof role !== "string" ||
+      !roles.includes(role as Role)
+    ) {
       return null;
     }
     return { sub, role: role as Role };

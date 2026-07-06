@@ -21,6 +21,7 @@
     "resend:domains": "tsx --env-file=.env scripts/resend-domains.ts",
     "stripe:check": "tsx --env-file=.env scripts/stripe-check.ts",
     "stripe:webhook-test": "tsx --env-file=.env scripts/stripe-webhook-test.ts",
+    "verify:jwt": "tsx --env-file=.env scripts/verify-jwt.ts",
     "cf:types": "wrangler types --env-interface CloudflareEnv",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:wrangler": "OPEN_NEXT_DEPLOY=true CLOUDFLARE_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID WRANGLER_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID wrangler deploy",
