@@ -14,7 +14,7 @@ import {
 
 
 export async function POST(request: Request) {
-  const admin = await requireAdminApi();
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const mediaResult = requireMediaBucket();

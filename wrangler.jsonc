@@ -2,9 +2,12 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID",
 	"name": "qto-erp-web",
-	"main": ".open-next/worker.js",
+	"main": "cf-worker.ts",
 	"compatibility_date": "2026-07-03",
 	"compatibility_flags": ["nodejs_compat"],
+	"triggers": {
+		"crons": ["0 3 * * *"]
+	},
 	"routes": [
 		{ "pattern": "qto-erp.com/*", "zone_name": "qto-erp.com" },
 		{ "pattern": "www.qto-erp.com/*", "zone_name": "qto-erp.com" }
@@ -63,6 +66,9 @@
 	"env": {
 		"staging": {
 			"name": "qto-erp-web-staging",
+			"triggers": {
+				"crons": ["0 3 * * *"]
+			},
 			"services": [
 				{
 					"binding": "WORKER_SELF_REFERENCE",

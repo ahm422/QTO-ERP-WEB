@@ -6,8 +6,8 @@ import { resendErrorResponse } from "@/lib/resend-api-error";
 import { createDomainSchema } from "@/lib/validations/domain";
 
 
-export async function GET() {
-  const admin = await requireAdminApi();
+export async function GET(request: Request) {
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const resendResult = requireResend();
@@ -22,7 +22,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const admin = await requireAdminApi();
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const resendResult = requireResend();

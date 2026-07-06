@@ -8,8 +8,8 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function POST(_request: Request, context: RouteContext) {
-  const admin = await requireAdminApi();
+export async function POST(request: Request, context: RouteContext) {
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   const resendResult = requireResend();

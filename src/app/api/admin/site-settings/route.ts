@@ -6,8 +6,8 @@ import { getSiteSettings, setSiteSetting } from "@/lib/site-settings";
 import { updateSiteSettingsSchema } from "@/lib/validations/admin-site-settings";
 
 
-export async function GET() {
-  const admin = await requireAdminApi();
+export async function GET(request: Request) {
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   try {
@@ -20,7 +20,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const admin = await requireAdminApi();
+  const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
   let body: unknown;

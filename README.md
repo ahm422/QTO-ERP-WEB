@@ -20,7 +20,7 @@ Next.js marketing site and admin panel deployed on **Cloudflare Workers** (OpenN
 ```bash
 npm install
 cp .env.example .env
-# Edit .env: AUTH_SECRET, AUTH_URL, ADMIN_*, RESEND_*, STRIPE_*
+# Edit .env: JWT_ACCESS_SECRET, JWT_REFRESH_PEPPER, AUTH_URL, ADMIN_*, RESEND_*, STRIPE_*
 
 # For wrangler dev (dev:workers / preview) — create .dev.vars (gitignored) with the same
 # secrets plus NEXTJS_ENV=development. Use AUTH_URL=http://localhost:8787 for dev:workers.
