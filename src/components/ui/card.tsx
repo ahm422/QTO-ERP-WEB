@@ -8,13 +8,13 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md",
-        outlined: "bg-transparent border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600",
-        filled: "bg-slate-50 dark:bg-slate-800/50 border-0 shadow-inner",
-        gradient: "bg-gradient-to-br from-orange-500 to-amber-600 border-0 text-white shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40",
-        glass: "bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl",
-        elevated: "bg-white dark:bg-slate-900 border-0 shadow-lg hover:shadow-xl hover:-translate-y-1",
-        interactive: "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-orange-400 dark:hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/10 group",
+        default: "bg-card border border-border shadow-sm hover:shadow-md",
+        outlined: "bg-transparent border-2 border-border hover:border-border/80",
+        filled: "bg-muted border-0 shadow-inner",
+        gradient: "bg-gradient-to-br from-accent to-accent-dark border-0 text-accent-foreground shadow-lg shadow-accent/25 hover:shadow-accent/40",
+        glass: "bg-card/10 backdrop-blur-xl border border-border/20 shadow-xl",
+        elevated: "bg-card border-0 shadow-lg hover:shadow-xl hover:-translate-y-1",
+        interactive: "bg-card border border-border cursor-pointer hover:border-accent hover:shadow-lg hover:shadow-accent/10 group",
       },
       radius: {
         none: "rounded-none",
@@ -81,7 +81,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
         ref={ref}
         className={cn(
           "font-semibold leading-tight tracking-tight text-lg",
-          gradient && "bg-linear-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent",
+          gradient && "bg-linear-to-r from-accent to-accent-dark bg-clip-text text-transparent",
           className
         )}
         {...props}
@@ -97,7 +97,7 @@ const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttribu
     return (
       <p
         ref={ref}
-        className={cn("text-sm text-slate-500 dark:text-slate-400 leading-relaxed", className)}
+        className={cn("text-sm text-muted-foreground leading-relaxed", className)}
         {...props}
       />
     )
@@ -177,11 +177,11 @@ CardImage.displayName = "CardImage"
 const CardBadge = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement> & { color?: "default" | "success" | "warning" | "error" | "info" }>(
   ({ className, color = "default", ...props }, ref) => {
     const colorClasses = {
-      default: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-      success: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-      warning: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-      error: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-      info: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+      default: "bg-muted text-muted-foreground",
+      success: "bg-success/10 text-success",
+      warning: "bg-warning/10 text-warning",
+      error: "bg-destructive/10 text-destructive",
+      info: "bg-info/10 text-info",
     }
 
     return (
@@ -209,9 +209,9 @@ const CardIcon = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     }
 
     const colorClasses = {
-      default: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-      gradient: "bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30",
-      orange: "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
+      default: "bg-muted text-muted-foreground",
+      gradient: "bg-gradient-to-br from-accent to-accent-dark text-accent-foreground shadow-lg shadow-accent/30",
+      orange: "bg-accent/10 text-accent",
     }
 
     return (

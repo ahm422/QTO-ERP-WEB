@@ -133,6 +133,6 @@ export function resolveBreadcrumbs(pathname: string): BreadcrumbSegment[] {
   const lastSegment = segments.at(-1);
   return [
     { label: "QTO ERP", href: "/admin" },
-    { label: humanizeSegment(lastSegment) || "Admin" },
+    { label: lastSegment ? humanizeSegment(lastSegment) : "Admin" },
   ];
 }
