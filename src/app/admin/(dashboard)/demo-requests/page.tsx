@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { EmptyState } from "@/components/admin/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,6 +54,7 @@ const statusVariant: Record<
   READ: "secondary",
   ARCHIVED: "outline",
 };
+// Phase 5: replace with demoRequestStatusVariant from @/lib/status-variants
 
 export default function DemoRequestsPage() {
   const [requests, setRequests] = useState<DemoRequest[]>([]);
@@ -176,8 +178,8 @@ export default function DemoRequestsPage() {
             <TableBody>
               {requests.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground">
-                    No demo requests found.
+                  <TableCell colSpan={7} className="p-0">
+                    <EmptyState title="No demo requests found." />
                   </TableCell>
                 </TableRow>
               ) : (

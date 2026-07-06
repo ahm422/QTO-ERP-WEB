@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { EmptyState } from "@/components/admin/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -101,8 +102,8 @@ export default function BlogAdminPage() {
             <TableBody>
               {posts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground">
-                    No posts yet.
+                  <TableCell colSpan={6} className="p-0">
+                    <EmptyState title="No posts yet." />
                   </TableCell>
                 </TableRow>
               ) : (
