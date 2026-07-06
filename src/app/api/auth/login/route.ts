@@ -2,18 +2,9 @@ import { NextResponse } from "next/server";
 import type { Role } from "@/db/enums";
 import { verifyUserCredentials } from "@/lib/auth-credentials";
 import { ACCESS_TOKEN_TTL_SECONDS } from "@/lib/jwt";
+import { getClientMeta } from "@/lib/auth-request-meta";
 import { createRefreshSession } from "@/lib/refresh-session";
 import { setRefreshCookie } from "@/lib/session-cookies";
-
-function getClientMeta(request: Request) {
-  return {
-    userAgent: request.headers.get("user-agent"),
-    ip:
-      request.headers.get("cf-connecting-ip") ??
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-      null,
-  };
-}
 
 export async function POST(request: Request) {
   let body: unknown;

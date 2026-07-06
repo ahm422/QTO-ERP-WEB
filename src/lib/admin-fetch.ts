@@ -1,4 +1,7 @@
-import { getAccessToken, setAccessToken } from "@/lib/access-token";
+import {
+  getAccessToken,
+  refreshAccessToken,
+} from "@/lib/auth-refresh-client";
 
 export class AdminFetchError extends Error {
   status: number;
@@ -20,34 +23,6 @@ type AdminFetchOptions = Omit<RequestInit, "body" | "credentials"> & {
   json?: unknown;
   _retry?: boolean;
 };
-
-let refreshInFlight: Promise<boolean> | null = null;
-
-async function tryRefreshSession(): Promise<boolean> {
-  if (!refreshInFlight) {
-    refreshInFlight = (async () => {
-      try {
-        const response = await fetch("/api/auth/refresh", {
-          method: "POST",
-          credentials: "include",
-        });
-        if (!response.ok) {
-          return false;
-        }
-        const data = (await response.json()) as { accessToken?: string };
-        if (data.accessToken) {
-          setAccessToken(data.accessToken);
-        }
-        return true;
-      } catch {
-        return false;
-      } finally {
-        refreshInFlight = null;
-      }
-    })();
-  }
-  return refreshInFlight;
-}
 
 function redirectToLogin(): void {
   if (typeof window !== "undefined") {
@@ -80,7 +55,7 @@ export async function adminFetch<T>(
   });
 
   if (response.status === 401 && !_retry) {
-    const refreshed = await tryRefreshSession();
+    const refreshed = (await refreshAccessToken()) !== null;
     if (refreshed) {
       return adminFetch<T>(url, { ...options, _retry: true });
     }
@@ -109,14 +84,4 @@ export async function adminFetch<T>(
   }
 
   return data as T;
-}
-
-export async function adminLogout(): Promise<void> {
-  await fetch("/api/auth/logout", {
-    method: "POST",
-    credentials: "include",
-    headers: authHeaders(),
-  });
-  setAccessToken(null);
-  redirectToLogin();
 }
