@@ -25,6 +25,15 @@
 	"images": {
 		"binding": "IMAGES"
 	},
+	"vars": {
+		"AUTH_URL": "https://qtoerp.com",
+		"EMAIL_FROM": "QTO ERP <noreply@qtoerp.com>",
+		"ADMIN_NOTIFICATION_EMAIL": "you@example.com",
+		"STRIPE_PRICE_STARTER_MONTHLY": "price_1TdaTH9eEHYHd6KjFyT5uAd8",
+		"STRIPE_PRICE_STARTER_YEARLY": "price_1TdaTe9eEHYHd6KjTXWdPuAo",
+		"STRIPE_PRICE_GROWTH_MONTHLY": "price_1TdaTx9eEHYHd6KjGMBPjZto",
+		"STRIPE_PRICE_GROWTH_YEARLY": "price_1TdaUK9eEHYHd6KjkcYxPpC9"
+	},
 	"d1_databases": [
 		{
 			"binding": "DB",
@@ -70,6 +79,15 @@
 			"routes": [],
 			"triggers": {
 				"crons": ["0 3 * * *"]
+			},
+			"vars": {
+				"AUTH_URL": "https://qto-erp-web-staging.your-subdomain.workers.dev",
+				"EMAIL_FROM": "QTO ERP <onboarding@resend.dev>",
+				"ADMIN_NOTIFICATION_EMAIL": "you@example.com",
+				"STRIPE_PRICE_STARTER_MONTHLY": "price_1TdaTH9eEHYHd6KjFyT5uAd8",
+				"STRIPE_PRICE_STARTER_YEARLY": "price_1TdaTe9eEHYHd6KjTXWdPuAo",
+				"STRIPE_PRICE_GROWTH_MONTHLY": "price_1TdaTx9eEHYHd6KjGMBPjZto",
+				"STRIPE_PRICE_GROWTH_YEARLY": "price_1TdaUK9eEHYHd6KjkcYxPpC9"
 			},
 			"services": [
 				{
