@@ -9,8 +9,8 @@
 		"crons": ["0 3 * * *"]
 	},
 	"routes": [
-		{ "pattern": "qto-erp.com/*", "zone_name": "qto-erp.com" },
-		{ "pattern": "www.qto-erp.com/*", "zone_name": "qto-erp.com" }
+		{ "pattern": "qtoerp.com/*", "zone_name": "qtoerp.com" },
+		{ "pattern": "www.qtoerp.com/*", "zone_name": "qtoerp.com" }
 	],
 	"assets": {
 		"directory": ".open-next/assets",
