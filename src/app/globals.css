@@ -277,18 +277,3 @@
     background-clip: text;
   }
 }
-
-
-/* AnimatedButton css */
-@keyframes border-sweep {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.animate-border-sweep {
-  animation: border-sweep 1.5s linear infinite;
-}
