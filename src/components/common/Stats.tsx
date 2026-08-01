@@ -7,9 +7,14 @@ import {
   isValidElement,
   type ReactNode,
 } from "react";
-import { useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  getStaggerContainer,
+  getStaggerItem,
+  viewportOnce,
+} from "@/lib/motion";
 
 export type StatItem = {
   value: number;
@@ -31,15 +36,17 @@ function AnimatedNumber({
   target,
   suffix,
   inView,
+  reduced,
 }: {
   target: number;
   suffix?: string;
   inView: boolean;
+  reduced: boolean | null;
 }) {
   const [display, setDisplay] = useState(() => formatAnimatedValue(0, target));
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || reduced) return;
 
     let frame = 0;
     const duration = 2000;
@@ -47,7 +54,6 @@ function AnimatedNumber({
 
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
-      // expo-ish ease-out
       const eased = 1 - Math.pow(1 - t, 3);
       setDisplay(formatAnimatedValue(target * eased, target));
       if (t < 1) frame = requestAnimationFrame(tick);
@@ -55,11 +61,15 @@ function AnimatedNumber({
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [inView, target]);
+  }, [inView, target, reduced]);
+
+  const shown = reduced
+    ? formatAnimatedValue(target, target)
+    : display;
 
   return (
     <span className="tabular-nums">
-      {display}
+      {shown}
       {suffix}
     </span>
   );
@@ -78,12 +88,14 @@ function renderIcon(icon: StatItem["icon"]) {
 export type StatTileProps = {
   stat: StatItem;
   inView?: boolean;
+  reduced?: boolean | null;
   className?: string;
 };
 
 export function StatTile({
   stat,
   inView = true,
+  reduced = false,
   className,
 }: StatTileProps) {
   const iconNode = renderIcon(stat.icon);
@@ -101,6 +113,7 @@ export function StatTile({
           target={stat.value}
           suffix={stat.suffix}
           inView={inView}
+          reduced={reduced}
         />
       </div>
 
@@ -119,19 +132,28 @@ export type StatsStripProps = {
 export function StatsStrip({ stats, className }: StatsStripProps) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const reduced = useReducedMotion();
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
 
   return (
-    <div
+    <motion.div
       ref={ref}
+      variants={container}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewportOnce}
       className={cn(
         "mx-auto mt-16 grid max-w-5xl grid-cols-2 gap-8 px-6 md:grid-cols-4 md:gap-6",
         className
       )}
     >
       {stats.map((stat) => (
-        <StatTile key={stat.label} stat={stat} inView={inView} />
+        <motion.div key={stat.label} variants={item}>
+          <StatTile stat={stat} inView={inView} reduced={reduced} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
 

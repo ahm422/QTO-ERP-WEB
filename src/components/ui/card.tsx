@@ -8,15 +8,16 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
+        // Lift is driven by Framer cardHover on consumers — CSS only handles border/shadow
         default:
-          "bg-card border border-border shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] hover:-translate-y-0.5",
+          "bg-card border border-border shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)]",
         outlined: "bg-transparent border-2 border-border hover:border-border/80",
         filled: "bg-muted border-0 shadow-inner",
         gradient: "bg-gradient-to-br from-accent to-accent-dark border-0 text-accent-foreground shadow-lg shadow-accent/25 hover:shadow-accent/40",
         glass: "bg-card/10 backdrop-blur-xl border border-border/20 shadow-xl",
-        elevated: "bg-card border-0 shadow-lg hover:shadow-xl hover:-translate-y-1",
+        elevated: "bg-card border-0 shadow-lg hover:shadow-xl",
         interactive:
-          "bg-card border border-border cursor-pointer shadow-[var(--card-shadow)] hover:border-accent hover:shadow-[var(--card-shadow-hover)] hover:-translate-y-0.5 group",
+          "bg-card border border-border cursor-pointer shadow-[var(--card-shadow)] hover:border-accent hover:shadow-[var(--card-shadow-hover)] group",
       },
       radius: {
         none: "rounded-none",

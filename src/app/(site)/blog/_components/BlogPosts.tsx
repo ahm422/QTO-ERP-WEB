@@ -1,25 +1,37 @@
 'use client';
-import { motion } from 'framer-motion';
+
+import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import type { BlogPostSummary } from '@/types/content';
+import {
+  getCardHover,
+  getStaggerContainer,
+  getStaggerItem,
+  viewportOnce,
+} from '@/lib/motion';
 
 interface BlogPostsProps {
   posts: BlogPostSummary[];
 }
 
 export default function BlogPosts({ posts }: BlogPostsProps) {
+  const reduced = useReducedMotion();
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
+  const hover = getCardHover(reduced);
+
   return (
     <section className='section-padding'>
       <div className='container-main max-w-3xl'>
-        <div className='space-y-6'>
-          {posts.map((post, i) => (
-            <motion.div
-              key={post.slug}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: i * 0.05 }}
-            >
+        <motion.div
+          className='space-y-6'
+          variants={container}
+          initial='hidden'
+          whileInView='visible'
+          viewport={viewportOnce}
+        >
+          {posts.map((post) => (
+            <motion.div key={post.slug} variants={item} whileHover={hover}>
               <Link
                 href={`/blog/${post.slug}`}
                 className='block rounded-2xl border border-border bg-card p-6 card-elevated hover:border-accent/40 transition-colors'
@@ -40,7 +52,7 @@ export default function BlogPosts({ posts }: BlogPostsProps) {
               </Link>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

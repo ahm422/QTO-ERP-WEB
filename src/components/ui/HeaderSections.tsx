@@ -1,6 +1,11 @@
 'use client';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from './card';
+
+import { motion, useReducedMotion } from 'framer-motion';
+import {
+  getStaggerContainer,
+  getStaggerItem,
+  viewportOnce,
+} from '@/lib/motion';
 
 interface HeaderSectionsProps {
   tag?: string;
@@ -15,50 +20,43 @@ export function HeaderSections({
   description,
   centered = true,
 }: HeaderSectionsProps) {
+  const reduced = useReducedMotion();
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.5 }}
+      variants={container}
+      initial='hidden'
+      whileInView='visible'
+      viewport={viewportOnce}
       className={`mb-12 ${centered ? 'text-center' : ''}`}
     >
       {tag && (
-        <>
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className='inline-block text-md  uppercase tracking-widest text-accent mb-3 font-bold'
-          >
-            {tag}
-          </motion.p>
-        </>
+        <motion.p
+          variants={item}
+          className='inline-block text-md uppercase tracking-widest text-accent mb-3 font-bold'
+        >
+          {tag}
+        </motion.p>
       )}
       <motion.h2
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        variants={item}
         className='text-3xl md:text-4xl font-bold text-foreground mb-4'
       >
         {title}
       </motion.h2>
       {description && (
-        <p className='text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed'>
+        <motion.p
+          variants={item}
+          className='text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed'
+        >
           {description}
-        </p>
+        </motion.p>
       )}
       <motion.div
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-        style={{
-          width: 60,
-          height: 3,
-          background: 'linear-gradient(90deg, #f2b60f, #d89f03)',
-          margin: '16px auto 0',
-          borderRadius: 2,
-        }}
+        variants={item}
+        className='mx-auto mt-4 h-[3px] w-[60px] rounded-sm bg-gradient-to-r from-accent to-accent-dark'
       />
     </motion.div>
   );
