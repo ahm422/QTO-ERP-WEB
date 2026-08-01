@@ -39,7 +39,7 @@ export default function RecommendedModulesSection({
   if (modules.length === 0) return null;
 
   return (
-    <section className='section-padding bg-slate-50 dark:bg-slate-950'>
+    <section className='section-padding bg-muted/30'>
       <div className='container-main'>
         <HeaderSections
           tag='Recommended'

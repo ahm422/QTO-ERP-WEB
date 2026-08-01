@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Check,
   AlertCircle,
@@ -16,7 +16,8 @@ import {
   Target,
   type LucideIcon,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { MarketingButton } from '@/components/ui/marketing-button';
+import { getFadeInUp, viewportOnce } from '@/lib/motion';
 
 interface FormData {
   name: string;
@@ -58,6 +59,9 @@ const countries = [
 ];
 
 const DemoForm = () => {
+  const reduced = useReducedMotion();
+  const fadeUp = getFadeInUp(reduced);
+
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -182,24 +186,22 @@ const DemoForm = () => {
   };
 
   return (
-    <section className='relative section-padding overflow-hidden'>
-      {/* Background Elements */}
-      <div className='absolute inset-0 bg-linear-to-br from-background via-background to-accent/10 pointer-events-none' />
-      <div className='absolute top-0 right-0 w-96 h-96 bg-accent/20 rounded-full blur-3xl opacity-30 pointer-events-none' />
-      <div className='absolute bottom-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-20 pointer-events-none' />
+    <section className='relative section-padding overflow-hidden bg-background'>
+      <div className='pointer-events-none absolute top-0 right-0 size-96 rounded-full bg-accent/10 opacity-30 blur-3xl' />
+      <div className='pointer-events-none absolute bottom-0 left-0 size-96 rounded-full bg-muted opacity-40 blur-3xl' />
 
-      <div className='container-main max-w-7xl relative z-10 px-6'>
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
+      <div className='container-main relative z-10 max-w-7xl px-6'>
+        <div className='grid grid-cols-1 items-start gap-8 lg:grid-cols-3'>
           {/* Left Column - Info */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.6 }}
-            className='lg:col-span-1 space-y-8'
+            variants={fadeUp}
+            initial='hidden'
+            whileInView='visible'
+            viewport={viewportOnce}
+            className='space-y-8 lg:col-span-1'
           >
             <div>
-              <h2 className='text-3xl md:text-4xl font-bold text-foreground mb-3 leading-tight'>
+              <h2 className='mb-3 font-display text-3xl font-bold leading-tight text-foreground md:text-4xl'>
                 See ERPSuite in Action
               </h2>
               <p className='text-lg text-muted-foreground leading-relaxed'>
@@ -228,42 +230,29 @@ const DemoForm = () => {
                     desc: 'For your industry',
                   },
                 ] satisfies { icon: LucideIcon; title: string; desc: string }[]
-              ).map((item, i) => {
+              ).map((item) => {
                 const Icon = item.icon;
                 return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
-                  className='flex gap-3 items-start'
-                >
-                  <div className='w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0'>
-                    <Icon className='w-4 h-4 text-accent' />
+                <div key={item.title} className='flex items-start gap-3'>
+                  <div className='flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent/10'>
+                    <Icon className='size-4 text-accent' />
                   </div>
                   <div>
-                    <p className='font-semibold text-foreground text-sm'>
+                    <p className='text-sm font-semibold text-foreground'>
                       {item.title}
                     </p>
                     <p className='text-xs text-muted-foreground'>{item.desc}</p>
                   </div>
-                </motion.div>
+                </div>
               );
               })}
             </div>
 
             {/* Testimonial Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className='p-4 rounded-xl bg-accent/10 border border-accent/20'
-            >
-              <p className='text-sm text-foreground italic mb-3'>
-                "This demo helped us understand exactly how to streamline our HR
-                workflows. Game changer!"
+            <div className='rounded-xl border border-border bg-muted/50 p-4'>
+              <p className='mb-3 text-sm italic text-foreground'>
+                &quot;This demo helped us understand exactly how to streamline our
+                HR workflows. Game changer!&quot;
               </p>
               <p className='text-xs font-semibold text-foreground'>
                 Sarah Chen
@@ -271,30 +260,24 @@ const DemoForm = () => {
               <p className='text-xs text-muted-foreground'>
                 Operations Manager, TechFlow Inc
               </p>
-            </motion.div>
+            </div>
           </motion.div>
 
           {/* Right Column - Form */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            variants={fadeUp}
+            initial='hidden'
+            whileInView='visible'
+            viewport={viewportOnce}
             className='lg:col-span-2'
           >
-            <motion.form
+            <form
               onSubmit={handleSubmit}
-              className='group rounded-2xl border border-border/50 bg-linear-to-br from-card to-card/80 backdrop-blur-sm p-8 shadow-md hover:shadow-3xl transition-shadow duration-300 relative overflow-hidden'
+              className='relative space-y-6 overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-[var(--card-shadow)]'
             >
-              {/* linear Border Effect */}
-              <div className='absolute inset-0 rounded-2xl bg-linear-to-br from-accent/20 to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none' />
               <div className='relative z-10 space-y-6'>
                 {/* Name Field */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.1 }}
+                <div
                   className='flex flex-col'
                 >
                   <label
@@ -325,14 +308,10 @@ const DemoForm = () => {
                       <AlertCircle className='h-3 w-3' /> {errors.name}
                     </p>
                   )}
-                </motion.div>
+                </div>
 
                 {/* Email Field */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.15 }}
+                <div
                   className='flex flex-col'
                 >
                   <label
@@ -363,14 +342,10 @@ const DemoForm = () => {
                       <AlertCircle className='h-3 w-3' /> {errors.email}
                     </p>
                   )}
-                </motion.div>
+                </div>
 
                 {/* Phone Field */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
+                <div
                   className='flex flex-col'
                 >
                   <label
@@ -401,14 +376,10 @@ const DemoForm = () => {
                       <AlertCircle className='h-3 w-3' /> {errors.phone}
                     </p>
                   )}
-                </motion.div>
+                </div>
 
                 {/* Country Field */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.25 }}
+                <div
                   className='flex flex-col'
                 >
                   <label
@@ -444,14 +415,10 @@ const DemoForm = () => {
                       <AlertCircle className='h-3 w-3' /> {errors.country}
                     </p>
                   )}
-                </motion.div>
+                </div>
 
                 {/* Company Field */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.3 }}
+                <div
                   className='flex flex-col'
                 >
                   <label
@@ -482,14 +449,10 @@ const DemoForm = () => {
                       <AlertCircle className='h-3 w-3' /> {errors.company}
                     </p>
                   )}
-                </motion.div>
+                </div>
 
                 {/* Business Type Field */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.35 }}
+                <div
                   className='flex flex-col'
                 >
                   <label
@@ -525,69 +488,61 @@ const DemoForm = () => {
                       <AlertCircle className='h-3 w-3' /> {errors.businessType}
                     </p>
                   )}
-                </motion.div>
+                </div>
 
                 {/* Submit Button */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.4 }}
+                <div
                   className='flex gap-3 pt-4'
                 >
-                  <Button
+                  <MarketingButton
                     type='submit'
                     disabled={isLoading || status === 'success'}
-                    variant='default'
+                    variant='primary'
                     size='lg'
-                    className='flex-1 font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-accent/30'
+                    className='flex-1'
+                    iconSlide={!isLoading && status !== 'success'}
                   >
                     {isLoading ? (
-                      <div className='flex items-center gap-2'>
-                        <div className='h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin' />
+                      <>
+                        <div className='size-4 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground' />
                         Submitting...
-                      </div>
+                      </>
                     ) : status === 'success' ? (
-                      <div className='flex items-center gap-2'>
-                        <Check className='h-4 w-4' />
+                      <>
+                        <Check className='size-4' />
                         Request Submitted!
-                      </div>
+                      </>
                     ) : (
                       'Request Demo'
                     )}
-                  </Button>
-                </motion.div>
+                  </MarketingButton>
+                </div>
 
                 {/* Status Messages */}
                 {status === 'error' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                  <div
                     className='p-4 rounded-xl bg-destructive/10 border border-destructive/30 flex items-start gap-3'
                   >
                     <AlertCircle className='h-5 w-5 text-destructive shrink-0 mt-0.5' />
                     <p className='text-sm text-destructive'>{statusMessage}</p>
-                  </motion.div>
+                  </div>
                 )}
 
                 {status === 'success' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className='p-4 rounded-xl bg-green-50 border border-green-200 flex items-start gap-3'
+                  <div
+                    className='flex items-start gap-3 rounded-xl border border-success/30 bg-success/10 p-4'
                   >
-                    <Check className='h-5 w-5 text-green-600 shrink-0 mt-0.5' />
-                    <p className='text-sm text-green-700'>{statusMessage}</p>
-                  </motion.div>
+                    <Check className='mt-0.5 size-5 shrink-0 text-success' />
+                    <p className='text-sm text-success'>{statusMessage}</p>
+                  </div>
                 )}
 
-                <p className='text-xs text-muted-foreground text-center'>
-                  We respect your privacy. We'll never share your information.
+                <p className='text-center text-xs text-muted-foreground'>
+                  We respect your privacy. We&apos;ll never share your
+                  information.
                 </p>
               </div>
-            </motion.form>
+            </form>
           </motion.div>
         </div>
       </div>

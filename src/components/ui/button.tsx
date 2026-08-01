@@ -19,8 +19,8 @@ const buttonVariants = cva(
       variant: {
         default: [
           "bg-accent text-accent-foreground font-semibold rounded-md",
-          "shadow-[0_2px_12px_hsl(44_90%_50%/0.25)]",
-          "hover:shadow-[0_4px_20px_hsl(44_90%_50%/0.5)] hover:brightness-105",
+          "shadow-[0_2px_12px_color-mix(in_oklab,var(--accent)_25%,transparent)]",
+          "hover:shadow-[0_4px_20px_color-mix(in_oklab,var(--accent)_50%,transparent)] hover:brightness-105",
           "active:scale-[0.97]",
           "before:absolute before:inset-0",
           "before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent",
@@ -49,7 +49,7 @@ const buttonVariants = cva(
         outline: [
           "border border-border bg-background text-foreground",
           "shadow-xs dark:bg-input/30 dark:border-input",
-          "hover:text-accent-foreground hover:border-accent",
+          "hover:text-accent hover:border-accent",
           "active:scale-[0.97]",
           "before:absolute before:inset-x-0 before:bottom-0 before:h-0",
           "before:bg-accent/15 dark:before:bg-accent/20",
@@ -59,10 +59,10 @@ const buttonVariants = cva(
 
         secondary: [
           "bg-secondary text-secondary-foreground",
-          "shadow-[inset_0_0_0_0_hsl(44_90%_50%/0)]",
+          "shadow-[inset_0_0_0_0_transparent]",
           "hover:bg-secondary/70",
-          "hover:shadow-[inset_0_0_14px_2px_hsl(44_90%_50%/0.12)]",
-          "active:scale-[0.97] active:shadow-[inset_0_0_20px_4px_hsl(44_90%_50%/0.18)]",
+          "hover:shadow-[inset_0_0_14px_2px_color-mix(in_oklab,var(--accent)_12%,transparent)]",
+          "active:scale-[0.97] active:shadow-[inset_0_0_20px_4px_color-mix(in_oklab,var(--accent)_18%,transparent)]",
         ].join(" "),
 
         ghost: [
@@ -70,7 +70,7 @@ const buttonVariants = cva(
           "hover:text-accent",
           "active:scale-[0.97]",
           "before:absolute before:inset-0 before:rounded-[inherit]",
-          "before:bg-[radial-gradient(ellipse_at_center,hsl(44_90%_50%/0.18)_0%,transparent_70%)]",
+          "before:bg-[radial-gradient(ellipse_at_center,color-mix(in_oklab,var(--accent)_18%,transparent)_0%,transparent_70%)]",
           "before:scale-0 before:opacity-0",
           "hover:before:scale-100 hover:before:opacity-100",
           "before:transition-[transform,opacity] before:duration-300 before:ease-out",

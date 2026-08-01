@@ -1,7 +1,18 @@
 'use client';
+
 import DemoForm from './_components/DemoForm';
-import { motion } from 'framer-motion';
-import { Check, CheckCircle2, Clock, Users, Zap } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Check, CheckCircle2, Clock, Sparkles, Users, Zap } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
+import { GridBackground } from '@/components/ui/grid-background';
+import {
+  getCardHover,
+  getFadeInUp,
+  getStaggerContainer,
+  getStaggerItem,
+  viewportOnce,
+} from '@/lib/motion';
 
 const features = [
   {
@@ -29,151 +40,127 @@ const features = [
 ];
 
 export default function Demopage() {
+  const reduced = useReducedMotion();
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
+  const fadeUp = getFadeInUp(reduced);
+  const hover = getCardHover(reduced);
+
   return (
     <main className='min-h-screen bg-background'>
-      {/* Hero Section */}
-      <section className='hero-gradient section-padding relative overflow-hidden'>
-        <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-          <div className='absolute top-20 right-0 w-72 h-72 bg-accent/10 rounded-full blur-3xl' />
-          <div className='absolute -bottom-20 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl' />
+      <section className='relative overflow-hidden hero-gradient section-padding'>
+        <GridBackground opacity={0.12} className='absolute inset-0' />
+        <div className='pointer-events-none absolute inset-0 overflow-hidden'>
+          <div className='absolute top-20 right-0 size-72 rounded-full bg-hero-glow blur-3xl' />
+          <div className='absolute -bottom-20 -left-20 size-96 rounded-full bg-hero-glow-alt blur-3xl' />
         </div>
 
-        <div className='container-main text-center relative z-10'>
+        <div className='container-main relative z-10 text-center'>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            variants={container}
+            initial='hidden'
+            animate='visible'
+            className='mx-auto max-w-3xl'
           >
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className='inline-block mb-4 px-4 py-2 rounded-full bg-accent/10 border border-accent/30'
-            >
-              <span className='text-sm font-semibold text-accent'>
-                Limited Time Offer
-              </span>
+            <motion.div variants={item} className='mb-6 flex justify-center'>
+              <EyebrowBadge
+                icon={Sparkles}
+                label='Limited Time Offer'
+                variant='muted'
+                className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+              />
             </motion.div>
 
-            <h1 className='text-5xl md:text-6xl font-bold text-primary-foreground mb-6 leading-tight'>
+            <motion.h1
+              variants={fadeUp}
+              className='mb-6 font-display text-5xl font-bold leading-tight text-hero-foreground md:text-6xl'
+            >
               Experience ERPSuite
-              <span className='block text-accent mt-2'>Your Way</span>
-            </h1>
+              <span className='mt-2 block text-hero-accent'>Your Way</span>
+            </motion.h1>
 
-            <p className='text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-8 leading-relaxed'>
+            <motion.p
+              variants={item}
+              className='mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-hero-muted-foreground'
+            >
               Get a personalized walkthrough of how ERPSuite can streamline your
               operations, boost productivity, and transform your business.
-            </p>
+            </motion.p>
 
-            <div className='flex justify-center gap-4'>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className='px-6 py-2 bg-accent/20 rounded-lg text-primary-foreground'
-              >
-                <p className='text-sm font-medium flex items-center justify-center gap-1.5'>
-                  <Check className='w-4 h-4 shrink-0' />
+            <motion.div
+              variants={item}
+              className='flex flex-wrap justify-center gap-4'
+            >
+              <div className='rounded-lg border border-hero-chip-border bg-hero-chip px-6 py-2 text-hero-foreground'>
+                <p className='flex items-center justify-center gap-1.5 text-sm font-medium'>
+                  <Check className='size-4 shrink-0' />
                   No credit card required
                 </p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className='px-6 py-2 bg-accent/20 rounded-lg text-primary-foreground'
-              >
-                <p className='text-sm font-medium flex items-center justify-center gap-1.5'>
-                  <Check className='w-4 h-4 shrink-0' />
+              </div>
+              <div className='rounded-lg border border-hero-chip-border bg-hero-chip px-6 py-2 text-hero-foreground'>
+                <p className='flex items-center justify-center gap-1.5 text-sm font-medium'>
+                  <Check className='size-4 shrink-0' />
                   15 minutes to book
                 </p>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className='section-padding bg-card/30'>
+      <section className='section-padding bg-muted/30'>
         <div className='container-main'>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.5 }}
-            className='text-center mb-16'
+            variants={fadeUp}
+            initial='hidden'
+            whileInView='visible'
+            viewport={viewportOnce}
+            className='mb-16 text-center'
           >
-            <h2 className='text-4xl font-bold text-foreground mb-4'>
+            <h2 className='mb-4 font-display text-4xl font-bold text-foreground'>
               What to Expect
             </h2>
-            <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
+            <p className='mx-auto max-w-2xl text-lg text-muted-foreground'>
               Our demo process is designed to give you maximum value and insight
             </p>
           </motion.div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-            {features.map((feature, index) => {
+          <motion.div
+            className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'
+            variants={container}
+            initial='hidden'
+            whileInView='visible'
+            viewport={viewportOnce}
+          >
+            {features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className='p-6 rounded-2xl border border-border/50 bg-card hover:border-accent/50 hover:shadow-lg transition-all duration-300 group'
+                  key={feature.title}
+                  variants={item}
+                  whileHover={hover}
                 >
-                  <div className='mb-4 inline-flex p-3 rounded-lg bg-accent/10 group-hover:bg-accent/20 transition-colors'>
-                    <Icon className='w-6 h-6 text-accent' />
-                  </div>
-                  <h3 className='text-lg font-semibold text-foreground mb-2'>
-                    {feature.title}
-                  </h3>
-                  <p className='text-sm text-muted-foreground leading-relaxed'>
-                    {feature.description}
-                  </p>
+                  <Card variant='interactive' radius='lg' padding='md' className='h-full'>
+                    <CardContent className='p-0'>
+                      <div className='mb-4 inline-flex rounded-lg bg-accent/10 p-3'>
+                        <Icon className='size-6 text-accent' />
+                      </div>
+                      <h3 className='mb-2 font-display text-lg font-semibold text-foreground'>
+                        {feature.title}
+                      </h3>
+                      <p className='text-sm leading-relaxed text-muted-foreground'>
+                        {feature.description}
+                      </p>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Form Section */}
       <DemoForm />
-
-      {/* Trust Badges */}
-      {/* <section className='section-padding bg-linear-to-b from-accent/5 to-background border-t border-border'>
-        <div className='container-main'>
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className='grid grid-cols-2 md:grid-cols-4 gap-8 text-center'
-          >
-            {[
-              { label: 'Companies', value: '500+' },
-              { label: 'Users', value: '50K+' },
-              { label: 'Countries', value: '25+' },
-              { label: 'Uptime', value: '99.9%' },
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <p className='text-3xl font-bold text-accent mb-2'>
-                  {stat.value}
-                </p>
-                <p className='text-sm text-muted-foreground'>{stat.label}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section> */}
     </main>
   );
 }

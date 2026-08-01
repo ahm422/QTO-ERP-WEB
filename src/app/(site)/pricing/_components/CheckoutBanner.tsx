@@ -12,8 +12,7 @@ export default function CheckoutBanner() {
     return (
       <div
         className={cn(
-          "mb-8 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900",
-          "dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-100",
+          "mb-8 flex items-start gap-3 rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success",
         )}
         role="status"
       >
@@ -30,8 +29,7 @@ export default function CheckoutBanner() {
     return (
       <div
         className={cn(
-          "mb-8 flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700",
-          "dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300",
+          "mb-8 flex items-start gap-3 rounded-xl border border-border bg-muted px-4 py-3 text-sm text-muted-foreground",
         )}
         role="status"
       >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import {
   Menu,
   X,
@@ -18,7 +18,7 @@ import {
   DollarSign,
   FolderKanban,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "../ui/button";
 import { platformDeepLinks } from "@/lib/platform-nav";
 import { getModuleIcon } from "@/lib/icon-map";
@@ -32,24 +32,24 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 // Color palette for nav apps
 const navAppColors = [
   {
-    color: "from-blue-500 to-indigo-500",
-    bgColor: "bg-blue-50 dark:bg-blue-950/30",
-    textColor: "text-blue-600 dark:text-blue-400",
+    color: "from-module-hr to-module-crm",
+    bgColor: "bg-module-hr-bg",
+    textColor: "text-module-hr",
   },
   {
-    color: "from-purple-500 to-violet-500",
-    bgColor: "bg-purple-50 dark:bg-purple-950/30",
-    textColor: "text-purple-600 dark:text-purple-400",
+    color: "from-module-inventory to-module-mfg",
+    bgColor: "bg-module-inventory-bg",
+    textColor: "text-module-inventory",
   },
   {
-    color: "from-emerald-500 to-teal-500",
-    bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
-    textColor: "text-emerald-600 dark:text-emerald-400",
+    color: "from-module-crm to-module-payroll",
+    bgColor: "bg-module-crm-bg",
+    textColor: "text-module-crm",
   },
   {
-    color: "from-amber-500 to-orange-500",
-    bgColor: "bg-amber-50 dark:bg-amber-950/30",
-    textColor: "text-amber-600 dark:text-amber-400",
+    color: "from-accent to-accent-dark",
+    bgColor: "bg-accent/10",
+    textColor: "text-accent",
   },
 ];
 
@@ -94,9 +94,9 @@ function buildSolutionsItems(
       description:
         "Centralize HR workflows with attendance tracking, performance management, and compliance.",
       icon: Clock,
-      color: "from-blue-500 to-indigo-500",
-      bgColor: "bg-blue-50 dark:bg-blue-950/30",
-      textColor: "text-blue-600 dark:text-blue-400",
+      color: "from-module-hr to-module-crm",
+      bgColor: "bg-module-hr-bg",
+      textColor: "text-module-hr",
       useCases: solutionUseCases("hr-teams"),
     },
     {
@@ -107,9 +107,9 @@ function buildSolutionsItems(
       description:
         "Manage projects end-to-end with planning, tracking, and resource allocation tools.",
       icon: Briefcase,
-      color: "from-purple-500 to-violet-500",
-      bgColor: "bg-purple-50 dark:bg-purple-950/30",
-      textColor: "text-purple-600 dark:text-purple-400",
+      color: "from-module-inventory to-module-mfg",
+      bgColor: "bg-module-inventory-bg",
+      textColor: "text-module-inventory",
       useCases: solutionUseCases("project-teams"),
     },
     {
@@ -120,9 +120,9 @@ function buildSolutionsItems(
       description:
         "Unified platform for operations, people, projects, and financials across your organization.",
       icon: TrendingUp,
-      color: "from-emerald-500 to-teal-500",
-      bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
-      textColor: "text-emerald-600 dark:text-emerald-400",
+      color: "from-module-crm to-module-payroll",
+      bgColor: "bg-module-crm-bg",
+      textColor: "text-module-crm",
       useCases: solutionUseCases("owners"),
     },
     {
@@ -133,9 +133,9 @@ function buildSolutionsItems(
       description:
         "Manage leads, generate proposals, estimate projects, and track deals from inquiry to completion.",
       icon: Building2,
-      color: "from-amber-500 to-orange-500",
-      bgColor: "bg-amber-50 dark:bg-amber-950/30",
-      textColor: "text-amber-600 dark:text-amber-400",
+      color: "from-accent to-accent-dark",
+      bgColor: "bg-accent/10",
+      textColor: "text-accent",
       useCases: moduleUseCases("crms"),
     },
     {
@@ -146,9 +146,9 @@ function buildSolutionsItems(
       description:
         "Automate payroll processing, manage salary structures, and streamline approvals seamlessly.",
       icon: DollarSign,
-      color: "from-rose-500 to-pink-500",
-      bgColor: "bg-rose-50 dark:bg-rose-950/30",
-      textColor: "text-rose-600 dark:text-rose-400",
+      color: "from-module-payroll to-accent",
+      bgColor: "bg-module-payroll-bg",
+      textColor: "text-module-payroll",
       useCases: moduleUseCases("salary"),
     },
     {
@@ -159,9 +159,9 @@ function buildSolutionsItems(
       description:
         "Track accounts, manage budgets, and generate financial reports efficiently.",
       icon: FolderKanban,
-      color: "from-cyan-500 to-blue-500",
-      bgColor: "bg-cyan-50 dark:bg-cyan-950/30",
-      textColor: "text-cyan-600 dark:text-cyan-400",
+      color: "from-module-accounting to-module-hr",
+      bgColor: "bg-module-accounting-bg",
+      textColor: "text-module-accounting",
       useCases: moduleUseCases("finance"),
     },
   ];
@@ -190,10 +190,10 @@ function getNavResourceIcon(key: string): LucideIcon {
 }
 
 const navResourceColors = [
-  { color: "from-blue-500 to-indigo-500",  textColor: "text-blue-600 dark:text-blue-400" },
-  { color: "from-amber-500 to-orange-500", textColor: "text-amber-600 dark:text-amber-400" },
-  { color: "from-rose-500 to-pink-500",    textColor: "text-rose-600 dark:text-rose-400" },
-  { color: "from-emerald-500 to-teal-500", textColor: "text-emerald-600 dark:text-emerald-400" },
+  { color: "from-module-hr to-module-crm", textColor: "text-module-hr" },
+  { color: "from-accent to-accent-dark", textColor: "text-accent" },
+  { color: "from-module-mfg to-module-payroll", textColor: "text-module-mfg" },
+  { color: "from-module-crm to-module-inventory", textColor: "text-module-crm" },
 ];
 
 const resourcesItems = [
@@ -202,24 +202,24 @@ const resourcesItems = [
     href: "/blog",
     description: "Latest updates",
     icon: BookOpen,
-    color: "from-blue-500 to-indigo-500",
-    textColor: "text-blue-600 dark:text-blue-400",
+    color: "from-module-hr to-module-crm",
+    textColor: "text-module-hr",
   },
   {
     label: "About Us",
     href: "/about",
     description: "Learn more",
     icon: Info,
-    color: "from-amber-500 to-orange-500",
-    textColor: "text-amber-600 dark:text-amber-400",
+    color: "from-accent to-accent-dark",
+    textColor: "text-accent",
   },
   {
     label: "Contact Us",
     href: "/contact",
     description: "Get in touch",
     icon: Mail,
-    color: "from-amber-500 to-orange-500",
-    textColor: "text-amber-600 dark:text-amber-400",
+    color: "from-accent to-accent-dark",
+    textColor: "text-accent",
   },
   {
     label: "QTO Dev",
@@ -227,8 +227,8 @@ const resourcesItems = [
     external: true,
     description: "Web development partner",
     icon: ExternalLink,
-    color: "from-rose-500 to-pink-500",
-    textColor: "text-rose-600 dark:text-rose-400",
+    color: "from-module-mfg to-module-payroll",
+    textColor: "text-module-mfg",
   },
 ];
 
@@ -279,11 +279,48 @@ export default function NavbarV3({
   );
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
+  const reduced = useReducedMotion();
+  const megaMenuVariants = reduced
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        initial: { opacity: 0, y: 10, scale: 0.97 },
+        animate: { opacity: 1, y: 0, scale: 1 },
+        exit: { opacity: 0, y: 10, scale: 0.97 },
+      };
+  const listItemVariants = reduced
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        initial: { opacity: 0, y: 8 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -8 },
+      };
+  const mobileDrawerVariants = reduced
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        initial: { x: "100%" },
+        animate: { x: 0 },
+        exit: { x: "100%" },
+      };
 
-  useEffect(() => {
+  // Close overlays when the route changes (adjust state during render)
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setMobileOpen(false);
     setActiveDropdown(null);
-  }, [pathname]);
+  }
 
   const openDropdown = (label: string) => {
     if (timeoutRef.current !== null) {
@@ -304,7 +341,7 @@ export default function NavbarV3({
     solutionsItems.find((s) => s.slug === hoveredSolution) || solutionsItems[0];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50">
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -317,14 +354,14 @@ export default function NavbarV3({
             />
           ) : (
             <>
-              <div className="w-9 h-9 rounded-xl bg-linear-to-br from-orange-500 via-amber-500 to-yellow-500 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 group-hover:scale-105 transition-all duration-300">
+              <div className="w-9 h-9 rounded-xl bg-linear-to-br from-accent via-accent to-accent-dark flex items-center justify-center shadow-lg shadow-accent/20 group-hover:shadow-accent/30 group-hover:scale-105 transition-all duration-300">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xl font-bold tracking-tight">
-                <span className="bg-linear-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+              <span className="font-display text-xl font-bold tracking-tight">
+                <span className="bg-linear-to-r from-accent to-accent-dark bg-clip-text text-transparent">
                   {(siteName ?? "QTO-ERP").split("-")[0]}
                 </span>
-                <span className="text-slate-800 dark:text-slate-100">
+                <span className="text-foreground">
                   {(siteName ?? "QTO-ERP").includes("-")
                     ? `-${(siteName ?? "QTO-ERP").split("-").slice(1).join("-")}`
                     : ""}
@@ -349,8 +386,8 @@ export default function NavbarV3({
                 <button
                   className={`flex items-center gap-1.5 px-4 py-2 mx-0.5 text-sm font-medium rounded-xl transition-all duration-200 ${
                     activeDropdown === item.label
-                      ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
                   {item.label}
@@ -366,7 +403,7 @@ export default function NavbarV3({
               ) : (
                 <Link
                   href={item.href}
-                  className="px-4 py-2 mx-0.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all duration-200 rounded-xl block"
+                  className="px-4 py-2 mx-0.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 rounded-xl block"
                 >
                   {item.label}
                 </Link>
@@ -376,9 +413,10 @@ export default function NavbarV3({
               <AnimatePresence>
                 {item.label === "Platform" && activeDropdown === "Platform" && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.97 }}
+                    variants={megaMenuVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
                     transition={{
                       duration: 0.2,
                       ease: [0.25, 0.46, 0.45, 0.94],
@@ -387,15 +425,15 @@ export default function NavbarV3({
                     onMouseEnter={() => openDropdown("Platform")}
                     onMouseLeave={closeDropdown}
                   >
-                    <div className="w-212.5 rounded-3xl bg-white dark:bg-slate-900 shadow-2xl shadow-slate-400/20 dark:shadow-black/50 overflow-hidden ring-1 ring-slate-200 dark:ring-slate-700">
+                    <div className="w-212.5 rounded-3xl bg-card shadow-2xl shadow-black/10 dark:shadow-black/50 overflow-hidden ring-1 ring-border">
                       {/* Top accent line */}
-                      <div className="h-1 bg-linear-to-r from-orange-500 via-amber-500 to-yellow-500" />
+                      <div className="h-1 bg-linear-to-r from-accent via-accent to-accent-dark" />
 
                       <div className="grid grid-cols-[260px_1fr]">
                         {/* Apps Sidebar */}
-                        <div className="bg-slate-50/80 dark:bg-slate-800/30 p-5 border-r border-slate-100 dark:border-slate-800">
-                          <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                        <div className="bg-muted/80 p-5 border-r border-border">
+                          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                             Platfroms{" "}
                           </p>
                           <div className="space-y-1">
@@ -410,15 +448,15 @@ export default function NavbarV3({
                                   whileTap={{ scale: 0.98 }}
                                   className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
                                     isActive
-                                      ? `${app.bgColor} ring-1 ring-slate-200 dark:ring-slate-700 shadow-sm`
-                                      : "hover:bg-white dark:hover:bg-slate-700/50"
+                                      ? `${app.bgColor} ring-1 ring-border shadow-sm`
+                                      : "hover:bg-card"
                                   }`}
                                 >
                                   <div
                                     className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 ${
                                       isActive
                                         ? `bg-linear-to-br ${app.color} text-white shadow-md`
-                                        : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                                        : "bg-muted text-muted-foreground"
                                     }`}
                                   >
                                     <Icon className="w-4 h-4" />
@@ -428,12 +466,12 @@ export default function NavbarV3({
                                       className={`text-sm font-semibold truncate transition-colors ${
                                         isActive
                                           ? app.textColor
-                                          : "text-slate-700 dark:text-slate-300"
+                                          : "text-foreground/80"
                                       }`}
                                     >
                                       {app.name}
                                     </p>
-                                    <p className="text-[11px] text-slate-400 truncate">
+                                    <p className="text-[11px] text-muted-foreground truncate">
                                       {/* {app.description} */}
                                     </p>
                                   </div>
@@ -466,10 +504,10 @@ export default function NavbarV3({
                                 {currentApp?.icon && <currentApp.icon className="w-5 h-5" />}
                               </div>
                               <div>
-                                <p className="text-sm font-bold text-slate-900 dark:text-white">
+                                <p className="text-sm font-bold text-foreground">
                                   {currentApp?.name}
                                 </p>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-muted-foreground">
                                   {currentApp?.features.length} features
                                 </p>
                               </div>
@@ -477,7 +515,7 @@ export default function NavbarV3({
                             <Link
                               href={`/erp/${currentApp?.slug}`}
                               onClick={() => setActiveDropdown(null)}
-                              className={`text-xs font-semibold ${currentApp?.textColor} hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors`}
+                              className={`text-xs font-semibold ${currentApp?.textColor} hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors`}
                             >
                               View module <ArrowRight className="w-3 h-3" />
                             </Link>
@@ -489,9 +527,10 @@ export default function NavbarV3({
                               {sectionLinks.map((links, idx) => (
                                 <motion.div
                                   key={`${hoveredApp}-${links.label}`}
-                                  initial={{ opacity: 0, y: 8 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: -8 }}
+                                  variants={listItemVariants}
+                                  initial="initial"
+                                  animate="animate"
+                                  exit="exit"
                                   transition={{
                                     delay: idx * 0.03,
                                     duration: 0.15,
@@ -501,9 +540,9 @@ export default function NavbarV3({
                                     key={links.anchor}
                                     href={`/erp/${currentApp?.slug}${links.anchor}`}
                                     onClick={() => setActiveDropdown(null)}
-                                    className="group block p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 bg-white dark:bg-slate-800/30 hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-md hover:shadow-slate-200/50 dark:hover:shadow-black/20 transition-all duration-200"
+                                    className="group block p-3.5 rounded-xl border border-border bg-card hover:border-accent/40 hover:shadow-md transition-all duration-200"
                                   >
-                                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                                    <p className="text-sm font-semibold text-foreground group-hover:text-foreground transition-colors">
                                       {links.label}
                                     </p>
                                   </Link>
@@ -515,20 +554,20 @@ export default function NavbarV3({
                       </div>
 
                       {/* Footer */}
-                      <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <div className="px-5 py-3.5 bg-muted/50 border-t border-border flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="flex -space-x-2">
                             {apps.slice(0, 4).map((app) => (
                               <div
                                 key={app.slug}
-                                className={`w-7 h-7 rounded-full bg-linear-to-br ${app.color} flex items-center justify-center text-white text-[10px] border-2 border-white dark:border-slate-900`}
+                                className={`w-7 h-7 rounded-full bg-linear-to-br ${app.color} flex items-center justify-center text-white text-[10px] border-2 border-card`}
                               >
                                 <app.icon className="w-3 h-3" />
                               </div>
                             ))}
                           </div>
-                          <p className="text-xs text-slate-500">
-                            <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          <p className="text-xs text-muted-foreground">
+                            <span className="font-semibold text-foreground/80">
                               {apps.length}+ modules
                             </span>{" "}
                             to power your business
@@ -536,7 +575,7 @@ export default function NavbarV3({
                         </div>
                         <Link
                           href="/allApps"
-                          className="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-500/30 transition-all"
+                          className="text-xs font-semibold text-foreground/80 hover:text-accent flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border hover:border-accent/40 transition-all"
                         >
                           Explore all <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
@@ -549,9 +588,10 @@ export default function NavbarV3({
                 {item.label === "Solutions" &&
                   activeDropdown === "Solutions" && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.97 }}
+                      variants={megaMenuVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
                       transition={{
                         duration: 0.2,
                         ease: [0.25, 0.46, 0.45, 0.94],
@@ -560,14 +600,14 @@ export default function NavbarV3({
                       onMouseEnter={() => openDropdown("Solutions")}
                       onMouseLeave={closeDropdown}
                     >
-                      <div className="w-187.5 rounded-3xl bg-white dark:bg-slate-900 shadow-2xl shadow-slate-400/20 dark:shadow-black/50 overflow-hidden ring-1 ring-slate-200 dark:ring-slate-700">
+                      <div className="w-187.5 rounded-3xl bg-card shadow-2xl shadow-black/10 dark:shadow-black/50 overflow-hidden ring-1 ring-border">
                         {/* Top accent line */}
-                        <div className="h-1 bg-linear-to-r from-orange-500 via-amber-500 to-yellow-500" />
+                        <div className="h-1 bg-linear-to-r from-accent via-accent to-accent-dark" />
 
                         <div className="grid grid-cols-[240px_1fr]">
                           {/* Solutions Sidebar */}
-                          <div className="bg-slate-50/80 dark:bg-slate-800/30 p-5 border-r border-slate-100 dark:border-slate-800">
-                            <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                          <div className="bg-muted/80 p-5 border-r border-border">
+                            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
                               Solutions
                             </p>
@@ -585,15 +625,15 @@ export default function NavbarV3({
                                     whileTap={{ scale: 0.98 }}
                                     className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
                                       isActive
-                                        ? `${sol.bgColor} ring-1 ring-slate-200 dark:ring-slate-700 shadow-sm`
-                                        : "hover:bg-white dark:hover:bg-slate-700/50"
+                                        ? `${sol.bgColor} ring-1 ring-border shadow-sm`
+                                        : "hover:bg-card"
                                     }`}
                                   >
                                     <div
                                       className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 ${
                                         isActive
                                           ? `bg-linear-to-br ${sol.color} text-white shadow-md`
-                                          : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                                          : "bg-muted text-muted-foreground"
                                       }`}
                                     >
                                       <Icon className="w-4 h-4" />
@@ -603,7 +643,7 @@ export default function NavbarV3({
                                         className={`text-sm font-semibold truncate transition-colors ${
                                           isActive
                                             ? sol.textColor
-                                            : "text-slate-700 dark:text-slate-300"
+                                            : "text-foreground/80"
                                         }`}
                                       >
                                         {sol.label}
@@ -626,22 +666,22 @@ export default function NavbarV3({
                           <div className="p-6 relative overflow-hidden">
                             {/* Background glow - updates via currentSol, no animation wrapper needed */}
                             <div
-                              className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${currentSol.color} opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 transition-all duration-300`}
+                              className={`absolute top-0 right-0 w-64 h-64 bg-linear-to-br ${currentSol.color} opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 transition-all duration-300`}
                             />
 
                             {/* Static Header - always visible, mirrors Platform */}
                             <div className="flex items-center justify-between mb-5 relative z-10">
                               <div className="flex items-center gap-3">
                                 <div
-                                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${currentSol.color} flex items-center justify-center text-white shadow-lg transition-all duration-200`}
+                                  className={`w-10 h-10 rounded-xl bg-linear-to-br ${currentSol.color} flex items-center justify-center text-white shadow-lg transition-all duration-200`}
                                 >
                                   <currentSol.icon className="w-5 h-5" />
                                 </div>
                                 <div>
-                                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                                  <p className="text-sm font-bold text-foreground">
                                     {currentSol.label}
                                   </p>
-                                  <p className="text-xs text-slate-500">
+                                  <p className="text-xs text-muted-foreground">
                                     {currentSol.useCases?.length ?? 0} use cases
                                   </p>
                                 </div>
@@ -649,7 +689,7 @@ export default function NavbarV3({
                               <Link
                                 href={currentSol.href}
                                 onClick={() => setActiveDropdown(null)}
-                                className={`text-xs font-semibold ${currentSol.textColor} hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors`}
+                                className={`text-xs font-semibold ${currentSol.textColor} hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors`}
                               >
                                 Explore <ArrowRight className="w-3 h-3" />
                               </Link>
@@ -665,9 +705,10 @@ export default function NavbarV3({
                                 ).map((useCase, idx) => (
                                   <motion.div
                                     key={`${hoveredSolution}-${idx}`}                         
-                                               initial={{ opacity: 0, y: 8 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -8 }}
+                                    variants={listItemVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
                                     transition={{
                                       delay: idx * 0.04,
                                       duration: 0.15,
@@ -675,11 +716,16 @@ export default function NavbarV3({
                                   >
                                     <Link
                                       href={currentSol.href}                                      onClick={() => setActiveDropdown(null)}
-                                      className="group block p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 bg-white dark:bg-slate-800/30 hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-md hover:shadow-slate-200/50 dark:hover:shadow-black/20 transition-all duration-200 h-full"
+                                      className="group block p-3.5 rounded-xl border border-border bg-card hover:border-accent/40 hover:shadow-md transition-all duration-200 h-full"
                                     >
-                                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                                        {(useCase as any).industry || (useCase as any).title || "Use Case"}                                      </p>
-                                      {/* <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
+                                      <p className="text-sm font-semibold text-foreground group-hover:text-foreground transition-colors">
+                                        {"industry" in useCase
+                                          ? useCase.industry
+                                          : "title" in useCase
+                                            ? useCase.title
+                                            : "Use Case"}
+                                      </p>
+                                      {/* <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
                                         {useCase.description}
                                       </p> */}
                                     </Link>
@@ -691,7 +737,7 @@ export default function NavbarV3({
                         </div>
 
                         {/* Footer - mirrors Platform footer exactly */}
-                        <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <div className="px-5 py-3.5 bg-muted/50 border-t border-border flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="flex -space-x-2">
                               {solutionsItems.map((sol) => {
@@ -699,15 +745,15 @@ export default function NavbarV3({
                                 return (
                                   <div
                                     key={sol.slug}
-                                    className={`w-7 h-7 rounded-full bg-gradient-to-br ${sol.color} flex items-center justify-center text-white border-2 border-white dark:border-slate-900`}
+                                    className={`w-7 h-7 rounded-full bg-linear-to-br ${sol.color} flex items-center justify-center text-white border-2 border-card`}
                                   >
                                     <Icon className="w-3 h-3" />
                                   </div>
                                 );
                               })}
                             </div>
-                            <p className="text-xs text-slate-500">
-                              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                            <p className="text-xs text-muted-foreground">
+                              <span className="font-semibold text-foreground/80">
                                 {solutionsItems.length} solutions
                               </span>{" "}
                               for every team
@@ -715,7 +761,7 @@ export default function NavbarV3({
                           </div>
                           <Link
                             href="/allApps"
-                            className="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-500/30 transition-all"
+                            className="text-xs font-semibold text-foreground/80 hover:text-accent flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border hover:border-accent/40 transition-all"
                           >
                             Explore all <ArrowRight className="w-3.5 h-3.5" />
                           </Link>
@@ -728,16 +774,17 @@ export default function NavbarV3({
                 {item.label === "Resources" &&
                   activeDropdown === "Resources" && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.96 }}
+                      variants={megaMenuVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
                       transition={{ duration: 0.2 }}
                       className="absolute right-0 top-full pt-4"
                       onMouseEnter={() => openDropdown("Resources")}
                       onMouseLeave={closeDropdown}
                     >
-                      <div className="w-72 rounded-2xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-300/30 dark:shadow-black/50 ring-1 ring-slate-200 dark:ring-slate-700 p-2 overflow-hidden">
-                        <div className="h-0.5 bg-linear-to-r from-orange-500 to-amber-500 mb-2" />
+                      <div className="w-72 rounded-2xl bg-card shadow-xl shadow-black/10 dark:shadow-black/50 ring-1 ring-border p-2 overflow-hidden">
+                        <div className="h-0.5 bg-linear-to-r from-accent to-accent-dark mb-2" />
                         {resourceItems.map((r, idx) => {
                           const Icon = r.icon;
                           return r.external ? (
@@ -749,7 +796,7 @@ export default function NavbarV3({
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: idx * 0.05 }}
-                              className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
+                              className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-muted transition-all group"
                             >
                               <div
                                 className={`w-10 h-10 rounded-xl bg-linear-to-br ${r.color} flex items-center justify-center text-white shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all`}
@@ -757,16 +804,16 @@ export default function NavbarV3({
                                 <Icon className="w-4 h-4" />
                               </div>
                               <div>
-                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white">
+                                <p className="text-sm font-semibold text-foreground group-hover:text-foreground">
                                   {r.label}
                                 </p>
                                 {r.description && (
-                                  <p className="text-xs text-slate-500">
+                                  <p className="text-xs text-muted-foreground">
                                     {r.description}
                                   </p>
                                 )}
                               </div>
-                              <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-orange-500 ml-auto opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent ml-auto opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                             </motion.a>
                           ) : (
                             <motion.div
@@ -777,7 +824,7 @@ export default function NavbarV3({
                             >
                               <Link
                                 href={r.href}
-                                className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
+                                className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-muted transition-all group"
                               >
                                 <div
                                   className={`w-10 h-10 rounded-xl bg-linear-to-br ${r.color} flex items-center justify-center text-white shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all`}
@@ -785,16 +832,16 @@ export default function NavbarV3({
                                   <Icon className="w-4 h-4" />
                                 </div>
                                 <div>
-                                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white">
+                                  <p className="text-sm font-semibold text-foreground group-hover:text-foreground">
                                     {r.label}
                                   </p>
                                   {r.description && (
-                                    <p className="text-xs text-slate-500">
+                                    <p className="text-xs text-muted-foreground">
                                       {r.description}
                                     </p>
                                   )}
                                 </div>
-                                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-orange-500 ml-auto opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent ml-auto opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                               </Link>
                             </motion.div>
                           );
@@ -821,7 +868,7 @@ export default function NavbarV3({
         <div className="lg:hidden flex items-center gap-1">
           <ThemeToggle />
           <button
-            className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2.5 rounded-xl hover:bg-muted transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -838,15 +885,16 @@ export default function NavbarV3({
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            variants={mobileDrawerVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-0 top-16 z-40 bg-white dark:bg-slate-950 lg:hidden overflow-y-auto"
+            className="fixed inset-0 top-16 z-40 bg-background lg:hidden overflow-y-auto"
           >
             <div className="p-4 pb-28 space-y-1">
               {/* Modules */}
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-3">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-3">
                 Platfroms
               </p>
               {apps.map((app, idx) => {
@@ -860,7 +908,7 @@ export default function NavbarV3({
                   >
                     <Link
                       href={`/erp/${app.slug}`}
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
                     >
                       <div
                         className={`w-12 h-12 rounded-xl bg-linear-to-br ${app.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}
@@ -868,21 +916,21 @@ export default function NavbarV3({
                         <Icon className="w-6 h-6" />
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-900 dark:text-white">
+                        <p className="font-semibold text-foreground">
                           {app.name}
                         </p>
-                        <p className="text-sm text-slate-500 line-clamp-1">
+                        <p className="text-sm text-muted-foreground line-clamp-1">
                           {app.description}
                         </p>
                       </div>
-                      <ArrowRight className="w-5 h-5 text-slate-300 ml-auto group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" />
                     </Link>
                   </motion.div>
                 );
               })}
 
               {/* Solutions */}
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-3 pt-6">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-3 pt-6">
                 Solutions
               </p>
               {solutionsItems.map((s, idx) => {
@@ -896,7 +944,7 @@ export default function NavbarV3({
                   >
                     <Link
                       href={s.href}
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
                     >
                       <div
                         className={`w-12 h-12 rounded-xl bg-linear-to-br ${s.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}
@@ -904,21 +952,21 @@ export default function NavbarV3({
                         <Icon className="w-6 h-6" />
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-900 dark:text-white">
+                        <p className="font-semibold text-foreground">
                           {s.label}
                         </p>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-muted-foreground">
                           {s.description}
                         </p>
                       </div>
-                      <ArrowRight className="w-5 h-5 text-slate-300 ml-auto group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" />
                     </Link>
                   </motion.div>
                 );
               })}
 
               {/* Resources */}
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-3 pt-6">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-3 pt-6">
                 Resources
               </p>
               {resourceItems.map((r, idx) => {
@@ -937,7 +985,7 @@ export default function NavbarV3({
                         href={r.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
                       >
                         <div
                           className={`w-12 h-12 rounded-xl bg-linear-to-br ${r.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}
@@ -945,19 +993,19 @@ export default function NavbarV3({
                           <Icon className="w-6 h-6" />
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-900 dark:text-white">
+                          <p className="font-semibold text-foreground">
                             {r.label}
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-muted-foreground">
                             {r.description}
                           </p>
                         </div>
-                        <ExternalLink className="w-5 h-5 text-slate-300 ml-auto group-hover:text-orange-500 transition-all" />
+                        <ExternalLink className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent transition-all" />
                       </a>
                     ) : (
                       <Link
                         href={r.href}
-                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
                       >
                         <div
                           className={`w-12 h-12 rounded-xl bg-linear-to-br ${r.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}
@@ -965,14 +1013,14 @@ export default function NavbarV3({
                           <Icon className="w-6 h-6" />
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-900 dark:text-white">
+                          <p className="font-semibold text-foreground">
                             {r.label}
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-muted-foreground">
                             {r.description}
                           </p>
                         </div>
-                        <ArrowRight className="w-5 h-5 text-slate-300 ml-auto group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+                        <ArrowRight className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" />
                       </Link>
                     )}
                   </motion.div>
@@ -980,32 +1028,32 @@ export default function NavbarV3({
               })}
 
               {/* Pricing link */}
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-3 pt-6">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-3 pt-6">
                 More
               </p>
               <Link
                 href="/pricing"
-                className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+                className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
               >
-                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-slate-500 to-slate-600 flex items-center justify-center text-white shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-muted-foreground to-foreground flex items-center justify-center text-white shadow-lg">
                   <DollarSign className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900 dark:text-white">
+                  <p className="font-semibold text-foreground">
                     Pricing
                   </p>
-                  <p className="text-sm text-slate-500">Plans & pricing</p>
+                  <p className="text-sm text-muted-foreground">Plans & pricing</p>
                 </div>
-                <ArrowRight className="w-5 h-5 text-slate-300 ml-auto group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" />
               </Link>
             </div>
 
             {/* Sticky bottom CTA */}
             {ctaVisible && (
-              <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 lg:hidden">
+              <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border lg:hidden">
                 <Link
                   href={ctaUrl ?? "/demo"}
-                  className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-white bg-linear-to-r from-orange-500 to-amber-500 px-4 py-3.5 rounded-xl shadow-lg shadow-orange-500/20"
+                  className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-white bg-linear-to-r from-accent to-accent-dark px-4 py-3.5 rounded-xl shadow-lg shadow-accent/20"
                 >
                   <Button>
                     {ctaLabel ?? "Book Demo"} <ArrowRight className="w-4 h-4" />

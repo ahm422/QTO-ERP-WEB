@@ -9,6 +9,8 @@ import {
   getStaggerItem,
   viewportOnce,
 } from '@/lib/motion';
+import { Card } from '@/components/ui/card';
+import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
 
 interface BlogPostsProps {
   posts: BlogPostSummary[];
@@ -21,7 +23,7 @@ export default function BlogPosts({ posts }: BlogPostsProps) {
   const hover = getCardHover(reduced);
 
   return (
-    <section className='section-padding'>
+    <section className='section-padding bg-background'>
       <div className='container-main max-w-3xl'>
         <motion.div
           className='space-y-6'
@@ -32,23 +34,24 @@ export default function BlogPosts({ posts }: BlogPostsProps) {
         >
           {posts.map((post) => (
             <motion.div key={post.slug} variants={item} whileHover={hover}>
-              <Link
-                href={`/blog/${post.slug}`}
-                className='block rounded-2xl border border-border bg-card p-6 card-elevated hover:border-accent/40 transition-colors'
-              >
-                <span className='text-xs font-semibold text-accent uppercase'>
-                  {post.category}
-                </span>
-                <h3 className='text-lg font-bold text-foreground mt-1 mb-1'>
-                  {post.title}
-                </h3>
-                <p className='text-sm text-muted-foreground'>
-                  {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </p>
+              <Link href={`/blog/${post.slug}`} className='block'>
+                <Card variant='interactive' radius='lg' padding='md'>
+                  <EyebrowBadge
+                    label={post.category}
+                    variant='accent'
+                    className='mb-3'
+                  />
+                  <h3 className='font-display text-lg font-bold leading-snug text-foreground'>
+                    {post.title}
+                  </h3>
+                  <p className='mt-2 text-sm text-muted-foreground'>
+                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
+                </Card>
               </Link>
             </motion.div>
           ))}

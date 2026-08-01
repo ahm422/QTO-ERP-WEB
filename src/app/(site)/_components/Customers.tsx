@@ -3,11 +3,10 @@ import {
   TESTIMONIALS_SECTION_TAG,
   TESTIMONIALS_SECTION_TITLE,
 } from '@/lib/copy';
-import { globalTestimonials } from '@/lib/testimonials';
-import React from 'react';
 import ClientsMarquee from './Clientsmarquee';
 import TestimonialCarousel from '@/components/common/TestimonialSection';
 import { HeaderSections } from '@/components/ui/HeaderSections';
+
 const testimonials = [
   {
     content:

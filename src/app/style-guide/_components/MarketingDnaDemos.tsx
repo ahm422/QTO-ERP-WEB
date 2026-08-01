@@ -195,7 +195,7 @@ export function MarketingCardsDemo() {
               <Card variant="interactive" radius="lg">
                 <CardHeader className="flex-row items-start gap-3 space-y-0">
                   <motion.div whileHover={iconHover}>
-                    <CardIcon color="orange">
+                    <CardIcon color="accent">
                       <ClipboardList className="size-5" />
                     </CardIcon>
                   </motion.div>

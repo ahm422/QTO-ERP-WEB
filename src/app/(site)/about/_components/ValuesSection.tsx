@@ -1,6 +1,7 @@
 'use client';
 
 import { HeaderSections } from '@/components/ui/HeaderSections';
+import { Card } from '@/components/ui/card';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   getCardHover,
@@ -40,23 +41,22 @@ export default function ValuesSection() {
       <div className='container-main'>
         <HeaderSections tag='Values' title='What We Stand For' />
         <motion.div
-          className='grid md:grid-cols-3 gap-6 max-w-4xl mx-auto'
+          className='mx-auto grid max-w-4xl gap-6 md:grid-cols-3'
           variants={container}
           initial='hidden'
           whileInView='visible'
           viewport={viewportOnce}
         >
           {values.map((v) => (
-            <motion.div
-              key={v.title}
-              variants={item}
-              whileHover={hover}
-              className='rounded-2xl border border-border bg-card p-6 card-elevated transition-[border-color,box-shadow] duration-300'
-            >
-              <h4 className='font-semibold text-foreground mb-2'>{v.title}</h4>
-              <p className='text-sm text-muted-foreground leading-relaxed'>
-                {v.desc}
-              </p>
+            <motion.div key={v.title} variants={item} whileHover={hover}>
+              <Card variant='interactive' radius='lg' padding='md' className='h-full'>
+                <h4 className='mb-2 font-display font-semibold text-foreground'>
+                  {v.title}
+                </h4>
+                <p className='text-sm leading-relaxed text-muted-foreground'>
+                  {v.desc}
+                </p>
+              </Card>
             </motion.div>
           ))}
         </motion.div>
