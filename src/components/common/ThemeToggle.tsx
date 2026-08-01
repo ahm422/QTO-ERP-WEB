@@ -29,7 +29,7 @@ export function ThemeToggle() {
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={isDark}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="relative rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground overflow-hidden"
+      className="relative overflow-hidden rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50"
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span

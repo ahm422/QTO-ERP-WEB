@@ -37,7 +37,7 @@ const MODULES = [
   {
     key: "hr",
     label: "HR",
-    note: "Navbar idx 0 · blue/indigo",
+    note: "Navbar idx 0 · blue",
     accent: "bg-module-hr",
     muted: "bg-module-hr-bg",
     text: "text-module-hr-foreground",
@@ -45,7 +45,7 @@ const MODULES = [
   {
     key: "inventory",
     label: "Inventory",
-    note: "Navbar idx 1 · purple/violet",
+    note: "Navbar idx 1 · cyan",
     accent: "bg-module-inventory",
     muted: "bg-module-inventory-bg",
     text: "text-module-inventory-foreground",
@@ -61,7 +61,7 @@ const MODULES = [
   {
     key: "payroll",
     label: "Payroll",
-    note: "Navbar idx 3 · amber/orange",
+    note: "Navbar idx 3 · orange",
     accent: "bg-module-payroll",
     muted: "bg-module-payroll-bg",
     text: "text-module-payroll-foreground",
@@ -77,7 +77,7 @@ const MODULES = [
   {
     key: "accounting",
     label: "Accounting",
-    note: "indigo (distinct)",
+    note: "fuchsia (distinct)",
     accent: "bg-module-accounting",
     muted: "bg-module-accounting-bg",
     text: "text-module-accounting-foreground",

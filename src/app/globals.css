@@ -39,6 +39,15 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-accent-dark: var(--accent-dark);
+  --color-hero-foreground: var(--hero-foreground);
+  --color-hero-muted-foreground: var(--hero-muted-foreground);
+  --color-hero-accent: var(--hero-accent);
+  --color-hero-chip: var(--hero-chip);
+  --color-hero-chip-border: var(--hero-chip-border);
+  --color-hero-cta: var(--hero-cta);
+  --color-hero-cta-foreground: var(--hero-cta-foreground);
+  --color-hero-glow: var(--hero-glow);
+  --color-hero-glow-alt: var(--hero-glow-alt);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -80,21 +89,31 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --hero-gradient: linear-gradient(
-    135deg,
-    hsl(40 90% 45%) 0%,
-    hsl(25 85% 55%) 50%,
-    hsl(20 70% 55%) 100%
-  );
 }
 
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --accent: hsl(44, 90%, 50%);
-  --accent-foreground: oklch(0.205 0 0);
-  --accent-dark: hsl(44, 90%, 40%);
-  /* #cb9606 */
+  /* Brand accent: indigo → violet */
+  --accent: #4f46e5;
+  --accent-foreground: oklch(0.985 0 0);
+  --accent-dark: #7c3aed;
+  /* Hero surface — light theme reads as a soft lavender wash with dark text */
+  --hero-gradient: linear-gradient(
+    135deg,
+    hsl(243 78% 96%) 0%,
+    hsl(258 76% 96%) 50%,
+    hsl(276 72% 96%) 100%
+  );
+  --hero-foreground: oklch(0.145 0 0);
+  --hero-muted-foreground: oklch(0.44 0 0);
+  --hero-accent: #4f46e5;
+  --hero-chip: rgb(79 70 229 / 0.08);
+  --hero-chip-border: rgb(79 70 229 / 0.22);
+  --hero-cta: #4f46e5;
+  --hero-cta-foreground: oklch(0.985 0 0);
+  --hero-glow: rgb(99 102 241 / 0.28);
+  --hero-glow-alt: rgb(168 85 247 / 0.22);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -109,18 +128,18 @@
   --destructive: oklch(0.577 0.245 27.325);
   --success: oklch(0.55 0.15 145);
   --success-foreground: oklch(0.985 0 0);
-  --warning: oklch(0.75 0.15 75);
+  --warning: oklch(0.70 0.17 45);
   --warning-foreground: oklch(0.25 0 0);
   --info: oklch(0.55 0.15 250);
   --info-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --ring: oklch(0.55 0.20 275);
+  --chart-1: oklch(0.55 0.20 275);
+  --chart-2: oklch(0.65 0.13 210);
+  --chart-3: oklch(0.60 0.14 162);
+  --chart-4: oklch(0.62 0.22 330);
+  --chart-5: oklch(0.68 0.17 45);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -131,30 +150,30 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Module accents — badges, icons, tags (not primary CTAs) */
-  --module-hr: #3b82f6;
+  --module-hr: #2563eb;
   --module-hr-foreground: #1e40af;
   --module-hr-muted: #eff6ff;
   --module-hr-bg: #eff6ff;
-  --module-inventory: #8b5cf6;
-  --module-inventory-foreground: #5b21b6;
-  --module-inventory-muted: #f5f3ff;
-  --module-inventory-bg: #f5f3ff;
+  --module-inventory: #0891b2;
+  --module-inventory-foreground: #155e75;
+  --module-inventory-muted: #ecfeff;
+  --module-inventory-bg: #ecfeff;
   --module-crm: #10b981;
   --module-crm-foreground: #047857;
   --module-crm-muted: #ecfdf5;
   --module-crm-bg: #ecfdf5;
-  --module-payroll: #f59e0b;
-  --module-payroll-foreground: #b45309;
-  --module-payroll-muted: #fffbeb;
-  --module-payroll-bg: #fffbeb;
+  --module-payroll: #ea580c;
+  --module-payroll-foreground: #c2410c;
+  --module-payroll-muted: #fff7ed;
+  --module-payroll-bg: #fff7ed;
   --module-mfg: #f43f5e;
   --module-mfg-foreground: #be123c;
   --module-mfg-muted: #fff1f2;
   --module-mfg-bg: #fff1f2;
-  --module-accounting: #6366f1;
-  --module-accounting-foreground: #3730a3;
-  --module-accounting-muted: #eef2ff;
-  --module-accounting-bg: #eef2ff;
+  --module-accounting: #c026d3;
+  --module-accounting-foreground: #86198f;
+  --module-accounting-muted: #fdf4ff;
+  --module-accounting-bg: #fdf4ff;
 
   /* Soft elevation scale */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -178,24 +197,41 @@
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: #f2b60f;
+  /* Lighter indigo on dark surfaces so `text-accent` stays legible */
+  --accent: #818cf8;
   --accent-foreground: oklch(0.205 0 0);
-  --accent-dark: hsl(44, 90%, 55%);
+  --accent-dark: #c4b5fd;
+  /* Hero surface — dark theme reads as a deep indigo→violet band with white text */
+  --hero-gradient: linear-gradient(
+    135deg,
+    hsl(243 65% 24%) 0%,
+    hsl(258 60% 26%) 50%,
+    hsl(272 55% 27%) 100%
+  );
+  --hero-foreground: oklch(0.985 0 0);
+  --hero-muted-foreground: oklch(0.88 0 0);
+  --hero-accent: #c4b5fd;
+  --hero-chip: rgb(0 0 0 / 0.25);
+  --hero-chip-border: rgb(255 255 255 / 0.2);
+  --hero-cta: oklch(0.985 0 0);
+  --hero-cta-foreground: oklch(0.145 0 0);
+  --hero-glow: rgb(255 255 255 / 0.12);
+  --hero-glow-alt: rgb(0 0 0 / 0.25);
   --destructive: oklch(0.704 0.191 22.216);
   --success: oklch(0.65 0.15 145);
   --success-foreground: oklch(0.985 0 0);
-  --warning: oklch(0.80 0.14 75);
+  --warning: oklch(0.76 0.16 45);
   --warning-foreground: oklch(0.20 0 0);
   --info: oklch(0.65 0.15 250);
   --info-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.70 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --ring: oklch(0.70 0.16 275);
+  --chart-1: oklch(0.70 0.18 275);
+  --chart-2: oklch(0.72 0.12 210);
+  --chart-3: oklch(0.70 0.15 162);
+  --chart-4: oklch(0.70 0.21 330);
+  --chart-5: oklch(0.75 0.16 45);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -210,26 +246,26 @@
   --module-hr-foreground: #93c5fd;
   --module-hr-muted: rgb(23 37 84 / 0.3);
   --module-hr-bg: rgb(23 37 84 / 0.3);
-  --module-inventory: #a78bfa;
-  --module-inventory-foreground: #c4b5fd;
-  --module-inventory-muted: rgb(46 16 101 / 0.3);
-  --module-inventory-bg: rgb(46 16 101 / 0.3);
+  --module-inventory: #22d3ee;
+  --module-inventory-foreground: #67e8f9;
+  --module-inventory-muted: rgb(8 51 68 / 0.3);
+  --module-inventory-bg: rgb(8 51 68 / 0.3);
   --module-crm: #34d399;
   --module-crm-foreground: #6ee7b7;
   --module-crm-muted: rgb(2 44 34 / 0.3);
   --module-crm-bg: rgb(2 44 34 / 0.3);
-  --module-payroll: #fbbf24;
-  --module-payroll-foreground: #fcd34d;
-  --module-payroll-muted: rgb(69 26 3 / 0.3);
-  --module-payroll-bg: rgb(69 26 3 / 0.3);
+  --module-payroll: #fb923c;
+  --module-payroll-foreground: #fdba74;
+  --module-payroll-muted: rgb(67 20 7 / 0.3);
+  --module-payroll-bg: rgb(67 20 7 / 0.3);
   --module-mfg: #fb7185;
   --module-mfg-foreground: #fda4af;
   --module-mfg-muted: rgb(76 5 25 / 0.3);
   --module-mfg-bg: rgb(76 5 25 / 0.3);
-  --module-accounting: #818cf8;
-  --module-accounting-foreground: #a5b4fc;
-  --module-accounting-muted: rgb(30 27 75 / 0.3);
-  --module-accounting-bg: rgb(30 27 75 / 0.3);
+  --module-accounting: #e879f9;
+  --module-accounting-foreground: #f0abfc;
+  --module-accounting-muted: rgb(74 4 78 / 0.3);
+  --module-accounting-bg: rgb(74 4 78 / 0.3);
 
   /* Softer elevation on dark surfaces */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
@@ -271,7 +307,7 @@
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
   .text-gradient {
-    background: linear-gradient(135deg, #f2b60f 0%, #cb9606 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

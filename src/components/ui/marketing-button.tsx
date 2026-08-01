@@ -29,6 +29,10 @@ const marketingButtonVariants = cva(
           "bg-white text-neutral-950 hover:bg-neutral-100 shadow-sm",
         "inverse-secondary":
           "border border-white/30 bg-transparent text-white hover:bg-white/10",
+        /** For hero sections, whose surface flips between light and dark with the theme */
+        hero: "bg-hero-cta text-hero-cta-foreground hover:opacity-90 shadow-sm",
+        "hero-secondary":
+          "border border-hero-chip-border bg-transparent text-hero-foreground hover:bg-hero-chip",
       },
       size: {
         default: "h-11 px-5 py-2",
@@ -43,7 +47,10 @@ const marketingButtonVariants = cva(
   }
 );
 
-export type MarketingButtonProps = React.ComponentProps<"button"> &
+export type MarketingButtonProps = Omit<
+  React.ComponentProps<"button">,
+  "onAnimationStart" | "onAnimationEnd" | "onDragStart" | "onDragEnd" | "onDrag"
+> &
   VariantProps<typeof marketingButtonVariants> & {
     asChild?: boolean;
     /** Show trailing arrow that slides right on hover. Default true. */

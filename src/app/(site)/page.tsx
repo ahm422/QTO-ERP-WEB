@@ -5,14 +5,8 @@ import Faqs from './_components/Faqs';
 import QTODev from './_components/QTODev';
 import { CTASection } from '@/components/ui/CTASection';
 import Subscribe from './_components/Subscribe';
-import StatsStrip from '@/components/common/Stats';
+import HomeStats from './_components/HomeStats';
 import { listPublishedModules } from '@/lib/content-db';
-
-const stats = [
-    { value: 10, suffix: 'K+', label: 'Active Users', icon: '' },
-    { value: 4.9, suffix: '+', label: 'Average Rating', icon: '' },
-    { value: 99, suffix: '%', label: 'Satisfaction', icon: '' },
-  ];
 
 export default async function Home() {
   const modules = await listPublishedModules();
@@ -21,7 +15,7 @@ export default async function Home() {
       <Hero />
       <Platforms modules={modules} />
       <Customers />
-      <StatsStrip stats={stats} />
+      <HomeStats />
       <Faqs />
       <QTODev />
       <CTASection />

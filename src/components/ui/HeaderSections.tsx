@@ -1,11 +1,13 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
 import {
   getStaggerContainer,
   getStaggerItem,
   viewportOnce,
 } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 
 interface HeaderSectionsProps {
   tag?: string;
@@ -30,34 +32,33 @@ export function HeaderSections({
       initial='hidden'
       whileInView='visible'
       viewport={viewportOnce}
-      className={`mb-12 ${centered ? 'text-center' : ''}`}
+      className={cn('mb-12', centered && 'text-center')}
     >
-      {tag && (
-        <motion.p
+      {tag ? (
+        <motion.div
           variants={item}
-          className='inline-block text-md uppercase tracking-widest text-accent mb-3 font-bold'
+          className={cn('mb-4', centered && 'flex justify-center')}
         >
-          {tag}
-        </motion.p>
-      )}
+          <EyebrowBadge label={tag} variant='accent' />
+        </motion.div>
+      ) : null}
       <motion.h2
         variants={item}
-        className='text-3xl md:text-4xl font-bold text-foreground mb-4'
+        className='font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl mb-4'
       >
         {title}
       </motion.h2>
-      {description && (
+      {description ? (
         <motion.p
           variants={item}
-          className='text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed'
+          className={cn(
+            'text-lg text-muted-foreground leading-relaxed',
+            centered && 'mx-auto max-w-2xl'
+          )}
         >
           {description}
         </motion.p>
-      )}
-      <motion.div
-        variants={item}
-        className='mx-auto mt-4 h-[3px] w-[60px] rounded-sm bg-gradient-to-r from-accent to-accent-dark'
-      />
+      ) : null}
     </motion.div>
   );
 }

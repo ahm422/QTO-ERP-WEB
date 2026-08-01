@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { getStaggerContainer, getStaggerItem } from '@/lib/motion';
 
 type NodeDef = {
   id: string;
@@ -54,7 +55,8 @@ function PulsingDot({
         cx={(x1 + x2) / 2}
         cy={(y1 + y2) / 2}
         r={3}
-        fill='rgba(255,255,255,0.55)'
+        fill='var(--hero-accent)'
+        fillOpacity={0.55}
       />
     );
   }
@@ -62,7 +64,7 @@ function PulsingDot({
   return (
     <motion.circle
       r={3.5}
-      fill='#EEB822'
+      fill='var(--hero-accent)'
       filter='url(#nodeGlow)'
       initial={{ opacity: 0.3 }}
       animate={{
@@ -82,27 +84,37 @@ function PulsingDot({
 
 export default function HeroNodeDiagram() {
   const reduced = useReducedMotion();
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
 
   return (
     <div
-      className='relative w-full aspect-[580/320] rounded-2xl border border-white/20 bg-black/20 backdrop-blur-xl shadow-2xl shadow-black/20 overflow-hidden'
+      className='relative aspect-[580/320] w-full overflow-hidden rounded-2xl border border-hero-chip-border bg-hero-chip text-hero-foreground shadow-2xl shadow-black/10 backdrop-blur-xl'
       aria-hidden='true'
     >
       <svg
         viewBox='0 0 580 320'
-        className='w-full h-full'
+        className='h-full w-full'
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
       >
         <defs>
           <linearGradient id='nodeEdge' x1='0%' y1='0%' x2='100%' y2='0%'>
-            <stop offset='0%' stopColor='rgba(255,255,255,0.15)' />
-            <stop offset='50%' stopColor='rgba(238,184,34,0.55)' />
-            <stop offset='100%' stopColor='rgba(255,255,255,0.15)' />
+            <stop offset='0%' stopColor='currentColor' stopOpacity='0.15' />
+            <stop
+              offset='50%'
+              stopColor='var(--hero-accent)'
+              stopOpacity='0.55'
+            />
+            <stop offset='100%' stopColor='currentColor' stopOpacity='0.15' />
           </linearGradient>
           <linearGradient id='nodeFill' x1='0%' y1='0%' x2='100%' y2='100%'>
-            <stop offset='0%' stopColor='rgba(255,165,0,0.35)' />
-            <stop offset='100%' stopColor='rgba(238,118,0,0.25)' />
+            <stop
+              offset='0%'
+              stopColor='var(--hero-accent)'
+              stopOpacity='0.35'
+            />
+            <stop offset='100%' stopColor='var(--accent-dark)' stopOpacity='0.25' />
           </linearGradient>
           <filter id='nodeGlow'>
             <feGaussianBlur stdDeviation='2' result='blur' />
@@ -113,18 +125,16 @@ export default function HeroNodeDiagram() {
           </filter>
         </defs>
 
-        {/* Soft grid */}
         <pattern
           id='nodeGrid'
           width='24'
           height='24'
           patternUnits='userSpaceOnUse'
         >
-          <circle cx='1' cy='1' r='0.8' fill='rgba(255,255,255,0.12)' />
+          <circle cx='1' cy='1' r='0.8' fill='currentColor' fillOpacity='0.12' />
         </pattern>
         <rect width='580' height='320' fill='url(#nodeGrid)' opacity='0.5' />
 
-        {/* Edges */}
         {EDGES.map(([from, to], i) => {
           const a = nodeById(from);
           const b = nodeById(to);
@@ -150,61 +160,62 @@ export default function HeroNodeDiagram() {
           );
         })}
 
-        {/* Nodes */}
-        {NODES.map((node, i) => (
-          <motion.g
-            key={node.id}
-            initial={reduced ? false : { opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={
-              reduced
-                ? { duration: 0 }
-                : { duration: 0.45, delay: 0.15 + i * 0.08 }
-            }
-            style={{ originX: `${node.x}px`, originY: `${node.y}px` }}
-          >
-            <rect
-              x={node.x - 52}
-              y={node.y - 22}
-              width={104}
-              height={44}
-              rx={12}
-              fill='url(#nodeFill)'
-              stroke='rgba(255,255,255,0.35)'
-              strokeWidth='1.5'
-            />
-            {!reduced && (
-              <motion.rect
+        <motion.g
+          variants={container}
+          initial='hidden'
+          animate='visible'
+        >
+          {NODES.map((node) => (
+            <motion.g
+              key={node.id}
+              variants={item}
+              style={{ originX: `${node.x}px`, originY: `${node.y}px` }}
+            >
+              <rect
                 x={node.x - 52}
                 y={node.y - 22}
                 width={104}
                 height={44}
                 rx={12}
-                fill='none'
-                stroke='rgba(238,184,34,0.55)'
-                strokeWidth='1'
-                animate={{ opacity: [0.25, 0.7, 0.25] }}
-                transition={{
-                  duration: 3,
-                  delay: i * 0.35,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
+                fill='url(#nodeFill)'
+                stroke='currentColor'
+                strokeOpacity='0.35'
+                strokeWidth='1.5'
               />
-            )}
-            <text
-              x={node.x}
-              y={node.y + 5}
-              textAnchor='middle'
-              fill='white'
-              fontSize='13'
-              fontWeight='600'
-              style={{ fontFamily: 'system-ui, sans-serif' }}
-            >
-              {node.label}
-            </text>
-          </motion.g>
-        ))}
+              {!reduced && (
+                <motion.rect
+                  x={node.x - 52}
+                  y={node.y - 22}
+                  width={104}
+                  height={44}
+                  rx={12}
+                  fill='none'
+                  stroke='var(--hero-accent)'
+                  strokeOpacity='0.55'
+                  strokeWidth='1'
+                  animate={{ opacity: [0.25, 0.7, 0.25] }}
+                  transition={{
+                    duration: 3,
+                    delay: NODES.indexOf(node) * 0.35,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                />
+              )}
+              <text
+                x={node.x}
+                y={node.y + 5}
+                textAnchor='middle'
+                fill='currentColor'
+                fontSize='13'
+                fontWeight='600'
+                className='font-sans'
+              >
+                {node.label}
+              </text>
+            </motion.g>
+          ))}
+        </motion.g>
       </svg>
     </div>
   );

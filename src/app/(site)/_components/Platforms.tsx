@@ -1,9 +1,12 @@
 'use client';
 
 import { HeaderSections } from '@/components/ui/HeaderSections';
+import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { getModuleIcon } from '@/lib/icon-map';
 import {
   getCardHover,
+  getIconChipHover,
+  getPanelSwap,
   getStaggerContainer,
   getStaggerItem,
   viewportOnce,
@@ -27,6 +30,8 @@ const Platforms = ({ modules }: PlatformsProps) => {
   const container = getStaggerContainer(reduced);
   const item = getStaggerItem(reduced);
   const hover = getCardHover(reduced);
+  const chipHover = getIconChipHover(reduced);
+  const panel = getPanelSwap(reduced);
 
   return (
     <>
@@ -35,10 +40,10 @@ const Platforms = ({ modules }: PlatformsProps) => {
           <HeaderSections
             tag='Platform'
             title='Everything You Need, In One Suite'
-            description='Three powerful modules designed to work together seamlessly. Hover to preview.'
+            description='Powerful modules designed to work together seamlessly. Hover to preview.'
           />
           <motion.div
-            className='grid md:grid-cols-3 gap-6'
+            className='grid gap-6 md:grid-cols-3'
             variants={container}
             initial='hidden'
             whileInView='visible'
@@ -54,20 +59,17 @@ const Platforms = ({ modules }: PlatformsProps) => {
                   onMouseEnter={() => setHoveredApp(i)}
                   onMouseLeave={() => setHoveredApp(null)}
                 >
-                  <div className='block rounded-2xl border border-border bg-card p-6 card-elevated transition-[border-color,box-shadow] duration-300 hover:border-accent/40'>
+                  <Card variant='interactive' radius='lg' padding='md' className='h-full'>
                     <motion.div
                       className='mb-4 inline-flex'
-                      whileHover={reduced ? undefined : { scale: 1.08 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      whileHover={chipHover}
                     >
-                      <Icon className='h-10 w-10 text-accent' />
+                      <Icon className='size-10 text-accent' />
                     </motion.div>
-                    <h3 className='text-xl font-bold text-foreground mb-2'>
-                      {app.name}
-                    </h3>
-                    <p className='text-sm text-muted-foreground mb-4 leading-relaxed'>
+                    <CardTitle className='mb-2 text-xl'>{app.name}</CardTitle>
+                    <CardDescription className='mb-4 leading-relaxed'>
                       {app.shortDescription}
-                    </p>
+                    </CardDescription>
 
                     <motion.div
                       initial={false}
@@ -79,44 +81,44 @@ const Platforms = ({ modules }: PlatformsProps) => {
                       className='overflow-hidden'
                     >
                       <div
-                        className='mb-4 rounded-xl bg-muted aspect-video flex items-center justify-center relative group cursor-pointer'
+                        className='group relative mb-4 flex aspect-video cursor-pointer items-center justify-center rounded-xl bg-muted'
                         onClick={() => {
                           setActiveImageSlug(app.slug);
                           setImageOpen(true);
                         }}
                       >
-                        <div className='absolute inset-0 bg-foreground/5 rounded-xl flex items-center justify-center group-hover:bg-foreground/10 transition-colors'>
-                          <div className='h-12 w-12 rounded-full bg-accent/90 flex items-center justify-center shadow-lg'>
-                            <Play className='h-5 w-5 text-accent-foreground ml-0.5' />
+                        <div className='absolute inset-0 flex items-center justify-center rounded-xl bg-foreground/5 transition-colors group-hover:bg-foreground/10'>
+                          <div className='flex size-12 items-center justify-center rounded-full bg-accent/90 shadow-lg'>
+                            <Play className='ml-0.5 size-5 text-accent-foreground' />
                           </div>
                         </div>
                         <span className='text-xs text-muted-foreground'>
                           View {app.name} Overview
                         </span>
                       </div>
-                      <ul className='space-y-1.5 mb-4'>
+                      <ul className='mb-4 space-y-1.5'>
                         {app.highlights.map((h) => (
                           <li
                             key={h}
-                            className='text-xs text-muted-foreground flex items-center gap-2'
+                            className='flex items-center gap-2 text-xs text-muted-foreground'
                           >
-                            <CheckCircle className='h-3 w-3 text-accent shrink-0' />
+                            <CheckCircle className='size-3 shrink-0 text-accent' />
                             {h}
                           </li>
                         ))}
                       </ul>
-                      <p className='text-xs text-accent font-medium mb-3'>
+                      <p className='mb-3 text-xs font-medium text-accent'>
                         Best for: {app.bestFor}
                       </p>
                     </motion.div>
 
                     <Link
                       href={`/erp/${app.slug}`}
-                      className='text-sm font-medium text-accent flex items-center gap-1'
+                      className='flex items-center gap-1 text-sm font-medium text-accent'
                     >
-                      Learn more <ArrowRight className='h-3.5 w-3.5' />
+                      Learn more <ArrowRight className='size-3.5' />
                     </Link>
-                  </div>
+                  </Card>
                 </motion.div>
               );
             })}
@@ -127,40 +129,40 @@ const Platforms = ({ modules }: PlatformsProps) => {
       <AnimatePresence>
         {imageOpen && (
           <div
-            className='fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4'
+            className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'
             onClick={() => setImageOpen(false)}
           >
             <motion.div
-              initial={reduced ? { opacity: 1 } : { scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={reduced ? { opacity: 0 } : { scale: 0.9, opacity: 0 }}
-              transition={{ duration: reduced ? 0.01 : 0.25 }}
+              variants={panel}
+              initial='initial'
+              animate='animate'
+              exit='exit'
               onClick={(e) => e.stopPropagation()}
-              className='bg-card rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto'
+              className='max-h-[90vh] w-full max-w-4xl overflow-auto rounded-2xl border border-border bg-card'
             >
               <div className='p-6'>
-                <div className='flex justify-between items-center mb-4'>
-                  <h3 className='text-2xl font-bold text-foreground'>
+                <div className='mb-4 flex items-center justify-between'>
+                  <h3 className='font-display text-2xl font-bold text-foreground'>
                     {activeModule?.name} Overview
                   </h3>
                   <button
                     type='button'
                     onClick={() => setImageOpen(false)}
-                    className='text-muted-foreground hover:text-foreground transition-colors p-1'
+                    className='p-1 text-muted-foreground transition-colors hover:text-foreground'
                     aria-label='Close preview'
                   >
-                    <X className='w-6 h-6' />
+                    <X className='size-6' />
                   </button>
                 </div>
-                <div className='w-full bg-muted rounded-xl overflow-hidden'>
+                <div className='w-full overflow-hidden rounded-xl bg-muted'>
                   {activeModule?.image ? (
                     <img
                       src={activeModule.image}
                       alt={activeModule.name}
-                      className='w-full h-auto'
+                      className='h-auto w-full'
                     />
                   ) : (
-                    <div className='aspect-video flex items-center justify-center bg-gradient-to-br from-muted to-muted/50'>
+                    <div className='flex aspect-video items-center justify-center bg-muted'>
                       <p className='text-muted-foreground'>
                         Image not available yet
                       </p>

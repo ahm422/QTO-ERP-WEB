@@ -1,21 +1,52 @@
 'use client';
-import { motion } from 'framer-motion';
+
+import { motion, useReducedMotion } from 'framer-motion';
+import { Newspaper } from 'lucide-react';
+import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
+import { GridBackground } from '@/components/ui/grid-background';
+import {
+  getFadeInUp,
+  getStaggerContainer,
+  getStaggerItem,
+} from '@/lib/motion';
 
 export default function BlogHero() {
+  const reduced = useReducedMotion();
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
+  const fadeUp = getFadeInUp(reduced);
+
   return (
-    <section className='hero-gradient section-padding'>
-      <div className='container-main text-center'>
+    <section className='relative overflow-hidden hero-gradient section-padding'>
+      <GridBackground opacity={0.12} className='absolute inset-0' />
+
+      <div className='container-main relative z-10 text-center'>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          variants={container}
+          initial='hidden'
+          animate='visible'
+          className='mx-auto max-w-2xl'
         >
-          <h1 className='text-4xl md:text-5xl font-bold text-primary-foreground mb-4'>
+          <motion.div variants={item} className='mb-6 flex justify-center'>
+            <EyebrowBadge
+              icon={Newspaper}
+              label='Insights'
+              variant='muted'
+              className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+            />
+          </motion.div>
+          <motion.h1
+            variants={fadeUp}
+            className='mb-4 font-display text-4xl font-bold text-hero-foreground md:text-5xl'
+          >
             Blog
-          </h1>
-          <p className='text-lg text-primary-foreground/80'>
+          </motion.h1>
+          <motion.p
+            variants={item}
+            className='text-lg leading-relaxed text-hero-muted-foreground'
+          >
             Insights, guides, and best practices for modern teams.
-          </p>
+          </motion.p>
         </motion.div>
       </div>
     </section>

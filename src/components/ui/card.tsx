@@ -203,7 +203,7 @@ const CardBadge = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpa
 CardBadge.displayName = "CardBadge"
 
 // Card Icon - for icon containers
-const CardIcon = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { size?: "sm" | "md" | "lg"; color?: "default" | "gradient" | "orange" }>(
+const CardIcon = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { size?: "sm" | "md" | "lg"; color?: "default" | "gradient" | "accent" }>(
   ({ className, size = "md", color = "default", ...props }, ref) => {
     const sizeClasses = {
       sm: "w-8 h-8",
@@ -214,7 +214,7 @@ const CardIcon = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     const colorClasses = {
       default: "bg-muted text-muted-foreground",
       gradient: "bg-gradient-to-br from-accent to-accent-dark text-accent-foreground shadow-lg shadow-accent/30",
-      orange: "bg-accent/10 text-accent",
+      accent: "bg-accent/10 text-accent",
     }
 
     return (
