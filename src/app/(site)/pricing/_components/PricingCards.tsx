@@ -1,11 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Check, Sparkles, ArrowRight, Zap, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { PricingPlan } from '@/types/pricingPlan';
+import {
+  getCardHover,
+  getStaggerContainer,
+  getStaggerItem,
+  viewportOnce,
+} from '@/lib/motion';
 
 interface PricingCardsProps {
   plans: PricingPlan[];
@@ -17,6 +23,10 @@ const CHECKOUT_PLANS = new Set(['starter', 'growth']);
 export default function PricingCards({ plans, yearly }: PricingCardsProps) {
   const [loadingSlug, setLoadingSlug] = useState<string | null>(null);
   const [errorBySlug, setErrorBySlug] = useState<Record<string, string>>({});
+  const reduced = useReducedMotion();
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
+  const hover = getCardHover(reduced);
 
   async function startCheckout(planSlug: string) {
     setLoadingSlug(planSlug);
@@ -71,8 +81,14 @@ export default function PricingCards({ plans, yearly }: PricingCardsProps) {
     );
 
   return (
-    <div className='grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-center'>
-      {plans.map((plan, i) => {
+    <motion.div
+      className='grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-center'
+      variants={container}
+      initial='hidden'
+      whileInView='visible'
+      viewport={viewportOnce}
+    >
+      {plans.map((plan) => {
         const isPopular = plan.popular;
         const price = yearly ? plan.yearlyPrice : plan.monthlyPrice;
         const isCheckoutPlan = CHECKOUT_PLANS.has(plan.slug);
@@ -82,14 +98,8 @@ export default function PricingCards({ plans, yearly }: PricingCardsProps) {
         return (
           <motion.div
             key={plan.slug}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{
-              duration: 0.5,
-              delay: i * 0.1,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
+            variants={item}
+            whileHover={hover}
             className={cn(
               'relative rounded-3xl p-1 transition-all duration-500 h-full',
               isPopular ? '' : '',
@@ -107,7 +117,7 @@ export default function PricingCards({ plans, yearly }: PricingCardsProps) {
                 'transition-all duration-500',
                 isPopular
                   ? 'shadow-2xl shadow-orange-500/20 ring-1 ring-orange-500/20'
-                  : 'shadow-lg shadow-slate-200/50 dark:shadow-black/20 ring-1 ring-slate-200 dark:ring-slate-800 hover:shadow-xl hover:shadow-slate-200/60 dark:hover:shadow-black/30 hover:-translate-y-1',
+                  : 'shadow-lg shadow-slate-200/50 dark:shadow-black/20 ring-1 ring-slate-200 dark:ring-slate-800 hover:shadow-xl hover:shadow-slate-200/60 dark:hover:shadow-black/30',
               )}
             >
               {isPopular && (
@@ -193,13 +203,9 @@ export default function PricingCards({ plans, yearly }: PricingCardsProps) {
                     What&apos;s included
                   </p>
                   <ul className='space-y-3'>
-                    {plan.features.map((feature, idx) => (
-                      <motion.li
+                    {plan.features.map((feature) => (
+                      <li
                         key={feature}
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.3 + idx * 0.05 }}
                         className='flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300'
                       >
                         <div
@@ -213,7 +219,7 @@ export default function PricingCards({ plans, yearly }: PricingCardsProps) {
                           <Check className='w-3 h-3' strokeWidth={3} />
                         </div>
                         <span className='leading-relaxed'>{feature}</span>
-                      </motion.li>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -222,6 +228,6 @@ export default function PricingCards({ plans, yearly }: PricingCardsProps) {
           </motion.div>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

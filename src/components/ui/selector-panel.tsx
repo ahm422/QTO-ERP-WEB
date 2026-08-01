@@ -8,8 +8,16 @@ import {
   type ReactNode,
 } from "react";
 import type { LucideIcon } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getPanelSwap } from "@/lib/motion";
 
 export type SelectorItem = {
   id: string;
@@ -44,6 +52,8 @@ export function SelectorPanel({
     () => defaultValue ?? items[0]?.id ?? ""
   );
   const selectedId = isControlled ? valueProp! : uncontrolled;
+  const reduced = useReducedMotion();
+  const swap = getPanelSwap(reduced);
 
   const selected =
     items.find((item) => item.id === selectedId) ?? items[0] ?? null;
@@ -147,20 +157,32 @@ export function SelectorPanel({
         variant="default"
         radius="lg"
         padding="none"
-        className="min-h-[12rem]"
+        className="min-h-[12rem] overflow-hidden"
         role="tabpanel"
         id={`${listId}-panel-${selected.id}`}
         aria-labelledby={`${listId}-tab-${selected.id}`}
       >
-        <CardHeader className="border-b border-border px-6 py-4">
-          <CardTitle className="font-display text-xl">
-            {selected.label}
-          </CardTitle>
-          {selected.description ? (
-            <CardDescription>{selected.description}</CardDescription>
-          ) : null}
-        </CardHeader>
-        <CardContent className="px-6 py-5">{renderDetail(selected)}</CardContent>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={selected.id}
+            variants={swap}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <CardHeader className="border-b border-border px-6 py-4">
+              <CardTitle className="font-display text-xl">
+                {selected.label}
+              </CardTitle>
+              {selected.description ? (
+                <CardDescription>{selected.description}</CardDescription>
+              ) : null}
+            </CardHeader>
+            <CardContent className="px-6 py-5">
+              {renderDetail(selected)}
+            </CardContent>
+          </motion.div>
+        </AnimatePresence>
       </Card>
     </div>
   );

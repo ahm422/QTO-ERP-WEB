@@ -13,6 +13,7 @@ import {
   Percent,
   Hash,
 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
 import { MarketingButton } from "@/components/ui/marketing-button";
 import {
@@ -28,6 +29,13 @@ import { StatsStrip } from "@/components/common/Stats";
 import { SelectorPanel, type SelectorItem } from "@/components/ui/selector-panel";
 import { DarkCtaBand } from "@/components/ui/dark-cta-band";
 import { GridBackground } from "@/components/ui/grid-background";
+import {
+  getCardHover,
+  getIconChipHover,
+  getStaggerContainer,
+  getStaggerItem,
+  viewportOnce,
+} from "@/lib/motion";
 
 const MODULE_ITEMS: SelectorItem[] = [
   {
@@ -151,7 +159,8 @@ export function MarketingButtonDemo() {
           <MarketingButton variant="secondary">Book a demo</MarketingButton>
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          Hover — trailing arrow slides right (Framer Motion).
+          Hover — arrow slides via springSnappy. Press — whileTap scale 0.97
+          (disabled under prefers-reduced-motion).
         </p>
       </ThemeFrame>
       <ThemeFrame dark>
@@ -165,67 +174,87 @@ export function MarketingButtonDemo() {
 }
 
 export function MarketingCardsDemo() {
+  const reduced = useReducedMotion();
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
+  const hover = getCardHover(reduced);
+  const iconHover = getIconChipHover(reduced);
+
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {[false, true].map((dark) => (
         <ThemeFrame key={String(dark)} dark={dark}>
-          <div className="grid gap-4">
-            <Card variant="interactive" radius="lg">
-              <CardHeader className="flex-row items-start gap-3 space-y-0">
-                <CardIcon color="orange">
-                  <ClipboardList className="size-5" />
-                </CardIcon>
-                <div>
-                  <CardTitle className="font-display">Attendance</CardTitle>
-                  <CardDescription>
-                    Module tile — hover for ~2px lift + shadow.
-                  </CardDescription>
-                </div>
-              </CardHeader>
-            </Card>
+          <motion.div
+            className="grid gap-4"
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+          >
+            <motion.div variants={item} whileHover={hover}>
+              <Card variant="interactive" radius="lg">
+                <CardHeader className="flex-row items-start gap-3 space-y-0">
+                  <motion.div whileHover={iconHover}>
+                    <CardIcon color="orange">
+                      <ClipboardList className="size-5" />
+                    </CardIcon>
+                  </motion.div>
+                  <div>
+                    <CardTitle className="font-display">Attendance</CardTitle>
+                    <CardDescription>
+                      Shared cardHover — lift + scale 1.03 + icon chip spring.
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+            </motion.div>
 
-            <Card variant="default" radius="xl" padding="md">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
+            <motion.div variants={item} whileHover={hover}>
+              <Card variant="default" radius="xl" padding="md">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Case study
+                    </p>
+                    <CardTitle className="mt-1 font-display text-lg">
+                      Acme Manufacturing
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      Cut payroll cycle time by 40% with unified HR + attendance.
+                    </CardDescription>
+                  </div>
+                  <MarketingButton variant="secondary" size="sm" iconSlide>
+                    Read story
+                  </MarketingButton>
+                </div>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={item} whileHover={hover}>
+              <Card variant="default" radius="xl">
+                <CardHeader>
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Case study
+                    Pricing
                   </p>
-                  <CardTitle className="mt-1 font-display text-lg">
-                    Acme Manufacturing
-                  </CardTitle>
-                  <CardDescription className="mt-1">
-                    Cut payroll cycle time by 40% with unified HR + attendance.
-                  </CardDescription>
-                </div>
-                <MarketingButton variant="secondary" size="sm" iconSlide>
-                  Read story
-                </MarketingButton>
-              </div>
-            </Card>
-
-            <Card variant="default" radius="xl">
-              <CardHeader>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Pricing
-                </p>
-                <CardTitle className="font-display text-2xl">Growth</CardTitle>
-                <CardDescription>For scaling multi-site teams</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="font-display text-4xl font-bold tracking-tight">
-                  $49
-                  <span className="text-base font-sans font-normal text-muted-foreground">
-                    /seat
-                  </span>
-                </p>
-              </CardContent>
-              <CardFooter>
-                <MarketingButton variant="primary" className="w-full">
-                  Start trial
-                </MarketingButton>
-              </CardFooter>
-            </Card>
-          </div>
+                  <CardTitle className="font-display text-2xl">Growth</CardTitle>
+                  <CardDescription>For scaling multi-site teams</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="font-display text-4xl font-bold tracking-tight">
+                    $49
+                    <span className="text-base font-sans font-normal text-muted-foreground">
+                      /seat
+                    </span>
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <MarketingButton variant="primary" className="w-full">
+                    Start trial
+                  </MarketingButton>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          </motion.div>
         </ThemeFrame>
       ))}
     </div>
@@ -248,6 +277,10 @@ export function StatsDemo() {
 export function SelectorPanelDemo() {
   return (
     <div className="space-y-8">
+      <p className="text-xs text-muted-foreground">
+        Detail pane uses AnimatePresence mode=&quot;wait&quot; + panelSwap
+        (crossfade/slide). Emulate prefers-reduced-motion to collapse travel.
+      </p>
       <div>
         <p className="mb-3 text-sm font-medium text-foreground">
           Module catalog

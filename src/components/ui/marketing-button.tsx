@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Slot } from "radix-ui";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { getButtonTap, springSnappy } from "@/lib/motion";
 
 const marketingButtonVariants = cva(
   [
@@ -65,6 +66,8 @@ export function MarketingButton({
   ...props
 }: MarketingButtonProps) {
   const [hovered, setHovered] = React.useState(false);
+  const reduced = useReducedMotion();
+  const tap = getButtonTap(reduced);
   const classes = cn(marketingButtonVariants({ variant, size }), className);
 
   if (asChild) {
@@ -76,9 +79,10 @@ export function MarketingButton({
   }
 
   return (
-    <button
+    <motion.button
       type="button"
       className={classes}
+      whileTap={tap}
       onMouseEnter={(e) => {
         setHovered(true);
         onMouseEnter?.(e);
@@ -96,14 +100,14 @@ export function MarketingButton({
             aria-hidden="true"
             className="inline-flex"
             initial={false}
-            animate={{ x: hovered ? 4 : 0 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            animate={{ x: !reduced && hovered ? 4 : 0 }}
+            transition={springSnappy}
           >
             <ArrowRight className="size-4 shrink-0" />
           </motion.span>
         ) : null}
       </span>
-    </button>
+    </motion.button>
   );
 }
 

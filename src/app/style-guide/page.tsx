@@ -259,7 +259,7 @@ export default function StyleGuidePage() {
 
         <Section
           title="Marketing buttons"
-          description="MarketingButton — solid dark primary + outline secondary; trailing arrow slides on hover via Framer Motion."
+          description="MarketingButton — solid dark primary + outline secondary; arrow slide on hover + whileTap scale from @/lib/motion (respects prefers-reduced-motion)."
         >
           <MarketingButtonDemo />
         </Section>
@@ -291,21 +291,21 @@ export default function StyleGuidePage() {
 
         <Section
           title="Cards"
-          description="Card default / interactive DNA — 1px border, rounded-2xl/3xl, hover ~2px lift + --card-shadow-hover. Module tile, case-study row, pricing compositions."
+          description="Card DNA + shared cardHover (scale 1.03 + y lift + icon chip spring). Border/shadow via CSS tokens; lift via Framer — see @/lib/motion."
         >
           <MarketingCardsDemo />
         </Section>
 
         <Section
           title="Stat tiles"
-          description="StatsStrip / StatTile — 4-up grid, icon chip, font-display number, muted label. Count-up retained."
+          description="StatsStrip / StatTile — 4-up stagger reveal from @/lib/motion; count-up skips under prefers-reduced-motion."
         >
           <StatsDemo />
         </Section>
 
         <Section
           title="SelectorPanel"
-          description="One shared two-pane list ↔ detail component — module catalog and domain explorer demos."
+          description="List ↔ detail with AnimatePresence mode=wait + panelSwap crossfade. Module catalog and domain explorer demos."
         >
           <SelectorPanelDemo />
         </Section>

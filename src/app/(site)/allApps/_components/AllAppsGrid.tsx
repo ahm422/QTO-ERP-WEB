@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { HeaderSections } from "@/components/ui/HeaderSections";
 import { CTASection } from "@/components/ui/CTASection";
 import { getModuleIcon } from "@/lib/icon-map";
+import {
+  getCardHover,
+  getFadeInUp,
+  getStaggerContainer,
+  getStaggerItem,
+  viewportOnce,
+} from "@/lib/motion";
 import type { ModuleDetail } from "@/types/content";
 
 const appColors = [
@@ -48,6 +55,12 @@ type AllAppsGridProps = {
 };
 
 export default function AllAppsGrid({ modules }: AllAppsGridProps) {
+  const reduced = useReducedMotion();
+  const fadeUp = getFadeInUp(reduced);
+  const container = getStaggerContainer(reduced);
+  const item = getStaggerItem(reduced);
+  const hover = getCardHover(reduced);
+
   return (
     <>
       <section className="relative overflow-hidden py-20 sm:py-28">
@@ -57,9 +70,9 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
           >
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 text-sm font-semibold px-4 py-1.5 rounded-full mb-6">
               <Sparkles className="w-4 h-4" />
@@ -84,20 +97,25 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <HeaderSections tag="Platforms" title="Explore More" />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6 mt-10">
+          <motion.div
+            className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6 mt-10"
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+          >
             {modules.map((app, idx) => {
               const colors = getAppColor(idx);
               const Icon = getModuleIcon(app.iconKey);
               return (
                 <motion.div
                   key={app.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1, duration: 0.4 }}
+                  variants={item}
+                  whileHover={hover}
                 >
                   <Link
                     href={`/erp/${app.slug}`}
-                    className={`group relative block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 transition-all duration-300 ${colors.borderHover} hover:shadow-xl ${colors.shadowHover} h-full min-h-[400px]`}
+                    className={`group relative block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 transition-[border-color,box-shadow] duration-300 ${colors.borderHover} hover:shadow-xl ${colors.shadowHover} h-full min-h-[400px]`}
                   >
                     <div
                       className={`absolute top-0 right-0 w-40 h-40 bg-gradient-to-br ${colors.color} opacity-0 group-hover:opacity-5 blur-3xl rounded-full transition-opacity duration-500 -translate-y-1/2 translate-x-1/2`}
@@ -106,11 +124,19 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
                     <div className="relative z-10 flex flex-col gap-5">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-4">
-                          <div
-                            className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colors.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300`}
+                          <motion.div
+                            className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colors.color} flex items-center justify-center text-white shadow-lg`}
+                            whileHover={
+                              reduced ? undefined : { scale: 1.08 }
+                            }
+                            transition={{
+                              type: "spring",
+                              stiffness: 400,
+                              damping: 25,
+                            }}
                           >
                             <Icon className="w-6 h-6" />
-                          </div>
+                          </motion.div>
                           <div>
                             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                               {app.name}
@@ -165,7 +191,7 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
                 </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
       </section>
 
