@@ -2,6 +2,16 @@ import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
+import {
+  EyebrowDemo,
+  MarketingButtonDemo,
+  MarketingCardsDemo,
+  StatsDemo,
+  SelectorPanelDemo,
+  DarkCtaBandDemo,
+  GridBackgroundDemo,
+} from "./_components/ClientDemos";
 
 export const metadata = {
   title: "Style Guide · QTO ERP",
@@ -153,7 +163,8 @@ function SwatchGrid({ dark }: { dark?: boolean }) {
 
 function TypeColumn({ face }: { face: "display" | "sans" }) {
   const font = face === "display" ? "font-display" : "font-sans";
-  const label = face === "display" ? "font-display (Space Grotesk)" : "font-sans (Inter)";
+  const label =
+    face === "display" ? "font-display (Space Grotesk)" : "font-sans (Inter)";
   return (
     <div className="space-y-3 rounded-2xl border border-border p-5">
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -189,21 +200,20 @@ export default function StyleGuidePage() {
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-5xl space-y-12 px-4 py-12 sm:px-6 lg:px-8">
         <header className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Dev only · NODE_ENV !== production
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+              Dev only · NODE_ENV !== production
+            </p>
+            <ThemeToggle />
+          </div>
           <h1 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">
             Style Guide
           </h1>
           <p className="max-w-2xl text-muted-foreground">
-            Proving ground for Phase 1 design tokens. Headings / heroes →{" "}
-            <code className="font-mono text-sm">font-display</code>; body,
-            buttons, forms, nav →{" "}
-            <code className="font-mono text-sm">font-sans</code>. Module colors
-            are for badges/tags/icons only — CTAs stay on{" "}
-            <code className="font-mono text-sm">--accent</code>. Phase 2+ will
-            migrate marketing heroes to{" "}
-            <code className="font-mono text-sm">font-display</code>.
+            Proving ground for design tokens and Phase 2 marketing DNA
+            primitives (#99). Page theme toggle + local{" "}
+            <code className="font-mono text-sm">.dark</code> wrappers for
+            dual-theme QA. Live marketing page rollouts are a follow-up.
           </p>
         </header>
 
@@ -228,8 +238,8 @@ export default function StyleGuidePage() {
         </Section>
 
         <Section
-          title="Buttons"
-          description="Existing Button variants. Default uses brand --accent (CTA)."
+          title="Buttons (shared)"
+          description="Existing Button variants. Default uses brand --accent (CTA). Admin-safe — unchanged."
         >
           <div className="flex flex-wrap gap-3">
             <Button variant="default">Primary (accent)</Button>
@@ -238,6 +248,20 @@ export default function StyleGuidePage() {
             <Button variant="ghost">Ghost</Button>
             <Button variant="destructive">Destructive</Button>
           </div>
+        </Section>
+
+        <Section
+          title="Eyebrow badge"
+          description="Marketing section labels — EyebrowBadge (not admin Badge status variants)."
+        >
+          <EyebrowDemo />
+        </Section>
+
+        <Section
+          title="Marketing buttons"
+          description="MarketingButton — solid dark primary + outline secondary; trailing arrow slides on hover via Framer Motion."
+        >
+          <MarketingButtonDemo />
         </Section>
 
         <Section
@@ -267,48 +291,37 @@ export default function StyleGuidePage() {
 
         <Section
           title="Cards"
-          description="Flat card vs .card-elevated (uses --card-shadow → --shadow-md; hover → --shadow-lg)."
+          description="Card default / interactive DNA — 1px border, rounded-2xl/3xl, hover ~2px lift + --card-shadow-hover. Module tile, case-study row, pricing compositions."
         >
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="font-display text-lg font-semibold">Flat card</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Border only, no elevation token.
-              </p>
-            </div>
-            <div className="card-elevated cursor-default rounded-2xl border border-border bg-card p-6">
-              <h3 className="font-display text-lg font-semibold">
-                Elevated card
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Hover to see shadow lift (--card-shadow-hover).
-              </p>
-            </div>
-          </div>
+          <MarketingCardsDemo />
         </Section>
 
         <Section
           title="Stat tiles"
-          description="Mock KPIs using radius + shadow tokens."
+          description="StatsStrip / StatTile — 4-up grid, icon chip, font-display number, muted label. Count-up retained."
         >
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-              { label: "Active projects", value: "128", delta: "+12%" },
-              { label: "Open invoices", value: "$84k", delta: "-3%" },
-              { label: "Attendance rate", value: "96.4%", delta: "+1.2%" },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="card-elevated rounded-2xl border border-border bg-card p-5"
-              >
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
-                <p className="mt-1 font-display text-3xl font-bold tracking-tight">
-                  {stat.value}
-                </p>
-                <p className="mt-2 text-xs text-success">{stat.delta}</p>
-              </div>
-            ))}
-          </div>
+          <StatsDemo />
+        </Section>
+
+        <Section
+          title="SelectorPanel"
+          description="One shared two-pane list ↔ detail component — module catalog and domain explorer demos."
+        >
+          <SelectorPanelDemo />
+        </Section>
+
+        <Section
+          title="DarkCtaBand"
+          description="Dark rounded band + grid texture. Band stays dark in both page themes; inverse MarketingButtons for contrast."
+        >
+          <DarkCtaBandDemo />
+        </Section>
+
+        <Section
+          title="GridBackground"
+          description="Decorative radial-dot texture (pointer-events-none). Behind mock hero and section header."
+        >
+          <GridBackgroundDemo />
         </Section>
 
         <Section
@@ -348,14 +361,19 @@ export default function StyleGuidePage() {
               <code className="font-mono text-foreground">font-sans</code>
             </li>
             <li>
-              <strong className="text-foreground">CTA:</strong> keep{" "}
-              <code className="font-mono text-foreground">--accent</code>{" "}
-              (amber/gold). Module tokens are tagging/iconography only.
+              <strong className="text-foreground">Brand CTA:</strong> keep{" "}
+              <code className="font-mono text-foreground">Button</code>{" "}
+              <code className="font-mono text-foreground">--accent</code>.
+              Marketing DNA CTAs use{" "}
+              <code className="font-mono text-foreground">MarketingButton</code>{" "}
+              (dark primary).
             </li>
             <li>
-              <strong className="text-foreground">Navbar:</strong> still uses
-              hardcoded Tailwind palettes; token mapping documented above for a
-              later low-risk swap.
+              <strong className="text-foreground">Eyebrow:</strong>{" "}
+              <code className="font-mono text-foreground">EyebrowBadge</code> —
+              do not overload admin{" "}
+              <code className="font-mono text-foreground">Badge</code> status
+              variants.
             </li>
             <li>
               <strong className="text-foreground">Shadows:</strong>{" "}
@@ -364,6 +382,12 @@ export default function StyleGuidePage() {
               <code className="font-mono text-foreground">
                 --card-shadow / --card-shadow-hover / --mega-shadow
               </code>
+            </li>
+            <li>
+              <strong className="text-foreground">Follow-up:</strong> apply these
+              primitives to live{" "}
+              <code className="font-mono text-foreground">(site)</code> pages;
+              StepCard / Navbar-Footer cleanup are separate.
             </li>
           </ul>
         </Section>
