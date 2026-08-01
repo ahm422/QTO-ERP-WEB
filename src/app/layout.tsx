@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Poppins, Inter } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
 });
 
 const inter = Inter({
@@ -28,7 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.variable} ${inter.variable} antialiased`}>
+      <body
+        className={`${spaceGrotesk.variable} ${inter.variable} font-sans antialiased`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

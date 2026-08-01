@@ -10,7 +10,8 @@
   --accent: var(--accent);
   --accent-foreground: var(--accent-foreground);
   --accent-dark: var(--accent-dark);
-  --font-sans: var(--font-poppins);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-space-grotesk);
   --font-mono: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -48,6 +49,30 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-module-hr: var(--module-hr);
+  --color-module-hr-foreground: var(--module-hr-foreground);
+  --color-module-hr-muted: var(--module-hr-muted);
+  --color-module-hr-bg: var(--module-hr-bg);
+  --color-module-inventory: var(--module-inventory);
+  --color-module-inventory-foreground: var(--module-inventory-foreground);
+  --color-module-inventory-muted: var(--module-inventory-muted);
+  --color-module-inventory-bg: var(--module-inventory-bg);
+  --color-module-crm: var(--module-crm);
+  --color-module-crm-foreground: var(--module-crm-foreground);
+  --color-module-crm-muted: var(--module-crm-muted);
+  --color-module-crm-bg: var(--module-crm-bg);
+  --color-module-payroll: var(--module-payroll);
+  --color-module-payroll-foreground: var(--module-payroll-foreground);
+  --color-module-payroll-muted: var(--module-payroll-muted);
+  --color-module-payroll-bg: var(--module-payroll-bg);
+  --color-module-mfg: var(--module-mfg);
+  --color-module-mfg-foreground: var(--module-mfg-foreground);
+  --color-module-mfg-muted: var(--module-mfg-muted);
+  --color-module-mfg-bg: var(--module-mfg-bg);
+  --color-module-accounting: var(--module-accounting);
+  --color-module-accounting-foreground: var(--module-accounting-foreground);
+  --color-module-accounting-muted: var(--module-accounting-muted);
+  --color-module-accounting-bg: var(--module-accounting-bg);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -55,13 +80,12 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
---hero-gradient: linear-gradient(
-  135deg,
-  hsl(40 90% 45%) 0%,
-  hsl(25 85% 55%) 50%,
-  hsl(20 70% 55%) 100%
-);
-
+  --hero-gradient: linear-gradient(
+    135deg,
+    hsl(40 90% 45%) 0%,
+    hsl(25 85% 55%) 50%,
+    hsl(20 70% 55%) 100%
+  );
 }
 
 :root {
@@ -105,6 +129,40 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Module accents — badges, icons, tags (not primary CTAs) */
+  --module-hr: #3b82f6;
+  --module-hr-foreground: #1e40af;
+  --module-hr-muted: #eff6ff;
+  --module-hr-bg: #eff6ff;
+  --module-inventory: #8b5cf6;
+  --module-inventory-foreground: #5b21b6;
+  --module-inventory-muted: #f5f3ff;
+  --module-inventory-bg: #f5f3ff;
+  --module-crm: #10b981;
+  --module-crm-foreground: #047857;
+  --module-crm-muted: #ecfdf5;
+  --module-crm-bg: #ecfdf5;
+  --module-payroll: #f59e0b;
+  --module-payroll-foreground: #b45309;
+  --module-payroll-muted: #fffbeb;
+  --module-payroll-bg: #fffbeb;
+  --module-mfg: #f43f5e;
+  --module-mfg-foreground: #be123c;
+  --module-mfg-muted: #fff1f2;
+  --module-mfg-bg: #fff1f2;
+  --module-accounting: #6366f1;
+  --module-accounting-foreground: #3730a3;
+  --module-accounting-muted: #eef2ff;
+  --module-accounting-bg: #eef2ff;
+
+  /* Soft elevation scale */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+  --card-shadow: var(--shadow-md);
+  --card-shadow-hover: var(--shadow-lg);
+  --mega-shadow: var(--shadow-lg);
 }
 
 .dark {
@@ -146,6 +204,40 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Module accents — lighter for dark surfaces */
+  --module-hr: #60a5fa;
+  --module-hr-foreground: #93c5fd;
+  --module-hr-muted: rgb(23 37 84 / 0.3);
+  --module-hr-bg: rgb(23 37 84 / 0.3);
+  --module-inventory: #a78bfa;
+  --module-inventory-foreground: #c4b5fd;
+  --module-inventory-muted: rgb(46 16 101 / 0.3);
+  --module-inventory-bg: rgb(46 16 101 / 0.3);
+  --module-crm: #34d399;
+  --module-crm-foreground: #6ee7b7;
+  --module-crm-muted: rgb(2 44 34 / 0.3);
+  --module-crm-bg: rgb(2 44 34 / 0.3);
+  --module-payroll: #fbbf24;
+  --module-payroll-foreground: #fcd34d;
+  --module-payroll-muted: rgb(69 26 3 / 0.3);
+  --module-payroll-bg: rgb(69 26 3 / 0.3);
+  --module-mfg: #fb7185;
+  --module-mfg-foreground: #fda4af;
+  --module-mfg-muted: rgb(76 5 25 / 0.3);
+  --module-mfg-bg: rgb(76 5 25 / 0.3);
+  --module-accounting: #818cf8;
+  --module-accounting-foreground: #a5b4fc;
+  --module-accounting-muted: rgb(30 27 75 / 0.3);
+  --module-accounting-bg: rgb(30 27 75 / 0.3);
+
+  /* Softer elevation on dark surfaces */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35), 0 2px 4px -2px rgb(0 0 0 / 0.25);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.45), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --card-shadow: var(--shadow-md);
+  --card-shadow-hover: var(--shadow-lg);
+  --mega-shadow: var(--shadow-lg);
 }
 
 @layer base {
