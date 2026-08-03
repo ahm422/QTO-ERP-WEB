@@ -276,6 +276,144 @@
   --mega-shadow: var(--shadow-lg);
 }
 
+/*
+ * Brand palettes — set data-palette on <html> (composes with .dark from next-themes).
+ * Absent attribute → :root / .dark indigo hex above (first paint / no-JS fallback).
+ *
+ * OKLCH recipe from indigo #4f46e5 / #7c3aed / #818cf8 / #c4b5fd:
+ *   Light --accent:      L=0.5106  C=0.2301  H₀
+ *   Light --accent-dark: L=0.5413  C=0.2466  H₀+16.04
+ *   Dark  --accent:      L=0.6801  C=0.1583  H₀
+ *   Dark  --accent-dark: L=0.8112  C=0.1013  H₀+16.64
+ * Chroma is clamped to sRGB when recipe C is out of gamut for a hue.
+ * Adjust L only as a documented exception if WCAG AA fails at fixed L/C.
+ */
+
+/* Shared derived hero tokens for any named palette (light) */
+[data-palette] {
+  --hero-accent: var(--accent);
+  --hero-cta: var(--accent);
+  --hero-cta-foreground: var(--accent-foreground);
+  --hero-chip: color-mix(in oklab, var(--accent) 8%, transparent);
+  --hero-chip-border: color-mix(in oklab, var(--accent) 22%, transparent);
+  --hero-glow: color-mix(in oklab, var(--accent) 28%, transparent);
+  --hero-glow-alt: color-mix(in oklab, var(--accent-dark) 22%, transparent);
+  --hero-gradient: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--accent) 10%, white) 0%,
+    color-mix(in oklab, var(--accent) 8%, white) 50%,
+    color-mix(in oklab, var(--accent-dark) 10%, white) 100%
+  );
+}
+
+/* Shared derived hero tokens for any named palette (dark) */
+.dark[data-palette] {
+  --hero-accent: var(--accent-dark);
+  --hero-cta: oklch(0.985 0 0);
+  --hero-cta-foreground: oklch(0.145 0 0);
+  --hero-chip: rgb(0 0 0 / 0.25);
+  --hero-chip-border: rgb(255 255 255 / 0.2);
+  --hero-glow: rgb(255 255 255 / 0.12);
+  --hero-glow-alt: rgb(0 0 0 / 0.25);
+  --hero-gradient: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--accent) 55%, black) 0%,
+    color-mix(in oklab, var(--accent) 50%, black) 50%,
+    color-mix(in oklab, var(--accent-dark) 45%, black) 100%
+  );
+}
+
+/* indigo — exact hex so [data-palette="indigo"] ≡ :root / .dark fallback */
+[data-palette="indigo"] {
+  --accent: #4f46e5;
+  --accent-foreground: oklch(0.985 0 0);
+  --accent-dark: #7c3aed;
+  --hero-gradient: linear-gradient(
+    135deg,
+    hsl(243 78% 96%) 0%,
+    hsl(258 76% 96%) 50%,
+    hsl(276 72% 96%) 100%
+  );
+  --hero-accent: #4f46e5;
+  --hero-chip: rgb(79 70 229 / 0.08);
+  --hero-chip-border: rgb(79 70 229 / 0.22);
+  --hero-cta: #4f46e5;
+  --hero-cta-foreground: oklch(0.985 0 0);
+  --hero-glow: rgb(99 102 241 / 0.28);
+  --hero-glow-alt: rgb(168 85 247 / 0.22);
+}
+
+.dark[data-palette="indigo"] {
+  --accent: #818cf8;
+  --accent-foreground: oklch(0.205 0 0);
+  --accent-dark: #c4b5fd;
+  --hero-gradient: linear-gradient(
+    135deg,
+    hsl(243 65% 24%) 0%,
+    hsl(258 60% 26%) 50%,
+    hsl(272 55% 27%) 100%
+  );
+  --hero-accent: #c4b5fd;
+  --hero-chip: rgb(0 0 0 / 0.25);
+  --hero-chip-border: rgb(255 255 255 / 0.2);
+  --hero-cta: oklch(0.985 0 0);
+  --hero-cta-foreground: oklch(0.145 0 0);
+  --hero-glow: rgb(255 255 255 / 0.12);
+  --hero-glow-alt: rgb(0 0 0 / 0.25);
+}
+
+/* ocean — H₀=220 (cool teal–cyan); C clamped to sRGB */
+[data-palette="ocean"] {
+  --accent: oklch(0.5106 0.0937 220);
+  --accent-foreground: oklch(0.985 0 0);
+  --accent-dark: oklch(0.5413 0.1174 236.04);
+}
+
+.dark[data-palette="ocean"] {
+  --accent: oklch(0.6801 0.1243 220);
+  --accent-foreground: oklch(0.205 0 0);
+  --accent-dark: oklch(0.8112 0.1013 236.64);
+}
+
+/* forest — H₀=155 (green); C clamped to sRGB */
+[data-palette="forest"] {
+  --accent: oklch(0.5106 0.1272 155);
+  --accent-foreground: oklch(0.985 0 0);
+  --accent-dark: oklch(0.5413 0.1067 171.04);
+}
+
+.dark[data-palette="forest"] {
+  --accent: oklch(0.6801 0.1583 155);
+  --accent-foreground: oklch(0.205 0 0);
+  --accent-dark: oklch(0.8112 0.1013 171.64);
+}
+
+/* sunset — H₀=45 (coral–orange, not warning-yellow); C clamped to sRGB */
+[data-palette="sunset"] {
+  --accent: oklch(0.5106 0.1476 45);
+  --accent-foreground: oklch(0.985 0 0);
+  --accent-dark: oklch(0.5413 0.1268 61.04);
+}
+
+.dark[data-palette="sunset"] {
+  --accent: oklch(0.6801 0.1583 45);
+  --accent-foreground: oklch(0.205 0 0);
+  --accent-dark: oklch(0.8112 0.1013 61.64);
+}
+
+/* rose — H₀=5 (magenta–rose); C clamped to sRGB */
+[data-palette="rose"] {
+  --accent: oklch(0.5106 0.2066 5);
+  --accent-foreground: oklch(0.985 0 0);
+  --accent-dark: oklch(0.5413 0.2189 21.04);
+}
+
+.dark[data-palette="rose"] {
+  --accent: oklch(0.6801 0.1583 5);
+  --accent-foreground: oklch(0.205 0 0);
+  --accent-dark: oklch(0.8112 0.1013 21.64);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
