@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Bell, Monitor, Moon, Search, Sun, User } from "lucide-react";
+import { PaletteToggle } from "@/components/common/PaletteToggle";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,7 @@ export function AdminHeader({ email }: AdminHeaderProps) {
           />
         </Button>
 
+        <PaletteToggle />
         <ThemeToggle />
 
         <DropdownMenu>

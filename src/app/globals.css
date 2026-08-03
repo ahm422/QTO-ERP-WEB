@@ -276,17 +276,30 @@
   --mega-shadow: var(--shadow-lg);
 }
 
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
 /*
  * Brand palettes — set data-palette on <html> (composes with .dark from next-themes).
  * Absent attribute → :root / .dark indigo hex above (first paint / no-JS fallback).
  *
  * OKLCH recipe from indigo #4f46e5 / #7c3aed / #818cf8 / #c4b5fd:
- *   Light --accent:      L=0.5106  C=0.2301  H₀
- *   Light --accent-dark: L=0.5413  C=0.2466  H₀+16.04
- *   Dark  --accent:      L=0.6801  C=0.1583  H₀
- *   Dark  --accent-dark: L=0.8112  C=0.1013  H₀+16.64
+ *   Light --accent:      L=0.5106  C=0.2301  H0
+ *   Light --accent-dark: L=0.5413  C=0.2466  H0+16.04
+ *   Dark  --accent:      L=0.6801  C=0.1583  H0
+ *   Dark  --accent-dark: L=0.8112  C=0.1013  H0+16.64
  * Chroma is clamped to sRGB when recipe C is out of gamut for a hue.
  * Adjust L only as a documented exception if WCAG AA fails at fixed L/C.
+ *
+ * Must stay unlayered (after :root / .dark) so attribute overrides beat :root
+ * in the cascade. Avoid non-ASCII in comments — Turbopack has dropped these
+ * blocks when the preceding comment contained Unicode subscripts.
  */
 
 /* Shared derived hero tokens for any named palette (light) */
@@ -362,7 +375,7 @@
   --hero-glow-alt: rgb(0 0 0 / 0.25);
 }
 
-/* ocean — H₀=220 (cool teal–cyan); C clamped to sRGB */
+/* ocean — H0=220 (cool teal–cyan); C clamped to sRGB */
 [data-palette="ocean"] {
   --accent: oklch(0.5106 0.0937 220);
   --accent-foreground: oklch(0.985 0 0);
@@ -375,7 +388,7 @@
   --accent-dark: oklch(0.8112 0.1013 236.64);
 }
 
-/* forest — H₀=155 (green); C clamped to sRGB */
+/* forest — H0=155 (green); C clamped to sRGB */
 [data-palette="forest"] {
   --accent: oklch(0.5106 0.1272 155);
   --accent-foreground: oklch(0.985 0 0);
@@ -388,7 +401,7 @@
   --accent-dark: oklch(0.8112 0.1013 171.64);
 }
 
-/* sunset — H₀=45 (coral–orange, not warning-yellow); C clamped to sRGB */
+/* sunset — H0=45 (coral–orange, not warning-yellow); C clamped to sRGB */
 [data-palette="sunset"] {
   --accent: oklch(0.5106 0.1476 45);
   --accent-foreground: oklch(0.985 0 0);
@@ -401,7 +414,7 @@
   --accent-dark: oklch(0.8112 0.1013 61.64);
 }
 
-/* rose — H₀=5 (magenta–rose); C clamped to sRGB */
+/* rose — H0=5 (magenta–rose); C clamped to sRGB */
 [data-palette="rose"] {
   --accent: oklch(0.5106 0.2066 5);
   --accent-foreground: oklch(0.985 0 0);
@@ -412,15 +425,6 @@
   --accent: oklch(0.6801 0.1583 5);
   --accent-foreground: oklch(0.205 0 0);
   --accent-dark: oklch(0.8112 0.1013 21.64);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
 }
 
 @layer components {

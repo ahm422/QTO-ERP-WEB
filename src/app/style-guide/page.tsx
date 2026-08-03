@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
-import { PaletteSwitcher } from "./_components/PaletteSwitcher";
+import { PaletteToggle } from "@/components/common/PaletteToggle";
+import { PalettePicker } from "./_components/PalettePicker";
 import {
   EyebrowDemo,
   MarketingButtonDemo,
@@ -206,7 +207,7 @@ export default function StyleGuidePage() {
               Dev only · NODE_ENV !== production
             </p>
             <div className="flex flex-wrap items-center justify-end gap-2">
-              <PaletteSwitcher />
+              <PaletteToggle />
               <ThemeToggle />
             </div>
           </div>
@@ -221,6 +222,13 @@ export default function StyleGuidePage() {
             dual-theme QA. Live marketing page rollouts are a follow-up.
           </p>
         </header>
+
+        <Section
+          title="Brand palettes"
+          description="Switch palette above or here; demos below use live --accent / hero tokens. Theme (light/dark) and palette compose independently."
+        >
+          <PalettePicker />
+        </Section>
 
         <Section
           title="Type scale"
@@ -257,7 +265,7 @@ export default function StyleGuidePage() {
 
         <Section
           title="Eyebrow badge"
-          description="Marketing section labels — EyebrowBadge (not admin Badge status variants)."
+          description="Marketing section labels — EyebrowBadge (not admin Badge status variants). Switch palette above; demos below use live --accent / hero tokens."
         >
           <EyebrowDemo />
         </Section>

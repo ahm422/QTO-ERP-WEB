@@ -27,6 +27,7 @@ import { usePathname } from "next/navigation";
 import { QTO_DEV_URL } from "@/lib/constants";
 import type { ModuleDetail, SolutionDetail } from "@/types/content";
 import type { LucideIcon } from "lucide-react";
+import { PaletteToggle } from "@/components/common/PaletteToggle";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 // Color palette for nav apps
@@ -856,6 +857,7 @@ export default function NavbarV3({
 
         {/* Right side */}
         <div className="hidden lg:flex items-center gap-3">
+          <PaletteToggle />
           <ThemeToggle />
           {ctaVisible && (
             <Link href={ctaUrl ?? "/demo"}>
@@ -866,6 +868,7 @@ export default function NavbarV3({
 
         {/* Mobile toggle */}
         <div className="lg:hidden flex items-center gap-1">
+          <PaletteToggle />
           <ThemeToggle />
           <button
             className="p-2.5 rounded-xl hover:bg-muted transition-colors"
