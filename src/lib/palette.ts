@@ -50,7 +50,7 @@ export const PALETTE_SWATCH: Record<
   },
 };
 
-/** Decorative hero motif ids — render in a follow-up; metadata only here. */
+/** Decorative hero motif ids — drive home-hero backdrop atmosphere (not the 3D rail). */
 export type HeroMotif = "waves" | "leaves" | "rays" | "petals" | "grid";
 
 /** Persona mood ids — layout/decoration branches in follow-ups. */
@@ -64,7 +64,7 @@ export type PersonaMood =
 /**
  * Full brand persona per palette: fonts + mood + motif.
  * CSS owns font swap via `[data-palette]` → `--font-*-family`;
- * React exposes mood/motif for future Hero / decorative branching.
+ * React exposes mood/motif for Hero / decorative branching.
  */
 export type PalettePersona = {
   fontDisplay: string;
