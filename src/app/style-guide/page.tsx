@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { PaletteSwitcher } from "./_components/PaletteSwitcher";
 import {
   EyebrowDemo,
   MarketingButtonDemo,
@@ -204,14 +205,18 @@ export default function StyleGuidePage() {
             <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
               Dev only · NODE_ENV !== production
             </p>
-            <ThemeToggle />
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <PaletteSwitcher />
+              <ThemeToggle />
+            </div>
           </div>
           <h1 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">
             Style Guide
           </h1>
           <p className="max-w-2xl text-muted-foreground">
             Proving ground for design tokens and Phase 2 marketing DNA
-            primitives (#99). Page theme toggle + local{" "}
+            primitives (#99). Page theme toggle, brand palette switcher (
+            <code className="font-mono text-sm">usePalette</code>), and local{" "}
             <code className="font-mono text-sm">.dark</code> wrappers for
             dual-theme QA. Live marketing page rollouts are a follow-up.
           </p>

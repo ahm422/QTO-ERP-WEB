@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { getPaletteBootstrapScript } from "@/lib/palette";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -28,6 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: getPaletteBootstrapScript() }}
+        />
+      </head>
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} font-sans antialiased`}
       >
