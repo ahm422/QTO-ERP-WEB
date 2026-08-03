@@ -609,7 +609,7 @@ export default function NavbarV3({
                           {/* Solutions Sidebar */}
                           <div className="bg-muted/80 p-5 border-r border-border">
                             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                               Solutions
                             </p>
                             <div className="space-y-1">
