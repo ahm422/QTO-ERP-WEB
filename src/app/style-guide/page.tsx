@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { PaletteToggle } from "@/components/common/PaletteToggle";
 import { PalettePicker } from "./_components/PalettePicker";
+import { TypeScaleSection } from "./_components/TypeScaleSection";
 import {
   EyebrowDemo,
   MarketingButtonDemo,
@@ -163,36 +164,6 @@ function SwatchGrid({ dark }: { dark?: boolean }) {
   );
 }
 
-function TypeColumn({ face }: { face: "display" | "sans" }) {
-  const font = face === "display" ? "font-display" : "font-sans";
-  const label =
-    face === "display" ? "font-display (Space Grotesk)" : "font-sans (Inter)";
-  return (
-    <div className="space-y-3 rounded-2xl border border-border p-5">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
-      <h1 className={`${font} text-4xl font-bold`}>Heading 1</h1>
-      <h2 className={`${font} text-3xl font-semibold`}>Heading 2</h2>
-      <h3 className={`${font} text-2xl font-semibold`}>Heading 3</h3>
-      <h4 className={`${font} text-xl font-medium`}>Heading 4</h4>
-      <h5 className={`${font} text-lg font-medium`}>Heading 5</h5>
-      <h6 className={`${font} text-base font-medium`}>Heading 6</h6>
-      <p className={`${font} text-base`}>
-        Body copy for UI and long-form reading.
-      </p>
-      <p className={`${font} text-sm text-muted-foreground`}>
-        Muted helper text and captions.
-      </p>
-      {face === "sans" ? (
-        <p className="font-mono text-sm text-muted-foreground">
-          Mono sample (Inter via --font-mono)
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
 export default function StyleGuidePage() {
   if (process.env.NODE_ENV === "production") {
     notFound();
@@ -225,20 +196,12 @@ export default function StyleGuidePage() {
 
         <Section
           title="Brand palettes"
-          description="Switch palette above or here; demos below use live --accent / hero tokens. Theme (light/dark) and palette compose independently."
+          description="Switch palette above or here; demos below use live --accent / hero tokens. Theme (light/dark) and palette compose independently. Each card shows persona fonts, mood, and motif."
         >
           <PalettePicker />
         </Section>
 
-        <Section
-          title="Type scale"
-          description="Space Grotesk for display; Inter for body/UI. Do not mass-migrate page headings yet."
-        >
-          <div className="grid gap-4 md:grid-cols-2">
-            <TypeColumn face="display" />
-            <TypeColumn face="sans" />
-          </div>
-        </Section>
+        <TypeScaleSection />
 
         <Section
           title="Color swatches"

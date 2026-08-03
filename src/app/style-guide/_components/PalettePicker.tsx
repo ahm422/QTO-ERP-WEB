@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { usePalette } from "@/components/PaletteProvider";
-import { PALETTE_LABELS, PALETTE_SWATCH } from "@/lib/palette";
+import {
+  PALETTE_LABELS,
+  PALETTE_PERSONAS,
+  PALETTE_SWATCH,
+} from "@/lib/palette";
 import { cn } from "@/lib/utils";
 
 export function PalettePicker() {
@@ -24,7 +28,7 @@ export function PalettePicker() {
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
-            className="h-28 rounded-2xl border border-border bg-muted/40"
+            className="h-40 rounded-2xl border border-border bg-muted/40"
           />
         ))}
       </div>
@@ -40,6 +44,7 @@ export function PalettePicker() {
       {palettes.map((id) => {
         const active = palette === id;
         const swatch = PALETTE_SWATCH[id];
+        const persona = PALETTE_PERSONAS[id];
         return (
           <button
             key={id}
@@ -72,6 +77,20 @@ export function PalettePicker() {
             </div>
             <div>
               <p className="text-sm font-medium">{PALETTE_LABELS[id]}</p>
+              <p
+                className={cn(
+                  "mt-1 text-sm leading-snug",
+                  active ? "font-display" : null,
+                )}
+              >
+                {persona.fontDisplay} / {persona.fontBody}
+              </p>
+              <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+                mood: {persona.mood}
+              </p>
+              <p className="font-mono text-[10px] text-muted-foreground">
+                motif: {persona.heroMotif}
+              </p>
               <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">
                 data-palette=&quot;{id}&quot;
               </p>

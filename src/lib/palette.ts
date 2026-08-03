@@ -50,6 +50,79 @@ export const PALETTE_SWATCH: Record<
   },
 };
 
+/** Decorative hero motif ids — render in a follow-up; metadata only here. */
+export type HeroMotif = "waves" | "leaves" | "rays" | "petals" | "grid";
+
+/** Persona mood ids — layout/decoration branches in follow-ups. */
+export type PersonaMood =
+  | "crisp-tech"
+  | "organic-calm"
+  | "warm-energetic"
+  | "soft-romantic"
+  | "corporate-trust";
+
+/**
+ * Full brand persona per palette: fonts + mood + motif.
+ * CSS owns font swap via `[data-palette]` → `--font-*-family`;
+ * React exposes mood/motif for future Hero / decorative branching.
+ */
+export type PalettePersona = {
+  fontDisplay: string;
+  fontBody: string;
+  /** CSS var name emitted by next/font (e.g. "--font-space-grotesk") */
+  fontDisplayVar: string;
+  fontBodyVar: string;
+  mood: PersonaMood;
+  heroMotif: HeroMotif;
+};
+
+export const PALETTE_PERSONAS: Record<PaletteId, PalettePersona> = {
+  indigo: {
+    fontDisplay: "Space Grotesk",
+    fontBody: "Inter",
+    fontDisplayVar: "--font-space-grotesk",
+    fontBodyVar: "--font-inter",
+    mood: "corporate-trust",
+    heroMotif: "grid",
+  },
+  ocean: {
+    fontDisplay: "Manrope",
+    fontBody: "IBM Plex Sans",
+    fontDisplayVar: "--font-manrope",
+    fontBodyVar: "--font-ibm-plex-sans",
+    mood: "crisp-tech",
+    heroMotif: "waves",
+  },
+  forest: {
+    fontDisplay: "Fraunces",
+    fontBody: "Sora",
+    fontDisplayVar: "--font-fraunces",
+    fontBodyVar: "--font-sora",
+    mood: "organic-calm",
+    heroMotif: "leaves",
+  },
+  sunset: {
+    fontDisplay: "Outfit",
+    fontBody: "Poppins",
+    fontDisplayVar: "--font-outfit",
+    fontBodyVar: "--font-poppins",
+    mood: "warm-energetic",
+    heroMotif: "rays",
+  },
+  rose: {
+    fontDisplay: "Playfair Display",
+    fontBody: "Nunito",
+    fontDisplayVar: "--font-playfair-display",
+    fontBodyVar: "--font-nunito",
+    mood: "soft-romantic",
+    heroMotif: "petals",
+  },
+};
+
+export function getPalettePersona(id: PaletteId): PalettePersona {
+  return PALETTE_PERSONAS[id];
+}
+
 export function isPaletteId(value: unknown): value is PaletteId {
   return (
     typeof value === "string" &&

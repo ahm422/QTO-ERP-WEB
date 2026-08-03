@@ -11,18 +11,22 @@ import {
 } from "react";
 import {
   DEFAULT_PALETTE,
+  getPalettePersona,
   isPaletteId,
   PALETTE_IDS,
   PALETTE_STORAGE_KEY,
   readPaletteQuery,
   writePaletteQuery,
   type PaletteId,
+  type PalettePersona,
 } from "@/lib/palette";
 
 type PaletteContextValue = {
   palette: PaletteId;
   setPalette: (id: PaletteId) => void;
   palettes: readonly PaletteId[];
+  /** Active persona derived from `palette` (fonts/mood/motif metadata). */
+  persona: PalettePersona;
 };
 
 const PaletteContext = createContext<PaletteContextValue | null>(null);
@@ -68,13 +72,16 @@ export function PaletteProvider({ children }: { children: ReactNode }) {
     writePaletteQuery(id);
   }, []);
 
+  const persona = useMemo(() => getPalettePersona(palette), [palette]);
+
   const value = useMemo(
     () => ({
       palette,
       setPalette,
       palettes: PALETTE_IDS,
+      persona,
     }),
-    [palette, setPalette],
+    [palette, setPalette, persona],
   );
 
   return (
