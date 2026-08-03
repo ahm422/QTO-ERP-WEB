@@ -10,8 +10,10 @@
   --accent: var(--accent);
   --accent-foreground: var(--accent-foreground);
   --accent-dark: var(--accent-dark);
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-space-grotesk);
+  /* Point Tailwind at semantic aliases so [data-palette] can hot-swap faces */
+  --font-sans: var(--font-sans-family);
+  --font-display: var(--font-display-family);
+  /* Mono stays on Inter so code samples remain stable across personas */
   --font-mono: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -93,6 +95,9 @@
 
 :root {
   --radius: 0.625rem;
+  /* Persona font aliases (indigo defaults). [data-palette] overrides these. */
+  --font-sans-family: var(--font-inter);
+  --font-display-family: var(--font-space-grotesk);
   --background: oklch(1 0 0);
   /* Brand accent: indigo → violet */
   --accent: #4f46e5;
@@ -341,6 +346,8 @@
   --accent: #4f46e5;
   --accent-foreground: oklch(0.985 0 0);
   --accent-dark: #7c3aed;
+  --font-display-family: var(--font-space-grotesk);
+  --font-sans-family: var(--font-inter);
   --hero-gradient: linear-gradient(
     135deg,
     hsl(243 78% 96%) 0%,
@@ -380,6 +387,8 @@
   --accent: oklch(0.5106 0.0937 220);
   --accent-foreground: oklch(0.985 0 0);
   --accent-dark: oklch(0.5413 0.1174 236.04);
+  --font-display-family: var(--font-manrope);
+  --font-sans-family: var(--font-ibm-plex-sans);
 }
 
 .dark[data-palette="ocean"] {
@@ -393,6 +402,8 @@
   --accent: oklch(0.5106 0.1272 155);
   --accent-foreground: oklch(0.985 0 0);
   --accent-dark: oklch(0.5413 0.1067 171.04);
+  --font-display-family: var(--font-fraunces);
+  --font-sans-family: var(--font-sora);
 }
 
 .dark[data-palette="forest"] {
@@ -406,6 +417,8 @@
   --accent: oklch(0.5106 0.1476 45);
   --accent-foreground: oklch(0.985 0 0);
   --accent-dark: oklch(0.5413 0.1268 61.04);
+  --font-display-family: var(--font-outfit);
+  --font-sans-family: var(--font-poppins);
 }
 
 .dark[data-palette="sunset"] {
@@ -419,6 +432,8 @@
   --accent: oklch(0.5106 0.2066 5);
   --accent-foreground: oklch(0.985 0 0);
   --accent-dark: oklch(0.5413 0.2189 21.04);
+  --font-display-family: var(--font-playfair-display);
+  --font-sans-family: var(--font-nunito);
 }
 
 .dark[data-palette="rose"] {
