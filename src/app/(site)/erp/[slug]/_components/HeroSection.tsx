@@ -25,7 +25,7 @@ export default function HeroSection({ app }: HeroSectionProps) {
   const fadeUp = getFadeInUp(reduced);
 
   return (
-    <section className='relative flex min-h-[85vh] items-center overflow-hidden hero-gradient'>
+    <section className='relative overflow-hidden hero-gradient section-padding'>
       <GridBackground opacity={0.14} className='absolute inset-0' />
 
       {!reduced && (
@@ -43,7 +43,7 @@ export default function HeroSection({ app }: HeroSectionProps) {
         </>
       )}
 
-      <div className='container-main relative z-10 px-4 py-24 text-center'>
+      <div className='container-main relative z-10 text-center'>
         <motion.div
           variants={container}
           initial='hidden'

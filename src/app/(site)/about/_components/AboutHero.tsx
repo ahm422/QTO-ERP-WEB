@@ -17,7 +17,7 @@ export default function AboutHero() {
   const fadeUp = getFadeInUp(reduced);
 
   return (
-    <section className='relative flex min-h-[60vh] items-center overflow-hidden hero-gradient section-padding'>
+    <section className='relative overflow-hidden hero-gradient section-padding'>
       <GridBackground opacity={0.12} className='absolute inset-0' />
 
       <div className='container-main relative z-10 text-center'>
