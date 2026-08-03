@@ -29,6 +29,7 @@ import type { ModuleDetail, SolutionDetail } from "@/types/content";
 import type { LucideIcon } from "lucide-react";
 import { PaletteToggle } from "@/components/common/PaletteToggle";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { isPalettePickerEnabled } from "@/lib/palette";
 
 // Color palette for nav apps
 const navAppColors = [
@@ -857,7 +858,7 @@ export default function NavbarV3({
 
         {/* Right side */}
         <div className="hidden lg:flex items-center gap-3">
-          <PaletteToggle />
+          {isPalettePickerEnabled() && <PaletteToggle />}
           <ThemeToggle />
           {ctaVisible && (
             <Link href={ctaUrl ?? "/demo"}>
@@ -868,7 +869,7 @@ export default function NavbarV3({
 
         {/* Mobile toggle */}
         <div className="lg:hidden flex items-center gap-1">
-          <PaletteToggle />
+          {isPalettePickerEnabled() && <PaletteToggle />}
           <ThemeToggle />
           <button
             className="p-2.5 rounded-xl hover:bg-muted transition-colors"

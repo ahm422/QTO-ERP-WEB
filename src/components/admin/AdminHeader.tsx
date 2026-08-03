@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth-context";
+import { isPalettePickerEnabled } from "@/lib/palette";
 
 type AdminHeaderProps = {
   readonly email: string;
@@ -62,7 +63,7 @@ export function AdminHeader({ email }: AdminHeaderProps) {
           />
         </Button>
 
-        <PaletteToggle />
+        {isPalettePickerEnabled() && <PaletteToggle />}
         <ThemeToggle />
 
         <DropdownMenu>

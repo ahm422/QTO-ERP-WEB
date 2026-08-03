@@ -58,6 +58,46 @@ export function isPaletteId(value: unknown): value is PaletteId {
 }
 
 /**
+ * Production marketing/admin chrome hides the palette toggle unless this is true
+ * (or `NODE_ENV !== "production"`). Style-guide keeps switching unconditionally
+ * (page already 404s in production).
+ */
+export function isPalettePickerEnabled(): boolean {
+  return (
+    process.env.NODE_ENV !== "production" ||
+    process.env.NEXT_PUBLIC_ENABLE_PALETTE_PICKER === "true"
+  );
+}
+
+/** Read `?palette=` from a search string (`location.search` or full query). */
+export function readPaletteQuery(
+  search: string = typeof window !== "undefined" ? window.location.search : "",
+): string | null {
+  const params = new URLSearchParams(
+    search.startsWith("?") ? search.slice(1) : search,
+  );
+  return params.get("palette");
+}
+
+/**
+ * Update or remove `palette` in the current URL via `history.replaceState`
+ * (preserves other params; does not push history). No-op on the server.
+ */
+export function writePaletteQuery(id: PaletteId | null): void {
+  if (typeof window === "undefined") return;
+  const url = new URL(window.location.href);
+  if (id === null) {
+    url.searchParams.delete("palette");
+  } else {
+    url.searchParams.set("palette", id);
+  }
+  const next = `${url.pathname}${url.search}${url.hash}`;
+  const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (next === current) return;
+  window.history.replaceState(window.history.state, "", next);
+}
+
+/**
  * Blocking inline IIFE for root layout `<head>`.
  * Reads localStorage and sets `document.documentElement.dataset.palette`
  * before paint. Missing/invalid values leave the attribute unset (indigo CSS fallback).
