@@ -341,10 +341,24 @@ export default function NavbarV3({
   const currentApp = apps.find((a) => a.slug === hoveredApp) || apps[0];
   const currentSol =
     solutionsItems.find((s) => s.slug === hoveredSolution) || solutionsItems[0];
+  const desktopTriggerBase =
+    "group relative flex items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200";
+  const desktopTriggerInactive =
+    "text-muted-foreground hover:text-foreground hover:bg-background/80 hover:shadow-sm";
+  const desktopTriggerActive =
+    "bg-background text-foreground shadow-sm ring-1 ring-border/70";
+  const desktopMenuShell =
+    "overflow-hidden rounded-[2rem] border border-border/60 bg-background/88 shadow-[0_32px_80px_-32px_rgba(15,23,42,0.45)] ring-1 ring-white/10 backdrop-blur-2xl dark:border-white/10 dark:ring-white/5";
+  const desktopSectionCard =
+    "group block rounded-2xl border border-border/70 bg-background/72 p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30 hover:bg-background hover:shadow-lg";
+  const mobileSurface =
+    "border border-border/60 bg-background/90 shadow-[0_28px_80px_-36px_rgba(15,23,42,0.55)] ring-1 ring-white/10 backdrop-blur-2xl dark:border-white/10 dark:ring-white/5";
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-4 lg:px-6">
+      <nav
+        className={`mx-auto flex h-16 max-w-7xl items-center justify-between rounded-[1.75rem] border border-border/60 bg-background/78 px-4 shadow-[0_18px_50px_-24px_rgba(15,23,42,0.45)] ring-1 ring-white/10 backdrop-blur-2xl sm:px-6 lg:px-8 dark:border-white/10 dark:ring-white/5`}
+      >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
           {logoUrl ? (
@@ -374,7 +388,7 @@ export default function NavbarV3({
         </Link>
 
         {/* Desktop Nav */}
-        <ul className="hidden lg:flex items-center">
+        <ul className="hidden lg:flex items-center gap-1 rounded-full border border-border/50 bg-background/55 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
           {navItems.map((item) => (
             <li
               key={item.label}
@@ -386,13 +400,18 @@ export default function NavbarV3({
             >
               {item.hasMega || item.hasDropdown ? (
                 <button
-                  className={`flex items-center gap-1.5 px-4 py-2 mx-0.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+                  className={`${desktopTriggerBase} ${
                     activeDropdown === item.label
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? desktopTriggerActive
+                      : desktopTriggerInactive
                   }`}
                 >
                   {item.label}
+                  <span
+                    className={`absolute inset-x-4 -bottom-px h-0.5 rounded-full bg-linear-to-r from-accent/70 via-accent to-accent-dark transition-opacity duration-200 ${
+                      activeDropdown === item.label ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
                   <motion.div
                     animate={{
                       rotate: activeDropdown === item.label ? 180 : 0,
@@ -405,7 +424,7 @@ export default function NavbarV3({
               ) : (
                 <Link
                   href={item.href}
-                  className="px-4 py-2 mx-0.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 rounded-xl block"
+                  className={`${desktopTriggerBase} ${desktopTriggerInactive} block`}
                 >
                   {item.label}
                 </Link>
@@ -423,17 +442,19 @@ export default function NavbarV3({
                       duration: 0.2,
                       ease: [0.25, 0.46, 0.45, 0.94],
                     }}
-                    className="absolute left-1/2 -translate-x-1/2 top-full pt-4"
+                    className="fixed left-1/2 top-[4.75rem] z-50 -translate-x-1/2 pt-4"
                     onMouseEnter={() => openDropdown("Platform")}
                     onMouseLeave={closeDropdown}
                   >
-                    <div className="w-212.5 rounded-3xl bg-card shadow-2xl shadow-black/10 dark:shadow-black/50 overflow-hidden ring-1 ring-border">
+                    <div
+                      className={`w-[min(52rem,calc(100vw-2rem))] xl:w-212.5 ${desktopMenuShell}`}
+                    >
                       {/* Top accent line */}
-                      <div className="h-1 bg-linear-to-r from-accent via-accent to-accent-dark" />
+                      <div className="h-1.5 bg-linear-to-r from-accent/75 via-accent to-accent-dark" />
 
                       <div className="grid grid-cols-[260px_1fr]">
                         {/* Apps Sidebar */}
-                        <div className="bg-muted/80 p-5 border-r border-border">
+                        <div className="border-r border-border/60 bg-muted/35 p-6 backdrop-blur-sm">
                           <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                             Platfroms{" "}
@@ -448,10 +469,10 @@ export default function NavbarV3({
                                   onMouseEnter={() => setHoveredApp(app.slug)}
                                   whileHover={{ x: 3 }}
                                   whileTap={{ scale: 0.98 }}
-                                  className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
+                                  className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left transition-all duration-200 ${
                                     isActive
-                                      ? `${app.bgColor} ring-1 ring-border shadow-sm`
-                                      : "hover:bg-card"
+                                      ? `${app.bgColor} ring-1 ring-border/70 shadow-sm shadow-black/5`
+                                      : "hover:bg-background/75"
                                   }`}
                                 >
                                   <div
@@ -491,11 +512,12 @@ export default function NavbarV3({
                         </div>
 
                         {/* Sections Grid - DYNAMIC PER APP */}
-                        <div className="p-6 relative overflow-hidden">
+                        <div className="relative overflow-hidden p-7">
                           {/* Background glow */}
                           <div
-                            className={`absolute top-0 right-0 w-64 h-64 bg-linear-to-br ${currentApp?.color} opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2`}
+                            className={`absolute top-0 right-0 h-64 w-64 rounded-full bg-linear-to-br ${currentApp?.color} opacity-10 blur-3xl -translate-y-1/2 translate-x-1/2`}
                           />
+                          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/35 to-transparent" />
 
                           {/* Header */}
                           <div className="flex items-center justify-between mb-5 relative z-10">
@@ -517,7 +539,7 @@ export default function NavbarV3({
                             <Link
                               href={`/erp/${currentApp?.slug}`}
                               onClick={() => setActiveDropdown(null)}
-                              className={`text-xs font-semibold ${currentApp?.textColor} hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors`}
+                              className={`flex items-center gap-1 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-background/80 ${currentApp?.textColor}`}
                             >
                               View module <ArrowRight className="w-3 h-3" />
                             </Link>
@@ -542,7 +564,7 @@ export default function NavbarV3({
                                     key={links.anchor}
                                     href={`/erp/${currentApp?.slug}${links.anchor}`}
                                     onClick={() => setActiveDropdown(null)}
-                                    className="group block p-3.5 rounded-xl border border-border bg-card hover:border-accent/40 hover:shadow-md transition-all duration-200"
+                                    className={desktopSectionCard}
                                   >
                                     <p className="text-sm font-semibold text-foreground group-hover:text-foreground transition-colors">
                                       {links.label}
@@ -556,7 +578,7 @@ export default function NavbarV3({
                       </div>
 
                       {/* Footer */}
-                      <div className="px-5 py-3.5 bg-muted/50 border-t border-border flex items-center justify-between">
+                      <div className="flex items-center justify-between border-t border-border/60 bg-muted/30 px-6 py-4 backdrop-blur-sm">
                         <div className="flex items-center gap-3">
                           <div className="flex -space-x-2">
                             {apps.slice(0, 4).map((app) => (
@@ -577,7 +599,7 @@ export default function NavbarV3({
                         </div>
                         <Link
                           href="/allApps"
-                          className="text-xs font-semibold text-foreground/80 hover:text-accent flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border hover:border-accent/40 transition-all"
+                          className="flex items-center gap-1.5 rounded-full border border-border/70 bg-background/75 px-4 py-2 text-xs font-semibold text-foreground/80 transition-all hover:border-accent/40 hover:text-accent"
                         >
                           Explore all <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
@@ -598,17 +620,19 @@ export default function NavbarV3({
                         duration: 0.2,
                         ease: [0.25, 0.46, 0.45, 0.94],
                       }}
-                      className="absolute left-1/2 -translate-x-1/2 top-full pt-4"
+                      className="fixed left-1/2 top-[4.75rem] z-50 -translate-x-1/2 pt-4"
                       onMouseEnter={() => openDropdown("Solutions")}
                       onMouseLeave={closeDropdown}
                     >
-                      <div className="w-187.5 rounded-3xl bg-card shadow-2xl shadow-black/10 dark:shadow-black/50 overflow-hidden ring-1 ring-border">
+                      <div
+                        className={`w-[min(46rem,calc(100vw-2rem))] xl:w-187.5 ${desktopMenuShell}`}
+                      >
                         {/* Top accent line */}
-                        <div className="h-1 bg-linear-to-r from-accent via-accent to-accent-dark" />
+                        <div className="h-1.5 bg-linear-to-r from-accent/75 via-accent to-accent-dark" />
 
                         <div className="grid grid-cols-[240px_1fr]">
                           {/* Solutions Sidebar */}
-                          <div className="bg-muted/80 p-5 border-r border-border">
+                          <div className="border-r border-border/60 bg-muted/35 p-6 backdrop-blur-sm">
                             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                               Solutions
@@ -625,10 +649,10 @@ export default function NavbarV3({
                                     }
                                     whileHover={{ x: 3 }}
                                     whileTap={{ scale: 0.98 }}
-                                    className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
+                                    className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left transition-all duration-200 ${
                                       isActive
-                                        ? `${sol.bgColor} ring-1 ring-border shadow-sm`
-                                        : "hover:bg-card"
+                                        ? `${sol.bgColor} ring-1 ring-border/70 shadow-sm shadow-black/5`
+                                        : "hover:bg-background/75"
                                     }`}
                                   >
                                     <div
@@ -665,11 +689,12 @@ export default function NavbarV3({
                           </div>
 
                           {/* Solution Details - mirrors Platform pattern */}
-                          <div className="p-6 relative overflow-hidden">
+                          <div className="relative overflow-hidden p-7">
                             {/* Background glow - updates via currentSol, no animation wrapper needed */}
                             <div
-                              className={`absolute top-0 right-0 w-64 h-64 bg-linear-to-br ${currentSol.color} opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 transition-all duration-300`}
+                              className={`absolute top-0 right-0 h-64 w-64 rounded-full bg-linear-to-br ${currentSol.color} opacity-10 blur-3xl -translate-y-1/2 translate-x-1/2 transition-all duration-300`}
                             />
+                            <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/35 to-transparent" />
 
                             {/* Static Header - always visible, mirrors Platform */}
                             <div className="flex items-center justify-between mb-5 relative z-10">
@@ -691,7 +716,7 @@ export default function NavbarV3({
                               <Link
                                 href={currentSol.href}
                                 onClick={() => setActiveDropdown(null)}
-                                className={`text-xs font-semibold ${currentSol.textColor} hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors`}
+                                className={`flex items-center gap-1 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-background/80 ${currentSol.textColor}`}
                               >
                                 Explore <ArrowRight className="w-3 h-3" />
                               </Link>
@@ -717,8 +742,9 @@ export default function NavbarV3({
                                     }}
                                   >
                                     <Link
-                                      href={currentSol.href}                                      onClick={() => setActiveDropdown(null)}
-                                      className="group block p-3.5 rounded-xl border border-border bg-card hover:border-accent/40 hover:shadow-md transition-all duration-200 h-full"
+                                      href={currentSol.href}
+                                      onClick={() => setActiveDropdown(null)}
+                                      className={`${desktopSectionCard} h-full`}
                                     >
                                       <p className="text-sm font-semibold text-foreground group-hover:text-foreground transition-colors">
                                         {"industry" in useCase
@@ -739,7 +765,7 @@ export default function NavbarV3({
                         </div>
 
                         {/* Footer - mirrors Platform footer exactly */}
-                        <div className="px-5 py-3.5 bg-muted/50 border-t border-border flex items-center justify-between">
+                        <div className="flex items-center justify-between border-t border-border/60 bg-muted/30 px-6 py-4 backdrop-blur-sm">
                           <div className="flex items-center gap-3">
                             <div className="flex -space-x-2">
                               {solutionsItems.map((sol) => {
@@ -763,7 +789,7 @@ export default function NavbarV3({
                           </div>
                           <Link
                             href="/allApps"
-                            className="text-xs font-semibold text-foreground/80 hover:text-accent flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border hover:border-accent/40 transition-all"
+                            className="flex items-center gap-1.5 rounded-full border border-border/70 bg-background/75 px-4 py-2 text-xs font-semibold text-foreground/80 transition-all hover:border-accent/40 hover:text-accent"
                           >
                             Explore all <ArrowRight className="w-3.5 h-3.5" />
                           </Link>
@@ -781,12 +807,12 @@ export default function NavbarV3({
                       animate="animate"
                       exit="exit"
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 top-full pt-4"
+                      className="absolute right-0 top-full pt-5"
                       onMouseEnter={() => openDropdown("Resources")}
                       onMouseLeave={closeDropdown}
                     >
-                      <div className="w-72 rounded-2xl bg-card shadow-xl shadow-black/10 dark:shadow-black/50 ring-1 ring-border p-2 overflow-hidden">
-                        <div className="h-0.5 bg-linear-to-r from-accent to-accent-dark mb-2" />
+                      <div className={`w-80 p-2.5 ${desktopMenuShell} rounded-[1.75rem]`}>
+                        <div className="mb-2 h-0.5 rounded-full bg-linear-to-r from-accent/60 via-accent to-accent-dark" />
                         {resourceItems.map((r, idx) => {
                           const Icon = r.icon;
                           return r.external ? (
@@ -798,10 +824,10 @@ export default function NavbarV3({
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: idx * 0.05 }}
-                              className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-muted transition-all group"
+                              className="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all hover:bg-background/80"
                             >
                               <div
-                                className={`w-10 h-10 rounded-xl bg-linear-to-br ${r.color} flex items-center justify-center text-white shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all`}
+                                className={`flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br ${r.color} text-white shadow-md transition-all group-hover:scale-105 group-hover:shadow-lg`}
                               >
                                 <Icon className="w-4 h-4" />
                               </div>
@@ -826,10 +852,10 @@ export default function NavbarV3({
                             >
                               <Link
                                 href={r.href}
-                                className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-muted transition-all group"
+                                className="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all hover:bg-background/80"
                               >
                                 <div
-                                  className={`w-10 h-10 rounded-xl bg-linear-to-br ${r.color} flex items-center justify-center text-white shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all`}
+                                  className={`flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br ${r.color} text-white shadow-md transition-all group-hover:scale-105 group-hover:shadow-lg`}
                                 >
                                   <Icon className="w-4 h-4" />
                                 </div>
@@ -857,22 +883,24 @@ export default function NavbarV3({
         </ul>
 
         {/* Right side */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-2 rounded-full border border-border/50 bg-background/55 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
           {isPalettePickerEnabled() && <PaletteToggle />}
           <ThemeToggle />
           {ctaVisible && (
             <Link href={ctaUrl ?? "/demo"}>
-              <Button>{ctaLabel ?? "Book Demo"}</Button>
+              <Button className="rounded-full px-5 shadow-lg shadow-accent/20">
+                {ctaLabel ?? "Book Demo"}
+              </Button>
             </Link>
           )}
         </div>
 
         {/* Mobile toggle */}
-        <div className="lg:hidden flex items-center gap-1">
+        <div className="lg:hidden flex items-center gap-1 rounded-full border border-border/50 bg-background/60 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
           {isPalettePickerEnabled() && <PaletteToggle />}
           <ThemeToggle />
           <button
-            className="p-2.5 rounded-xl hover:bg-muted transition-colors"
+            className="rounded-full p-2.5 transition-colors hover:bg-background/80"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -894,177 +922,182 @@ export default function NavbarV3({
             animate="animate"
             exit="exit"
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-0 top-16 z-40 bg-background lg:hidden overflow-y-auto"
+            className="fixed inset-x-0 bottom-0 top-[5.25rem] z-40 px-3 pb-3 lg:hidden sm:px-4"
           >
-            <div className="p-4 pb-28 space-y-1">
-              {/* Modules */}
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-3">
-                Platfroms
-              </p>
-              {apps.map((app, idx) => {
-                const Icon = app.icon;
-                return (
-                  <motion.div
-                    key={app.slug}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <Link
-                      href={`/erp/${app.slug}`}
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
+            <div
+              className={`relative min-h-full space-y-1 overflow-y-auto rounded-[2rem] ${mobileSurface}`}
+            >
+              <div className="absolute inset-x-10 top-0 h-px bg-linear-to-r from-transparent via-accent/40 to-transparent" />
+              <div className="space-y-1 p-4 pb-28 sm:space-y-1 sm:p-5 sm:pb-32">
+                {/* Modules */}
+                <p className="px-2 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Platfroms
+                </p>
+                {apps.map((app, idx) => {
+                  const Icon = app.icon;
+                  return (
+                    <motion.div
+                      key={app.slug}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.05 }}
                     >
-                      <div
-                        className={`w-12 h-12 rounded-xl bg-linear-to-br ${app.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}
-                      >
-                        <Icon className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground">
-                          {app.name}
-                        </p>
-                        <p className="text-sm text-muted-foreground line-clamp-1">
-                          {app.description}
-                        </p>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" />
-                    </Link>
-                  </motion.div>
-                );
-              })}
-
-              {/* Solutions */}
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-3 pt-6">
-                Solutions
-              </p>
-              {solutionsItems.map((s, idx) => {
-                const Icon = s.icon;
-                return (
-                  <motion.div
-                    key={s.href}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (apps.length + idx) * 0.05 }}
-                  >
-                    <Link
-                      href={s.href}
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
-                    >
-                      <div
-                        className={`w-12 h-12 rounded-xl bg-linear-to-br ${s.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}
-                      >
-                        <Icon className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground">
-                          {s.label}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {s.description}
-                        </p>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" />
-                    </Link>
-                  </motion.div>
-                );
-              })}
-
-              {/* Resources */}
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-3 pt-6">
-                Resources
-              </p>
-              {resourceItems.map((r, idx) => {
-                const Icon = r.icon;
-                return (
-                  <motion.div
-                    key={r.href}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      delay: (apps.length + solutionsItems.length + idx) * 0.05,
-                    }}
-                  >
-                    {r.external ? (
-                      <a
-                        href={r.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
-                      >
-                        <div
-                          className={`w-12 h-12 rounded-xl bg-linear-to-br ${r.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}
-                        >
-                          <Icon className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">
-                            {r.label}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {r.description}
-                          </p>
-                        </div>
-                        <ExternalLink className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent transition-all" />
-                      </a>
-                    ) : (
                       <Link
-                        href={r.href}
-                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
+                        href={`/erp/${app.slug}`}
+                        className="group flex items-center gap-4 rounded-2xl p-3.5 transition-colors hover:bg-background/80"
                       >
                         <div
-                          className={`w-12 h-12 rounded-xl bg-linear-to-br ${r.color} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}
+                          className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br ${app.color} text-white shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl`}
                         >
                           <Icon className="w-6 h-6" />
                         </div>
                         <div>
                           <p className="font-semibold text-foreground">
-                            {r.label}
+                            {app.name}
                           </p>
-                          <p className="text-sm text-muted-foreground">
-                            {r.description}
+                          <p className="line-clamp-1 text-sm text-muted-foreground">
+                            {app.description}
                           </p>
                         </div>
-                        <ArrowRight className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" />
+                        <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-accent" />
                       </Link>
-                    )}
-                  </motion.div>
-                );
-              })}
+                    </motion.div>
+                  );
+                })}
 
-              {/* Pricing link */}
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-3 pt-6">
-                More
-              </p>
-              <Link
-                href="/pricing"
-                className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted transition-colors group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-muted-foreground to-foreground flex items-center justify-center text-white shadow-lg">
-                  <DollarSign className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground">
-                    Pricing
-                  </p>
-                  <p className="text-sm text-muted-foreground">Plans & pricing</p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" />
-              </Link>
-            </div>
+                {/* Solutions */}
+                <p className="px-2 py-3 pt-6 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Solutions
+                </p>
+                {solutionsItems.map((s, idx) => {
+                  const Icon = s.icon;
+                  return (
+                    <motion.div
+                      key={s.href}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (apps.length + idx) * 0.05 }}
+                    >
+                      <Link
+                        href={s.href}
+                        className="group flex items-center gap-4 rounded-2xl p-3.5 transition-colors hover:bg-background/80"
+                      >
+                        <div
+                          className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br ${s.color} text-white shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl`}
+                        >
+                          <Icon className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-foreground">
+                            {s.label}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {s.description}
+                          </p>
+                        </div>
+                        <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-accent" />
+                      </Link>
+                    </motion.div>
+                  );
+                })}
 
-            {/* Sticky bottom CTA */}
-            {ctaVisible && (
-              <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border lg:hidden">
+                {/* Resources */}
+                <p className="px-2 py-3 pt-6 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Resources
+                </p>
+                {resourceItems.map((r, idx) => {
+                  const Icon = r.icon;
+                  return (
+                    <motion.div
+                      key={r.href}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        delay:
+                          (apps.length + solutionsItems.length + idx) * 0.05,
+                      }}
+                    >
+                      {r.external ? (
+                        <a
+                          href={r.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex items-center gap-4 rounded-2xl p-3.5 transition-colors hover:bg-background/80"
+                        >
+                          <div
+                            className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br ${r.color} text-white shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl`}
+                          >
+                            <Icon className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-foreground">
+                              {r.label}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {r.description}
+                            </p>
+                          </div>
+                          <ExternalLink className="ml-auto h-5 w-5 text-muted-foreground transition-all group-hover:text-accent" />
+                        </a>
+                      ) : (
+                        <Link
+                          href={r.href}
+                          className="group flex items-center gap-4 rounded-2xl p-3.5 transition-colors hover:bg-background/80"
+                        >
+                          <div
+                            className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br ${r.color} text-white shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl`}
+                          >
+                            <Icon className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-foreground">
+                              {r.label}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {r.description}
+                            </p>
+                          </div>
+                          <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-accent" />
+                        </Link>
+                      )}
+                    </motion.div>
+                  );
+                })}
+
+                {/* Pricing link */}
+                <p className="px-2 py-3 pt-6 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  More
+                </p>
                 <Link
-                  href={ctaUrl ?? "/demo"}
-                  className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-white bg-linear-to-r from-accent to-accent-dark px-4 py-3.5 rounded-xl shadow-lg shadow-accent/20"
+                  href="/pricing"
+                  className="group flex items-center gap-4 rounded-2xl p-3.5 transition-colors hover:bg-background/80"
                 >
-                  <Button>
-                    {ctaLabel ?? "Book Demo"} <ArrowRight className="w-4 h-4" />
-                  </Button>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-muted-foreground to-foreground text-white shadow-lg">
+                    <DollarSign className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground">Pricing</p>
+                    <p className="text-sm text-muted-foreground">
+                      Plans & pricing
+                    </p>
+                  </div>
+                  <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-accent" />
                 </Link>
               </div>
-            )}
+              {/* Sticky bottom CTA */}
+              {ctaVisible && (
+                <div className="sticky bottom-0 z-10 mt-6 rounded-b-[2rem] bg-linear-to-t from-background via-background/95 to-transparent px-4 pb-4 pt-6 sm:px-5">
+                  <div className="rounded-[1.5rem] border border-border/60 bg-background/75 p-2 shadow-[0_20px_50px_-28px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+                    <Link
+                      href={ctaUrl ?? "/demo"}
+                      className="flex w-full items-center justify-center gap-2 rounded-[1.1rem] bg-linear-to-r from-accent to-accent-dark px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-accent/20"
+                    >
+                      {ctaLabel ?? "Book Demo"} <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
