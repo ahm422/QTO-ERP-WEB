@@ -37,7 +37,7 @@ export default function ValuesSection() {
   ];
 
   return (
-    <section className='section-padding bg-muted/50'>
+    <section className='section-padding bg-muted/30'>
       <div className='container-main'>
         <HeaderSections tag='Values' title='What We Stand For' />
         <motion.div

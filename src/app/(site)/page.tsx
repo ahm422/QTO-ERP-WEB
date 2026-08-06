@@ -22,7 +22,11 @@ export default async function Home() {
       <HomeStats />
       <Faqs />
       <QTODev />
-      <CTASection />
+      <CTASection
+        eyebrow="Next step"
+        headline="Ready to Transform Your Operations?"
+        description="See how QTO-ERP fits your workflows — book a demo or compare plans."
+      />
       <Subscribe />
     </>
   );

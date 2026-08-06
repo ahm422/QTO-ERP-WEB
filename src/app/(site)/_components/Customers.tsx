@@ -13,7 +13,7 @@ const Customers = () => {
     <>
       <section className='section-padding bg-accent/5'>
         <div className='container-main'>
-          <div className='pb-16 md:pb-20'>
+          <div className='mb-12 md:mb-16'>
             <ClientsMarquee />
           </div>
           <HeaderSections

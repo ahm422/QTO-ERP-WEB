@@ -10,7 +10,11 @@ export default function About() {
       <AboutHero />
       <StorySection />
       <ValuesSection />
-      <CTASection />
+      <CTASection
+        eyebrow="Join the team"
+        headline="Ready to Transform Your Operations?"
+        description="We're building the modern ERP growing teams love — let's talk."
+      />
     </>
   );
 }

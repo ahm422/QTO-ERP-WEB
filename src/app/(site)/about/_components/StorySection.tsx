@@ -48,9 +48,9 @@ export default function StorySection() {
                   variant='accent'
                 />
               </div>
-              <h3 className='mb-6 font-display text-3xl font-bold text-foreground md:text-4xl'>
+              <h2 className='mb-6 font-display text-3xl font-bold text-foreground md:text-4xl'>
                 Why We Built QTO-ERP
-              </h3>
+              </h2>
 
               <div className='space-y-6 text-lg leading-relaxed text-muted-foreground'>
                 <p>
