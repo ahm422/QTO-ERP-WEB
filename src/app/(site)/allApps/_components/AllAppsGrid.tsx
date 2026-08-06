@@ -46,14 +46,13 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
                 variant='hero'
               />
             </div>
-            <h1 className='mb-6 font-display text-4xl font-bold tracking-tight text-hero-foreground sm:text-5xl lg:text-6xl'>
+            <h1 className='mb-6 font-display text-4xl font-bold tracking-tight text-hero-foreground sm:text-5xl'>
               Unified Business Management{' '}
               <span className='text-hero-accent'>Platform</span>
             </h1>
-            <p className='mx-auto max-w-3xl text-lg leading-relaxed text-hero-muted-foreground sm:text-xl'>
-              Discover our integrated suite of enterprise applications designed
-              to streamline operations, enhance productivity, and drive growth
-              across all business functions.
+            <p className='mx-auto max-w-2xl text-lg leading-relaxed text-hero-muted-foreground'>
+              Explore every QTO-ERP module in one catalog — pick a capability,
+              preview highlights, then open the full product page.
             </p>
           </motion.div>
         </div>
@@ -119,7 +118,9 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
       </section>
 
       <CTASection
+        eyebrow="Ready when you are"
         headline='Ready to Simplify Your Operations with QTO ERP?'
+        description='Schedule a walkthrough or compare plans — same DNA across every palette.'
         primaryLabel='Schedule a Demo'
         primaryHref='/demo'
         secondaryLabel='View Pricing'

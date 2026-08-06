@@ -133,9 +133,13 @@ export default async function HRSoftwareLandingFullWidth({
               </div>
             </div>
 
-            <div className='relative rounded-3xl border border-hero-chip-border bg-hero-chip p-8 shadow-[var(--card-shadow)]'>
-              <div className='aspect-4/3 rounded-2xl bg-linear-to-br from-hero-accent/30 via-hero-glow to-transparent' />
-              <p className='mt-4 text-center text-sm text-hero-muted-foreground'>
+            <div className='relative overflow-hidden rounded-3xl border border-hero-chip-border bg-hero-chip p-8 shadow-[var(--card-shadow)]'>
+              <GridBackground
+                opacity={0.2}
+                className='absolute inset-0 rounded-3xl'
+              />
+              <div className='relative z-10 aspect-4/3 rounded-2xl border border-hero-chip-border bg-linear-to-br from-hero-accent/25 via-hero-glow to-transparent' />
+              <p className='relative z-10 mt-4 text-center text-sm text-hero-muted-foreground'>
                 Unified workflows for {solution.title.toLowerCase()}
               </p>
             </div>
@@ -150,7 +154,7 @@ export default async function HRSoftwareLandingFullWidth({
       <RecommendedModulesSection modules={recommendedModules} />
 
       {solution.solutionFaqs && solution.solutionFaqs.length > 0 ? (
-        <section className='section-padding bg-muted/40'>
+        <section className='section-padding bg-muted/30'>
           <div className='container-main'>
             <HeaderSections
               tag='Got Questions?'
@@ -161,7 +165,10 @@ export default async function HRSoftwareLandingFullWidth({
         </section>
       ) : null}
 
-      <CTASection />
+      <CTASection
+        eyebrow="Build with us"
+        description="Request a walkthrough tailored to this solution — or compare plans."
+      />
     </main>
   );
 }

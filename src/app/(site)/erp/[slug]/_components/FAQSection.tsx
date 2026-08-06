@@ -16,7 +16,7 @@ interface FAQSectionProps {
 
 export default function FAQSection({ app }: FAQSectionProps) {
   return (
-    <section id="faq" className="section-padding bg-muted/50">
+    <section id="faq" className="section-padding bg-muted/30">
       <div className="container-main">
         <HeaderSections tag="FAQ" title={`${app.name} FAQ`} />
         <FAQAccordion faqs={app.faqs} />
