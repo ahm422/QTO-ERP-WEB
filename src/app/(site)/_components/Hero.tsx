@@ -109,8 +109,7 @@ const Hero = () => {
                 <EyebrowBadge
                   icon={Sparkles}
                   label='The Modern ERP Platform'
-                  variant='muted'
-                  className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+                  variant='hero'
                 />
               </motion.div>
 

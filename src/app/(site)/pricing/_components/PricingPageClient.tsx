@@ -55,8 +55,7 @@ export default function PricingPageClient({
               <EyebrowBadge
                 icon={Tag}
                 label="Pricing"
-                variant="muted"
-                className="border-hero-chip-border bg-hero-chip text-hero-foreground"
+                variant="hero"
               />
             </motion.div>
             <motion.h1

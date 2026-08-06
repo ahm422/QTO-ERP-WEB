@@ -54,8 +54,7 @@ export default function HeroSection({ app }: HeroSectionProps) {
             <EyebrowBadge
               icon={Sparkles}
               label='ERP Module'
-              variant='muted'
-              className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+              variant='hero'
             />
           </motion.div>
 

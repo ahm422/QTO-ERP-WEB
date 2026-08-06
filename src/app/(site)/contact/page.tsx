@@ -113,8 +113,7 @@ export default function ContactPage() {
               <EyebrowBadge
                 icon={MessageCircle}
                 label='Contact Our Team'
-                variant='muted'
-                className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+                variant='hero'
               />
             </motion.div>
 

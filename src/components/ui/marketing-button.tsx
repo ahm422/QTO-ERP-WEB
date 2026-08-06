@@ -20,17 +20,17 @@ const marketingButtonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-sm)]",
         secondary:
           "border border-border bg-transparent text-foreground hover:bg-muted",
         ghost: "text-foreground hover:bg-muted",
         /** Light fill for use on DarkCtaBand (band stays dark in both themes) */
         inverse:
-          "bg-white text-neutral-950 hover:bg-neutral-100 shadow-sm",
+          "bg-white text-neutral-950 hover:bg-neutral-100 shadow-[var(--shadow-sm)]",
         "inverse-secondary":
           "border border-white/30 bg-transparent text-white hover:bg-white/10",
         /** For hero sections, whose surface flips between light and dark with the theme */
-        hero: "bg-hero-cta text-hero-cta-foreground hover:opacity-90 shadow-sm",
+        hero: "bg-hero-cta text-hero-cta-foreground hover:opacity-90 shadow-[var(--shadow-sm)]",
         "hero-secondary":
           "border border-hero-chip-border bg-transparent text-hero-foreground hover:bg-hero-chip",
       },

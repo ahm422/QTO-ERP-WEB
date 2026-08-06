@@ -89,8 +89,8 @@ export default async function HRSoftwareLandingFullWidth({
               <EyebrowBadge
                 icon={Sparkles}
                 label='Solution'
-                variant='muted'
-                className='mb-4 border-hero-chip-border bg-hero-chip text-hero-foreground'
+                variant='hero'
+                className='mb-4'
               />
 
               <h1 className='font-display text-4xl font-bold tracking-tight text-hero-foreground md:text-5xl lg:text-6xl'>

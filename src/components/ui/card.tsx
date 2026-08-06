@@ -13,9 +13,12 @@ const cardVariants = cva(
           "bg-card border border-border shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)]",
         outlined: "bg-transparent border-2 border-border hover:border-border/80",
         filled: "bg-muted border-0 shadow-inner",
-        gradient: "bg-gradient-to-br from-accent to-accent-dark border-0 text-accent-foreground shadow-lg shadow-accent/25 hover:shadow-accent/40",
-        glass: "bg-card/10 backdrop-blur-xl border border-border/20 shadow-xl",
-        elevated: "bg-card border-0 shadow-lg hover:shadow-xl",
+        gradient:
+          "bg-gradient-to-br from-accent to-accent-dark border-0 text-accent-foreground shadow-[var(--shadow-lg)] shadow-accent/25 hover:shadow-accent/40",
+        glass:
+          "bg-card/10 backdrop-blur-xl border border-border/20 shadow-[var(--card-shadow)]",
+        elevated:
+          "bg-card border-0 shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)]",
         interactive:
           "bg-card border border-border cursor-pointer shadow-[var(--card-shadow)] hover:border-accent hover:shadow-[var(--card-shadow-hover)] group",
       },

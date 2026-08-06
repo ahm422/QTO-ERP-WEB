@@ -65,9 +65,8 @@ export default function Demopage() {
             <motion.div variants={item} className='mb-6 flex justify-center'>
               <EyebrowBadge
                 icon={Sparkles}
-                label='Limited Time Offer'
-                variant='muted'
-                className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+                label='Book a Demo'
+                variant='hero'
               />
             </motion.div>
 

@@ -43,8 +43,7 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
               <EyebrowBadge
                 icon={Sparkles}
                 label='Comprehensive ERP Suite'
-                variant='muted'
-                className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+                variant='hero'
               />
             </div>
             <h1 className='mb-6 font-display text-4xl font-bold tracking-tight text-hero-foreground sm:text-5xl lg:text-6xl'>

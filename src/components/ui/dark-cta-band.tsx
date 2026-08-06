@@ -31,7 +31,6 @@ export function DarkCtaBand({
     <div
       className={cn(
         "relative overflow-hidden rounded-3xl bg-neutral-950 text-neutral-50",
-        "dark:bg-neutral-950",
         className
       )}
     >
@@ -44,8 +43,7 @@ export function DarkCtaBand({
             <EyebrowBadge
               label={eyebrow}
               icon={eyebrowIcon}
-              variant="muted"
-              className="border-white/15 bg-white/10 text-neutral-200"
+              variant="inverse"
             />
           ) : null}
 

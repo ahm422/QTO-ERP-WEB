@@ -31,8 +31,7 @@ export default function BlogHero() {
             <EyebrowBadge
               icon={Newspaper}
               label='Insights'
-              variant='muted'
-              className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+              variant='hero'
             />
           </motion.div>
           <motion.h1

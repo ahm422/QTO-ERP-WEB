@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
+import type { LucideIcon } from 'lucide-react';
 import { DarkCtaBand } from '@/components/ui/dark-cta-band';
 import { MarketingButton } from '@/components/ui/marketing-button';
 import { getFadeInUp, viewportOnce } from '@/lib/motion';
@@ -14,6 +15,9 @@ const defaultSecondaryHref = '/pricing';
 
 export interface CTASectionProps {
   headline?: string;
+  description?: string;
+  eyebrow?: string;
+  eyebrowIcon?: LucideIcon;
   primaryLabel?: string;
   primaryHref?: string;
   secondaryLabel?: string;
@@ -26,6 +30,9 @@ export interface CTASectionProps {
  */
 export function CTASection({
   headline = defaultHeadline,
+  description,
+  eyebrow,
+  eyebrowIcon,
   primaryLabel = defaultPrimaryLabel,
   primaryHref = defaultPrimaryHref,
   secondaryLabel = defaultSecondaryLabel,
@@ -45,7 +52,10 @@ export function CTASection({
           className='mx-auto max-w-5xl'
         >
           <DarkCtaBand
+            eyebrow={eyebrow}
+            eyebrowIcon={eyebrowIcon}
             title={headline}
+            description={description}
             primaryAction={
               <MarketingButton variant='inverse' size='lg' asChild>
                 <Link href={primaryHref}>{primaryLabel}</Link>
