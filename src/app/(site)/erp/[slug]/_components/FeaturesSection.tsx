@@ -56,7 +56,7 @@ export default function FeaturesSection({
                   className={isEven ? "" : "lg:order-2"}
                 >
                   <div className="flex flex-col gap-5">
-                    <span className="select-none text-7xl font-black leading-none text-accent/10">
+                    <span className="select-none text-7xl font-bold leading-none text-accent/10">
                       {num}
                     </span>
                     <h3 className="font-display text-3xl font-bold leading-tight text-foreground lg:text-4xl">

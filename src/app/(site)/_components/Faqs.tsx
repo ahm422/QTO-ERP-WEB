@@ -7,7 +7,7 @@ const Faqs = () => {
   return (
     <>
     {/* FAQ */}
-      <section className="section-padding">
+      <section id="faq" className="section-padding">
         <div className="container-main">
           <HeaderSections tag="FAQ" title="Common Questions" />
           <FAQAccordion faqs={generalFaqs.slice(0, 5)} />

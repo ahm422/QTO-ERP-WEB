@@ -464,10 +464,22 @@ export default function HeroApiConstellation({
         {active ? (
           <motion.div
             key={active.id}
-            initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            initial={
+              reduced
+                ? { opacity: 0 }
+                : { opacity: 0, y: 16, filter: 'blur(6px)' }
+            }
+            animate={
+              reduced
+                ? { opacity: 1 }
+                : { opacity: 1, y: 0, filter: 'blur(0px)' }
+            }
+            exit={
+              reduced
+                ? { opacity: 0 }
+                : { opacity: 0, y: 8, filter: 'blur(4px)' }
+            }
+            transition={{ duration: reduced ? 0.01 : 0.28, ease: [0.22, 1, 0.36, 1] }}
             className='pointer-events-none absolute inset-x-6 bottom-2 rounded-2xl border border-hero-chip-border bg-hero-chip/90 px-4 py-3 shadow-2xl backdrop-blur-xl'
           >
             <p className='text-sm font-semibold tracking-wide text-hero-foreground'>

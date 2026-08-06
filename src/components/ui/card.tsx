@@ -166,7 +166,7 @@ const CardImage = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
           <img
             src={src}
             alt={alt}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
           />
         )}
         {overlay && (
