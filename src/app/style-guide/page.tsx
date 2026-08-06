@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
+import { FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { PaletteToggle } from "@/components/common/PaletteToggle";
 import { PalettePicker } from "./_components/PalettePicker";
@@ -107,13 +110,15 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="space-y-4 border-b border-border pb-10 last:border-b-0">
+    <section className="space-y-6">
       <div>
-        <h2 className="font-display text-2xl font-semibold tracking-tight">
+        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
           {title}
         </h2>
         {description ? (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+            {description}
+          </p>
         ) : null}
       </div>
       {children}
@@ -123,14 +128,13 @@ function Section({
 
 function SwatchGrid({ dark }: { dark?: boolean }) {
   return (
-    <div
-      className={
-        dark
-          ? "dark rounded-2xl border border-border bg-background p-4 text-foreground"
-          : "rounded-2xl border border-border bg-background p-4 text-foreground"
-      }
+    <Card
+      variant="default"
+      radius="lg"
+      padding="md"
+      className={dark ? "dark text-foreground" : "text-foreground"}
     >
-      <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+      <p className="mb-3 text-xs font-medium text-muted-foreground">
         {dark ? "Dark (.dark wrapper)" : "Light"}
       </p>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
@@ -160,7 +164,7 @@ function SwatchGrid({ dark }: { dark?: boolean }) {
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -171,26 +175,28 @@ export default function StyleGuidePage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-5xl space-y-12 px-4 py-12 sm:px-6 lg:px-8">
-        <header className="space-y-3">
+      <div className="container-main section-padding space-y-16">
+        <header className="space-y-4">
           <div className="flex items-start justify-between gap-4">
-            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-              Dev only · NODE_ENV !== production
-            </p>
+            <EyebrowBadge
+              icon={FlaskConical}
+              label="Dev only"
+              variant="accent"
+            />
             <div className="flex flex-wrap items-center justify-end gap-2">
               <PaletteToggle />
               <ThemeToggle />
             </div>
           </div>
-          <h1 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Style Guide
           </h1>
-          <p className="max-w-2xl text-muted-foreground">
-            Proving ground for design tokens and Phase 2 marketing DNA
-            primitives (#99). Page theme toggle, brand palette switcher (
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
+            Proving ground for design tokens and marketing DNA primitives.
+            Page theme toggle, brand palette switcher (
             <code className="font-mono text-sm">usePalette</code>), and local{" "}
             <code className="font-mono text-sm">.dark</code> wrappers for
-            dual-theme QA. Live marketing page rollouts are a follow-up.
+            dual-theme QA.
           </p>
         </header>
 
@@ -323,49 +329,45 @@ export default function StyleGuidePage() {
 
         <Section
           title="Usage notes"
-          description="Stable surface for Phase 2+ page restyles."
+          description="Stable surface for page restyles across the marketing site."
         >
-          <ul className="list-inside list-disc space-y-2 text-sm text-muted-foreground">
-            <li>
-              <strong className="text-foreground">Display:</strong> hero titles
-              and expressive headings →{" "}
-              <code className="font-mono text-foreground">font-display</code>
-            </li>
-            <li>
-              <strong className="text-foreground">UI:</strong> body, buttons,
-              forms, nav labels →{" "}
-              <code className="font-mono text-foreground">font-sans</code>
-            </li>
-            <li>
-              <strong className="text-foreground">Brand CTA:</strong> keep{" "}
-              <code className="font-mono text-foreground">Button</code>{" "}
-              <code className="font-mono text-foreground">--accent</code>.
-              Marketing DNA CTAs use{" "}
-              <code className="font-mono text-foreground">MarketingButton</code>{" "}
-              (dark primary).
-            </li>
-            <li>
-              <strong className="text-foreground">Eyebrow:</strong>{" "}
-              <code className="font-mono text-foreground">EyebrowBadge</code> —
-              do not overload admin{" "}
-              <code className="font-mono text-foreground">Badge</code> status
-              variants.
-            </li>
-            <li>
-              <strong className="text-foreground">Shadows:</strong>{" "}
-              <code className="font-mono text-foreground">--shadow-sm|md|lg</code>{" "}
-              with aliases{" "}
-              <code className="font-mono text-foreground">
-                --card-shadow / --card-shadow-hover / --mega-shadow
-              </code>
-            </li>
-            <li>
-              <strong className="text-foreground">Follow-up:</strong> apply these
-              primitives to live{" "}
-              <code className="font-mono text-foreground">(site)</code> pages;
-              StepCard / Navbar-Footer cleanup are separate.
-            </li>
-          </ul>
+          <Card variant="default" radius="lg" padding="md">
+            <ul className="list-inside list-disc space-y-2 text-sm text-muted-foreground">
+              <li>
+                <strong className="text-foreground">Display:</strong> hero titles
+                and expressive headings →{" "}
+                <code className="font-mono text-foreground">font-display</code>
+              </li>
+              <li>
+                <strong className="text-foreground">UI:</strong> body, buttons,
+                forms, nav labels →{" "}
+                <code className="font-mono text-foreground">font-sans</code>
+              </li>
+              <li>
+                <strong className="text-foreground">Brand CTA:</strong> keep{" "}
+                <code className="font-mono text-foreground">Button</code>{" "}
+                <code className="font-mono text-foreground">--accent</code>.
+                Marketing DNA CTAs use{" "}
+                <code className="font-mono text-foreground">MarketingButton</code>{" "}
+                (dark primary).
+              </li>
+              <li>
+                <strong className="text-foreground">Eyebrow:</strong>{" "}
+                <code className="font-mono text-foreground">EyebrowBadge</code> —
+                do not overload admin{" "}
+                <code className="font-mono text-foreground">Badge</code> status
+                variants.
+              </li>
+              <li>
+                <strong className="text-foreground">Shadows:</strong>{" "}
+                <code className="font-mono text-foreground">--shadow-sm|md|lg</code>{" "}
+                with aliases{" "}
+                <code className="font-mono text-foreground">
+                  --card-shadow / --card-shadow-hover / --mega-shadow
+                </code>
+              </li>
+            </ul>
+          </Card>
         </Section>
       </div>
     </main>

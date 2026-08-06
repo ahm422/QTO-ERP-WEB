@@ -1,18 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { HeaderSections } from "@/components/ui/HeaderSections";
 import type { ModuleDetail } from "@/types/content";
 import { AboutContentType } from "@/types";
+import { getFadeInUp, viewportOnce } from "@/lib/motion";
 
 interface AboutSectionProps {
   app: ModuleDetail;
 }
 
-const smoothEase: [number, number, number, number] = [0.165, 0.84, 0.44, 1];
-
 export default function AboutSection({ app }: AboutSectionProps) {
+  const reduced = useReducedMotion();
+  const fadeUp = getFadeInUp(reduced);
   const sectionHeadings = ["Overview", "Problem", "Solution", "Results"];
 
   const aboutContents: AboutContentType[] =
@@ -28,12 +29,9 @@ export default function AboutSection({ app }: AboutSectionProps) {
         }));
 
   return (
-    <section id="about" className="py-20 bg-background">
+    <section id="about" className="section-padding bg-background">
       <div className="container-main max-w-[1300px]">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <HeaderSections tag="About" title={app.aboutTitle} />
-        </div>
+        <HeaderSections tag="About" title={app.aboutTitle} />
 
         <div className="space-y-20">
           {aboutContents.map((content, index) => {
@@ -42,47 +40,40 @@ export default function AboutSection({ app }: AboutSectionProps) {
             return (
               <div
                 key={content.id}
-                className="grid lg:grid-cols-2 gap-12 items-start"
+                className="grid items-start gap-12 lg:grid-cols-2"
               >
-                {/* Content Side */}
                 <motion.div
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: smoothEase }}
-                  className={`${isEven ? "" : "lg:order-2"}`}
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={viewportOnce}
+                  className={isEven ? "" : "lg:order-2"}
                 >
-                  <div className="rounded-2xl bg-card  h-full flex flex-col">
-                    {/* Heading aligned to top */}
-                    <h3 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight mb-6 text-balance-700">
+                  <div className="flex h-full flex-col rounded-2xl bg-card">
+                    <h3 className="mb-6 font-display text-3xl font-bold leading-tight text-foreground lg:text-4xl">
                       {content.title}
                     </h3>
-
-                    {/* Paragraph perfectly spaced */}
-                    <p className="text-lg text-muted-foreground leading-relaxed">
+                    <p className="text-lg leading-relaxed text-muted-foreground">
                       {content.description}
                     </p>
                   </div>
                 </motion.div>
 
-                {/* Image Side */}
                 <motion.div
-                  initial={{ opacity: 0, x: isEven ? 60 : -60 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: smoothEase }}
-                  className={`${isEven ? "lg:order-2" : "lg:order-1"}`}
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={viewportOnce}
+                  className={isEven ? "lg:order-2" : "lg:order-1"}
                 >
-                  <div
-                    className="rounded-2xl bg-background h-[340px] flex items-center justify-center p-6 transition-all duration-300"
-                    style={{
-                      boxShadow:
-                        "0 25px 60px -20px rgba(0,0,0,0.12), 0 10px 25px -15px rgba(0,0,0,0.08)",
-                    }}
-                  >
-                    <div className="relative w-full h-full">
+                  <div className="flex h-[340px] items-center justify-center rounded-2xl border border-border bg-background p-6 shadow-[var(--card-shadow)] transition-all duration-300">
+                    <div className="relative h-full w-full">
                       <Image
-                        src={content.image || app.image || "/assets/images/attendance.png"}
+                        src={
+                          content.image ||
+                          app.image ||
+                          "/assets/images/attendance.png"
+                        }
                         alt={content.imageAlt || `${app.name} image`}
                         fill
                         className="object-contain object-center"

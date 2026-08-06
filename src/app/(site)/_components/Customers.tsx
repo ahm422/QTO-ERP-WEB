@@ -12,8 +12,8 @@ const Customers = () => {
   return (
     <>
       <section className='section-padding bg-accent/5'>
-        <div className='max-w-360 mx-auto px-4'>
-          <div className='pb-20'>
+        <div className='container-main'>
+          <div className='pb-16 md:pb-20'>
             <ClientsMarquee />
           </div>
           <HeaderSections

@@ -35,8 +35,8 @@ export function CTASection({
   const fadeUp = getFadeInUp(reduced);
 
   return (
-    <section className='relative py-16 md:py-24'>
-      <div className='container mx-auto px-4'>
+    <section className='relative section-padding'>
+      <div className='container-main'>
         <motion.div
           variants={fadeUp}
           initial='hidden'

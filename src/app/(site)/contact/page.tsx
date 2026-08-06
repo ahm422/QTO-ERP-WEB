@@ -15,6 +15,8 @@ import {
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
+import { GridBackground } from '@/components/ui/grid-background';
+import { HeaderSections } from '@/components/ui/HeaderSections';
 import { MarketingButton } from '@/components/ui/marketing-button';
 import {
   getCardHover,
@@ -93,10 +95,11 @@ export default function ContactPage() {
 
   return (
     <main className='min-h-screen bg-background'>
-      <section className='relative section-padding overflow-hidden bg-muted/30'>
+      <section className='relative overflow-hidden hero-gradient section-padding'>
+        <GridBackground opacity={0.12} className='absolute inset-0' />
         <div className='pointer-events-none absolute inset-0 overflow-hidden'>
-          <div className='absolute -top-40 -right-40 size-80 rounded-full bg-accent/10 blur-3xl' />
-          <div className='absolute bottom-0 left-10 size-72 rounded-full bg-muted blur-3xl' />
+          <div className='absolute top-20 right-0 size-72 rounded-full bg-hero-glow blur-3xl' />
+          <div className='absolute -bottom-20 -left-20 size-96 rounded-full bg-hero-glow-alt blur-3xl' />
         </div>
 
         <div className='container-main relative z-10 text-center'>
@@ -110,21 +113,24 @@ export default function ContactPage() {
               <EyebrowBadge
                 icon={MessageCircle}
                 label='Contact Our Team'
-                variant='accent'
+                variant='muted'
+                className='border-hero-chip-border bg-hero-chip text-hero-foreground'
               />
             </motion.div>
 
             <motion.h1
               variants={fadeUp}
-              className='mb-6 font-display text-5xl font-bold leading-tight text-foreground md:text-6xl'
+              className='mb-6 font-display text-5xl font-bold leading-tight text-hero-foreground md:text-6xl'
             >
               Let&apos;s Connect
-              <span className='mt-2 block text-accent'>And Build Together</span>
+              <span className='mt-2 block text-hero-accent'>
+                And Build Together
+              </span>
             </motion.h1>
 
             <motion.p
               variants={item}
-              className='mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-muted-foreground'
+              className='mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-hero-muted-foreground'
             >
               Whether you have questions, need technical support, want to
               explore a partnership, or just want to say hello—we&apos;re all
@@ -135,15 +141,15 @@ export default function ContactPage() {
               variants={item}
               className='flex flex-wrap justify-center gap-4'
             >
-              <div className='rounded-lg border border-border bg-card px-6 py-2 text-foreground'>
+              <div className='rounded-lg border border-hero-chip-border bg-hero-chip px-6 py-2 text-hero-foreground'>
                 <p className='flex items-center justify-center gap-1.5 text-sm font-medium'>
-                  <MessageCircle className='size-4 shrink-0 text-accent' />
+                  <MessageCircle className='size-4 shrink-0' />
                   Multiple channels
                 </p>
               </div>
-              <div className='rounded-lg border border-border bg-card px-6 py-2 text-foreground'>
+              <div className='rounded-lg border border-hero-chip-border bg-hero-chip px-6 py-2 text-hero-foreground'>
                 <p className='flex items-center justify-center gap-1.5 text-sm font-medium'>
-                  <Zap className='size-4 shrink-0 text-accent' />
+                  <Zap className='size-4 shrink-0' />
                   Fast response
                 </p>
               </div>
@@ -154,21 +160,11 @@ export default function ContactPage() {
 
       <section className='section-padding bg-background'>
         <div className='container-main'>
-          <motion.div
-            variants={fadeUp}
-            initial='hidden'
-            whileInView='visible'
-            viewport={viewportOnce}
-            className='mb-16 text-center'
-          >
-            <h2 className='mb-4 font-display text-4xl font-bold text-foreground'>
-              How We Support You
-            </h2>
-            <p className='mx-auto max-w-2xl text-lg text-muted-foreground'>
-              We&apos;re committed to providing world-class support across every
-              channel, whenever you need us most
-            </p>
-          </motion.div>
+          <HeaderSections
+            tag='Support'
+            title='How We Support You'
+            description="We're committed to providing world-class support across every channel, whenever you need us most"
+          />
 
           <motion.div
             className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import Image from 'next/image';
 import { ExternalLink, Lightbulb, BookOpen } from 'lucide-react';
 import { QTO_DEV_URL } from '@/lib/constants';
 import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
@@ -20,13 +21,15 @@ export default function StorySection() {
             initial='hidden'
             whileInView='visible'
             viewport={viewportOnce}
-            className='group relative order-2 aspect-square overflow-hidden rounded-2xl border border-border lg:order-1 lg:aspect-auto lg:h-[600px]'
+            className='group relative order-2 aspect-square overflow-hidden rounded-2xl border border-border shadow-[var(--card-shadow)] lg:order-1 lg:aspect-auto lg:h-[600px]'
           >
             <div className='pointer-events-none absolute inset-0 z-10 bg-primary/10 transition-colors duration-500 group-hover:bg-primary/0' />
-            <img
+            <Image
               src='https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2940&auto=format&fit=crop'
               alt='Our Story Illustration'
-              className='h-full w-full object-cover'
+              fill
+              className='object-cover'
+              sizes='(max-width: 1024px) 100vw, 50vw'
             />
           </motion.div>
 
@@ -64,7 +67,7 @@ export default function StorySection() {
                 </p>
 
                 <Card
-                  variant='default'
+                  variant='interactive'
                   radius='lg'
                   padding='md'
                   className='mt-8'
