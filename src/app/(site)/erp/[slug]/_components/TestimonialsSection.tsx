@@ -19,9 +19,15 @@ export default function TestimonialsSection({ app }: TestimonialsSectionProps) {
         <HeaderSections
           tag={app.testimonialsSectionTag ?? TESTIMONIALS_SECTION_TAG}
           title={app.testimonialsSectionTitle ?? TESTIMONIALS_SECTION_TITLE}
-          description={app.testimonialsSectionDescription ?? TESTIMONIALS_SECTION_DESCRIPTION}
+          description={
+            app.testimonialsSectionDescription ?? TESTIMONIALS_SECTION_DESCRIPTION
+          }
         />
-        <TestimonialCarousel testimonials={app.testimonials} autoPlay={true} />
+        <TestimonialCarousel
+          testimonials={app.testimonials}
+          showStats
+          autoPlay={true}
+        />
       </div>
     </section>
   );
