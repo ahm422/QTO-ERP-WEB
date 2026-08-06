@@ -53,7 +53,9 @@ export default async function BlogPostPage({ params }: PageProps) {
         </div>
       </article>
       <CTASection
+        eyebrow="From the blog"
         headline="Want to see QTO-ERP in action?"
+        description="Book a short walkthrough tailored to your team — or keep reading more insights."
         primaryLabel="Book a Demo"
         primaryHref="/demo"
         secondaryLabel="Read more posts"
