@@ -64,19 +64,21 @@ export default async function HRSoftwareLandingFullWidth({
 
   return (
     <main className='min-h-screen bg-background text-foreground'>
-      <section className='relative overflow-hidden'>
-        <GridBackground opacity={0.2} className='absolute inset-0' />
-        <div className='pointer-events-none absolute top-0 right-0 h-[460px] w-[620px] rounded-bl-[170px] bg-accent/15' />
-        <div className='pointer-events-none absolute top-[-80px] right-[-120px] h-[520px] w-[520px] rounded-full bg-accent/10 blur-2xl' />
+      <section className='relative overflow-hidden hero-gradient section-padding'>
+        <GridBackground opacity={0.12} className='absolute inset-0' />
+        <div className='pointer-events-none absolute inset-0 overflow-hidden'>
+          <div className='absolute top-20 right-0 size-72 rounded-full bg-hero-glow blur-3xl' />
+          <div className='absolute -bottom-20 -left-20 size-96 rounded-full bg-hero-glow-alt blur-3xl' />
+        </div>
 
-        <div className='relative z-10 px-6 pt-16 pb-12 md:px-16 lg:px-24'>
+        <div className='container-main relative z-10'>
           <div className='grid max-w-6xl items-center gap-10 md:grid-cols-2'>
             <div>
               {selectedUseCase ? (
                 <div className='mb-4'>
                   <Link
                     href={`/solution/${slug}`}
-                    className='inline-flex items-center gap-2 text-sm text-accent hover:underline'
+                    className='inline-flex items-center gap-2 text-sm text-hero-accent hover:underline'
                   >
                     <ArrowLeft className='size-4' />
                     Back to {solution.title}
@@ -87,15 +89,15 @@ export default async function HRSoftwareLandingFullWidth({
               <EyebrowBadge
                 icon={Sparkles}
                 label='Solution'
-                variant='accent'
+                variant='hero'
                 className='mb-4'
               />
 
-              <h1 className='font-display text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl'>
+              <h1 className='font-display text-4xl font-bold tracking-tight text-hero-foreground md:text-5xl lg:text-6xl'>
                 {heroTitle}
               </h1>
 
-              <p className='mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg'>
+              <p className='mt-5 max-w-xl text-base leading-relaxed text-hero-muted-foreground md:text-lg'>
                 {heroSubtitle}
               </p>
 
@@ -104,10 +106,10 @@ export default async function HRSoftwareLandingFullWidth({
                   {selectedUseCase.specificNeeds.map((need) => (
                     <li
                       key={need}
-                      className='flex items-center gap-2 text-sm text-muted-foreground'
+                      className='flex items-center gap-2 text-sm text-hero-muted-foreground'
                     >
                       <Check
-                        className='size-4 shrink-0 text-accent'
+                        className='size-4 shrink-0 text-hero-accent'
                         aria-hidden
                       />
                       {need}
@@ -117,11 +119,11 @@ export default async function HRSoftwareLandingFullWidth({
               ) : null}
 
               <div className='mt-8 flex flex-wrap gap-3'>
-                <MarketingButton variant='primary' size='lg' asChild>
+                <MarketingButton variant='hero' size='lg' asChild>
                   <Link href='/demo'>Request a Demo</Link>
                 </MarketingButton>
                 <MarketingButton
-                  variant='secondary'
+                  variant='hero-secondary'
                   size='lg'
                   asChild
                   iconSlide={false}
@@ -131,9 +133,13 @@ export default async function HRSoftwareLandingFullWidth({
               </div>
             </div>
 
-            <div className='relative rounded-3xl border border-border bg-card p-8 shadow-[var(--card-shadow)]'>
-              <div className='aspect-4/3 rounded-2xl bg-linear-to-br from-accent/20 via-accent/5 to-muted' />
-              <p className='mt-4 text-center text-sm text-muted-foreground'>
+            <div className='relative overflow-hidden rounded-3xl border border-hero-chip-border bg-hero-chip p-8 shadow-[var(--card-shadow)]'>
+              <GridBackground
+                opacity={0.2}
+                className='absolute inset-0 rounded-3xl'
+              />
+              <div className='relative z-10 aspect-4/3 rounded-2xl border border-hero-chip-border bg-linear-to-br from-hero-accent/25 via-hero-glow to-transparent' />
+              <p className='relative z-10 mt-4 text-center text-sm text-hero-muted-foreground'>
                 Unified workflows for {solution.title.toLowerCase()}
               </p>
             </div>
@@ -148,7 +154,7 @@ export default async function HRSoftwareLandingFullWidth({
       <RecommendedModulesSection modules={recommendedModules} />
 
       {solution.solutionFaqs && solution.solutionFaqs.length > 0 ? (
-        <section className='section-padding bg-muted/40'>
+        <section className='section-padding bg-muted/30'>
           <div className='container-main'>
             <HeaderSections
               tag='Got Questions?'
@@ -159,7 +165,10 @@ export default async function HRSoftwareLandingFullWidth({
         </section>
       ) : null}
 
-      <CTASection />
+      <CTASection
+        eyebrow="Build with us"
+        description="Request a walkthrough tailored to this solution — or compare plans."
+      />
     </main>
   );
 }

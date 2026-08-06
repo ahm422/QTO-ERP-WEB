@@ -30,38 +30,36 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
 
   return (
     <>
-      <section className='relative overflow-hidden py-20 sm:py-28'>
-        <GridBackground opacity={0.25} className='absolute inset-0' />
-        <div className='absolute inset-0 -z-10'>
-          <div className='absolute top-0 left-1/2 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-accent/10 blur-3xl' />
+      <section className='relative overflow-hidden hero-gradient section-padding'>
+        <GridBackground opacity={0.12} className='absolute inset-0' />
+        <div className='pointer-events-none absolute inset-0 overflow-hidden'>
+          <div className='absolute top-20 right-0 size-72 rounded-full bg-hero-glow blur-3xl' />
+          <div className='absolute -bottom-20 -left-20 size-96 rounded-full bg-hero-glow-alt blur-3xl' />
         </div>
 
-        <div className='relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8'>
+        <div className='container-main relative z-10 text-center'>
           <motion.div variants={fadeUp} initial='hidden' animate='visible'>
             <div className='mb-6 flex justify-center'>
               <EyebrowBadge
                 icon={Sparkles}
                 label='Comprehensive ERP Suite'
-                variant='accent'
+                variant='hero'
               />
             </div>
-            <h1 className='mb-6 font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl'>
+            <h1 className='mb-6 font-display text-4xl font-bold tracking-tight text-hero-foreground sm:text-5xl'>
               Unified Business Management{' '}
-              <span className='bg-linear-to-r from-accent to-accent-dark bg-clip-text text-transparent'>
-                Platform
-              </span>
+              <span className='text-hero-accent'>Platform</span>
             </h1>
-            <p className='mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground sm:text-xl'>
-              Discover our integrated suite of enterprise applications designed
-              to streamline operations, enhance productivity, and drive growth
-              across all business functions.
+            <p className='mx-auto max-w-2xl text-lg leading-relaxed text-hero-muted-foreground'>
+              Explore every QTO-ERP module in one catalog — pick a capability,
+              preview highlights, then open the full product page.
             </p>
           </motion.div>
         </div>
       </section>
 
-      <section className='pb-20 sm:pb-28'>
-        <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+      <section className='section-padding'>
+        <div className='container-main'>
           <HeaderSections
             tag='Platforms'
             title='Explore modules'
@@ -120,7 +118,9 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
       </section>
 
       <CTASection
+        eyebrow="Ready when you are"
         headline='Ready to Simplify Your Operations with QTO ERP?'
+        description='Schedule a walkthrough or compare plans — same DNA across every palette.'
         primaryLabel='Schedule a Demo'
         primaryHref='/demo'
         secondaryLabel='View Pricing'

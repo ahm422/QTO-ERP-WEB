@@ -31,8 +31,8 @@ const buttonVariants = cva(
 
         destructive: [
           "bg-destructive text-white rounded-xl font-semibold",
-          "shadow-[0_2px_12px_oklch(0.577_0.245_27.325/0.3)]",
-          "hover:bg-destructive/90 hover:shadow-[0_4px_20px_oklch(0.577_0.245_27.325/0.5)]",
+          "shadow-[0_2px_12px_color-mix(in_oklab,var(--destructive)_30%,transparent)]",
+          "hover:bg-destructive/90 hover:shadow-[0_4px_20px_color-mix(in_oklab,var(--destructive)_50%,transparent)]",
           "active:scale-[0.97]",
           "focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
           "before:absolute before:inset-0",

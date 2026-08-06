@@ -127,7 +127,7 @@ export default function ClientsMarquee() {
   const fadeUp = getFadeInUp(reduced);
 
   return (
-    <section className='py-18 font-sans'>
+    <section className='font-sans'>
       <HeaderSections title='Trusted by industry leaders' tag='Customers' />
 
       <div className='flex flex-col gap-6'>

@@ -37,14 +37,14 @@ export function AdminHeader({ email }: AdminHeaderProps) {
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4 md:px-6">
-      <div className="relative hidden md:flex w-64 sm:max-w-xs">
-        <Search className="pointer-events-none absolute inset-y-0 left-3 my-auto h-4 w-4 text-muted-foreground" />
+      <div className="relative hidden w-64 sm:max-w-xs md:flex">
+        <Search className="pointer-events-none absolute inset-y-0 left-3 my-auto size-4 text-muted-foreground" />
         <Input
           type="search"
           placeholder="Search…"
           disabled
           aria-label="Search (coming soon)"
-          className="bg-muted/50 border-border pl-9 text-foreground placeholder:text-muted-foreground"
+          className="border-border bg-muted/50 pl-9 text-foreground placeholder:text-muted-foreground"
         />
       </div>
 
@@ -56,9 +56,9 @@ export function AdminHeader({ email }: AdminHeaderProps) {
           aria-label="Notifications"
           className="relative"
         >
-          <Bell className="h-4 w-4" />
+          <Bell className="size-4" />
           <span
-            className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive"
+            className="absolute top-1.5 right-1.5 size-2 rounded-full bg-destructive"
             aria-hidden
           />
         </Button>

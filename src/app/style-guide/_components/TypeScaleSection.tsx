@@ -12,10 +12,8 @@ function TypeColumn({ face }: { face: "display" | "sans" }) {
       : `font-sans (${faceName})`;
 
   return (
-    <div className="space-y-3 rounded-2xl border border-border p-5">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
+    <div className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-[var(--card-shadow)]">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <h1 className={`${font} text-4xl font-bold`}>Heading 1</h1>
       <h2 className={`${font} text-3xl font-semibold`}>Heading 2</h2>
       <h3 className={`${font} text-2xl font-semibold`}>Heading 3</h3>
@@ -41,14 +39,14 @@ export function TypeScaleSection() {
   const { persona } = usePalette();
 
   return (
-    <section className="space-y-4 border-b border-border pb-10 last:border-b-0">
+    <section className="space-y-6">
       <div>
-        <h2 className="font-display text-2xl font-semibold tracking-tight">
+        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
           Type scale
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
           Fonts follow the active palette persona ({persona.fontDisplay} /{" "}
-          {persona.fontBody}). Do not mass-migrate page headings yet.
+          {persona.fontBody}).
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">

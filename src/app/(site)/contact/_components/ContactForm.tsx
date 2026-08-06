@@ -190,10 +190,7 @@ const ContactForm = () => {
 
   return (
     <section className='relative section-padding overflow-hidden bg-background'>
-      <div className='pointer-events-none absolute top-0 right-0 size-96 rounded-full bg-accent/10 opacity-40 blur-3xl' />
-      <div className='pointer-events-none absolute bottom-0 left-0 size-96 rounded-full bg-muted opacity-50 blur-3xl' />
-
-      <div className='container-main relative z-10 max-w-7xl px-6'>
+      <div className='container-main relative z-10'>
         <div className='grid grid-cols-1 items-start gap-8 lg:grid-cols-3'>
           {/* Left Column - Info */}
           <motion.div

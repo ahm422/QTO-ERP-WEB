@@ -48,8 +48,8 @@ export default function Subscribe() {
   };
 
   return (
-    <section className='w-full bg-muted/40 px-4 py-20'>
-      <div className='mx-auto max-w-2xl'>
+    <section className='w-full section-padding bg-muted/40'>
+      <div className='container-main max-w-2xl'>
         <div className='mb-10 text-center'>
           <div className='mb-4 flex justify-center'>
             <EyebrowBadge label='Newsletter' variant='accent' icon={Mail} />

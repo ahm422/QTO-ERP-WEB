@@ -119,6 +119,11 @@ export function EyebrowDemo() {
             label="Evaluation Workflow"
             variant="accent"
           />
+          <EyebrowBadge
+            icon={Sparkles}
+            label="Hero chip"
+            variant="hero"
+          />
         </div>
       </ThemeFrame>
       <ThemeFrame dark>
@@ -132,6 +137,11 @@ export function EyebrowDemo() {
             icon={Workflow}
             label="Evaluation Workflow"
             variant="accent"
+          />
+          <EyebrowBadge
+            icon={Sparkles}
+            label="Inverse band"
+            variant="inverse"
           />
         </div>
       </ThemeFrame>

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Tag } from "lucide-react";
 import { getPublishedBlogPostBySlug } from "@/lib/content-db";
+import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
+import { CTASection } from "@/components/ui/CTASection";
 
 export const dynamicParams = true;
 export const revalidate = 3600; // ISR: revalidate every hour
@@ -24,32 +26,41 @@ export default async function BlogPostPage({ params }: PageProps) {
   });
 
   return (
-    <article className="section-padding">
-      <div className="container-main max-w-3xl">
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to blog
-        </Link>
-        <span className="text-xs font-semibold text-accent uppercase">
-          {post.category}
-        </span>
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
-          {post.title}
-        </h1>
-        <p className="text-sm text-muted-foreground mb-8">{publishedDate}</p>
-        {post.excerpt && (
-          <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-            {post.excerpt}
-          </p>
-        )}
-        <div
-          className="prose prose-slate dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
-      </div>
-    </article>
+    <>
+      <article className="section-padding">
+        <div className="container-main max-w-3xl">
+          <Link
+            href="/blog"
+            className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to blog
+          </Link>
+          <EyebrowBadge icon={Tag} label={post.category} variant="accent" />
+          <h1 className="mt-4 mb-3 font-display text-3xl font-bold text-foreground md:text-4xl">
+            {post.title}
+          </h1>
+          <p className="mb-8 text-sm text-muted-foreground">{publishedDate}</p>
+          {post.excerpt && (
+            <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
+              {post.excerpt}
+            </p>
+          )}
+          <div
+            className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-accent prose-li:text-muted-foreground"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
+        </div>
+      </article>
+      <CTASection
+        eyebrow="From the blog"
+        headline="Want to see QTO-ERP in action?"
+        description="Book a short walkthrough tailored to your team — or keep reading more insights."
+        primaryLabel="Book a Demo"
+        primaryHref="/demo"
+        secondaryLabel="Read more posts"
+        secondaryHref="/blog"
+      />
+    </>
   );
 }

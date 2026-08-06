@@ -41,10 +41,15 @@ export default function BlogPosts({ posts }: BlogPostsProps) {
                     variant='accent'
                     className='mb-3'
                   />
-                  <h3 className='font-display text-lg font-bold leading-snug text-foreground'>
+                  <h3 className='font-display text-xl font-bold leading-snug text-foreground md:text-2xl'>
                     {post.title}
                   </h3>
-                  <p className='mt-2 text-sm text-muted-foreground'>
+                  {post.excerpt ? (
+                    <p className='mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground'>
+                      {post.excerpt}
+                    </p>
+                  ) : null}
+                  <p className='mt-3 text-xs text-muted-foreground'>
                     {new Date(post.publishedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',

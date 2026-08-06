@@ -34,7 +34,7 @@ export function FAQAccordion({
   };
 
   return (
-    <div className={cn('mx-auto mb-20 max-w-3xl space-y-4', className)}>
+    <div className={cn('mx-auto max-w-3xl space-y-4', className)}>
       {faqs.map((faq, index) => {
         const isOpen = openIndex === index;
         const number = String(index + 1).padStart(2, '0');
@@ -50,11 +50,11 @@ export function FAQAccordion({
           >
             <div
               className={cn(
-                'relative overflow-hidden rounded-2xl border bg-card shadow-sm',
+                'relative overflow-hidden rounded-2xl border bg-card',
                 'transition-[border-color,box-shadow,transform] duration-300',
                 isOpen
                   ? 'border-accent/50 shadow-[var(--card-shadow-hover)]'
-                  : 'border-border hover:border-accent/30'
+                  : 'border-border shadow-[var(--card-shadow)] hover:border-accent/30'
               )}
             >
               <button

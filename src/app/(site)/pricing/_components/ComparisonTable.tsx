@@ -33,7 +33,7 @@ export default function ComparisonTable({
   comparisonFeatures,
 }: ComparisonTableProps) {
   return (
-    <section className='section-padding bg-muted/50'>
+    <section className='section-padding bg-muted/30'>
       <div className='container-main max-w-4xl'>
         <HeaderSections tag='Compare' title='Feature Comparison' />
         <div className='rounded-2xl border border-border bg-card overflow-hidden'>

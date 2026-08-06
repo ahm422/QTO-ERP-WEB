@@ -31,8 +31,7 @@ export default function AboutHero() {
             <EyebrowBadge
               icon={Building2}
               label='Our Company'
-              variant='muted'
-              className='border-hero-chip-border bg-hero-chip text-hero-foreground'
+              variant='hero'
             />
           </motion.div>
           <motion.h1

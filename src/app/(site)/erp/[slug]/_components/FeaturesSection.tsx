@@ -1,15 +1,17 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Play } from "lucide-react";
 import { HeaderSections } from "@/components/ui/HeaderSections";
+import { MarketingButton } from "@/components/ui/marketing-button";
 import type { ModuleDetail } from "@/types/content";
 import Image from "next/image";
+import { getFadeInUp, viewportOnce } from "@/lib/motion";
+
 interface FeaturesSectionProps {
   app: ModuleDetail;
   onVideoOpen: () => void;
 }
 
-const smoothEase: [number, number, number, number] = [0.165, 0.84, 0.44, 1];
 // Feature image URLs for visual demonstrations
 const featureImages = [
   "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop",
@@ -26,19 +28,18 @@ export default function FeaturesSection({
   app,
   onVideoOpen,
 }: FeaturesSectionProps) {
-  return (
-    <section id="features" className="py-20 bg-muted/30">
-      <div className="container-main max-w-[1300px]">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <HeaderSections
-            tag="Features"
-            title={app.featuresSectionTitle ?? `${app.name} Features`}
-            description="A powerful set of tools built to give your team full control and visibility."
-          />
-        </div>
+  const reduced = useReducedMotion();
+  const fadeUp = getFadeInUp(reduced);
 
-        {/* Alternating rows */}
+  return (
+    <section id="features" className="section-padding bg-muted/30">
+      <div className="container-main max-w-[1300px]">
+        <HeaderSections
+          tag="Features"
+          title={app.featuresSectionTitle ?? `${app.name} Features`}
+          description="A powerful set of tools built to give your team full control and visibility."
+        />
+
         <div className="space-y-20">
           {app.features.map((feature, index) => {
             const isEven = index % 2 === 0;
@@ -46,58 +47,49 @@ export default function FeaturesSection({
             const imageUrl = featureImages[index % featureImages.length];
 
             return (
-              <div key={feature.title} className="grid lg:grid-cols-2 gap-12 ">
-                {/* Description side */}
+              <div key={feature.title} className="grid gap-12 lg:grid-cols-2">
                 <motion.div
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: smoothEase }}
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={viewportOnce}
                   className={isEven ? "" : "lg:order-2"}
                 >
                   <div className="flex flex-col gap-5">
-                    <span className="text-7xl font-black leading-none select-none text-accent/10">
+                    <span className="select-none text-7xl font-black leading-none text-accent/10">
                       {num}
                     </span>
-                    <h3 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                    <h3 className="font-display text-3xl font-bold leading-tight text-foreground lg:text-4xl">
                       {feature.title}
                     </h3>
-                    <p className="text-lg text-muted-foreground leading-relaxed">
+                    <p className="text-lg leading-relaxed text-muted-foreground">
                       {feature.description}
                     </p>
                   </div>
                 </motion.div>
 
-                {/* Visual panel side */}
                 <motion.div
-                  initial={{ opacity: 0, x: isEven ? 60 : -60 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: smoothEase }}
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={viewportOnce}
                   className={isEven ? "lg:order-2" : "lg:order-1"}
                 >
-                  <div
-                    className="rounded-2xl bg-background border border-border h-[400px] overflow-hidden relative group"
-                    style={{
-                      boxShadow:
-                        "0 25px 60px -20px rgba(0,0,0,0.12), 0 10px 25px -15px rgba(0,0,0,0.08)",
-                    }}
-                  >
+                  <div className="relative h-[400px] overflow-hidden rounded-2xl border border-border bg-background shadow-[var(--card-shadow)] group">
                     <Image
                       src={imageUrl}
                       alt={feature.title}
                       fill
-                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {/* Accent glow blob */}
-                    {/* Overlay gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                    {/* Feature label overlay */}
                     <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                      <p className="text-sm font-semibold text-accent mb-2 uppercase tracking-wider">
+                      <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-accent">
                         {num}
                       </p>
-                      <h4 className="text-lg font-bold">{feature.title}</h4>
+                      <h4 className="font-display text-lg font-bold">
+                        {feature.title}
+                      </h4>
                     </div>
                   </div>
                 </motion.div>
@@ -106,17 +98,15 @@ export default function FeaturesSection({
           })}
         </div>
 
-        {/* Video CTA Strip */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: smoothEase }}
-          className="mt-20 rounded-2xl bg-card border border-border p-8 flex flex-col sm:flex-row items-center justify-between gap-6"
-          style={{ boxShadow: "0 20px 50px -18px rgba(0,0,0,0.08)" }}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="mt-20 flex flex-col items-center justify-between gap-6 rounded-2xl border border-border bg-card p-8 shadow-[var(--card-shadow)] sm:flex-row"
         >
           <div>
-            <h4 className="text-xl font-bold text-foreground mb-1">
+            <h4 className="mb-1 font-display text-xl font-bold text-foreground">
               {app.videoCtaTitle ?? `See ${app.name} in action`}
             </h4>
             <p className="text-sm text-muted-foreground">
@@ -124,15 +114,19 @@ export default function FeaturesSection({
                 "Watch a quick overview of all key features and how they work together seamlessly."}
             </p>
           </div>
-          <button
+          <MarketingButton
+            type="button"
+            variant="primary"
+            size="lg"
             onClick={onVideoOpen}
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-md bg-accent text-accent-foreground font-semibold hover:bg-accent/90 transition-colors duration-200 shrink-0"
+            className="shrink-0"
+            iconSlide={false}
           >
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/20">
-              <Play className="h-4 w-4 fill-current" />
+            <span className="inline-flex size-8 items-center justify-center rounded-full bg-accent-foreground/20">
+              <Play className="size-4 fill-current" />
             </span>
             Watch Demo
-          </button>
+          </MarketingButton>
         </motion.div>
       </div>
     </section>
