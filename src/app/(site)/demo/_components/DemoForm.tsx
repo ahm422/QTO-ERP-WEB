@@ -199,7 +199,7 @@ const DemoForm = () => {
           >
             <div>
               <h2 className='mb-3 font-display text-3xl font-bold leading-tight text-foreground md:text-4xl'>
-                See ERPSuite in Action
+                See QTO-ERP in Action
               </h2>
               <p className='text-lg text-muted-foreground leading-relaxed'>
                 Get a personalized walkthrough of features designed to transform

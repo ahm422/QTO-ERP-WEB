@@ -6,6 +6,7 @@ import { Check, CheckCircle2, Clock, Sparkles, Users, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
 import { GridBackground } from '@/components/ui/grid-background';
+import { HeaderSections } from '@/components/ui/HeaderSections';
 import {
   getCardHover,
   getFadeInUp,
@@ -72,17 +73,17 @@ export default function Demopage() {
 
             <motion.h1
               variants={fadeUp}
-              className='mb-6 font-display text-5xl font-bold leading-tight text-hero-foreground md:text-6xl'
+              className='mb-6 font-display text-4xl font-bold leading-tight text-hero-foreground md:text-5xl'
             >
-              Experience ERPSuite
+              Experience QTO-ERP
               <span className='mt-2 block text-hero-accent'>Your Way</span>
             </motion.h1>
 
             <motion.p
               variants={item}
-              className='mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-hero-muted-foreground'
+              className='mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-hero-muted-foreground'
             >
-              Get a personalized walkthrough of how ERPSuite can streamline your
+              Get a personalized walkthrough of how QTO-ERP can streamline your
               operations, boost productivity, and transform your business.
             </motion.p>
 
@@ -109,20 +110,11 @@ export default function Demopage() {
 
       <section className='section-padding bg-muted/30'>
         <div className='container-main'>
-          <motion.div
-            variants={fadeUp}
-            initial='hidden'
-            whileInView='visible'
-            viewport={viewportOnce}
-            className='mb-16 text-center'
-          >
-            <h2 className='mb-4 font-display text-4xl font-bold text-foreground'>
-              What to Expect
-            </h2>
-            <p className='mx-auto max-w-2xl text-lg text-muted-foreground'>
-              Our demo process is designed to give you maximum value and insight
-            </p>
-          </motion.div>
+          <HeaderSections
+            tag='Process'
+            title='What to Expect'
+            description='Our demo process is designed to give you maximum value and insight'
+          />
 
           <motion.div
             className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'

@@ -119,7 +119,7 @@ export default function ContactPage() {
 
             <motion.h1
               variants={fadeUp}
-              className='mb-6 font-display text-5xl font-bold leading-tight text-hero-foreground md:text-6xl'
+              className='mb-6 font-display text-4xl font-bold leading-tight text-hero-foreground md:text-5xl'
             >
               Let&apos;s Connect
               <span className='mt-2 block text-hero-accent'>
@@ -129,7 +129,7 @@ export default function ContactPage() {
 
             <motion.p
               variants={item}
-              className='mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-hero-muted-foreground'
+              className='mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-hero-muted-foreground'
             >
               Whether you have questions, need technical support, want to
               explore a partnership, or just want to say hello—we&apos;re all
@@ -204,51 +204,46 @@ export default function ContactPage() {
 
       <section className='section-padding border-t border-border bg-muted/30'>
         <div className='container-main'>
+          <HeaderSections
+            tag='FAQ'
+            title='Quick Support Guide'
+            description='Find quick answers to common questions. For more help, our support team is just one message away.'
+          />
+
+          <motion.div
+            className='mx-auto grid max-w-3xl grid-cols-1 gap-6 md:grid-cols-3'
+            variants={container}
+            initial='hidden'
+            whileInView='visible'
+            viewport={viewportOnce}
+          >
+            {faqs.map((faq) => (
+              <motion.div key={faq.q} variants={item}>
+                <Card
+                  variant='default'
+                  radius='lg'
+                  padding='md'
+                  className='h-full text-left'
+                >
+                  <p className='mb-2 text-sm font-semibold text-foreground'>
+                    {faq.q}
+                  </p>
+                  <p className='text-xs text-muted-foreground'>{faq.a}</p>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+
           <motion.div
             variants={fadeUp}
             initial='hidden'
             whileInView='visible'
             viewport={viewportOnce}
-            className='mx-auto max-w-3xl text-center'
+            className='mt-8 flex justify-center'
           >
-            <h2 className='mb-4 font-display text-3xl font-bold text-foreground'>
-              Quick Support Guide
-            </h2>
-            <p className='mb-8 text-lg text-muted-foreground'>
-              Find quick answers to common questions. For more help, our support
-              team is just one message away.
-            </p>
-
-            <motion.div
-              className='grid grid-cols-1 gap-6 md:grid-cols-3'
-              variants={container}
-              initial='hidden'
-              whileInView='visible'
-              viewport={viewportOnce}
-            >
-              {faqs.map((faq) => (
-                <motion.div key={faq.q} variants={item}>
-                  <Card variant='default' radius='lg' padding='md' className='h-full text-left'>
-                    <p className='mb-2 text-sm font-semibold text-foreground'>
-                      {faq.q}
-                    </p>
-                    <p className='text-xs text-muted-foreground'>{faq.a}</p>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            <motion.div
-              variants={fadeUp}
-              initial='hidden'
-              whileInView='visible'
-              viewport={viewportOnce}
-              className='mt-8 flex justify-center'
-            >
-              <MarketingButton variant='primary' asChild>
-                <Link href='/blog'>Explore Knowledge Base</Link>
-              </MarketingButton>
-            </motion.div>
+            <MarketingButton variant='primary' asChild>
+              <Link href='/blog'>Explore Knowledge Base</Link>
+            </MarketingButton>
           </motion.div>
         </div>
       </section>
