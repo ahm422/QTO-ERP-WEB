@@ -147,6 +147,8 @@ export const apps: PlatformsType = [
         name: "Sarah Chen",
         role: "HR Director",
         company: "TechFlow Inc.",
+        rating: 5,
+        selectedSolution: "Attendance",
       },
       {
         content:
@@ -154,6 +156,8 @@ export const apps: PlatformsType = [
         name: "James Miller",
         role: "Operations Lead",
         company: "BuildRight Co.",
+        rating: 5,
+        selectedSolution: "Attendance",
       },
     ],
     faqs: [
@@ -281,6 +285,8 @@ export const apps: PlatformsType = [
         name: "Lisa Park",
         role: "People Ops Manager",
         company: "ScaleUp Labs",
+        rating: 5,
+        selectedSolution: "HRM",
       },
       {
         content:
@@ -288,6 +294,8 @@ export const apps: PlatformsType = [
         name: "Ahmed Hassan",
         role: "HR Business Partner",
         company: "GlobalTech",
+        rating: 5,
+        selectedSolution: "HRM",
       },
     ],
     faqs: [
@@ -440,6 +448,8 @@ export const apps: PlatformsType = [
         name: "Michael Torres",
         role: "VP of Engineering",
         company: "DevCore Systems",
+        rating: 5,
+        selectedSolution: "Project Management",
       },
       {
         content:
@@ -447,6 +457,8 @@ export const apps: PlatformsType = [
         name: "Emily Watson",
         role: "Project Director",
         company: "Catalyst Agency",
+        rating: 5,
+        selectedSolution: "Project Management",
       },
     ],
     faqs: [
@@ -646,6 +658,8 @@ export const apps: PlatformsType = [
         name: "Ahmed Raza",
         role: "Business Development Manager",
         company: "Skyline Constructions",
+        rating: 5,
+        selectedSolution: "CRM",
       },
       {
         content:
@@ -653,6 +667,8 @@ export const apps: PlatformsType = [
         name: "Michael Torres",
         role: "Senior Estimator",
         company: "BuildCore Ltd.",
+        rating: 5,
+        selectedSolution: "CRM",
       },
     ],
 

@@ -1,19 +1,60 @@
-import { GeneralFAQsType } from "@/types";
+import type { GeneralFAQsType } from '@/types';
+import type { TestimonialType } from '@/types/testimonial';
 
-export interface Testimonial {
-  content: string;
-  name: string;
-  role: string;
-  company: string;
-}
-
-export const globalTestimonials: Testimonial[] = [
-  { content: "We cut payroll processing time by 60% after switching to this attendance system.", name: "Sarah Chen", role: "HR Director", company: "TechFlow Inc." },
-  { content: "Onboarding went from 2 weeks of chaos to a smooth 3-day process.", name: "Lisa Park", role: "People Ops Manager", company: "ScaleUp Labs" },
-  { content: "We went from 40% on-time delivery to 92% in three months.", name: "Michael Torres", role: "VP of Engineering", company: "DevCore Systems" },
-  { content: "One platform replaced four tools and gave me the oversight I was missing.", name: "David Kim", role: "CEO", company: "NovaTech Solutions" },
-  { content: "The resource allocation view alone saved us from burning out two senior developers.", name: "Emily Watson", role: "Project Director", company: "Catalyst Agency" },
-  { content: "Finally, one place for everything. No more digging through shared drives.", name: "Ahmed Hassan", role: "HR Business Partner", company: "GlobalTech" },
+export const globalTestimonials: TestimonialType[] = [
+  {
+    content:
+      'We cut payroll processing time by 60% after switching to this attendance system.',
+    name: 'Sarah Chen',
+    role: 'HR Director',
+    company: 'TechFlow Inc.',
+    rating: 5,
+    selectedSolution: 'Attendance',
+  },
+  {
+    content:
+      'Onboarding went from 2 weeks of chaos to a smooth 3-day process.',
+    name: 'Lisa Park',
+    role: 'People Ops Manager',
+    company: 'ScaleUp Labs',
+    rating: 5,
+    selectedSolution: 'HRM',
+  },
+  {
+    content: 'We went from 40% on-time delivery to 92% in three months.',
+    name: 'Michael Torres',
+    role: 'VP of Engineering',
+    company: 'DevCore Systems',
+    rating: 5,
+    selectedSolution: 'Project Management',
+  },
+  {
+    content:
+      'One platform replaced four tools and gave me the oversight I was missing.',
+    name: 'David Kim',
+    role: 'CEO',
+    company: 'NovaTech Solutions',
+    rating: 5,
+    selectedSolution: 'ERP Suite',
+  },
+  {
+    content:
+      'The resource allocation view alone saved us from burning out two senior developers.',
+    name: 'Emily Watson',
+    role: 'Project Director',
+    company: 'Catalyst Agency',
+    rating: 5,
+    selectedSolution: 'Project Management',
+  },
+  {
+    content:
+      'Finally, one place for everything. No more digging through shared drives.',
+    name: 'Ahmed Hassan',
+    role: 'HR Business Partner',
+    company: 'GlobalTech',
+    rating: 5,
+    selectedSolution: 'HRM',
+  },
 ];
 
 export const customerLogos = [
