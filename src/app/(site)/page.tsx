@@ -1,5 +1,6 @@
 import Hero from './_components/Hero';
 import Platforms from './_components/Platforms';
+import IndustryEcosystems from './_components/IndustryEcosystems';
 import Customers from './_components/Customers';
 import Faqs from './_components/Faqs';
 import QTODev from './_components/QTODev';
@@ -14,6 +15,7 @@ export default async function Home() {
     <>
       <Hero />
       <Platforms modules={modules} />
+      <IndustryEcosystems />
       <Customers />
       <HomeStats />
       <Faqs />

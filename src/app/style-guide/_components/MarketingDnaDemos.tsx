@@ -3,7 +3,6 @@
 import type { ReactNode } from "react";
 import {
   Boxes,
-  Building2,
   ClipboardList,
   Layers,
   Sparkles,
@@ -29,6 +28,8 @@ import { StatsStrip } from "@/components/common/Stats";
 import { SelectorPanel, type SelectorItem } from "@/components/ui/selector-panel";
 import { DarkCtaBand } from "@/components/ui/dark-cta-band";
 import { GridBackground } from "@/components/ui/grid-background";
+import { getDomainIcon } from "@/lib/icon-map";
+import { getIndustryDomains } from "@/lib/industry-domains";
 import {
   getCardHover,
   getIconChipHover,
@@ -64,26 +65,14 @@ const MODULE_ITEMS: SelectorItem[] = [
   },
 ];
 
-const DOMAIN_ITEMS: SelectorItem[] = [
-  {
-    id: "manufacturing",
-    label: "Manufacturing",
-    description: "Shop floor to ship",
-    icon: Building2,
-  },
-  {
-    id: "services",
-    label: "Professional services",
-    description: "Projects & billing",
-    icon: Workflow,
-  },
-  {
-    id: "retail",
-    label: "Retail",
-    description: "Omnichannel ops",
-    icon: Sparkles,
-  },
-];
+const DOMAIN_ITEMS: SelectorItem[] = getIndustryDomains()
+  .slice(0, 3)
+  .map((domain) => ({
+    id: domain.id,
+    label: domain.name,
+    description: `${domain.systemCount} systems`,
+    icon: getDomainIcon(domain.iconKey),
+  }));
 
 const DEMO_STATS = [
   { value: 4.9, suffix: "/5.0", label: "Average rating", icon: Star },
