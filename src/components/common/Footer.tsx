@@ -81,8 +81,8 @@ export default function Footer() {
 
   return (
     <footer className='border-t border-border bg-card'>
-      <div className='container-main py-16'>
-        <div className='grid grid-cols-2 gap-8 md:grid-cols-6 lg:grid-cols-12'>
+      <div className='container-main py-16 md:py-20'>
+        <div className='grid grid-cols-2 gap-10 md:grid-cols-6 lg:grid-cols-12 lg:gap-8'>
           {/* Brand */}
           <div className='col-span-2 md:col-span-6 lg:col-span-3'>
             <Link
@@ -91,7 +91,7 @@ export default function Footer() {
             >
               <span className='text-gradient'>QTO</span>-ERP
             </Link>
-            <p className='mt-3 text-sm leading-relaxed text-muted-foreground'>
+            <p className='mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground'>
               Modern ERP for growing teams. Attendance, HR, and projects — all in
               one place.
             </p>
@@ -107,7 +107,7 @@ export default function Footer() {
 
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title} className='md:col-span-1 lg:col-span-2'>
-              <h4 className='mb-4 text-sm font-semibold text-foreground'>
+              <h4 className='mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-foreground'>
                 {title}
               </h4>
               <ul className='space-y-2.5'>
@@ -139,10 +139,10 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div className='col-span-2 md:col-span-6 lg:col-span-3'>
-            <h4 className='mb-4 text-sm font-semibold text-foreground'>
+            <h4 className='mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-foreground'>
               Newsletter
             </h4>
-            <p className='mb-4 text-sm leading-relaxed text-muted-foreground'>
+            <p className='mb-5 text-sm leading-relaxed text-muted-foreground'>
               Product updates and construction ops insights — no spam.
             </p>
             <form onSubmit={handleSubscribe} className='space-y-3'>
@@ -165,7 +165,7 @@ export default function Footer() {
                   placeholder='you@company.com'
                   required
                   disabled={isLoading}
-                  className='w-full rounded-xl border border-input bg-background py-2.5 pr-3 pl-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60'
+                  className='w-full rounded-xl border border-input bg-background py-3 pr-3 pl-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60'
                 />
               </div>
               <MarketingButton

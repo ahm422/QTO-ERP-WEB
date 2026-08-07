@@ -17,10 +17,13 @@ interface FAQAccordionProps {
   showNumbers?: boolean;
 }
 
+/**
+ * FAQ list — border-bottom rows with + / − (SoT motif). Cards optional via numbers.
+ */
 export function FAQAccordion({
   faqs,
   className,
-  showNumbers = true,
+  showNumbers = false,
 }: FAQAccordionProps) {
   const [openIndex, setOpenIndex] = React.useState<number | null>(null);
   const reduced = useReducedMotion();
@@ -32,7 +35,7 @@ export function FAQAccordion({
   };
 
   return (
-    <div className={cn('mx-auto max-w-3xl space-y-4', className)}>
+    <div className={cn('mx-auto max-w-3xl', className)}>
       {faqs.map((faq, index) => {
         const isOpen = openIndex === index;
         const number = String(index + 1).padStart(2, '0');
@@ -45,119 +48,94 @@ export function FAQAccordion({
             whileInView='visible'
             viewport={viewportOnce}
             custom={index}
+            className='border-b border-border'
           >
-            <div
+            <button
+              type='button'
+              onClick={() => handleToggle(index)}
+              aria-expanded={isOpen}
               className={cn(
-                'relative overflow-hidden rounded-2xl border bg-card',
-                'transition-[border-color,box-shadow,transform] duration-300',
-                isOpen
-                  ? 'border-accent/50 shadow-[var(--card-shadow-hover)]'
-                  : 'border-border shadow-[var(--card-shadow)] hover:border-accent/30'
+                'flex w-full items-center gap-4 py-5 text-left md:py-6',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
               )}
             >
-              <button
-                type='button'
-                onClick={() => handleToggle(index)}
-                className={cn(
-                  'flex w-full items-center gap-4 px-4 py-3 text-left md:px-5 md:py-4',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
-                )}
-              >
-                {showNumbers ? (
-                  <span
-                    className={cn(
-                      'flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold md:size-12 md:text-base',
-                      'transition-colors duration-300',
-                      isOpen
-                        ? 'bg-accent text-accent-foreground'
-                        : 'bg-muted text-muted-foreground'
-                    )}
-                  >
-                    {number}
-                  </span>
-                ) : null}
-
+              {showNumbers ? (
                 <span
                   className={cn(
-                    'flex-1 text-base font-semibold md:text-lg',
-                    isOpen ? 'text-foreground' : 'text-foreground/90'
-                  )}
-                >
-                  {faq.question}
-                </span>
-
-                <div
-                  className={cn(
-                    'relative flex size-10 shrink-0 items-center justify-center rounded-full md:size-11',
+                    'flex size-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold md:size-10 md:text-sm',
                     'transition-colors duration-300',
                     isOpen
                       ? 'bg-accent text-accent-foreground'
                       : 'bg-muted text-muted-foreground'
                   )}
                 >
-                  <AnimatePresence mode='wait' initial={false}>
-                    {isOpen ? (
-                      <motion.div
-                        key='minus'
-                        variants={panel}
-                        initial='initial'
-                        animate='animate'
-                        exit='exit'
-                      >
-                        <Minus className='size-5' />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key='plus'
-                        variants={panel}
-                        initial='initial'
-                        animate='animate'
-                        exit='exit'
-                      >
-                        <Plus className='size-5' />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </button>
+                  {number}
+                </span>
+              ) : null}
 
-              <AnimatePresence initial={false}>
-                {isOpen ? (
-                  <motion.div
-                    initial={
-                      reduced
-                        ? { opacity: 0 }
-                        : { height: 0, opacity: 0 }
-                    }
-                    animate={
-                      reduced
-                        ? { opacity: 1 }
-                        : { height: 'auto', opacity: 1 }
-                    }
-                    exit={
-                      reduced
-                        ? { opacity: 0 }
-                        : { height: 0, opacity: 0 }
-                    }
-                    transition={{ duration: reduced ? 0.15 : 0.3 }}
-                    className='overflow-hidden'
-                  >
-                    <div className='border-t border-border px-6 pb-6 md:px-8 md:pb-8'>
-                      <p className='pt-5 text-sm leading-relaxed text-muted-foreground md:text-base'>
-                        {faq.answer}
-                      </p>
-                    </div>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-
-              <div
+              <span
                 className={cn(
-                  'absolute bottom-0 left-0 top-0 w-1 bg-accent transition-opacity duration-300',
-                  isOpen ? 'opacity-100' : 'opacity-0'
+                  'flex-1 font-display text-base font-semibold tracking-tight md:text-lg',
+                  isOpen ? 'text-foreground' : 'text-foreground/90'
                 )}
-              />
-            </div>
+              >
+                {faq.question}
+              </span>
+
+              <span
+                className={cn(
+                  'relative flex size-8 shrink-0 items-center justify-center text-muted-foreground transition-colors',
+                  isOpen && 'text-accent'
+                )}
+                aria-hidden
+              >
+                <AnimatePresence mode='wait' initial={false}>
+                  {isOpen ? (
+                    <motion.span
+                      key='minus'
+                      variants={panel}
+                      initial='initial'
+                      animate='animate'
+                      exit='exit'
+                      className='absolute'
+                    >
+                      <Minus className='size-5' strokeWidth={2} />
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key='plus'
+                      variants={panel}
+                      initial='initial'
+                      animate='animate'
+                      exit='exit'
+                      className='absolute'
+                    >
+                      <Plus className='size-5' strokeWidth={2} />
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </span>
+            </button>
+
+            <AnimatePresence initial={false}>
+              {isOpen ? (
+                <motion.div
+                  initial={
+                    reduced ? { opacity: 0 } : { height: 0, opacity: 0 }
+                  }
+                  animate={
+                    reduced ? { opacity: 1 } : { height: 'auto', opacity: 1 }
+                  }
+                  exit={reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                  transition={{ duration: reduced ? 0.15 : 0.3 }}
+                  className='overflow-hidden'
+                >
+                  <p className='pb-6 pr-10 text-sm leading-relaxed text-muted-foreground md:pb-7 md:text-base'>
+                    {faq.answer}
+                  </p>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
           </motion.div>
         );
       })}

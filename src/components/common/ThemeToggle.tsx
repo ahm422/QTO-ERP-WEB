@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { getIconSwap } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -18,18 +18,29 @@ export function ThemeToggle() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  if (!mounted) return <div className="w-9 h-9" />;
+  if (!mounted) {
+    return (
+      <div
+        className="size-9 rounded-full"
+        aria-hidden
+      />
+    );
+  }
 
   const isDark = theme === "dark";
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <button
+      type="button"
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={isDark}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="relative overflow-hidden rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50"
+      className={cn(
+        "relative inline-flex size-9 items-center justify-center overflow-hidden rounded-full",
+        "text-muted-foreground transition-colors",
+        "hover:bg-muted hover:text-foreground",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+      )}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
@@ -41,12 +52,12 @@ export function ThemeToggle() {
           className="inline-flex"
         >
           {isDark ? (
-            <Sun className="h-4 w-4" />
+            <Sun className="size-4" />
           ) : (
-            <Moon className="h-4 w-4" />
+            <Moon className="size-4" />
           )}
         </motion.span>
       </AnimatePresence>
-    </Button>
+    </button>
   );
 }

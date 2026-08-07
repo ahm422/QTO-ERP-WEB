@@ -108,7 +108,7 @@ export function StatTile({
         </div>
       ) : null}
 
-      <div className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+      <div className="font-display text-5xl font-bold tracking-tight text-foreground sm:text-6xl">
         <AnimatedNumber
           target={stat.value}
           suffix={stat.suffix}
@@ -117,7 +117,7 @@ export function StatTile({
         />
       </div>
 
-      <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
         {stat.label}
       </p>
     </div>
@@ -144,7 +144,7 @@ export function StatsStrip({ stats, className }: StatsStripProps) {
       whileInView="visible"
       viewport={viewportOnce}
       className={cn(
-        "mx-auto mt-16 grid max-w-5xl grid-cols-2 gap-8 px-6 md:grid-cols-4 md:gap-6",
+        "mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-10 px-6 md:mt-16 md:grid-cols-4 md:gap-8",
         className
       )}
     >

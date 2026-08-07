@@ -10,26 +10,46 @@ import {
 } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
-interface HeaderSectionsProps {
+export interface HeaderSectionsProps {
   tag?: string;
   tagIcon?: LucideIcon;
+  /** Bold Outfit display line. */
   title: string;
+  /** Optional orange Instrument Serif italic accent line (two-tone motif). */
+  accent?: string;
   description?: string;
   centered?: boolean;
   className?: string;
+  /** Heading element — default h2 for sections; hero may pass h1 via SectionHeading. */
+  as?: 'h1' | 'h2' | 'h3';
 }
 
+/**
+ * Marketing section header — eyebrow + two-tone title (display + optional accent) + description.
+ */
 export function HeaderSections({
   tag,
   tagIcon,
   title,
+  accent,
   description,
   centered = true,
   className,
+  as: Heading = 'h2',
 }: HeaderSectionsProps) {
   const reduced = useReducedMotion();
   const container = getStaggerContainer(reduced);
   const item = getStaggerItem(reduced);
+
+  const titleClass =
+    Heading === 'h1'
+      ? 'mb-6 font-display text-4xl font-bold leading-[1.02] tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-7xl'
+      : 'mb-4 font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-5xl lg:text-6xl';
+
+  const accentClass =
+    Heading === 'h1'
+      ? 'mt-1 block font-accent text-4xl italic leading-[1.02] text-accent sm:text-5xl lg:text-6xl xl:text-7xl'
+      : 'mt-1 block font-accent text-4xl italic leading-[1.05] text-accent md:text-5xl lg:text-6xl';
 
   return (
     <motion.div
@@ -47,12 +67,12 @@ export function HeaderSections({
           <EyebrowBadge label={tag} icon={tagIcon} variant='accent' />
         </motion.div>
       ) : null}
-      <motion.h2
-        variants={item}
-        className='mb-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl'
-      >
-        {title}
-      </motion.h2>
+      <motion.div variants={item}>
+        <Heading className={titleClass}>
+          {title}
+          {accent ? <span className={accentClass}>{accent}</span> : null}
+        </Heading>
+      </motion.div>
       {description ? (
         <motion.p
           variants={item}
@@ -67,3 +87,6 @@ export function HeaderSections({
     </motion.div>
   );
 }
+
+/** Preferred alias for the two-tone heading primitive (#139). */
+export const SectionHeading = HeaderSections;

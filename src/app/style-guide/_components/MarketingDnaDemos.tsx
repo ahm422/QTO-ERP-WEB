@@ -466,7 +466,7 @@ export function OrbitMotifDemo() {
         <code className="font-mono">prefers-reduced-motion</code>: static frame,
         no auto-rotate / float. Colors from orbit / accent tokens.
       </p>
-      <div className="dark mx-auto w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-background p-2 shadow-[var(--card-shadow)]">
+      <div className="dark mx-auto w-full max-w-lg overflow-visible rounded-2xl border border-border bg-background p-4 shadow-[var(--card-shadow)]">
         <OrbitMotif
           interactive
           showHints
@@ -579,7 +579,8 @@ export function BuiltForSectionDemo() {
   return (
     <BuiltForSection
       tag="Built for"
-      title="Built for the field crew"
+      title="Built for the field"
+      accent="crew"
       description="Audience shell — three cards, token-only surfaces."
       className="!py-0"
       audiences={[
@@ -790,21 +791,25 @@ export function BoardTypographyDemo() {
       {[false, true].map((dark) => (
         <ThemeFrame key={String(dark)} dark={dark}>
           <div className="space-y-4">
-            <p className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
+            <p className="font-sans text-[11px] font-medium uppercase tracking-[0.25em] text-accent">
               Platform Ecosystem
             </p>
             <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               Construction Intelligence
             </h1>
-            <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
-              The Complete ERP Engine
+            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground">
+              The Complete
+              <span className="mt-1 block font-accent text-2xl italic text-accent sm:text-3xl">
+                ERP Engine
+              </span>
             </h2>
-            <h3 className="font-display text-lg font-semibold text-accent">
-              Module Capabilities
+            <h3 className="font-display text-lg font-semibold text-foreground">
+              Module{" "}
+              <span className="font-accent italic text-accent">Capabilities</span>
             </h3>
             <p className="max-w-md font-sans text-sm leading-relaxed text-muted-foreground">
               Visual identity and component language for field-service and
-              construction ERP surfaces.
+              construction ERP surfaces. Accent face: Instrument Serif italic.
             </p>
             <div className="flex flex-wrap gap-3 pt-1">
               <MarketingButton variant="primary">Book a Demo</MarketingButton>

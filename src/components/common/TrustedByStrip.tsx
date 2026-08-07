@@ -27,15 +27,15 @@ export function TrustedByStrip({
   return (
     <div className={cn("w-full", className)}>
       {label ? (
-        <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="mb-8 text-center text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           {label}
         </p>
       ) : null}
-      <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-12">
+      <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-80 sm:gap-x-14">
         {logos.map((logo) => (
           <li
             key={logo.name}
-            className="font-display text-sm font-semibold tracking-wide text-muted-foreground/80 sm:text-base"
+            className="font-display text-sm font-semibold tracking-wide text-muted-foreground sm:text-base"
           >
             {logo.label ?? logo.name}
           </li>

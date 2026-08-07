@@ -10,9 +10,10 @@
   --accent: var(--accent);
   --accent-foreground: var(--accent-foreground);
   --accent-dark: var(--accent-dark);
-  /* Permanent brand faces (Outfit display / Poppins body) */
+  /* Permanent brand faces (Outfit display / Poppins body / Instrument Serif accent) */
   --font-sans: var(--font-sans-family);
   --font-display: var(--font-display-family);
+  --font-accent: var(--font-accent-family);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     monospace;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -106,6 +107,7 @@
   --radius: 0.625rem;
   --font-sans-family: var(--font-poppins);
   --font-display-family: var(--font-outfit);
+  --font-accent-family: var(--font-instrument-serif);
 
   --background: #faf8f5;
   --foreground: #0a0a0a;

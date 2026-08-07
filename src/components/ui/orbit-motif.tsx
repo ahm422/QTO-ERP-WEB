@@ -2,6 +2,7 @@
 
 import { Environment, Float, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Suspense,
@@ -9,7 +10,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type RefObject,
 } from "react";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
@@ -91,6 +91,45 @@ const DEFAULT_MODULES: OrbitModuleDef[] = [
   },
 ];
 
+/**
+ * Bloom only on capable desktop: not mobile/coarse pointer, not narrow viewports,
+ * not reduced-motion, and not very low DPR / save-data.
+ */
+function useBloomEnabled(reduced: boolean | null): boolean {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const evaluate = () => {
+      if (reduced) {
+        setEnabled(false);
+        return;
+      }
+      const coarse = window.matchMedia("(pointer: coarse)").matches;
+      const narrow = window.matchMedia("(max-width: 1023px)").matches;
+      const dpr = window.devicePixelRatio || 1;
+      const saveData =
+        "connection" in navigator &&
+        Boolean(
+          (navigator as Navigator & { connection?: { saveData?: boolean } })
+            .connection?.saveData
+        );
+      setEnabled(!coarse && !narrow && dpr >= 1.25 && !saveData);
+    };
+    evaluate();
+    const mqNarrow = window.matchMedia("(max-width: 1023px)");
+    const mqCoarse = window.matchMedia("(pointer: coarse)");
+    mqNarrow.addEventListener("change", evaluate);
+    mqCoarse.addEventListener("change", evaluate);
+    return () => {
+      mqNarrow.removeEventListener("change", evaluate);
+      mqCoarse.removeEventListener("change", evaluate);
+    };
+  }, [reduced]);
+
+  return enabled;
+}
+
 function cssToRgb(cssColor: string, fallback: string): string {
   if (typeof document === "undefined") return fallback;
   try {
@@ -117,8 +156,6 @@ function useOrbitColors(): OrbitColors {
   useEffect(() => {
     const read = () => {
       const s = getComputedStyle(document.documentElement);
-      // --orbit-glow / --orbit-ring are translucent CSS atmospheres;
-      // Three.js materials need solid motif-gradient / accent counterparts.
       setColors({
         glow: cssToRgb(
           s.getPropertyValue("--motif-gradient-from").trim() ||
@@ -172,7 +209,8 @@ function GlowSprite({
       size / 2
     );
     g.addColorStop(0, "rgba(255,255,255,1)");
-    g.addColorStop(0.35, "rgba(255,255,255,0.45)");
+    g.addColorStop(0.22, "rgba(255,255,255,0.55)");
+    g.addColorStop(0.55, "rgba(255,255,255,0.12)");
     g.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, size, size);
@@ -192,55 +230,6 @@ function GlowSprite({
         blending={THREE.AdditiveBlending}
       />
     </sprite>
-  );
-}
-
-function SoftBeam({
-  targetRef,
-  color,
-  active,
-}: {
-  targetRef: RefObject<THREE.Group | null>;
-  color: string;
-  active: boolean;
-}) {
-  const mesh = useRef<THREE.Mesh>(null);
-  const mat = useRef<THREE.MeshBasicMaterial>(null);
-  const up = useMemo(() => new THREE.Vector3(0, 1, 0), []);
-  const dir = useMemo(() => new THREE.Vector3(), []);
-  const mid = useMemo(() => new THREE.Vector3(), []);
-  const quat = useMemo(() => new THREE.Quaternion(), []);
-
-  useFrame((_, dt) => {
-    if (!mesh.current || !targetRef.current || !mat.current) return;
-    const end = targetRef.current.position;
-    const len = Math.max(end.length(), 0.001);
-    mid.copy(end).multiplyScalar(0.5);
-    mesh.current.position.copy(mid);
-    dir.copy(end).normalize();
-    quat.setFromUnitVectors(up, dir);
-    mesh.current.quaternion.copy(quat);
-    const radius = active ? 0.028 : 0.01;
-    mesh.current.scale.set(radius, len, radius);
-    mat.current.opacity = THREE.MathUtils.damp(
-      mat.current.opacity,
-      active ? 0.7 : 0.18,
-      8,
-      dt
-    );
-  });
-
-  return (
-    <mesh ref={mesh}>
-      <cylinderGeometry args={[1, 1, 1, 12]} />
-      <meshBasicMaterial
-        ref={mat}
-        color={color}
-        transparent
-        opacity={0.18}
-        depthWrite={false}
-      />
-    </mesh>
   );
 }
 
@@ -280,40 +269,37 @@ function OrbitalModule({
   });
 
   return (
-    <>
-      <SoftBeam targetRef={group} color={colors.glow} active={hovered} />
-      <group ref={group}>
-        <mesh
-          ref={ball}
-          onPointerOver={(e) => {
-            e.stopPropagation();
-            onActive(def.id);
-            document.body.style.cursor = "pointer";
-          }}
-          onPointerOut={(e) => {
-            e.stopPropagation();
-            onActive(null);
-            document.body.style.cursor = "auto";
-          }}
-        >
-          <sphereGeometry args={[0.18, 48, 48]} />
-          <meshPhysicalMaterial
-            color={colors.glow}
-            emissive={colors.glow}
-            emissiveIntensity={hovered ? 2.4 : 1.1}
-            metalness={0.3}
-            roughness={0.12}
-            clearcoat={1}
-            clearcoatRoughness={0.08}
-          />
-        </mesh>
-        <GlowSprite
-          color={colors.glow}
-          scale={hovered ? 1.4 : 0.7}
-          opacity={hovered ? 0.85 : 0.4}
+    <group ref={group}>
+      <mesh
+        ref={ball}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          onActive(def.id);
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          onActive(null);
+          document.body.style.cursor = "auto";
+        }}
+      >
+        <sphereGeometry args={[0.075, 32, 32]} />
+        <meshPhysicalMaterial
+          color="#ffffff"
+          emissive={colors.glow}
+          emissiveIntensity={hovered ? 3.2 : 2.1}
+          metalness={0.15}
+          roughness={0.08}
+          clearcoat={1}
+          clearcoatRoughness={0.05}
         />
-      </group>
-    </>
+      </mesh>
+      <GlowSprite
+        color={colors.glow}
+        scale={hovered ? 0.4 : 0.22}
+        opacity={hovered ? 0.6 : 0.32}
+      />
+    </group>
   );
 }
 
@@ -321,23 +307,45 @@ function OrbitRing({
   radius,
   color,
   rotation,
-  opacity = 0.35,
+  opacity = 0.55,
+  tube = 0.012,
+  emissiveIntensity = 0.85,
+  /** Bright pinpoint flare at the ring's rightmost edge, echoing the reference render. */
+  flare = false,
 }: {
   radius: number;
   color: string;
   rotation: [number, number, number];
   opacity?: number;
+  tube?: number;
+  emissiveIntensity?: number;
+  flare?: boolean;
 }) {
   return (
-    <mesh rotation={rotation}>
-      <torusGeometry args={[radius, 0.008, 16, 200]} />
-      <meshBasicMaterial
-        color={color}
-        transparent
-        opacity={opacity}
-        depthWrite={false}
-      />
-    </mesh>
+    <group rotation={rotation}>
+      <mesh>
+        <torusGeometry args={[radius, tube, 24, 256]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={emissiveIntensity}
+          transparent
+          opacity={opacity}
+          depthWrite={false}
+          roughness={0.4}
+          metalness={0.04}
+        />
+      </mesh>
+      {flare ? (
+        <group position={[radius, 0, 0]}>
+          <mesh>
+            <sphereGeometry args={[0.04, 24, 24]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          <GlowSprite color={color} scale={0.5} opacity={0.5} />
+        </group>
+      ) : null}
+    </group>
   );
 }
 
@@ -368,35 +376,36 @@ function Core({
         <sphereGeometry args={[0.72, 64, 64]} />
         <meshPhysicalMaterial
           color={colors.glow}
-          metalness={0.05}
+          metalness={0.02}
           roughness={0.04}
-          transmission={0.94}
-          thickness={1.6}
-          ior={1.45}
+          transmission={0.95}
+          thickness={1.05}
+          ior={1.42}
           clearcoat={1}
-          clearcoatRoughness={0.03}
+          clearcoatRoughness={0.02}
           transparent
-          envMapIntensity={1.8}
+          envMapIntensity={2.4}
           attenuationColor={colors.accentDark}
-          attenuationDistance={0.7}
+          attenuationDistance={1.15}
         />
       </mesh>
-      <mesh ref={inner} scale={0.4}>
+      <mesh ref={inner} scale={0.34}>
         <icosahedronGeometry args={[1, 0]} />
         <meshStandardMaterial
           color={colors.glow}
           emissive={colors.glow}
-          emissiveIntensity={hot ? 2.6 : 1.4}
+          emissiveIntensity={hot ? 2.2 : 1.3}
           metalness={0.6}
           roughness={0.15}
         />
       </mesh>
-      <mesh scale={0.24}>
+      <mesh scale={0.2}>
         <sphereGeometry args={[1, 32, 32]} />
         <meshBasicMaterial color="#ffffff" />
       </mesh>
-      <GlowSprite color={colors.glow} scale={hot ? 4.2 : 3.2} opacity={0.6} />
-      <GlowSprite color="#ffffff" scale={1.4} opacity={0.35} />
+      {/* Kept subtle so it reads as a light source inside glass, not a solid fill hiding the transmission. */}
+      <GlowSprite color={colors.glow} scale={hot ? 2.4 : 1.7} opacity={0.18} />
+      <GlowSprite color="#ffffff" scale={0.85} opacity={0.22} />
     </group>
   );
 }
@@ -408,6 +417,7 @@ function Scene({
   onActive,
   modules,
   interactive,
+  bloom,
 }: {
   colors: OrbitColors;
   reduced: boolean;
@@ -415,26 +425,42 @@ function Scene({
   onActive: (id: string | null) => void;
   modules: OrbitModuleDef[];
   interactive: boolean;
+  bloom: boolean;
 }) {
+  // Scale so tilted outer rings (r≈2.45) + Float stay fully inside the canvas.
   const system = (
-    <group>
+    <group scale={0.92}>
+      {/* Dominant equatorial belt — bright, near-horizontal, flare at its edge. */}
       <OrbitRing
         radius={2.05}
         color={colors.ring}
-        rotation={[1.15, 0.3, 0.1]}
-        opacity={0.4}
+        rotation={[1.48, 0.14, 0.04]}
+        opacity={0.82}
+        tube={0.013}
+        emissiveIntensity={1.0}
+        flare
       />
+      {/* Thin crisscrossing trace lines — echo the reference's fine orbit threads. */}
       <OrbitRing
         radius={2.45}
         color={colors.ring}
         rotation={[1.4, -0.45, 0.55]}
-        opacity={0.22}
+        opacity={0.4}
+        tube={0.007}
       />
       <OrbitRing
         radius={1.55}
         color={colors.ring}
         rotation={[0.4, 0.8, 0.2]}
-        opacity={0.18}
+        opacity={0.36}
+        tube={0.007}
+      />
+      <OrbitRing
+        radius={1.85}
+        color={colors.ring}
+        rotation={[-0.55, 0.35, -0.3]}
+        opacity={0.32}
+        tube={0.006}
       />
       <Core colors={colors} hot={!!activeId} reduced={reduced} />
       {modules.map((mod) => (
@@ -452,25 +478,25 @@ function Scene({
 
   return (
     <>
-      <ambientLight intensity={0.55} />
+      <ambientLight intensity={0.5} />
       <spotLight
-        position={[5, 7, 4]}
-        angle={0.4}
-        penumbra={0.85}
-        intensity={2.8}
+        position={[5.5, 7.5, 4.5]}
+        angle={0.38}
+        penumbra={0.8}
+        intensity={3.2}
         color="#ffffff"
       />
       <pointLight
         position={[-4, -2, -3]}
-        intensity={1.8}
+        intensity={1.6}
         color={colors.glow}
         distance={14}
       />
-      <Environment preset="studio" environmentIntensity={1} />
+      <Environment preset="studio" environmentIntensity={1.05} />
       {reduced ? (
         system
       ) : (
-        <Float speed={1.4} rotationIntensity={0.2} floatIntensity={0.45}>
+        <Float speed={1.4} rotationIntensity={0.15} floatIntensity={0.28}>
           {system}
         </Float>
       )}
@@ -484,6 +510,16 @@ function Scene({
           minPolarAngle={Math.PI / 3.2}
           rotateSpeed={0.55}
         />
+      ) : null}
+      {bloom ? (
+        <EffectComposer multisampling={0}>
+          <Bloom
+            luminanceThreshold={0.55}
+            luminanceSmoothing={0.35}
+            intensity={0.9}
+            mipmapBlur
+          />
+        </EffectComposer>
       ) : null}
     </>
   );
@@ -503,6 +539,7 @@ export type OrbitMotifProps = {
  * Shared Orbit signature motif — glowing sphere, thin rings, drifting module nodes.
  * Driven by `--orbit-glow` / `--orbit-ring` / `--accent-dark` CSS tokens.
  * Respects `prefers-reduced-motion` (static frame, no auto-rotate / float).
+ * Bloom is gated off on mobile / coarse pointer / narrow viewports / reduced-motion / save-data.
  */
 export function OrbitMotif({
   className,
@@ -511,6 +548,7 @@ export function OrbitMotif({
   showHints = true,
 }: OrbitMotifProps) {
   const reduced = useReducedMotion();
+  const bloom = useBloomEnabled(reduced);
   const colors = useOrbitColors();
   const [activeId, setActiveId] = useState<string | null>(null);
   const active = modules.find((m) => m.id === activeId) ?? null;
@@ -519,11 +557,13 @@ export function OrbitMotif({
     <div
       className={cn("relative aspect-square w-full", className)}
       aria-hidden="true"
+      data-orbit-bloom={bloom ? "on" : "off"}
     >
       <Canvas
-        key={colors.glow}
-        dpr={[1, 1.85]}
-        camera={{ position: [0, 0.55, 6.2], fov: 34 }}
+        key={`${colors.glow}-${bloom ? "bloom" : "plain"}`}
+        dpr={bloom ? [1, 1.75] : [1, 1.5]}
+        // Framing: complete elliptical rings with margin around the canvas edge.
+        camera={{ position: [0, 0.1, 7.1], fov: 36 }}
         gl={{
           antialias: true,
           alpha: true,
@@ -532,6 +572,8 @@ export function OrbitMotif({
         onCreated={({ gl }) => {
           gl.setClearColor(0x000000, 0);
         }}
+        className="!overflow-visible"
+        style={{ overflow: "visible" }}
       >
         <Suspense fallback={null}>
           <Scene
@@ -541,6 +583,7 @@ export function OrbitMotif({
             onActive={setActiveId}
             modules={modules}
             interactive={interactive}
+            bloom={bloom}
           />
         </Suspense>
       </Canvas>
