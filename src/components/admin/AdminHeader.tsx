@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Bell, Monitor, Moon, Search, Sun, User } from "lucide-react";
-import { PaletteToggle } from "@/components/common/PaletteToggle";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth-context";
-import { isPalettePickerEnabled } from "@/lib/palette";
 
 type AdminHeaderProps = {
   readonly email: string;
@@ -63,7 +61,6 @@ export function AdminHeader({ email }: AdminHeaderProps) {
           />
         </Button>
 
-        {isPalettePickerEnabled() && <PaletteToggle />}
         <ThemeToggle />
 
         <DropdownMenu>

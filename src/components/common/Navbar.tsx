@@ -27,9 +27,7 @@ import { usePathname } from "next/navigation";
 import { QTO_DEV_URL } from "@/lib/constants";
 import type { ModuleDetail, SolutionDetail } from "@/types/content";
 import type { LucideIcon } from "lucide-react";
-import { PaletteToggle } from "@/components/common/PaletteToggle";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
-import { isPalettePickerEnabled } from "@/lib/palette";
 import { getButtonTap } from "@/lib/motion";
 
 // Color palette for nav apps
@@ -910,7 +908,6 @@ export default function NavbarV3({
 
         {/* Right side */}
         <div className="hidden lg:flex items-center gap-2 rounded-full border border-border/50 bg-background/55 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-          {isPalettePickerEnabled() && <PaletteToggle />}
           <ThemeToggle />
           {ctaVisible && (
             <Link href={ctaUrl ?? "/demo"}>
@@ -923,7 +920,6 @@ export default function NavbarV3({
 
         {/* Mobile toggle */}
         <div className="lg:hidden flex items-center gap-1 rounded-full border border-border/50 bg-background/60 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-          {isPalettePickerEnabled() && <PaletteToggle />}
           <ThemeToggle />
           <button
             className="rounded-full p-2.5 transition-colors hover:bg-background/80"

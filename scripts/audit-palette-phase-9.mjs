@@ -1,6 +1,8 @@
 /**
- * Phase 9 (#131) palette×theme spot-check (home + demo).
- * Verifies dataset.palette, computed accent, and font-family presence.
+ * DEPRECATED (#133 orange brand lock-in): multi-palette audit is retired.
+ * Product fonts are Outfit + Poppins only; there is no data-palette.
+ *
+ * Phase 9 (#131) palette×theme spot-check (home + demo) — archival.
  * Usage: node scripts/audit-palette-phase-9.mjs
  */
 import { createRequire } from "node:module";
