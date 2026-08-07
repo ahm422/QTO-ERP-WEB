@@ -30,7 +30,7 @@ import type { LucideIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { getButtonTap } from "@/lib/motion";
 
-// Color palette for nav apps
+// Module-token tint cycle for nav app tiles
 const navAppColors = [
   {
     color: "from-module-hr to-module-crm",

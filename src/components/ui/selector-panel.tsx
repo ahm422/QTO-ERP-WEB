@@ -141,7 +141,9 @@ export function SelectorPanel({
                 "flex min-w-[9rem] shrink-0 items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors md:min-w-0",
                 "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
                 isSelected
-                  ? "border-border bg-card text-foreground shadow-[var(--card-shadow)]"
+                  ? numbered
+                    ? "border-accent/35 bg-card text-foreground shadow-[var(--card-shadow)]"
+                    : "border-border bg-card text-foreground shadow-[var(--card-shadow)]"
                   : "border-transparent bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >

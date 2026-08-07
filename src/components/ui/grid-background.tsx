@@ -10,12 +10,13 @@ export type GridBackgroundProps = {
 
 /**
  * Relative container with a soft radial-dot texture behind content.
+ * Uses `currentColor` so parents (e.g. DarkCtaBand) can set a readable dot color on near-black.
  * Texture layer is pointer-events-none so children remain clickable.
  */
 export function GridBackground({
   children,
   className,
-  opacity = 0.4,
+  opacity = 0.45,
 }: GridBackgroundProps) {
   return (
     <div className={cn("relative", className)}>
@@ -25,11 +26,11 @@ export function GridBackground({
         style={{ opacity }}
       >
         <div
-          className="absolute inset-0 text-foreground"
+          className="absolute inset-0 text-current"
           style={{
             backgroundImage:
-              "radial-gradient(circle, currentColor 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
+              "radial-gradient(circle, currentColor 1.1px, transparent 1.1px)",
+            backgroundSize: "22px 22px",
             maskImage:
               "radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 75%)",
             WebkitMaskImage:

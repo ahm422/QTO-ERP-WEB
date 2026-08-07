@@ -13,7 +13,7 @@ const eyebrowBadgeVariants = cva(
       variant: {
         muted: "border-border bg-muted text-muted-foreground",
         accent: "border-accent/25 bg-accent/10 text-accent",
-        /** Hero surfaces — uses --hero-chip* so palettes cascade without call-site forks */
+        /** Hero surfaces — uses --hero-chip* tokens */
         hero: "border-hero-chip-border bg-hero-chip text-hero-foreground",
         /** DarkCtaBand only — intentional always-dark inverse */
         inverse: "border-white/15 bg-white/10 text-neutral-200",

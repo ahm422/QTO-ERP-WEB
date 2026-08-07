@@ -25,8 +25,8 @@ export interface CTASectionProps {
 }
 
 /**
- * Site-wide marketing CTA — thin wrapper over DarkCtaBand + inverse MarketingButtons.
- * Prefer this import at page call sites so copy/href props stay stable.
+ * Site-wide marketing CTA — convenience wrapper over DarkCtaBand + inverse MarketingButtons.
+ * Keep DarkCtaBand for custom compositions; prefer CTASection at page call sites (Option A).
  */
 export function CTASection({
   headline = defaultHeadline,

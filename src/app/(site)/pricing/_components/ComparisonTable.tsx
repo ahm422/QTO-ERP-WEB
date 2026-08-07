@@ -1,16 +1,10 @@
 'use client';
-import { HeaderSections } from '@/components/ui/HeaderSections';
-import { Check, Minus } from 'lucide-react';
 
-function ComparisonCell({ value }: { value: string }) {
-  if (value === '✓') {
-    return <Check className='w-4 h-4 mx-auto text-accent' aria-hidden />;
-  }
-  if (value === '—') {
-    return <Minus className='w-4 h-4 mx-auto text-muted-foreground/60' aria-hidden />;
-  }
-  return <>{value}</>;
-}
+import {
+  ComparisonTable as SharedComparisonTable,
+  type ComparisonColumn,
+  type ComparisonRow,
+} from '@/components/ui/comparison-table';
 
 interface ComparisonFeature {
   feature: string;
@@ -28,50 +22,25 @@ interface ComparisonTableProps {
   comparisonFeatures: ComparisonFeature[];
 }
 
+/** Pricing-page adapter — maps legacy starter/growth/enterprise rows onto shared ComparisonTable. */
 export default function ComparisonTable({
   plans,
   comparisonFeatures,
 }: ComparisonTableProps) {
-  return (
-    <section className='section-padding bg-muted/30'>
-      <div className='container-main max-w-4xl'>
-        <HeaderSections tag='Compare' title='Feature Comparison' />
-        <div className='rounded-2xl border border-border bg-card overflow-x-auto'>
-          <table className='w-full min-w-[36rem] text-sm'>
-            <thead>
-              <tr className='border-b border-border'>
-                <th className='text-left p-4 font-semibold text-foreground'>
-                  Feature
-                </th>
-                {plans.map((p) => (
-                  <th
-                    key={p.name}
-                    className='text-center p-4 font-semibold text-foreground'
-                  >
-                    {p.name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {comparisonFeatures.map((row, i) => (
-                <tr key={i} className='border-b border-border last:border-0'>
-                  <td className='p-4 text-foreground'>{row.feature}</td>
-                  <td className='p-4 text-center text-muted-foreground'>
-                    <ComparisonCell value={row.starter} />
-                  </td>
-                  <td className='p-4 text-center text-muted-foreground'>
-                    <ComparisonCell value={row.growth} />
-                  </td>
-                  <td className='p-4 text-center text-muted-foreground'>
-                    <ComparisonCell value={row.enterprise} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  );
+  const columns: ComparisonColumn[] = [
+    { key: 'starter', name: plans[0]?.name ?? 'Starter' },
+    { key: 'growth', name: plans[1]?.name ?? 'Growth' },
+    { key: 'enterprise', name: plans[2]?.name ?? 'Enterprise' },
+  ];
+
+  const rows: ComparisonRow[] = comparisonFeatures.map((row) => ({
+    feature: row.feature,
+    values: {
+      starter: row.starter,
+      growth: row.growth,
+      enterprise: row.enterprise,
+    },
+  }));
+
+  return <SharedComparisonTable columns={columns} rows={rows} />;
 }

@@ -35,8 +35,8 @@ export function DarkCtaBand({
       )}
     >
       <GridBackground
-        opacity={0.18}
-        className="px-6 py-12 sm:px-10 sm:py-16 md:px-14"
+        opacity={0.32}
+        className="text-neutral-400 px-6 py-12 sm:px-10 sm:py-16 md:px-14"
       >
         <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-start gap-5 text-left sm:items-center sm:text-center">
           {eyebrow ? (

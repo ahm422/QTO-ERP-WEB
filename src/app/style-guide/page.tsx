@@ -16,6 +16,15 @@ import {
   SelectorPanelDemo,
   DarkCtaBandDemo,
   GridBackgroundDemo,
+  OrbitMotifDemo,
+  TrustedByStripDemo,
+  BuiltForSectionDemo,
+  IntegratedModulesGridDemo,
+  EcosystemTabsDemo,
+  PlanCardDemo,
+  ComparisonTableDemo,
+  IndustryCardDemo,
+  BadgeBoardDemo,
 } from "./_components/ClientDemos";
 
 export const metadata = {
@@ -231,23 +240,24 @@ export default function StyleGuidePage() {
 
         <Section
           title="Eyebrow badge"
-          description="Marketing section labels — EyebrowBadge (not admin Badge status variants). Switch palette above; demos below use live --accent / hero tokens."
+          description="Marketing section labels — EyebrowBadge accent matches board “PLATFORM ECOSYSTEM” pill language."
         >
           <EyebrowDemo />
         </Section>
 
         <Section
           title="Marketing buttons"
-          description="MarketingButton — solid dark primary + outline secondary; arrow slide on hover + whileTap scale from @/lib/motion (respects prefers-reduced-motion)."
+          description="MarketingButton — solid orange primary (accent) + outline secondary; arrow slide on hover + whileTap scale from @/lib/motion (respects prefers-reduced-motion)."
         >
           <MarketingButtonDemo />
         </Section>
 
         <Section
           title="Badges"
-          description="Default/semantic variants plus module-tinted chips (token classes, not CTA)."
+          description="Admin semantic variants plus marketing accent outline (Enterprise) and module-tinted chips."
         >
-          <div className="flex flex-wrap gap-2">
+          <BadgeBoardDemo />
+          <div className="mt-4 flex flex-wrap gap-2">
             <Badge>Default</Badge>
             <Badge variant="secondary">Secondary</Badge>
             <Badge variant="outline">Outline</Badge>
@@ -298,14 +308,70 @@ export default function StyleGuidePage() {
 
         <Section
           title="GridBackground"
-          description="Decorative radial-dot texture (pointer-events-none). Behind mock hero and section header."
+          description="Decorative radial-dot texture (pointer-events-none). Verify dots read on near-black surfaces."
         >
           <GridBackgroundDemo />
         </Section>
 
         <Section
+          title="Orbit motif"
+          description="Shared OrbitMotif adapted from the home hero R3F rig. Token-driven glow/rings; reduced-motion safe."
+        >
+          <OrbitMotifDemo />
+        </Section>
+
+        <Section
+          title="TrustedByStrip"
+          description="Logo / trust strip for home composition (page wiring is a follow-up)."
+        >
+          <TrustedByStripDemo />
+        </Section>
+
+        <Section
+          title="BuiltForSection"
+          description="“Built for …” audience section shell."
+        >
+          <BuiltForSectionDemo />
+        </Section>
+
+        <Section
+          title="IntegratedModulesGrid"
+          description="Module card grid — Card DNA + module token tints."
+        >
+          <IntegratedModulesGridDemo />
+        </Section>
+
+        <Section
+          title="EcosystemTabs"
+          description="Connected Ecosystem — SelectorPanel numbered list + detail (do not reinvent tabs)."
+        >
+          <EcosystemTabsDemo />
+        </Section>
+
+        <Section
+          title="PlanCard"
+          description="Pricing plan card primitive extracted for shared use. Checkout stays on /pricing."
+        >
+          <PlanCardDemo />
+        </Section>
+
+        <Section
+          title="ComparisonTable"
+          description="Shared feature matrix (embedded mode for style-guide)."
+        >
+          <ComparisonTableDemo />
+        </Section>
+
+        <Section
+          title="IndustryCard"
+          description="Domain / industry card for ecosystem and solutions surfaces."
+        >
+          <IndustryCardDemo />
+        </Section>
+
+        <Section
           title="Radius scale"
-          description="Base --radius is 0.625rem; Tailwind rounded-* maps via @theme calc."
+          description="Base --radius is 0.625rem; Tailwind rounded-* maps via @theme calc. Card DNA defaults to rounded-2xl–3xl."
         >
           <div className="flex flex-wrap items-end gap-4">
             {RADIUS_SCALE.map((r) => (
@@ -346,7 +412,14 @@ export default function StyleGuidePage() {
                 <code className="font-mono text-foreground">--accent</code>.
                 Marketing DNA CTAs use{" "}
                 <code className="font-mono text-foreground">MarketingButton</code>{" "}
-                (dark primary).
+                (solid orange primary).
+              </li>
+              <li>
+                <strong className="text-foreground">CTA band:</strong>{" "}
+                <code className="font-mono text-foreground">DarkCtaBand</code>{" "}
+                primitive +{" "}
+                <code className="font-mono text-foreground">CTASection</code>{" "}
+                convenience wrapper (Option A). Inverse buttons on the band.
               </li>
               <li>
                 <strong className="text-foreground">Eyebrow:</strong>{" "}
