@@ -36,8 +36,8 @@ export default function ComparisonTable({
     <section className='section-padding bg-muted/30'>
       <div className='container-main max-w-4xl'>
         <HeaderSections tag='Compare' title='Feature Comparison' />
-        <div className='rounded-2xl border border-border bg-card overflow-hidden'>
-          <table className='w-full text-sm'>
+        <div className='rounded-2xl border border-border bg-card overflow-x-auto'>
+          <table className='w-full min-w-[36rem] text-sm'>
             <thead>
               <tr className='border-b border-border'>
                 <th className='text-left p-4 font-semibold text-foreground'>

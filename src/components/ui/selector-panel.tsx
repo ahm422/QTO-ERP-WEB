@@ -109,7 +109,7 @@ export function SelectorPanel({
   return (
     <div
       className={cn(
-        "grid gap-4 md:grid-cols-[minmax(0,14rem)_1fr] lg:grid-cols-[minmax(0,16rem)_1fr]",
+        "grid min-w-0 gap-4 md:grid-cols-[minmax(0,14rem)_1fr] lg:grid-cols-[minmax(0,16rem)_1fr]",
         className
       )}
     >
@@ -117,7 +117,7 @@ export function SelectorPanel({
         role="tablist"
         aria-orientation="vertical"
         aria-label={listAriaLabel}
-        className="flex flex-row gap-2 overflow-x-auto md:flex-col md:overflow-visible"
+        className="flex w-full min-w-0 max-w-full flex-row gap-2 overflow-x-auto md:flex-col md:overflow-visible"
         onKeyDown={onKeyDown}
       >
         {items.map((item, i) => {

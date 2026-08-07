@@ -30,6 +30,7 @@ import type { LucideIcon } from "lucide-react";
 import { PaletteToggle } from "@/components/common/PaletteToggle";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { isPalettePickerEnabled } from "@/lib/palette";
+import { getButtonTap } from "@/lib/motion";
 
 // Color palette for nav apps
 const navAppColors = [
@@ -282,6 +283,14 @@ export default function NavbarV3({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const reduced = useReducedMotion();
+  const navItemHover = reduced ? undefined : { x: 3 };
+  const navItemTap = getButtonTap(reduced);
+  const resourceItemVariants = reduced
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
+    : { initial: { opacity: 0, x: -10 }, animate: { opacity: 1, x: 0 } };
+  const mobileItemVariants = reduced
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
+    : { initial: { opacity: 0, x: 20 }, animate: { opacity: 1, x: 0 } };
   const megaMenuVariants = reduced
     ? {
         initial: { opacity: 0 },
@@ -413,10 +422,23 @@ export default function NavbarV3({
                     }`}
                   />
                   <motion.div
-                    animate={{
-                      rotate: activeDropdown === item.label ? 180 : 0,
-                    }}
+                    animate={
+                      reduced
+                        ? undefined
+                        : {
+                            rotate: activeDropdown === item.label ? 180 : 0,
+                          }
+                    }
                     transition={{ duration: 0.2 }}
+                    style={
+                      reduced
+                        ? {
+                            transform: `rotate(${
+                              activeDropdown === item.label ? 180 : 0
+                            }deg)`,
+                          }
+                        : undefined
+                    }
                   >
                     <ChevronDown className="h-4 w-4" />
                   </motion.div>
@@ -456,8 +478,8 @@ export default function NavbarV3({
                         {/* Apps Sidebar */}
                         <div className="border-r border-border/60 bg-muted/35 p-6 backdrop-blur-sm">
                           <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                            Platfroms{" "}
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse motion-reduce:animate-none" />
+                            Platforms{" "}
                           </p>
                           <div className="space-y-1">
                             {apps.map((app) => {
@@ -467,8 +489,8 @@ export default function NavbarV3({
                                 <motion.button
                                   key={app.slug}
                                   onMouseEnter={() => setHoveredApp(app.slug)}
-                                  whileHover={{ x: 3 }}
-                                  whileTap={{ scale: 0.98 }}
+                                  whileHover={navItemHover}
+                                  whileTap={navItemTap}
                                   className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left transition-all duration-200 ${
                                     isActive
                                       ? `${app.bgColor} ring-1 ring-border/70 shadow-sm shadow-black/5`
@@ -634,7 +656,7 @@ export default function NavbarV3({
                           {/* Solutions Sidebar */}
                           <div className="border-r border-border/60 bg-muted/35 p-6 backdrop-blur-sm">
                             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse motion-reduce:animate-none" />
                               Solutions
                             </p>
                             <div className="space-y-1">
@@ -647,8 +669,8 @@ export default function NavbarV3({
                                     onMouseEnter={() =>
                                       setHoveredSolution(sol.slug)
                                     }
-                                    whileHover={{ x: 3 }}
-                                    whileTap={{ scale: 0.98 }}
+                                    whileHover={navItemHover}
+                                    whileTap={navItemTap}
                                     className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left transition-all duration-200 ${
                                       isActive
                                         ? `${sol.bgColor} ring-1 ring-border/70 shadow-sm shadow-black/5`
@@ -821,9 +843,11 @@ export default function NavbarV3({
                               href={r.href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: idx * 0.05 }}
+                              initial={resourceItemVariants.initial}
+                              animate={resourceItemVariants.animate}
+                              transition={{
+                                delay: reduced ? 0 : idx * 0.05,
+                              }}
                               className="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all hover:bg-background/80"
                             >
                               <div
@@ -846,9 +870,11 @@ export default function NavbarV3({
                           ) : (
                             <motion.div
                               key={r.href}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: idx * 0.05 }}
+                              initial={resourceItemVariants.initial}
+                              animate={resourceItemVariants.animate}
+                              transition={{
+                                delay: reduced ? 0 : idx * 0.05,
+                              }}
                             >
                               <Link
                                 href={r.href}
@@ -925,22 +951,22 @@ export default function NavbarV3({
             className="fixed inset-x-0 bottom-0 top-[5.25rem] z-40 px-3 pb-3 lg:hidden sm:px-4"
           >
             <div
-              className={`relative min-h-full space-y-1 overflow-y-auto rounded-[2rem] ${mobileSurface}`}
+              className={`relative flex h-full max-h-full flex-col overflow-hidden rounded-[2rem] ${mobileSurface}`}
             >
               <div className="absolute inset-x-10 top-0 h-px bg-linear-to-r from-transparent via-accent/40 to-transparent" />
-              <div className="space-y-1 p-4 pb-28 sm:space-y-1 sm:p-5 sm:pb-32">
+              <div className="min-h-0 flex-1 space-y-1 overflow-y-auto p-4 sm:p-5">
                 {/* Modules */}
                 <p className="px-2 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Platfroms
+                  Platforms
                 </p>
                 {apps.map((app, idx) => {
                   const Icon = app.icon;
                   return (
                     <motion.div
                       key={app.slug}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.05 }}
+                      initial={mobileItemVariants.initial}
+                      animate={mobileItemVariants.animate}
+                      transition={{ delay: reduced ? 0 : idx * 0.05 }}
                     >
                       <Link
                         href={`/erp/${app.slug}`}
@@ -974,9 +1000,11 @@ export default function NavbarV3({
                   return (
                     <motion.div
                       key={s.href}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: (apps.length + idx) * 0.05 }}
+                      initial={mobileItemVariants.initial}
+                      animate={mobileItemVariants.animate}
+                      transition={{
+                        delay: reduced ? 0 : (apps.length + idx) * 0.05,
+                      }}
                     >
                       <Link
                         href={s.href}
@@ -1010,11 +1038,12 @@ export default function NavbarV3({
                   return (
                     <motion.div
                       key={r.href}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
+                      initial={mobileItemVariants.initial}
+                      animate={mobileItemVariants.animate}
                       transition={{
-                        delay:
-                          (apps.length + solutionsItems.length + idx) * 0.05,
+                        delay: reduced
+                          ? 0
+                          : (apps.length + solutionsItems.length + idx) * 0.05,
                       }}
                     >
                       {r.external ? (
@@ -1084,10 +1113,10 @@ export default function NavbarV3({
                   <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-accent" />
                 </Link>
               </div>
-              {/* Sticky bottom CTA */}
+              {/* Pinned bottom CTA — always reachable (not sticky-inside-scroll) */}
               {ctaVisible && (
-                <div className="sticky bottom-0 z-10 mt-6 rounded-b-[2rem] bg-linear-to-t from-background via-background/95 to-transparent px-4 pb-4 pt-6 sm:px-5">
-                  <div className="rounded-[1.5rem] border border-border/60 bg-background/75 p-2 shadow-[0_20px_50px_-28px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+                <div className="shrink-0 border-t border-border/50 bg-background/90 px-4 py-3 backdrop-blur-xl sm:px-5 sm:py-4">
+                  <div className="rounded-[1.5rem] border border-border/60 bg-background/75 p-2 shadow-[0_20px_50px_-28px_rgba(15,23,42,0.5)]">
                     <Link
                       href={ctaUrl ?? "/demo"}
                       className="flex w-full items-center justify-center gap-2 rounded-[1.1rem] bg-linear-to-r from-accent to-accent-dark px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-accent/20"

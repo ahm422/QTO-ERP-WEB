@@ -167,7 +167,7 @@ export default function EvaluationWorkflow() {
           />
 
           <motion.div
-            className='relative z-10 grid gap-6 md:grid-cols-3'
+            className='relative z-10 grid min-w-0 gap-6 md:grid-cols-3'
             variants={container}
             initial='hidden'
             whileInView='visible'
@@ -180,7 +180,7 @@ export default function EvaluationWorkflow() {
                   key={step.id}
                   variants={item}
                   whileHover={hover}
-                  className='h-full'
+                  className='h-full min-w-0 w-full'
                 >
                   <Card
                     variant='interactive'

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 type VideoModalProps = {
   isOpen: boolean;
@@ -21,6 +21,8 @@ export function VideoModal({
   loading,
   error,
 }: VideoModalProps) {
+  const reduced = useReducedMotion();
+
   if (!isOpen) return null;
 
   return (
@@ -29,8 +31,8 @@ export function VideoModal({
       onClick={onClose}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
+        animate={reduced ? { opacity: 1 } : { opacity: 1, scale: 1 }}
         className="bg-card rounded-2xl p-2 max-w-3xl w-full mx-4 mega-shadow"
         onClick={(e) => e.stopPropagation()}
       >

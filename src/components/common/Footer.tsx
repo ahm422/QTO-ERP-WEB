@@ -7,7 +7,7 @@ const footerLinks = {
     { label: "Attendance & Time", href: "/erp/attendance" },
     { label: "HRM", href: "/erp/hrm" },
     { label: "Project Management", href: "/erp/project-management" },
-    { label: "All Apps", href: "/platform" },
+    { label: "All Apps", href: "/allApps" },
   ],
   Solutions: [
     { label: "HR Teams", href: "/solution/hr-teams" },
@@ -15,17 +15,15 @@ const footerLinks = {
     { label: "Business Owners", href: "/solution/owners" },
   ],
   Resources: [
-    { label: "FAQ", href: "/resourcesfaq" },
+    { label: "FAQ", href: "/#faq" },
     { label: "Blog", href: "/blog" },
     { label: "About", href: "/about" },
     { label: "QTO Dev", href: QTO_DEV_URL, external: true },
   ],
   Company: [
     { label: "Pricing", href: "/pricing" },
-    { label: "Customers", href: "/customers" },
+    { label: "Contact", href: "/contact" },
     { label: "Book a Demo", href: "/demo" },
-    { label: "Privacy", href: "/privacy" },
-    { label: "Terms", href: "/terms" },
   ],
 };
 
@@ -83,8 +81,8 @@ export default function Footer() {
         <div className="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} QTO-ERP. All rights reserved.</p>
           <div className="flex gap-4">
-            <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
-            <Link href="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+            <Link href="/contact" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
+            <Link href="/demo" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Book a Demo</Link>
           </div>
         </div>
       </div>

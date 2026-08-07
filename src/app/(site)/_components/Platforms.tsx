@@ -43,7 +43,7 @@ const Platforms = ({ modules }: PlatformsProps) => {
             description='Powerful modules designed to work together seamlessly. Hover to preview.'
           />
           <motion.div
-            className='grid gap-6 md:grid-cols-3'
+            className='grid min-w-0 gap-6 md:grid-cols-3'
             variants={container}
             initial='hidden'
             whileInView='visible'
@@ -58,6 +58,7 @@ const Platforms = ({ modules }: PlatformsProps) => {
                   whileHover={hover}
                   onMouseEnter={() => setHoveredApp(i)}
                   onMouseLeave={() => setHoveredApp(null)}
+                  className='min-w-0 w-full'
                 >
                   <Card variant='interactive' radius='lg' padding='md' className='h-full'>
                     <motion.div
