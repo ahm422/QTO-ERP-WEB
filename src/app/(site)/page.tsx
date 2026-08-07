@@ -1,13 +1,11 @@
 import Hero from './_components/Hero';
-import Platforms from './_components/Platforms';
-import IndustryEcosystems from './_components/IndustryEcosystems';
-import EvaluationWorkflow from './_components/EvaluationWorkflow';
-import Customers from './_components/Customers';
-import Faqs from './_components/Faqs';
-import QTODev from './_components/QTODev';
-import { CTASection } from '@/components/ui/CTASection';
-import Subscribe from './_components/Subscribe';
+import TrustedBy from './_components/TrustedBy';
 import HomeStats from './_components/HomeStats';
+import BuiltFor from './_components/BuiltFor';
+import IntegratedModules from './_components/IntegratedModules';
+import IndustryEcosystems from './_components/IndustryEcosystems';
+import Faqs from './_components/Faqs';
+import { CTASection } from '@/components/ui/CTASection';
 import { listPublishedModules } from '@/lib/content-db';
 
 export default async function Home() {
@@ -15,19 +13,17 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <Platforms modules={modules} />
-      <IndustryEcosystems />
-      <EvaluationWorkflow />
-      <Customers />
+      <TrustedBy />
       <HomeStats />
+      <BuiltFor />
+      <IntegratedModules modules={modules} />
+      <IndustryEcosystems />
       <Faqs />
-      <QTODev />
       <CTASection
         eyebrow="Next step"
         headline="Ready to Transform Your Operations?"
         description="See how QTO-ERP fits your workflows — book a demo or compare plans."
       />
-      <Subscribe />
     </>
   );
 }

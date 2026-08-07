@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CTASection } from "@/components/ui//CTASection";
+import { CTASection } from "@/components/ui/CTASection";
 import { VideoModal } from "@/components/ui/VedioModal";
 import HeroSection from "./HeroSection";
+import FeatureCardsSection from "./FeatureCardsSection";
+import PipelineSection from "./PipelineSection";
 import AboutSection from "./AboutSection";
 import FeaturesSection from "./FeaturesSection";
 import TestimonialsSection from "./TestimonialsSection";
@@ -110,11 +112,13 @@ export default function ErpPageClient({ app, allModules }: ErpPageClientProps) {
   return (
     <>
       <HeroSection app={app} onVideoOpen={handleVideoOpen} />
+      <FeatureCardsSection app={app} />
+      <PipelineSection app={app} />
       <AboutSection app={app} />
       <FeaturesSection app={app} onVideoOpen={handleVideoOpen} />
       <TestimonialsSection app={app} />
-      <FAQSection app={app} />
       <AllAppsSection apps={allModules} />
+      <FAQSection app={app} />
       <CTASection
         headline="Ready to Simplify Your Operations with QTO ERP?"
         primaryLabel="Schedule a Demo"
