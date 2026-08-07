@@ -1,9 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
+import dynamic from "next/dynamic";
 import {
   Boxes,
+  Briefcase,
+  Building2,
   ClipboardList,
+  HardHat,
   Layers,
   Sparkles,
   Star,
@@ -28,6 +32,14 @@ import { StatsStrip } from "@/components/common/Stats";
 import { SelectorPanel, type SelectorItem } from "@/components/ui/selector-panel";
 import { DarkCtaBand } from "@/components/ui/dark-cta-band";
 import { GridBackground } from "@/components/ui/grid-background";
+import { TrustedByStrip } from "@/components/common/TrustedByStrip";
+import { BuiltForSection } from "@/components/common/BuiltForSection";
+import { IntegratedModulesGrid } from "@/components/common/IntegratedModulesGrid";
+import { EcosystemTabs } from "@/components/common/EcosystemTabs";
+import { PlanCard } from "@/components/ui/plan-card";
+import { ComparisonTable } from "@/components/ui/comparison-table";
+import { IndustryCard } from "@/components/ui/industry-card";
+import { Badge } from "@/components/ui/badge";
 import { getDomainIcon } from "@/lib/icon-map";
 import { getIndustryDomains } from "@/lib/industry-domains";
 import {
@@ -37,6 +49,11 @@ import {
   getStaggerItem,
   viewportOnce,
 } from "@/lib/motion";
+
+const OrbitMotif = dynamic(
+  () => import("@/components/ui/orbit-motif").then((m) => m.OrbitMotif),
+  { ssr: false, loading: () => <div className="aspect-square w-full max-w-md animate-pulse rounded-2xl bg-muted" /> }
+);
 
 const MODULE_ITEMS: SelectorItem[] = [
   {
@@ -158,8 +175,9 @@ export function MarketingButtonDemo() {
           <MarketingButton variant="secondary">Book a demo</MarketingButton>
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          Hover — arrow slides via springSnappy. Press — whileTap scale 0.97
-          (disabled under prefers-reduced-motion).
+          Orange primary (bg-accent) + outline secondary. Hover — arrow slides
+          via springSnappy. Press — whileTap scale 0.97 (disabled under
+          prefers-reduced-motion).
         </p>
       </ThemeFrame>
       <ThemeFrame dark>
@@ -415,8 +433,250 @@ export function GridBackgroundDemo() {
               </h4>
             </div>
           </GridBackground>
+
+          <GridBackground
+            opacity={0.32}
+            className="mt-4 overflow-hidden rounded-2xl bg-neutral-950 px-4 py-10 text-neutral-400"
+          >
+            <p className="text-center text-sm text-neutral-300">
+              Near-black surface — dots use currentColor (neutral-400).
+            </p>
+          </GridBackground>
         </ThemeFrame>
       ))}
+    </div>
+  );
+}
+
+export function OrbitMotifDemo() {
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-muted-foreground">
+        Shared OrbitMotif (R3F). Under{" "}
+        <code className="font-mono">prefers-reduced-motion</code>: static frame,
+        no auto-rotate / float. Colors from{" "}
+        <code className="font-mono">--motif-gradient-*</code> / accent tokens.
+      </p>
+      <div className="mx-auto w-full max-w-md">
+        <OrbitMotif interactive showHints className="rounded-2xl border border-border bg-neutral-950" />
+      </div>
+    </div>
+  );
+}
+
+export function TrustedByStripDemo() {
+  return (
+    <ThemeFrame>
+      <TrustedByStrip
+        logos={[
+          { name: "Nesma" },
+          { name: "Amreli Steels" },
+          { name: "KAPC" },
+          { name: "Haier" },
+          { name: "AkzoNobel" },
+        ]}
+      />
+    </ThemeFrame>
+  );
+}
+
+export function BuiltForSectionDemo() {
+  return (
+    <BuiltForSection
+      tag="Built for"
+      title="Built for the field crew"
+      description="Audience shell — three cards, token-only surfaces."
+      className="!py-0"
+      audiences={[
+        {
+          id: "ops",
+          title: "Operations leads",
+          description: "Crew allocation, site readiness, and daily throughput.",
+          icon: HardHat,
+        },
+        {
+          id: "hr",
+          title: "HR & compliance",
+          description: "Certifications, timesheets, and audit-ready records.",
+          icon: Users,
+        },
+        {
+          id: "finance",
+          title: "Controllers",
+          description: "Labor margin visibility before you overspend.",
+          icon: Briefcase,
+        },
+      ]}
+    />
+  );
+}
+
+export function IntegratedModulesGridDemo() {
+  return (
+    <IntegratedModulesGrid
+      columns={3}
+      modules={[
+        {
+          id: "hr",
+          name: "Human Resources",
+          description: "Workforce, compliance, and crew scheduling.",
+          href: "/erp/hrm",
+          icon: Users,
+          iconClassName: "bg-module-hr-bg text-module-hr",
+        },
+        {
+          id: "inventory",
+          name: "Inventory & Fleet",
+          description: "Assets, warehouses, and site logistics.",
+          href: "/erp/inventory",
+          icon: Boxes,
+          iconClassName: "bg-module-inventory-bg text-module-inventory",
+        },
+        {
+          id: "pm",
+          name: "Project Management",
+          description: "Schedules, budgets, and delivery milestones.",
+          href: "/erp/project-management",
+          icon: ClipboardList,
+          iconClassName: "bg-module-crm-bg text-module-crm",
+        },
+      ]}
+    />
+  );
+}
+
+export function EcosystemTabsDemo() {
+  const items: SelectorItem[] = [
+    { id: "pm", label: "Project Management", index: 1 },
+    { id: "hr", label: "Human Resources", index: 2 },
+    { id: "fin", label: "Finance", index: 3 },
+  ];
+
+  return (
+    <EcosystemTabs
+      items={items}
+      defaultValue="pm"
+      renderDetail={(item) => (
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <p>
+            Detail card for{" "}
+            <strong className="text-foreground">{item.label}</strong> — Connected
+            Ecosystem pattern via SelectorPanel.
+          </p>
+          <ul className="list-inside list-disc space-y-1">
+            <li>Shared data model</li>
+            <li>Role-based access</li>
+            <li>Audit trail</li>
+          </ul>
+        </div>
+      )}
+    />
+  );
+}
+
+export function PlanCardDemo() {
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      <PlanCard
+        yearly={false}
+        plan={{
+          slug: "core",
+          name: "Core",
+          monthlyPrice: 199,
+          yearlyPrice: 159,
+          description: "Essentials for growing project teams.",
+          popular: false,
+          features: ["CRM & Estimating", "3 seats", "Email support"],
+          cta: "Start Core",
+        }}
+      />
+      <PlanCard
+        yearly={false}
+        plan={{
+          slug: "enterprise",
+          name: "Enterprise",
+          monthlyPrice: 449,
+          yearlyPrice: 359,
+          description: "Full stack for multi-site operators.",
+          popular: true,
+          features: ["All Core modules", "HR & Workforce", "Priority support"],
+          cta: "Start Enterprise",
+        }}
+      />
+      <PlanCard
+        yearly={false}
+        plan={{
+          slug: "global",
+          name: "Global",
+          monthlyPrice: 0,
+          yearlyPrice: 0,
+          description: "Custom volume and compliance needs.",
+          popular: false,
+          features: ["Unlimited seats", "SSO", "Dedicated CSM"],
+          cta: "Contact sales",
+        }}
+      />
+    </div>
+  );
+}
+
+export function ComparisonTableDemo() {
+  return (
+    <ComparisonTable
+      embedded
+      columns={[
+        { key: "core", name: "Core" },
+        { key: "enterprise", name: "Enterprise" },
+        { key: "global", name: "Global" },
+      ]}
+      rows={[
+        {
+          feature: "CRM & Estimating",
+          values: { core: "✓", enterprise: "✓", global: "✓" },
+        },
+        {
+          feature: "HR & Workforce",
+          values: { core: "—", enterprise: "✓", global: "✓" },
+        },
+        {
+          feature: "SSO",
+          values: { core: "—", enterprise: "Add-on", global: "✓" },
+        },
+      ]}
+    />
+  );
+}
+
+export function IndustryCardDemo() {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <IndustryCard
+        name="Heavy Construction"
+        description="Field crews, plant, and project controls on one backbone."
+        href="/allApps"
+        icon={HardHat}
+        systemCount={14}
+        leaders={["Nesma", "Amreli"]}
+      />
+      <IndustryCard
+        name="Mining & Resources"
+        description="Compliance, fleet, and site ops for extractive industries."
+        href="/allApps"
+        icon={Building2}
+        systemCount={9}
+        leaders={["KAPC"]}
+      />
+    </div>
+  );
+}
+
+export function BadgeBoardDemo() {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Badge variant="accent">Enterprise</Badge>
+      <Badge variant="secondary">Standard</Badge>
+      <Badge variant="outline">Outline</Badge>
+      <Badge variant="success">Success</Badge>
     </div>
   );
 }

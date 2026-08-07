@@ -30,6 +30,43 @@ const GridBackgroundDemo = dynamic(
   () => import("./MarketingDnaDemos").then((m) => m.GridBackgroundDemo),
   { ssr: false, loading: () => <DemoSkeleton className="min-h-[16rem]" /> }
 );
+const OrbitMotifDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.OrbitMotifDemo),
+  { ssr: false, loading: () => <DemoSkeleton className="min-h-[20rem]" /> }
+);
+const TrustedByStripDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.TrustedByStripDemo),
+  { ssr: false, loading: () => <DemoSkeleton /> }
+);
+const BuiltForSectionDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.BuiltForSectionDemo),
+  { ssr: false, loading: () => <DemoSkeleton className="min-h-[16rem]" /> }
+);
+const IntegratedModulesGridDemo = dynamic(
+  () =>
+    import("./MarketingDnaDemos").then((m) => m.IntegratedModulesGridDemo),
+  { ssr: false, loading: () => <DemoSkeleton className="min-h-[16rem]" /> }
+);
+const EcosystemTabsDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.EcosystemTabsDemo),
+  { ssr: false, loading: () => <DemoSkeleton className="min-h-[16rem]" /> }
+);
+const PlanCardDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.PlanCardDemo),
+  { ssr: false, loading: () => <DemoSkeleton className="min-h-[20rem]" /> }
+);
+const ComparisonTableDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.ComparisonTableDemo),
+  { ssr: false, loading: () => <DemoSkeleton /> }
+);
+const IndustryCardDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.IndustryCardDemo),
+  { ssr: false, loading: () => <DemoSkeleton /> }
+);
+const BadgeBoardDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.BadgeBoardDemo),
+  { ssr: false, loading: () => <DemoSkeleton /> }
+);
 
 function DemoSkeleton({ className }: { className?: string }) {
   return (
@@ -50,4 +87,13 @@ export {
   SelectorPanelDemo,
   DarkCtaBandDemo,
   GridBackgroundDemo,
+  OrbitMotifDemo,
+  TrustedByStripDemo,
+  BuiltForSectionDemo,
+  IntegratedModulesGridDemo,
+  EcosystemTabsDemo,
+  PlanCardDemo,
+  ComparisonTableDemo,
+  IndustryCardDemo,
+  BadgeBoardDemo,
 };

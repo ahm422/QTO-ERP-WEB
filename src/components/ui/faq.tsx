@@ -15,8 +15,6 @@ interface FAQAccordionProps {
   faqs: FAQ[];
   className?: string;
   showNumbers?: boolean;
-  /** @deprecated Token DNA uses accent; kept for call-site compat */
-  variant?: 'default' | 'accent' | 'dark';
 }
 
 export function FAQAccordion({

@@ -20,7 +20,7 @@ const marketingButtonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-sm)]",
+          "bg-accent text-accent-foreground hover:bg-accent/90 shadow-[0_2px_12px_color-mix(in_oklab,var(--accent)_25%,transparent)]",
         secondary:
           "border border-border bg-transparent text-foreground hover:bg-muted",
         ghost: "text-foreground hover:bg-muted",
@@ -58,8 +58,8 @@ export type MarketingButtonProps = Omit<
   };
 
 /**
- * Marketing CTA button — solid dark primary / outline secondary with Framer Motion icon-slide.
- * Distinct from brand gold `Button variant="default"`.
+ * Marketing CTA button — solid orange primary (accent) / outline secondary with Framer Motion icon-slide.
+ * Prefer this on marketing pages; admin surfaces keep `Button` (also accent-default, different sizes/shapes).
  */
 export function MarketingButton({
   className,
