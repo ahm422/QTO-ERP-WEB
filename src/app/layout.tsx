@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Poppins } from "next/font/google";
+import { Instrument_Serif, Outfit, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 
@@ -17,6 +17,15 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
 });
 
+/** Accent / script face for two-tone section titles (#139). */
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  display: "swap",
+  weight: "400",
+  style: "italic",
+});
+
 export const metadata: Metadata = {
   title: "QTO ERP",
   description:
@@ -32,7 +41,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${outfit.variable} ${poppins.variable}`}
+      className={`${outfit.variable} ${poppins.variable} ${instrumentSerif.variable}`}
     >
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>

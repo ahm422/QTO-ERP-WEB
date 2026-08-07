@@ -20,6 +20,8 @@ export type BuiltForAudience = {
 export type BuiltForSectionProps = {
   tag?: string;
   title: string;
+  /** Orange Instrument Serif accent line (two-tone motif). */
+  accent?: string;
   description?: string;
   audiences: BuiltForAudience[];
   className?: string;
@@ -33,6 +35,7 @@ export type BuiltForSectionProps = {
 export function BuiltForSection({
   tag = "Audience",
   title,
+  accent,
   description,
   audiences,
   className,
@@ -41,8 +44,13 @@ export function BuiltForSection({
   return (
     <section className={cn("section-padding", className)}>
       <div className="container-main">
-        <HeaderSections tag={tag} title={title} description={description} />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <HeaderSections
+          tag={tag}
+          title={title}
+          accent={accent}
+          description={description}
+        />
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
           {audiences.map((audience) => {
             const Icon = audience.icon;
             return (

@@ -5,7 +5,8 @@ export default function BuiltFor() {
   return (
     <BuiltForSection
       tag='Built for'
-      title='Built for field & office'
+      title='Built for field &'
+      accent='office'
       description='One platform for crews on site and teams coordinating from HQ — shared data, shared truth.'
       audiences={[
         {

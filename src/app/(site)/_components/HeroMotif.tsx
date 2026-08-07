@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 
-export type HeroMotif = 'waves' | 'leaves' | 'rays' | 'petals' | 'grid';
+export type HeroMotif = 'waves' | 'leaves' | 'rays' | 'petals' | 'grid' | 'aurora';
 
 type HeroMotifBackdropProps = {
   motif: HeroMotif;
@@ -11,7 +11,7 @@ type HeroMotifBackdropProps = {
 /**
  * Full-bleed atmosphere for the home hero.
  * Distinct shapes per motif — not just faint glow blobs.
- * Orange brand lock-in pins the home hero to "rays".
+ * Home pins to "aurora" (soft glow + concentric arcs) — quieter than rays/sunburst.
  */
 export function HeroMotifBackdrop({ motif }: HeroMotifBackdropProps) {
   const reduced = useReducedMotion();
@@ -28,6 +28,7 @@ export function HeroMotifBackdrop({ motif }: HeroMotifBackdropProps) {
       {motif === 'rays' && <RaysLayer reduced={!!reduced} />}
       {motif === 'petals' && <PetalsLayer reduced={!!reduced} />}
       {motif === 'grid' && <GridLayer reduced={!!reduced} />}
+      {motif === 'aurora' && <AuroraLayer reduced={!!reduced} />}
     </div>
   );
 }
@@ -247,6 +248,106 @@ function RaysLayer({ reduced }: { reduced: boolean }) {
         </svg>
       </motion.div>
       <div className='absolute bottom-0 right-0 size-[28rem] translate-x-1/4 translate-y-1/4 rounded-full bg-hero-glow-alt opacity-50 blur-3xl' />
+    </div>
+  );
+}
+
+/**
+ * Quiet orbit-aligned atmosphere for the home hero — soft aurora washes +
+ * faint concentric arcs on the right. No spinning sunburst.
+ */
+function AuroraLayer({ reduced }: { reduced: boolean }) {
+  return (
+    <div className='absolute inset-0 text-hero-accent'>
+      {/* Depth veil — warm cream lift, not a dark vignette */}
+      <div className='absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_40%,transparent_20%,color-mix(in_oklab,var(--hero-foreground)_6%,transparent)_100%)]' />
+
+      {/* Left editorial glow */}
+      <motion.div
+        className='absolute -left-[10%] top-[10%] size-[36rem] rounded-full bg-hero-glow opacity-70 blur-[100px]'
+        animate={
+          reduced
+            ? undefined
+            : { opacity: [0.45, 0.7, 0.45], scale: [1, 1.06, 1] }
+        }
+        transition={
+          reduced
+            ? undefined
+            : { duration: 12, repeat: Infinity, ease: 'easeInOut' }
+        }
+      />
+
+      {/* Right orbit stage glow — sits behind the constellation */}
+      <motion.div
+        className='absolute right-[-5%] top-[5%] size-[42rem] rounded-full opacity-80 blur-[90px]'
+        style={{
+          background:
+            'radial-gradient(circle at 45% 45%, color-mix(in oklab, var(--hero-accent) 42%, transparent), color-mix(in oklab, var(--hero-glow-alt) 35%, transparent) 45%, transparent 70%)',
+        }}
+        animate={
+          reduced
+            ? undefined
+            : { opacity: [0.55, 0.85, 0.55], scale: [1, 1.04, 1] }
+        }
+        transition={
+          reduced
+            ? undefined
+            : { duration: 10, repeat: Infinity, ease: 'easeInOut' }
+        }
+      />
+
+      {/* Concentric arcs — echo OrbitMotif without competing sunburst rays */}
+      <svg
+        className='absolute right-[-8%] top-1/2 h-[min(92vh,720px)] w-[min(92vh,720px)] -translate-y-1/2 text-hero-accent'
+        viewBox='0 0 400 400'
+        fill='none'
+      >
+        <defs>
+          <linearGradient id='auroraArc' x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='currentColor' stopOpacity='0' />
+            <stop offset='35%' stopColor='currentColor' stopOpacity='0.35' />
+            <stop offset='65%' stopColor='currentColor' stopOpacity='0.12' />
+            <stop offset='100%' stopColor='currentColor' stopOpacity='0' />
+          </linearGradient>
+        </defs>
+        {[118, 148, 178, 208].map((r, i) => (
+          <motion.circle
+            key={r}
+            cx='200'
+            cy='200'
+            r={r}
+            stroke='url(#auroraArc)'
+            strokeWidth={i === 1 ? 1.4 : 1}
+            strokeDasharray={i % 2 === 0 ? '4 10' : undefined}
+            animate={
+              reduced
+                ? undefined
+                : { rotate: i % 2 === 0 ? [0, 360] : [360, 0] }
+            }
+            transition={
+              reduced
+                ? undefined
+                : {
+                    duration: 90 + i * 18,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }
+            }
+            style={{ transformOrigin: '200px 200px' }}
+          />
+        ))}
+        <circle
+          cx='200'
+          cy='200'
+          r='64'
+          fill='currentColor'
+          fillOpacity='0.06'
+        />
+      </svg>
+
+      {/* Fine horizontal rule accents — editorial calm */}
+      <div className='absolute inset-x-0 top-[18%] h-px bg-gradient-to-r from-transparent via-hero-accent/20 to-transparent' />
+      <div className='absolute inset-x-0 bottom-[14%] h-px bg-gradient-to-r from-transparent via-hero-accent/15 to-transparent' />
     </div>
   );
 }

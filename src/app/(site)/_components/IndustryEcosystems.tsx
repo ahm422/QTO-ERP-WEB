@@ -26,14 +26,15 @@ export default function IndustryEcosystems() {
       <div className='container-main'>
         <HeaderSections
           tag='Ecosystem'
-          title='Connected Ecosystem'
+          title='Connected'
+          accent='Ecosystem'
           description='See how QTO House modules map to the industries you operate in — pick a domain to preview systems, leaders, and next steps.'
         />
 
         <EcosystemTabs
           items={selectorItems}
           defaultValue={selectorItems[0]?.id}
-          className='mt-8'
+          className='mt-10'
           renderDetail={(item) => {
             const domain = getIndustryDomainById(item.id);
             if (!domain) return null;
@@ -68,7 +69,7 @@ export default function IndustryEcosystems() {
                 </div>
 
                 <div className='relative space-y-3'>
-                  <p className='text-[11px] font-semibold uppercase tracking-widest text-muted-foreground'>
+                  <p className='text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground'>
                     Industry Leaders in this Domain
                   </p>
                   <div className='flex flex-wrap gap-2'>

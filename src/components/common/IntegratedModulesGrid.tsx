@@ -45,7 +45,7 @@ export function IntegratedModulesGrid({
         : "sm:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <div className={cn("grid gap-6", colClass, className)}>
+    <div className={cn("grid gap-8", colClass, className)}>
       {modules.map((mod) => {
         const Icon = mod.icon;
         return (

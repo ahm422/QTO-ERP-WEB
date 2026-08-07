@@ -30,11 +30,12 @@ export default function IntegratedModules({ modules }: IntegratedModulesProps) {
       <div className='container-main'>
         <HeaderSections
           tag='Platform'
-          title='Integrated Modules'
+          title='Integrated'
+          accent='Modules'
           description='Powerful modules designed to work together — explore the catalog and open any product page.'
         />
-        <IntegratedModulesGrid modules={items} columns={3} />
-        <div className='mt-10 flex justify-center'>
+        <IntegratedModulesGrid modules={items} columns={3} className='mt-2' />
+        <div className='mt-12 flex justify-center'>
           <MarketingButton asChild variant='secondary'>
             <Link href='/allApps'>View all modules</Link>
           </MarketingButton>
