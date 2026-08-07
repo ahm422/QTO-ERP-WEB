@@ -1,0 +1,73 @@
+'use client';
+
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { HeaderSections } from '@/components/ui/HeaderSections';
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/ui/card';
+import { getModuleIcon } from '@/lib/icon-map';
+import { getModuleTintClass } from '@/lib/module-tint';
+import type { ModuleDetail } from '@/types/content';
+
+type FeatureCardsSectionProps = {
+  app: ModuleDetail;
+};
+
+export default function FeatureCardsSection({ app }: FeatureCardsSectionProps) {
+  const features = app.features.slice(0, 3);
+  if (features.length === 0) return null;
+
+  const Icon = getModuleIcon(app.iconKey);
+  const tint = getModuleTintClass(app.slug, app.iconKey);
+
+  return (
+    <section className='section-padding'>
+      <div className='container-main'>
+        <HeaderSections
+          tag='Capabilities'
+          title={`What ${app.name} unlocks`}
+          description='Three highlights from the module — open the full feature set below.'
+        />
+        <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+          {features.map((feature) => (
+            <Card
+              key={feature.title}
+              variant='interactive'
+              radius='xl'
+              className='h-full'
+            >
+              <CardHeader className='flex-row items-start gap-3 space-y-0'>
+                <CardIcon className={tint}>
+                  <Icon className='size-5' aria-hidden />
+                </CardIcon>
+                <div className='min-w-0 flex-1'>
+                  <CardTitle className='font-display text-lg'>
+                    {feature.title}
+                  </CardTitle>
+                  <CardDescription className='mt-2 leading-relaxed'>
+                    {feature.description}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardFooter className='pt-0'>
+                <Link
+                  href='#features'
+                  className='inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline'
+                >
+                  Explore Module
+                  <ArrowRight className='size-3.5' aria-hidden />
+                </Link>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

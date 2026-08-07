@@ -14,6 +14,22 @@ const MarketingCardsDemo = dynamic(
   () => import("./MarketingDnaDemos").then((m) => m.MarketingCardsDemo),
   { ssr: false, loading: () => <DemoSkeleton /> }
 );
+const FeatureCardBoardDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.FeatureCardBoardDemo),
+  { ssr: false, loading: () => <DemoSkeleton /> }
+);
+const FormInputDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.FormInputDemo),
+  { ssr: false, loading: () => <DemoSkeleton /> }
+);
+const BillingToggleDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.BillingToggleDemo),
+  { ssr: false, loading: () => <DemoSkeleton /> }
+);
+const BoardTypographyDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.BoardTypographyDemo),
+  { ssr: false, loading: () => <DemoSkeleton className="min-h-[16rem]" /> }
+);
 const StatsDemo = dynamic(
   () => import("./MarketingDnaDemos").then((m) => m.StatsDemo),
   { ssr: false, loading: () => <DemoSkeleton /> }
@@ -67,6 +83,10 @@ const BadgeBoardDemo = dynamic(
   () => import("./MarketingDnaDemos").then((m) => m.BadgeBoardDemo),
   { ssr: false, loading: () => <DemoSkeleton /> }
 );
+const StepCardDemo = dynamic(
+  () => import("./MarketingDnaDemos").then((m) => m.StepCardDemo),
+  { ssr: false, loading: () => <DemoSkeleton className="min-h-[16rem]" /> }
+);
 
 function DemoSkeleton({ className }: { className?: string }) {
   return (
@@ -83,6 +103,10 @@ export {
   EyebrowDemo,
   MarketingButtonDemo,
   MarketingCardsDemo,
+  FeatureCardBoardDemo,
+  FormInputDemo,
+  BillingToggleDemo,
+  BoardTypographyDemo,
   StatsDemo,
   SelectorPanelDemo,
   DarkCtaBandDemo,
@@ -96,4 +120,5 @@ export {
   ComparisonTableDemo,
   IndustryCardDemo,
   BadgeBoardDemo,
+  StepCardDemo,
 };

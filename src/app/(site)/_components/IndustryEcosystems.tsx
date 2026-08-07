@@ -4,10 +4,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { HeaderSections } from '@/components/ui/HeaderSections';
 import { MarketingButton } from '@/components/ui/marketing-button';
-import {
-  SelectorPanel,
-  type SelectorItem,
-} from '@/components/ui/selector-panel';
+import { EcosystemTabs } from '@/components/common/EcosystemTabs';
 import { getDomainIcon } from '@/lib/icon-map';
 import {
   getIndustryDomainById,
@@ -16,29 +13,27 @@ import {
 
 const domains = getIndustryDomains();
 
-const selectorItems: SelectorItem[] = domains.map((domain) => ({
+const selectorItems = domains.map((domain) => ({
   id: domain.id,
   label: domain.name,
   index: domain.order,
 }));
 
+/** Connected Ecosystem — IndustryEcosystems data on EcosystemTabs shell. */
 export default function IndustryEcosystems() {
   return (
-    <section className='section-padding bg-muted/30'>
+    <section className='section-padding'>
       <div className='container-main'>
         <HeaderSections
-          tag='Domains'
-          title='Explore by Domain'
+          tag='Ecosystem'
+          title='Connected Ecosystem'
           description='See how QTO House modules map to the industries you operate in — pick a domain to preview systems, leaders, and next steps.'
         />
 
-        <SelectorPanel
+        <EcosystemTabs
           items={selectorItems}
           defaultValue={selectorItems[0]?.id}
-          listVariant='numbered'
-          hideDetailHeader
-          listAriaLabel='Select an industry domain'
-          className='mt-8 md:grid-cols-[minmax(0,18rem)_1fr] lg:grid-cols-[minmax(0,20rem)_1fr]'
+          className='mt-8'
           renderDetail={(item) => {
             const domain = getIndustryDomainById(item.id);
             if (!domain) return null;

@@ -1,31 +1,79 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { CheckCircle, Sparkles } from 'lucide-react';
+import { Search, Sparkles } from 'lucide-react';
 import { HeaderSections } from '@/components/ui/HeaderSections';
 import { CTASection } from '@/components/ui/CTASection';
 import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
 import { GridBackground } from '@/components/ui/grid-background';
-import { MarketingButton } from '@/components/ui/marketing-button';
-import { SelectorPanel } from '@/components/ui/selector-panel';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  IntegratedModulesGrid,
+  type IntegratedModuleItem,
+} from '@/components/common/IntegratedModulesGrid';
 import { getModuleIcon } from '@/lib/icon-map';
+import { getModuleTintClass } from '@/lib/module-tint';
 import { getFadeInUp } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 import type { ModuleDetail } from '@/types/content';
 
 type AllAppsGridProps = {
   modules: ModuleDetail[];
 };
 
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'hr', label: 'HR' },
+  { id: 'inventory', label: 'Inventory' },
+  { id: 'crm', label: 'CRM' },
+  { id: 'payroll', label: 'Payroll' },
+  { id: 'mfg', label: 'Manufacturing' },
+  { id: 'accounting', label: 'Accounting' },
+] as const;
+
+function matchesFilter(mod: ModuleDetail, filter: string): boolean {
+  if (filter === 'all') return true;
+  const hay = `${mod.slug} ${mod.iconKey} ${mod.name}`.toLowerCase();
+  const map: Record<string, RegExp> = {
+    hr: /hr|attendance|workforce|people/,
+    inventory: /inventory|fleet|warehouse|asset/,
+    crm: /crm|sales|pipeline|lead/,
+    payroll: /payroll|pay/,
+    mfg: /mfg|manufactur|production/,
+    accounting: /account|finance|ledger/,
+  };
+  return map[filter]?.test(hay) ?? true;
+}
+
 export default function AllAppsGrid({ modules }: AllAppsGridProps) {
   const reduced = useReducedMotion();
   const fadeUp = getFadeInUp(reduced);
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<string>('all');
 
-  const selectorItems = modules.map((app) => ({
-    id: app.slug,
-    label: app.name,
-    description: app.shortDescription,
-    icon: getModuleIcon(app.iconKey),
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return modules.filter((mod) => {
+      if (!matchesFilter(mod, filter)) return false;
+      if (!q) return true;
+      return (
+        mod.name.toLowerCase().includes(q) ||
+        mod.shortDescription.toLowerCase().includes(q) ||
+        (mod.cardTagline?.toLowerCase().includes(q) ?? false)
+      );
+    });
+  }, [modules, query, filter]);
+
+  const gridItems: IntegratedModuleItem[] = filtered.map((mod) => ({
+    id: mod.slug,
+    name: mod.name,
+    description: mod.cardTagline ?? mod.shortDescription,
+    href: `/erp/${mod.slug}`,
+    icon: getModuleIcon(mod.iconKey),
+    iconClassName: getModuleTintClass(mod.slug, mod.iconKey),
   }));
 
   return (
@@ -51,8 +99,8 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
               <span className='text-hero-accent'>Platform</span>
             </h1>
             <p className='mx-auto max-w-2xl text-lg leading-relaxed text-hero-muted-foreground'>
-              Explore every QTO-ERP module in one catalog — pick a capability,
-              preview highlights, then open the full product page.
+              Explore every QTO-ERP module in one catalog — filter by capability,
+              then open the full product page.
             </p>
           </motion.div>
         </div>
@@ -63,64 +111,75 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
           <HeaderSections
             tag='Platforms'
             title='Explore modules'
-            description='Select a module to preview highlights, then open the full product page.'
+            description='Search and filter the catalog, then open any module card.'
           />
 
-          {selectorItems.length > 0 ? (
-            <SelectorPanel
-              items={selectorItems}
-              defaultValue={selectorItems[0]?.id}
-              className='mt-4'
-              renderDetail={(item) => {
-                const app = modules.find((m) => m.slug === item.id);
-                if (!app) return null;
-                return (
-                  <div className='space-y-5'>
-                    <p className='text-sm leading-relaxed text-muted-foreground'>
-                      {app.cardTagline ?? app.shortDescription}
-                    </p>
-                    <p className='text-xs font-medium text-accent'>
-                      Best for: {app.bestFor}
-                    </p>
-                    <ul className='space-y-2'>
-                      {app.highlights.map((h) => (
-                        <li
-                          key={h}
-                          className='flex items-center gap-2 text-sm text-muted-foreground'
-                        >
-                          <CheckCircle className='size-4 shrink-0 text-accent' />
-                          {h}
-                        </li>
-                      ))}
-                    </ul>
-                    <div className='grid gap-2 border-t border-border pt-4 sm:grid-cols-2'>
-                      {app.features.slice(0, 4).map((feature) => (
-                        <div
-                          key={feature.title}
-                          className='flex items-center gap-2 text-xs text-muted-foreground'
-                        >
-                          <div className='size-1.5 rounded-full bg-accent' />
-                          {feature.title}
-                        </div>
-                      ))}
-                    </div>
-                    <MarketingButton variant='primary' asChild>
-                      <Link href={`/erp/${app.slug}`}>
-                        Learn more about {app.name}
-                      </Link>
-                    </MarketingButton>
-                  </div>
-                );
-              }}
+          <div className='mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+            <div className='relative w-full max-w-md'>
+              <Search
+                className='pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground'
+                aria-hidden
+              />
+              <Input
+                type='search'
+                placeholder='Search modules…'
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className='pl-9'
+                aria-label='Search modules'
+              />
+            </div>
+            <div
+              className='flex flex-wrap gap-2'
+              role='group'
+              aria-label='Filter by module family'
+            >
+              {FILTERS.map((f) => (
+                <button
+                  key={f.id}
+                  type='button'
+                  onClick={() => setFilter(f.id)}
+                  aria-pressed={filter === f.id}
+                >
+                  <Badge
+                    variant={filter === f.id ? 'accent' : 'outline'}
+                    className={cn(
+                      'cursor-pointer transition-colors',
+                      filter === f.id ? '' : 'hover:bg-muted',
+                    )}
+                  >
+                    {f.label}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {gridItems.length > 0 ? (
+            <IntegratedModulesGrid
+              modules={gridItems}
+              columns={3}
+              className='mt-10'
             />
-          ) : null}
+          ) : (
+            <p className='mt-10 text-center text-sm text-muted-foreground'>
+              No modules match your search. Try another filter or clear the query.
+            </p>
+          )}
+
+          <p className='mt-8 text-center text-sm text-muted-foreground'>
+            Looking for a walkthrough?{' '}
+            <Link href='/demo' className='font-medium text-accent hover:underline'>
+              Book a demo
+            </Link>
+          </p>
         </div>
       </section>
 
       <CTASection
-        eyebrow="Ready when you are"
+        eyebrow='Ready when you are'
         headline='Ready to Simplify Your Operations with QTO ERP?'
-        description='Schedule a walkthrough or compare plans — same DNA across every palette.'
+        description='Schedule a walkthrough or compare plans — single orange brand across every surface.'
         primaryLabel='Schedule a Demo'
         primaryHref='/demo'
         secondaryLabel='View Pricing'

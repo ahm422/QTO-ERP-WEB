@@ -1,17 +1,15 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { FlaskConical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { BrandTokenSwatches } from "./_components/BrandTokenSwatches";
-import { TypeScaleSection } from "./_components/TypeScaleSection";
 import {
-  EyebrowDemo,
   MarketingButtonDemo,
-  MarketingCardsDemo,
+  FeatureCardBoardDemo,
+  FormInputDemo,
+  BillingToggleDemo,
+  BoardTypographyDemo,
   StatsDemo,
   SelectorPanelDemo,
   DarkCtaBandDemo,
@@ -25,33 +23,60 @@ import {
   ComparisonTableDemo,
   IndustryCardDemo,
   BadgeBoardDemo,
+  MarketingCardsDemo,
+  EyebrowDemo,
+  StepCardDemo,
 } from "./_components/ClientDemos";
 
 export const metadata = {
-  title: "Style Guide · QTO ERP",
+  title: "QTO-ERP Design System · Style Guide",
   robots: { index: false, follow: false },
 };
 
-const CORE_SWATCHES = [
-  { name: "background", className: "bg-background border border-border" },
-  { name: "foreground", className: "bg-foreground" },
-  { name: "card", className: "bg-card border border-border" },
-  { name: "muted", className: "bg-muted" },
-  { name: "border", className: "bg-border" },
-  { name: "accent", className: "bg-accent" },
-  { name: "primary", className: "bg-primary" },
-  { name: "secondary", className: "bg-secondary" },
-  { name: "destructive", className: "bg-destructive" },
-  { name: "success", className: "bg-success" },
-  { name: "warning", className: "bg-warning" },
-  { name: "info", className: "bg-info" },
+/** Board-labeled roles — hex via tokens only (docs/design-tokens.md). */
+const BOARD_PALETTE = [
+  {
+    role: "Background",
+    hex: "#0A0A0A",
+    light: "#FAF8F5",
+    className: "bg-background border border-border",
+  },
+  {
+    role: "Surface / Card",
+    hex: "#1C1512",
+    light: "#FFFFFF",
+    className: "bg-card border border-border",
+  },
+  {
+    role: "Primary Accent",
+    hex: "#E8733A",
+    light: "#AE562B",
+    className: "bg-accent",
+  },
+  {
+    role: "Secondary Accent",
+    hex: "#F1B27C",
+    light: "#8B4522",
+    className: "bg-accent-dark",
+  },
+  {
+    role: "Primary Text",
+    hex: "#F5F1EA",
+    light: "#0A0A0A",
+    className: "bg-foreground",
+  },
+  {
+    role: "Muted Text",
+    hex: "#A89A8F",
+    light: "#6B5E55",
+    className: "bg-muted-foreground",
+  },
 ] as const;
 
 const MODULES = [
   {
     key: "hr",
     label: "HR",
-    note: "Navbar idx 0 · blue",
     accent: "bg-module-hr",
     muted: "bg-module-hr-bg",
     text: "text-module-hr-foreground",
@@ -59,7 +84,6 @@ const MODULES = [
   {
     key: "inventory",
     label: "Inventory",
-    note: "Navbar idx 1 · cyan",
     accent: "bg-module-inventory",
     muted: "bg-module-inventory-bg",
     text: "text-module-inventory-foreground",
@@ -67,7 +91,6 @@ const MODULES = [
   {
     key: "crm",
     label: "CRM",
-    note: "Navbar idx 2 · emerald/teal",
     accent: "bg-module-crm",
     muted: "bg-module-crm-bg",
     text: "text-module-crm-foreground",
@@ -75,7 +98,6 @@ const MODULES = [
   {
     key: "payroll",
     label: "Payroll",
-    note: "Navbar idx 3 · orange",
     accent: "bg-module-payroll",
     muted: "bg-module-payroll-bg",
     text: "text-module-payroll-foreground",
@@ -83,7 +105,6 @@ const MODULES = [
   {
     key: "mfg",
     label: "Manufacturing",
-    note: "rose (distinct)",
     accent: "bg-module-mfg",
     muted: "bg-module-mfg-bg",
     text: "text-module-mfg-foreground",
@@ -91,21 +112,10 @@ const MODULES = [
   {
     key: "accounting",
     label: "Accounting",
-    note: "fuchsia (distinct)",
     accent: "bg-module-accounting",
     muted: "bg-module-accounting-bg",
     text: "text-module-accounting-foreground",
   },
-] as const;
-
-const RADIUS_SCALE = [
-  { token: "--radius-sm", tw: "rounded-sm", className: "rounded-sm" },
-  { token: "--radius-md", tw: "rounded-md", className: "rounded-md" },
-  { token: "--radius-lg", tw: "rounded-lg", className: "rounded-lg" },
-  { token: "--radius-xl", tw: "rounded-xl", className: "rounded-xl" },
-  { token: "--radius-2xl", tw: "rounded-2xl", className: "rounded-2xl" },
-  { token: "--radius-3xl", tw: "rounded-3xl", className: "rounded-3xl" },
-  { token: "--radius-4xl", tw: "rounded-4xl", className: "rounded-4xl" },
 ] as const;
 
 function Section({
@@ -134,45 +144,30 @@ function Section({
   );
 }
 
-function SwatchGrid({ dark }: { dark?: boolean }) {
+function BoardPaletteGrid({ dark }: { dark?: boolean }) {
   return (
-    <Card
-      variant="default"
-      radius="lg"
-      padding="md"
-      className={dark ? "dark text-foreground" : "text-foreground"}
+    <div
+      className={
+        dark
+          ? "dark rounded-2xl border border-border bg-card p-5 text-foreground shadow-[var(--card-shadow)]"
+          : "rounded-2xl border border-border bg-card p-5 text-foreground shadow-[var(--card-shadow)]"
+      }
     >
-      <p className="mb-3 text-xs font-medium text-muted-foreground">
-        {dark ? "Dark (.dark wrapper)" : "Light"}
+      <p className="mb-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {dark ? "Dark (board)" : "Light counterpart"}
       </p>
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
-        {CORE_SWATCHES.map((s) => (
-          <div key={s.name} className="space-y-1.5">
-            <div className={`h-12 w-full rounded-lg ${s.className}`} />
-            <p className="truncate font-mono text-[10px] text-muted-foreground">
-              {s.name}
-            </p>
-          </div>
-        ))}
-      </div>
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {MODULES.map((m) => (
-          <div
-            key={m.key}
-            className={`rounded-xl border border-border p-3 ${m.muted}`}
-          >
-            <div className="mb-2 flex items-center gap-2">
-              <span className={`size-3 rounded-full ${m.accent}`} />
-              <span className={`text-sm font-medium ${m.text}`}>{m.label}</span>
-            </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+        {BOARD_PALETTE.map((s) => (
+          <div key={s.role} className="space-y-1.5">
+            <div className={`h-14 w-full rounded-lg ${s.className}`} />
+            <p className="text-xs font-medium text-foreground">{s.role}</p>
             <p className="font-mono text-[10px] text-muted-foreground">
-              --module-{m.key}
+              {dark ? s.hex : s.light}
             </p>
-            <p className="mt-0.5 text-[10px] text-muted-foreground">{m.note}</p>
           </div>
         ))}
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -182,8 +177,9 @@ export default function StyleGuidePage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <div className="container-main section-padding space-y-16">
+    <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
+      <div className="container-main section-padding min-w-0 space-y-16">
+        {/* —— Board header —— */}
         <header className="space-y-4">
           <div className="flex items-start justify-between gap-4">
             <EyebrowBadge
@@ -191,254 +187,200 @@ export default function StyleGuidePage() {
               label="Dev only"
               variant="accent"
             />
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <ThemeToggle />
-            </div>
+            <ThemeToggle />
           </div>
           <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            Style Guide
+            QTO-ERP Design System
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
-            Proving ground for design tokens and marketing DNA primitives.
-            Single orange brand system — theme toggle and local{" "}
+            Visual identity and component library for the construction &amp;
+            field-service ERP platform. Living mirror of the orange brand board
+            — theme toggle and local{" "}
             <code className="font-mono text-sm">.dark</code> wrappers for
             dual-theme QA.
           </p>
         </header>
 
+        {/* —— 1 Color palette —— */}
         <Section
-          title="Brand tokens"
-          description="Locked orange system from docs/design-tokens.md. Light/dark only — no multi-palette switcher."
+          title="Color palette"
+          description="Board roles mapped to CSS tokens — no one-off hex in components."
         >
-          <BrandTokenSwatches />
-        </Section>
-
-        <TypeScaleSection />
-
-        <Section
-          title="Color swatches"
-          description="Light column vs local .dark wrapper — every token should have a visible dark equivalent."
-        >
-          <div className="grid gap-4 lg:grid-cols-2">
-            <SwatchGrid />
-            <SwatchGrid dark />
+          <div className="space-y-4">
+            <BoardPaletteGrid dark />
+            <BoardPaletteGrid />
+            <BrandTokenSwatches />
           </div>
         </Section>
 
+        {/* —— 2 Module identity —— */}
         <Section
-          title="Buttons (shared)"
-          description="Existing Button variants. Default uses brand --accent (CTA). Admin-safe — unchanged."
+          title="Module identity"
+          description="Six module accents via --module-* tokens (dots + muted chips)."
         >
-          <div className="flex flex-wrap gap-3">
-            <Button variant="default">Primary (accent)</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="destructive">Destructive</Button>
-          </div>
-        </Section>
-
-        <Section
-          title="Eyebrow badge"
-          description="Marketing section labels — EyebrowBadge accent matches board “PLATFORM ECOSYSTEM” pill language."
-        >
-          <EyebrowDemo />
-        </Section>
-
-        <Section
-          title="Marketing buttons"
-          description="MarketingButton — solid orange primary (accent) + outline secondary; arrow slide on hover + whileTap scale from @/lib/motion (respects prefers-reduced-motion)."
-        >
-          <MarketingButtonDemo />
-        </Section>
-
-        <Section
-          title="Badges"
-          description="Admin semantic variants plus marketing accent outline (Enterprise) and module-tinted chips."
-        >
-          <BadgeBoardDemo />
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Badge>Default</Badge>
-            <Badge variant="secondary">Secondary</Badge>
-            <Badge variant="outline">Outline</Badge>
-            <Badge variant="success">Success</Badge>
-            <Badge variant="warning">Warning</Badge>
-            <Badge variant="info">Info</Badge>
-            <Badge variant="destructive">Destructive</Badge>
-          </div>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-[var(--card-shadow)]">
             {MODULES.map((m) => (
-              <span
-                key={m.key}
-                className={`inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-medium ${m.muted} ${m.text}`}
-              >
-                {m.label}
-              </span>
+              <div key={m.key} className="flex items-center gap-2">
+                <span
+                  className={`size-3.5 rounded-full ${m.accent}`}
+                  aria-hidden
+                />
+                <span className={`text-sm font-medium ${m.text}`}>{m.label}</span>
+              </div>
             ))}
           </div>
-        </Section>
-
-        <Section
-          title="Cards"
-          description="Card DNA + shared cardHover (scale 1.03 + y lift + icon chip spring). Border/shadow via CSS tokens; lift via Framer — see @/lib/motion."
-        >
-          <MarketingCardsDemo />
-        </Section>
-
-        <Section
-          title="Stat tiles"
-          description="StatsStrip / StatTile — 4-up stagger reveal from @/lib/motion; count-up skips under prefers-reduced-motion."
-        >
-          <StatsDemo />
-        </Section>
-
-        <Section
-          title="SelectorPanel"
-          description="List ↔ detail with AnimatePresence mode=wait + panelSwap crossfade. Module catalog and domain explorer demos."
-        >
-          <SelectorPanelDemo />
-        </Section>
-
-        <Section
-          title="DarkCtaBand"
-          description="Dark rounded band + grid texture. Band stays dark in both page themes; inverse MarketingButtons for contrast."
-        >
-          <DarkCtaBandDemo />
-        </Section>
-
-        <Section
-          title="GridBackground"
-          description="Decorative radial-dot texture (pointer-events-none). Verify dots read on near-black surfaces."
-        >
-          <GridBackgroundDemo />
-        </Section>
-
-        <Section
-          title="Orbit motif"
-          description="Shared OrbitMotif adapted from the home hero R3F rig. Token-driven glow/rings; reduced-motion safe."
-        >
-          <OrbitMotifDemo />
-        </Section>
-
-        <Section
-          title="TrustedByStrip"
-          description="Logo / trust strip for home composition (page wiring is a follow-up)."
-        >
-          <TrustedByStripDemo />
-        </Section>
-
-        <Section
-          title="BuiltForSection"
-          description="“Built for …” audience section shell."
-        >
-          <BuiltForSectionDemo />
-        </Section>
-
-        <Section
-          title="IntegratedModulesGrid"
-          description="Module card grid — Card DNA + module token tints."
-        >
-          <IntegratedModulesGridDemo />
-        </Section>
-
-        <Section
-          title="EcosystemTabs"
-          description="Connected Ecosystem — SelectorPanel numbered list + detail (do not reinvent tabs)."
-        >
-          <EcosystemTabsDemo />
-        </Section>
-
-        <Section
-          title="PlanCard"
-          description="Pricing plan card primitive extracted for shared use. Checkout stays on /pricing."
-        >
-          <PlanCardDemo />
-        </Section>
-
-        <Section
-          title="ComparisonTable"
-          description="Shared feature matrix (embedded mode for style-guide)."
-        >
-          <ComparisonTableDemo />
-        </Section>
-
-        <Section
-          title="IndustryCard"
-          description="Domain / industry card for ecosystem and solutions surfaces."
-        >
-          <IndustryCardDemo />
-        </Section>
-
-        <Section
-          title="Radius scale"
-          description="Base --radius is 0.625rem; Tailwind rounded-* maps via @theme calc. Card DNA defaults to rounded-2xl–3xl."
-        >
-          <div className="flex flex-wrap items-end gap-4">
-            {RADIUS_SCALE.map((r) => (
-              <div key={r.token} className="space-y-2 text-center">
-                <div
-                  className={`size-16 border border-border bg-muted ${r.className}`}
-                />
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {MODULES.map((m) => (
+              <div
+                key={`${m.key}-chip`}
+                className={`rounded-xl border border-border p-3 ${m.muted}`}
+              >
+                <div className="mb-1 flex items-center gap-2">
+                  <span className={`size-2.5 rounded-full ${m.accent}`} />
+                  <span className={`text-sm font-medium ${m.text}`}>
+                    {m.label}
+                  </span>
+                </div>
                 <p className="font-mono text-[10px] text-muted-foreground">
-                  {r.tw}
-                </p>
-                <p className="font-mono text-[10px] text-muted-foreground">
-                  {r.token}
+                  --module-{m.key}
                 </p>
               </div>
             ))}
           </div>
         </Section>
 
+        {/* —— 3 Typography —— */}
         <Section
-          title="Usage notes"
-          description="Stable surface for page restyles across the marketing site."
+          title="Typography"
+          description="Outfit display (H1–H3) + Poppins body / uppercase eyebrow / button labels."
         >
-          <Card variant="default" radius="lg" padding="md">
-            <ul className="list-inside list-disc space-y-2 text-sm text-muted-foreground">
-              <li>
-                <strong className="text-foreground">Display:</strong> hero titles
-                and expressive headings →{" "}
-                <code className="font-mono text-foreground">font-display</code>
-              </li>
-              <li>
-                <strong className="text-foreground">UI:</strong> body, buttons,
-                forms, nav labels →{" "}
-                <code className="font-mono text-foreground">font-sans</code>
-              </li>
-              <li>
-                <strong className="text-foreground">Brand CTA:</strong> keep{" "}
-                <code className="font-mono text-foreground">Button</code>{" "}
-                <code className="font-mono text-foreground">--accent</code>.
-                Marketing DNA CTAs use{" "}
-                <code className="font-mono text-foreground">MarketingButton</code>{" "}
-                (solid orange primary).
-              </li>
-              <li>
-                <strong className="text-foreground">CTA band:</strong>{" "}
-                <code className="font-mono text-foreground">DarkCtaBand</code>{" "}
-                primitive +{" "}
-                <code className="font-mono text-foreground">CTASection</code>{" "}
-                convenience wrapper (Option A). Inverse buttons on the band.
-              </li>
-              <li>
-                <strong className="text-foreground">Eyebrow:</strong>{" "}
-                <code className="font-mono text-foreground">EyebrowBadge</code> —
-                do not overload admin{" "}
-                <code className="font-mono text-foreground">Badge</code> status
-                variants.
-              </li>
-              <li>
-                <strong className="text-foreground">Shadows:</strong>{" "}
-                <code className="font-mono text-foreground">--shadow-sm|md|lg</code>{" "}
-                with aliases{" "}
-                <code className="font-mono text-foreground">
-                  --card-shadow / --card-shadow-hover / --mega-shadow
-                </code>
-              </li>
-            </ul>
-          </Card>
+          <BoardTypographyDemo />
         </Section>
+
+        {/* —— 4 Buttons —— */}
+        <Section
+          title="Buttons"
+          description="MarketingButton — solid accent primary + ghost/outline secondary."
+        >
+          <MarketingButtonDemo />
+        </Section>
+
+        {/* —— 5 Feature card —— */}
+        <Section
+          title="Feature card"
+          description="Card DNA + module icon tint + Explore Module →."
+        >
+          <FeatureCardBoardDemo />
+        </Section>
+
+        {/* —— 6 Form input —— */}
+        <Section
+          title="Form input"
+          description="Work-email field + helper row (checkmark + no credit card)."
+        >
+          <FormInputDemo />
+        </Section>
+
+        {/* —— 7 Chips / badges —— */}
+        <Section
+          title="Chips / badges"
+          description="Enterprise (accent outline), Standard, module-tinted chip."
+        >
+          <BadgeBoardDemo />
+        </Section>
+
+        {/* —— 8 Billing toggle —— */}
+        <Section
+          title="Billing toggle"
+          description="Monthly / Annual pill — PricingToggle DNA shared with /pricing."
+        >
+          <BillingToggleDemo />
+        </Section>
+
+        {/* —— 9 Signature motif —— */}
+        <Section
+          title="Signature motif"
+          description="OrbitMotif in a dark rounded frame — glow, rings, module nodes."
+        >
+          <OrbitMotifDemo />
+        </Section>
+
+        {/* —— Board footer strip —— */}
+        <footer className="border-t border-border pt-8 text-center">
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} QTO-ERP Design System. A product by QTO
+            Dev. Style-guide chrome only — not the site Footer.
+          </p>
+        </footer>
+
+        {/* —— Extended proving ground —— */}
+        <div className="space-y-16 border-t border-border pt-16">
+          <div>
+            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+              Extended proving ground
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
+              Additional DNA primitives used on live routes — not part of the
+              board section order.
+            </p>
+          </div>
+
+          <Section title="Eyebrow badge">
+            <EyebrowDemo />
+          </Section>
+
+          <Section title="Card DNA (extended)">
+            <MarketingCardsDemo />
+          </Section>
+
+          <Section title="Stat tiles">
+            <StatsDemo />
+          </Section>
+
+          <Section title="SelectorPanel">
+            <SelectorPanelDemo />
+          </Section>
+
+          <Section title="DarkCtaBand">
+            <DarkCtaBandDemo />
+          </Section>
+
+          <Section title="GridBackground">
+            <GridBackgroundDemo />
+          </Section>
+
+          <Section title="TrustedByStrip">
+            <TrustedByStripDemo />
+          </Section>
+
+          <Section title="BuiltForSection">
+            <BuiltForSectionDemo />
+          </Section>
+
+          <Section title="IntegratedModulesGrid">
+            <IntegratedModulesGridDemo />
+          </Section>
+
+          <Section title="EcosystemTabs">
+            <EcosystemTabsDemo />
+          </Section>
+
+          <Section title="PlanCard">
+            <PlanCardDemo />
+          </Section>
+
+          <Section title="ComparisonTable">
+            <ComparisonTableDemo />
+          </Section>
+
+          <Section title="StepCard">
+            <StepCardDemo />
+          </Section>
+
+          <Section title="IndustryCard">
+            <IndustryCardDemo />
+          </Section>
+        </div>
       </div>
     </main>
   );

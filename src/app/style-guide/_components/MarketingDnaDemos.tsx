@@ -1,14 +1,20 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import {
+  ArrowRight,
   Boxes,
   Briefcase,
   Building2,
+  Check,
   ClipboardList,
   HardHat,
   Layers,
+  LineChart,
+  Rocket,
+  Settings2,
   Sparkles,
   Star,
   Users,
@@ -39,7 +45,11 @@ import { EcosystemTabs } from "@/components/common/EcosystemTabs";
 import { PlanCard } from "@/components/ui/plan-card";
 import { ComparisonTable } from "@/components/ui/comparison-table";
 import { IndustryCard } from "@/components/ui/industry-card";
+import { StepCardGrid } from "@/components/ui/step-card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import PricingToggle from "@/app/(site)/pricing/_components/PricingToggle";
 import { getDomainIcon } from "@/lib/icon-map";
 import { getIndustryDomains } from "@/lib/industry-domains";
 import {
@@ -452,14 +462,99 @@ export function OrbitMotifDemo() {
   return (
     <div className="space-y-4">
       <p className="text-xs text-muted-foreground">
-        Shared OrbitMotif (R3F). Under{" "}
+        Signature motif — glowing sphere, orbit rings, module nodes. Under{" "}
         <code className="font-mono">prefers-reduced-motion</code>: static frame,
-        no auto-rotate / float. Colors from{" "}
-        <code className="font-mono">--motif-gradient-*</code> / accent tokens.
+        no auto-rotate / float. Colors from orbit / accent tokens.
       </p>
-      <div className="mx-auto w-full max-w-md">
-        <OrbitMotif interactive showHints className="rounded-2xl border border-border bg-neutral-950" />
+      <div className="dark mx-auto w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-background p-2 shadow-[var(--card-shadow)]">
+        <OrbitMotif
+          interactive
+          showHints
+          className="rounded-xl bg-[color:var(--background)]"
+        />
       </div>
+    </div>
+  );
+}
+
+/** Board feature card — Card DNA + module icon + Explore Module link. */
+export function FeatureCardBoardDemo() {
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      {[false, true].map((dark) => (
+        <ThemeFrame key={String(dark)} dark={dark}>
+          <Card variant="interactive" radius="lg" className="max-w-sm">
+            <CardHeader className="flex-row items-start gap-3 space-y-0">
+              <CardIcon className="bg-module-crm-bg text-module-crm-foreground">
+                <Layers className="size-5" />
+              </CardIcon>
+              <div className="min-w-0 flex-1">
+                <CardTitle className="font-display">CRM</CardTitle>
+                <CardDescription className="mt-1">
+                  Pipeline, leads, and client relationships in one workspace.
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardFooter className="pt-0">
+              <span className="inline-flex items-center gap-1 text-sm font-medium text-accent">
+                Explore Module
+                <ArrowRight className="size-3.5" aria-hidden />
+              </span>
+            </CardFooter>
+          </Card>
+        </ThemeFrame>
+      ))}
+    </div>
+  );
+}
+
+/** Board form field — work email + helper row. */
+export function FormInputDemo() {
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      {[false, true].map((dark) => (
+        <ThemeFrame key={String(dark)} dark={dark}>
+          <div className="max-w-sm space-y-2">
+            <Label
+              htmlFor={`work-email-${dark ? "dark" : "light"}`}
+              className="text-xs font-medium uppercase tracking-wider text-muted-foreground"
+            >
+              Work email
+            </Label>
+            <Input
+              id={`work-email-${dark ? "dark" : "light"}`}
+              type="email"
+              placeholder="name@company.com"
+              autoComplete="email"
+            />
+            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Check
+                className="size-3.5 shrink-0 text-success"
+                aria-hidden
+              />
+              No credit card required to start.
+            </p>
+          </div>
+        </ThemeFrame>
+      ))}
+    </div>
+  );
+}
+
+/** Board billing toggle — Monthly / Annual pill via PricingToggle. */
+export function BillingToggleDemo() {
+  const [yearly, setYearly] = useState(false);
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      {[false, true].map((dark) => (
+        <ThemeFrame key={String(dark)} dark={dark}>
+          <PricingToggle
+            yearly={yearly}
+            onToggle={setYearly}
+            className="mb-0"
+          />
+        </ThemeFrame>
+      ))}
     </div>
   );
 }
@@ -576,7 +671,7 @@ export function EcosystemTabsDemo() {
 
 export function PlanCardDemo() {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-3">
       <PlanCard
         yearly={false}
         plan={{
@@ -672,11 +767,94 @@ export function IndustryCardDemo() {
 
 export function BadgeBoardDemo() {
   return (
-    <div className="flex flex-wrap gap-2">
-      <Badge variant="accent">Enterprise</Badge>
-      <Badge variant="secondary">Standard</Badge>
-      <Badge variant="outline">Outline</Badge>
-      <Badge variant="success">Success</Badge>
+    <div className="grid gap-4 lg:grid-cols-2">
+      {[false, true].map((dark) => (
+        <ThemeFrame key={String(dark)} dark={dark}>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="accent">Enterprise</Badge>
+            <Badge variant="outline">Standard</Badge>
+            <span className="inline-flex items-center rounded-full border border-module-inventory/40 bg-module-inventory-bg px-2.5 py-0.5 text-xs font-medium text-module-inventory-foreground">
+              Inventory
+            </span>
+          </div>
+        </ThemeFrame>
+      ))}
     </div>
+  );
+}
+
+/** Board typography samples — Outfit display + Poppins body / eyebrow / buttons. */
+export function BoardTypographyDemo() {
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      {[false, true].map((dark) => (
+        <ThemeFrame key={String(dark)} dark={dark}>
+          <div className="space-y-4">
+            <p className="font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
+              Platform Ecosystem
+            </p>
+            <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Construction Intelligence
+            </h1>
+            <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+              The Complete ERP Engine
+            </h2>
+            <h3 className="font-display text-lg font-semibold text-accent">
+              Module Capabilities
+            </h3>
+            <p className="max-w-md font-sans text-sm leading-relaxed text-muted-foreground">
+              Visual identity and component language for field-service and
+              construction ERP surfaces.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-1">
+              <MarketingButton variant="primary">Book a Demo</MarketingButton>
+              <MarketingButton variant="secondary">Learn More</MarketingButton>
+            </div>
+          </div>
+        </ThemeFrame>
+      ))}
+    </div>
+  );
+}
+
+export function StepCardDemo() {
+  return (
+    <StepCardGrid
+      steps={[
+        {
+          step: 1,
+          title: "Discover fit",
+          description: "Map workflows and success criteria before you buy seats.",
+          icon: ClipboardList,
+          iconClassName: "bg-accent/10 text-accent",
+          preview: (
+            <p className="text-xs text-muted-foreground">
+              Mini preview — checklist ready
+            </p>
+          ),
+        },
+        {
+          step: 2,
+          title: "Configure",
+          description: "Roles, fields, and integrations without custom code.",
+          icon: Settings2,
+          iconClassName: "bg-module-crm-bg text-module-crm",
+        },
+        {
+          step: 3,
+          title: "Deploy",
+          description: "Pilot a site, then expand with shared templates.",
+          icon: Rocket,
+          iconClassName: "bg-module-hr-bg text-module-hr",
+        },
+        {
+          step: 4,
+          title: "Optimize",
+          description: "Dashboards and audits keep cycle time tight.",
+          icon: LineChart,
+          iconClassName: "bg-module-inventory-bg text-module-inventory",
+        },
+      ]}
+    />
   );
 }
