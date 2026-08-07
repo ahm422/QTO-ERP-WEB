@@ -1,5 +1,9 @@
 /**
- * One-off Phase 4 (#111) visual matrix + contrast re-measure.
+ * DEPRECATED (#133 orange brand lock-in): multi-palette capture is retired.
+ * Historical baselines remain under docs/baseline-screenshots/palette-phase-4/.
+ * Do not rely on data-palette / qto-palette — the product is a single orange system.
+ *
+ * One-off Phase 4 (#111) visual matrix + contrast re-measure (archival).
  * Usage: node scripts/capture-palette-phase-4.mjs
  * Requires: npm run dev on http://localhost:3000
  */

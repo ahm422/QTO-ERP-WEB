@@ -1,7 +1,6 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
-import { PaletteProvider } from "@/components/PaletteProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +10,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <PaletteProvider>{children}</PaletteProvider>
+      {children}
     </ThemeProvider>
   );
 }

@@ -5,7 +5,6 @@ import { CheckCircle, ExternalLink, Sparkles } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useCallback, useRef, type MouseEvent } from 'react';
-import { usePalette } from '@/components/PaletteProvider';
 import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
 import { MarketingButton } from '@/components/ui/marketing-button';
 import { QTO_DEV_URL } from '@/lib/constants';
@@ -25,7 +24,6 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 const Hero = () => {
   const reduced = useReducedMotion();
-  const { persona } = usePalette();
   const sectionRef = useRef<HTMLElement>(null);
 
   const mx = useMotionValue(0.5);
@@ -85,7 +83,7 @@ const Hero = () => {
       className='relative flex h-screen max-h-[820px] min-h-[600px] w-full items-center overflow-hidden hero-gradient'
     >
       <div className='absolute inset-0 overflow-hidden'>
-        <HeroMotifBackdrop motif={persona.heroMotif} />
+        <HeroMotifBackdrop motif="rays" />
         {/* Ciao-like mouse-follow aurora */}
         {!reduced && (
           <motion.div

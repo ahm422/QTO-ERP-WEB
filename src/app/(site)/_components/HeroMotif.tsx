@@ -1,15 +1,17 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import type { HeroMotif as HeroMotifId } from '@/lib/palette';
+
+export type HeroMotif = 'waves' | 'leaves' | 'rays' | 'petals' | 'grid';
 
 type HeroMotifBackdropProps = {
-  motif: HeroMotifId;
+  motif: HeroMotif;
 };
 
 /**
- * Full-bleed palette-reactive atmosphere for the home hero.
+ * Full-bleed atmosphere for the home hero.
  * Distinct shapes per motif — not just faint glow blobs.
+ * Orange brand lock-in pins the home hero to "rays".
  */
 export function HeroMotifBackdrop({ motif }: HeroMotifBackdropProps) {
   const reduced = useReducedMotion();

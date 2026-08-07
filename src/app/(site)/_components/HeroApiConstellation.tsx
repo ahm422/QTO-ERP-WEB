@@ -12,7 +12,6 @@ import {
   type RefObject,
 } from 'react';
 import * as THREE from 'three';
-import { usePalette } from '@/components/PaletteProvider';
 
 type HeroColors = {
   accent: string;
@@ -71,21 +70,29 @@ function cssToRgb(cssColor: string, fallback: string): string {
 }
 
 function useHeroColors(): HeroColors {
-  const { palette } = usePalette();
   const [colors, setColors] = useState<HeroColors>({
-    accent: '#818cf8',
-    accentDark: '#4f46e5',
+    accent: '#E8733A',
+    accentDark: '#F1B27C',
   });
   useEffect(() => {
-    const s = getComputedStyle(document.documentElement);
-    setColors({
-      accent: cssToRgb(s.getPropertyValue('--hero-accent').trim(), '#818cf8'),
-      accentDark: cssToRgb(
-        s.getPropertyValue('--accent-dark').trim(),
-        '#4f46e5',
-      ),
+    const read = () => {
+      const s = getComputedStyle(document.documentElement);
+      setColors({
+        accent: cssToRgb(s.getPropertyValue('--hero-accent').trim(), '#E8733A'),
+        accentDark: cssToRgb(
+          s.getPropertyValue('--accent-dark').trim(),
+          '#F1B27C',
+        ),
+      });
+    };
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
     });
-  }, [palette]);
+    return () => observer.disconnect();
+  }, []);
   return colors;
 }
 

@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
-import { PaletteToggle } from "@/components/common/PaletteToggle";
-import { PalettePicker } from "./_components/PalettePicker";
+import { BrandTokenSwatches } from "./_components/BrandTokenSwatches";
 import { TypeScaleSection } from "./_components/TypeScaleSection";
 import {
   EyebrowDemo,
@@ -184,7 +183,6 @@ export default function StyleGuidePage() {
               variant="accent"
             />
             <div className="flex flex-wrap items-center justify-end gap-2">
-              <PaletteToggle />
               <ThemeToggle />
             </div>
           </div>
@@ -193,18 +191,17 @@ export default function StyleGuidePage() {
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
             Proving ground for design tokens and marketing DNA primitives.
-            Page theme toggle, brand palette switcher (
-            <code className="font-mono text-sm">usePalette</code>), and local{" "}
+            Single orange brand system — theme toggle and local{" "}
             <code className="font-mono text-sm">.dark</code> wrappers for
             dual-theme QA.
           </p>
         </header>
 
         <Section
-          title="Brand palettes"
-          description="Switch palette above or here; demos below use live --accent / hero tokens. Theme (light/dark) and palette compose independently. Each card shows persona fonts, mood, and motif."
+          title="Brand tokens"
+          description="Locked orange system from docs/design-tokens.md. Light/dark only — no multi-palette switcher."
         >
-          <PalettePicker />
+          <BrandTokenSwatches />
         </Section>
 
         <TypeScaleSection />

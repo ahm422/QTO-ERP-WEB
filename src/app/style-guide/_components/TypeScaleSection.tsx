@@ -1,11 +1,8 @@
 "use client";
 
-import { usePalette } from "@/components/PaletteProvider";
-
 function TypeColumn({ face }: { face: "display" | "sans" }) {
-  const { persona } = usePalette();
   const font = face === "display" ? "font-display" : "font-sans";
-  const faceName = face === "display" ? persona.fontDisplay : persona.fontBody;
+  const faceName = face === "display" ? "Outfit" : "Poppins";
   const label =
     face === "display"
       ? `font-display (${faceName})`
@@ -28,7 +25,7 @@ function TypeColumn({ face }: { face: "display" | "sans" }) {
       </p>
       {face === "sans" ? (
         <p className="font-mono text-sm text-muted-foreground">
-          Mono sample (Inter via --font-mono)
+          Mono sample (system ui-monospace via --font-mono)
         </p>
       ) : null}
     </div>
@@ -36,8 +33,6 @@ function TypeColumn({ face }: { face: "display" | "sans" }) {
 }
 
 export function TypeScaleSection() {
-  const { persona } = usePalette();
-
   return (
     <section className="space-y-6">
       <div>
@@ -45,8 +40,7 @@ export function TypeScaleSection() {
           Type scale
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
-          Fonts follow the active palette persona ({persona.fontDisplay} /{" "}
-          {persona.fontBody}).
+          Locked brand faces: Outfit (display) / Poppins (body).
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
