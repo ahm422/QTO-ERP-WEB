@@ -25,7 +25,11 @@ export async function getObject(key: string): Promise<R2ObjectBody | null> {
   return bucket.get(key);
 }
 
-const ALLOWED_KEY_PREFIXES = ["demo-videos/", "blog-images/"] as const;
+const ALLOWED_KEY_PREFIXES = [
+  "demo-videos/",
+  "blog-images/",
+  "trusted-logos/",
+] as const;
 
 export function isAllowedMediaKey(key: string): boolean {
   if (!key || key.includes("..")) return false;

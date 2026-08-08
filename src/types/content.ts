@@ -110,3 +110,44 @@ export type HeroOrbitModule = {
   orbitPhase: number | null;
   orbitSpeed: number | null;
 };
+
+/** Public DTO for home Trusted By logos. */
+export type TrustedLogo = {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  linkUrl: string | null;
+  sortOrder: number;
+};
+
+/** Public DTO for home stats strip. */
+export type HomeStat = {
+  id: string;
+  label: string;
+  value: number;
+  suffix: string;
+  iconKey: string;
+  sortOrder: number;
+};
+
+/** Shared home section header copy (home_sections row). */
+export type HomeSectionHeader = {
+  tag: string;
+  title: string;
+  accent: string;
+  description: string;
+};
+
+/** Public DTO for Built For audience cards. */
+export type BuiltForCard = {
+  id: string;
+  title: string;
+  description: string;
+  iconKey: string;
+  sortOrder: number;
+};
+
+export type BuiltForSection = {
+  section: HomeSectionHeader;
+  cards: BuiltForCard[];
+};

@@ -453,6 +453,102 @@ export const navResources = sqliteTable(
   ],
 );
 
+/** Home page "Trusted By" logos (optional R2 image; null = text-only). */
+export const trustedLogos = sqliteTable(
+  "trusted_logos",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    name: text("name").notNull(),
+    logoImageKey: text("logo_image_key"),
+    linkUrl: text("link_url"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    published: integer("published", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    index("trusted_logos_published_idx").on(t.published),
+    index("trusted_logos_sort_order_idx").on(t.sortOrder),
+  ],
+);
+
+/** Home page stats strip rows. */
+export const homeStats = sqliteTable(
+  "home_stats",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    label: text("label").notNull(),
+    value: real("value").notNull(),
+    suffix: text("suffix").notNull(),
+    iconKey: text("icon_key").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    published: integer("published", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    index("home_stats_published_idx").on(t.published),
+    index("home_stats_sort_order_idx").on(t.sortOrder),
+  ],
+);
+
+/** Home page Built For audience cards. */
+export const builtForCards = sqliteTable(
+  "built_for_cards",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    iconKey: text("icon_key").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    published: integer("published", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    index("built_for_cards_published_idx").on(t.published),
+    index("built_for_cards_sort_order_idx").on(t.sortOrder),
+  ],
+);
+
+/**
+ * Shared home section header copy (one row per sectionKey).
+ * Phase 5: add Integrated Modules / Ecosystems / FAQ / etc. as new rows here
+ * instead of new singleton tables or scattered site_settings keys.
+ */
+export const homeSections = sqliteTable("home_sections", {
+  sectionKey: text("section_key").primaryKey(),
+  tag: text("tag").notNull(),
+  title: text("title").notNull(),
+  accent: text("accent").notNull(),
+  description: text("description").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   blogPosts: many(blogPosts),
 }));

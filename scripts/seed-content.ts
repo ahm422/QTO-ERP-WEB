@@ -6,18 +6,30 @@ import { SITE_SETTING_DEFAULTS } from "../src/lib/site-settings";
 import { QTO_DEV_URL } from "../src/lib/constants";
 import {
   blogPosts,
+  builtForCards,
   comparisonFeatures as comparisonFeaturesTable,
   erpModules,
   homeHero,
+  homeSections,
+  homeStats,
   navResources,
   pricingPlans,
   siteSettings,
   solutions as solutionsTable,
+  trustedLogos,
 } from "../src/db/schema";
 import { HOME_HERO_DEFAULTS, HOME_HERO_ID, ORBIT_SEED_BY_SLUG } from "../src/lib/home-hero-defaults";
+import {
+  BUILT_FOR_CARDS_DEFAULTS,
+  BUILT_FOR_SECTION_DEFAULT,
+  HOME_STATS_DEFAULTS,
+  TRUSTED_LOGOS_DEFAULTS,
+} from "../src/lib/home-sections-defaults";
 import type { PlatformType } from "../src/types/appModule";
 import type { ScriptDb } from "./db";
-import { and, eq, isNull } from "drizzle-orm";
+import { seedTrustedLogoObjectsToR2 } from "./seed-trusted-logos-r2";
+import { and, count, eq, isNull } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
 
 const PRICING_PLANS_SEED = [
   {
@@ -361,4 +373,83 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     },
   ]);
   console.log("Seeded nav resources");
+
+  const [{ logosCount }] = await db
+    .select({ logosCount: count() })
+    .from(trustedLogos);
+  if ((logosCount ?? 0) === 0) {
+    await db.insert(trustedLogos).values(
+      TRUSTED_LOGOS_DEFAULTS.map((logo) => ({
+        id: createId(),
+        name: logo.name,
+        logoImageKey: logo.logoImageKey,
+        linkUrl: logo.linkUrl,
+        sortOrder: logo.sortOrder,
+        published: logo.published,
+      })),
+    );
+    console.log(`Seeded ${TRUSTED_LOGOS_DEFAULTS.length} trusted logos`);
+  } else {
+    console.log("Trusted logos already present — skip insert");
+  }
+
+  try {
+    seedTrustedLogoObjectsToR2({ remote: false });
+  } catch (err) {
+    console.warn(
+      "Trusted logo R2 upload skipped:",
+      err instanceof Error ? err.message : err,
+    );
+  }
+
+  const [{ statsCount }] = await db
+    .select({ statsCount: count() })
+    .from(homeStats);
+  if ((statsCount ?? 0) === 0) {
+    await db.insert(homeStats).values(
+      HOME_STATS_DEFAULTS.map((stat) => ({
+        id: createId(),
+        label: stat.label,
+        value: stat.value,
+        suffix: stat.suffix,
+        iconKey: stat.iconKey,
+        sortOrder: stat.sortOrder,
+        published: stat.published,
+      })),
+    );
+    console.log(`Seeded ${HOME_STATS_DEFAULTS.length} home stats`);
+  } else {
+    console.log("Home stats already present — skip insert");
+  }
+
+  await db
+    .insert(homeSections)
+    .values({
+      sectionKey: BUILT_FOR_SECTION_DEFAULT.sectionKey,
+      tag: BUILT_FOR_SECTION_DEFAULT.tag,
+      title: BUILT_FOR_SECTION_DEFAULT.title,
+      accent: BUILT_FOR_SECTION_DEFAULT.accent,
+      description: BUILT_FOR_SECTION_DEFAULT.description,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded built_for home section header");
+
+  const [{ cardsCount }] = await db
+    .select({ cardsCount: count() })
+    .from(builtForCards);
+  if ((cardsCount ?? 0) === 0) {
+    await db.insert(builtForCards).values(
+      BUILT_FOR_CARDS_DEFAULTS.map((card) => ({
+        id: createId(),
+        title: card.title,
+        description: card.description,
+        iconKey: card.iconKey,
+        sortOrder: card.sortOrder,
+        published: card.published,
+      })),
+    );
+    console.log(`Seeded ${BUILT_FOR_CARDS_DEFAULTS.length} built-for cards`);
+  } else {
+    console.log("Built-for cards already present — skip insert");
+  }
 }

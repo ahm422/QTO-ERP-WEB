@@ -1,20 +1,39 @@
-import { TrustedByStrip } from '@/components/common/TrustedByStrip';
+import { TrustedByStrip } from "@/components/common/TrustedByStrip";
+import {
+  TRUSTED_LOGOS_DEFAULTS,
+} from "@/lib/home-sections-defaults";
+import { mediaUrl } from "@/lib/media";
+import type { TrustedLogo } from "@/types/content";
 
-/** Calm trust strip — logo names adapted from Clientsmarquee rows. */
-const TRUSTED_LOGOS = [
-  { name: 'Nesma' },
-  { name: 'Amreli Steels' },
-  { name: 'KAPC' },
-  { name: 'Haier' },
-  { name: 'AkzoNobel' },
-  { name: 'Honda Ring Road' },
-];
+type TrustedByProps = {
+  logos?: TrustedLogo[];
+};
 
-export default function TrustedBy() {
+function toStripLogos(logos: TrustedLogo[]) {
+  return logos.map((logo) => ({
+    name: logo.name,
+    imageUrl: logo.imageUrl,
+    href: logo.linkUrl,
+  }));
+}
+
+function defaultLogos(): TrustedLogo[] {
+  return TRUSTED_LOGOS_DEFAULTS.map((d, index) => ({
+    id: `default-logo-${index}`,
+    name: d.name,
+    imageUrl: d.logoImageKey ? mediaUrl(d.logoImageKey) : null,
+    linkUrl: d.linkUrl,
+    sortOrder: d.sortOrder,
+  }));
+}
+
+export default function TrustedBy({ logos }: TrustedByProps) {
+  const resolved = logos?.length ? logos : defaultLogos();
+
   return (
-    <section className='section-padding pt-0 md:pt-4'>
-      <div className='container-main'>
-        <TrustedByStrip logos={TRUSTED_LOGOS} />
+    <section className="section-padding pt-0 md:pt-4">
+      <div className="container-main">
+        <TrustedByStrip logos={toStripLogos(resolved)} />
       </div>
     </section>
   );

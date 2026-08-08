@@ -1,36 +1,50 @@
-import { HardHat, Building2, Briefcase } from 'lucide-react';
-import { BuiltForSection } from '@/components/common/BuiltForSection';
+import { BuiltForSection } from "@/components/common/BuiltForSection";
+import {
+  BUILT_FOR_CARDS_DEFAULTS,
+  BUILT_FOR_SECTION_DEFAULT,
+} from "@/lib/home-sections-defaults";
+import { getMarketingIcon } from "@/lib/icon-map";
+import type { BuiltForSection as BuiltForSectionData } from "@/types/content";
 
-export default function BuiltFor() {
+type BuiltForProps = {
+  data?: BuiltForSectionData;
+};
+
+function defaultBuiltFor(): BuiltForSectionData {
+  return {
+    section: {
+      tag: BUILT_FOR_SECTION_DEFAULT.tag,
+      title: BUILT_FOR_SECTION_DEFAULT.title,
+      accent: BUILT_FOR_SECTION_DEFAULT.accent,
+      description: BUILT_FOR_SECTION_DEFAULT.description,
+    },
+    cards: BUILT_FOR_CARDS_DEFAULTS.map((d, index) => ({
+      id: `default-built-for-${index}`,
+      title: d.title,
+      description: d.description,
+      iconKey: d.iconKey,
+      sortOrder: d.sortOrder,
+    })),
+  };
+}
+
+export default function BuiltFor({ data }: BuiltForProps) {
+  const resolved =
+    data?.cards?.length && data.section ? data : defaultBuiltFor();
+  const { section, cards } = resolved;
+
   return (
     <BuiltForSection
-      tag='Built for'
-      title='Built for field &'
-      accent='office'
-      description='One platform for crews on site and teams coordinating from HQ — shared data, shared truth.'
-      audiences={[
-        {
-          id: 'field',
-          title: 'Field crews',
-          description:
-            'Attendance, tasks, and site readiness without spreadsheet chaos.',
-          icon: HardHat,
-        },
-        {
-          id: 'office',
-          title: 'Office ops',
-          description:
-            'HR, inventory, and project controls that stay in sync with the field.',
-          icon: Building2,
-        },
-        {
-          id: 'finance',
-          title: 'Controllers',
-          description:
-            'Labor and material visibility before costs overrun the bid.',
-          icon: Briefcase,
-        },
-      ]}
+      tag={section.tag}
+      title={section.title}
+      accent={section.accent}
+      description={section.description}
+      audiences={cards.map((card) => ({
+        id: card.id,
+        title: card.title,
+        description: card.description,
+        icon: getMarketingIcon(card.iconKey),
+      }))}
     />
   );
 }
