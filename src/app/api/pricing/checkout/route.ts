@@ -96,7 +96,7 @@ export async function POST(request: Request) {
       persist.stripePriceIdYearly = fromEnv.yearly;
     }
     if (Object.keys(persist).length > 0) {
-      await getDb()
+      await (await getDb())
         .update(pricingPlans)
         .set(persist)
         .where(eq(pricingPlans.id, plan.id));

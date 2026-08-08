@@ -8,13 +8,16 @@ import {
   blogPosts,
   comparisonFeatures as comparisonFeaturesTable,
   erpModules,
+  homeHero,
   navResources,
   pricingPlans,
   siteSettings,
   solutions as solutionsTable,
 } from "../src/db/schema";
+import { HOME_HERO_DEFAULTS, HOME_HERO_ID, ORBIT_SEED_BY_SLUG } from "../src/lib/home-hero-defaults";
 import type { PlatformType } from "../src/types/appModule";
 import type { ScriptDb } from "./db";
+import { and, eq, isNull } from "drizzle-orm";
 
 const PRICING_PLANS_SEED = [
   {
@@ -196,6 +199,16 @@ export async function seedContent(db: ScriptDb, authorId: string) {
   }
   console.log(`Seeded ${apps.length} ERP modules`);
 
+  // Apply orbit layout defaults only when null (preserve admin orbit tweaks on re-seed).
+  for (const [slug, orbit] of Object.entries(ORBIT_SEED_BY_SLUG)) {
+    const [orbitRadius, orbitTilt, orbitPhase, orbitSpeed] = orbit;
+    await db
+      .update(erpModules)
+      .set({ orbitRadius, orbitTilt, orbitPhase, orbitSpeed })
+      .where(and(eq(erpModules.slug, slug), isNull(erpModules.orbitRadius)));
+  }
+  console.log("Seeded orbit layout defaults for known module slugs");
+
   for (let i = 0; i < solutions.length; i++) {
     const s = solutions[i];
     const data = {
@@ -295,6 +308,25 @@ export async function seedContent(db: ScriptDb, authorId: string) {
       .onConflictDoNothing();
   }
   console.log("Seeded site settings defaults");
+
+  await db
+    .insert(homeHero)
+    .values({
+      id: HOME_HERO_ID,
+      eyebrowText: HOME_HERO_DEFAULTS.eyebrowText,
+      titleLine1: HOME_HERO_DEFAULTS.titleLine1,
+      titleAccent: HOME_HERO_DEFAULTS.titleAccent,
+      subtitle: HOME_HERO_DEFAULTS.subtitle,
+      bullets: HOME_HERO_DEFAULTS.bullets,
+      primaryCtaLabel: HOME_HERO_DEFAULTS.primaryCtaLabel,
+      primaryCtaUrl: HOME_HERO_DEFAULTS.primaryCtaUrl,
+      secondaryCtaLabel: HOME_HERO_DEFAULTS.secondaryCtaLabel,
+      secondaryCtaUrl: HOME_HERO_DEFAULTS.secondaryCtaUrl,
+      poweredByText: HOME_HERO_DEFAULTS.poweredByText,
+      poweredByUrl: HOME_HERO_DEFAULTS.poweredByUrl,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded home hero defaults");
 
   await db.delete(navResources);
   await db.insert(navResources).values([

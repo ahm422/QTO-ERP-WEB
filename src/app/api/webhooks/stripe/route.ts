@@ -90,7 +90,7 @@ async function handleCheckoutSessionCompleted(
       ? session.subscription
       : session.subscription?.id ?? null;
 
-  const [existing] = await getDb()
+  const [existing] = await (await getDb())
     .select()
     .from(subscriptions)
     .where(eq(subscriptions.stripeCheckoutSessionId, session.id))
@@ -100,7 +100,7 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
-  await getDb().insert(subscriptions).values({
+  await (await getDb()).insert(subscriptions).values({
     stripeCustomerId,
     stripeSubscriptionId,
     stripeCheckoutSessionId: session.id,

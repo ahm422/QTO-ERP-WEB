@@ -7,6 +7,7 @@ import {
   Table2,
   Settings2,
   Link2,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -28,6 +29,7 @@ export const adminNavItems: AdminNavItem[] = [
   { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
   { href: "/admin/demo-videos", label: "Demo videos", icon: Video },
   { href: "/admin/comparison", label: "Comparison", icon: Table2 },
+  { href: "/admin/home-hero", label: "Home hero", icon: Sparkles },
   { href: "/admin/site-settings", label: "Site settings", icon: Settings2 },
   { href: "/admin/nav-resources", label: "Nav resources", icon: Link2 },
 ];
@@ -96,6 +98,13 @@ const breadcrumbRoutes: Array<{
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
       { label: "Site settings" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/home-hero$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Home hero" },
     ],
   },
   {

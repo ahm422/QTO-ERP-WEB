@@ -28,7 +28,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const [existing] = await getDb()
+    const [existing] = await (await getDb())
       .select()
       .from(demoRequests)
       .where(eq(demoRequests.id, id))
@@ -37,7 +37,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       return jsonError("Demo request not found", 404);
     }
 
-    const [updated] = await getDb()
+    const [updated] = await (await getDb())
       .update(demoRequests)
       .set({ status: parsed.data.status })
       .where(eq(demoRequests.id, id))

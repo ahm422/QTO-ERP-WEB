@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   const { email } = parsed.data;
 
   try {
-    const [subscriber] = await getDb()
+    const [subscriber] = await (await getDb())
       .insert(newsletterSubscribers)
       .values({ email })
       .returning();

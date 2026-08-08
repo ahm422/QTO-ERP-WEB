@@ -78,3 +78,35 @@ export type ComparisonRow = {
   growth: string;
   enterprise: string;
 };
+
+/** Public / admin DTO for the marketing home hero singleton. */
+export type HomeHero = {
+  eyebrowText: string;
+  titleLine1: string;
+  titleAccent: string;
+  subtitle: string;
+  bullets: string[];
+  primaryCtaLabel: string;
+  primaryCtaUrl: string;
+  secondaryCtaLabel: string;
+  secondaryCtaUrl: string;
+  poweredByText: string;
+  poweredByUrl: string;
+};
+
+/** Published module row shaped for home hero orbit admin + mapping. */
+export type HeroOrbitModule = {
+  id: string;
+  slug: string;
+  name: string;
+  shortDescription: string;
+  cardTagline?: string;
+  iconKey: string;
+  sortOrder: number;
+  published: boolean;
+  showInHeroOrbit: boolean;
+  orbitRadius: number | null;
+  orbitTilt: number | null;
+  orbitPhase: number | null;
+  orbitSpeed: number | null;
+};

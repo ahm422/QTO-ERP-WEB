@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [dbUser] = await getDb()
+  const [dbUser] = await (await getDb())
     .select({ email: users.email, role: users.role })
     .from(users)
     .where(eq(users.id, user.id))

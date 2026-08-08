@@ -58,7 +58,7 @@ export async function listPublishedDemoVideos(options?: {
     conditions.push(eq(demoVideos.moduleSlug, options.moduleSlug));
   }
 
-  return getDb()
+  return await (await getDb())
     .select()
     .from(demoVideos)
     .where(and(...conditions))
@@ -66,7 +66,7 @@ export async function listPublishedDemoVideos(options?: {
 }
 
 export async function listAllDemoVideos() {
-  const rows = await getDb()
+  const rows = await (await getDb())
     .select()
     .from(demoVideos)
     .orderBy(asc(demoVideos.sortOrder), desc(demoVideos.createdAt));
@@ -74,7 +74,7 @@ export async function listAllDemoVideos() {
 }
 
 export async function getDemoVideoById(id: string) {
-  const [row] = await getDb()
+  const [row] = await (await getDb())
     .select()
     .from(demoVideos)
     .where(eq(demoVideos.id, id))
@@ -83,7 +83,7 @@ export async function getDemoVideoById(id: string) {
 }
 
 export async function getDemoVideoBySlug(slug: string) {
-  const [row] = await getDb()
+  const [row] = await (await getDb())
     .select()
     .from(demoVideos)
     .where(eq(demoVideos.slug, slug))
@@ -100,7 +100,7 @@ export type CreateDemoVideoDraftInput = {
 };
 
 export async function createDemoVideoDraft(data: CreateDemoVideoDraftInput) {
-  const [row] = await getDb()
+  const [row] = await (await getDb())
     .insert(demoVideos)
     .values({
       slug: data.slug,
@@ -115,7 +115,7 @@ export async function createDemoVideoDraft(data: CreateDemoVideoDraftInput) {
 }
 
 export async function publishDemoVideo(id: string) {
-  const [row] = await getDb()
+  const [row] = await (await getDb())
     .update(demoVideos)
     .set({
       status: "PUBLISHED",
@@ -127,7 +127,7 @@ export async function publishDemoVideo(id: string) {
 }
 
 export async function unpublishDemoVideo(id: string) {
-  const [row] = await getDb()
+  const [row] = await (await getDb())
     .update(demoVideos)
     .set({
       status: "DRAFT",
@@ -149,7 +149,7 @@ export async function updateDemoVideo(
   id: string,
   fields: UpdateDemoVideoFields,
 ) {
-  const [row] = await getDb()
+  const [row] = await (await getDb())
     .update(demoVideos)
     .set(fields)
     .where(eq(demoVideos.id, id))

@@ -1,7 +1,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
-export function getMediaBucket(): R2Bucket {
-  const { env } = getCloudflareContext();
+export async function getMediaBucket(): Promise<R2Bucket> {
+  const { env } = await getCloudflareContext({ async: true });
   return env.MEDIA_BUCKET;
 }
 
@@ -14,13 +14,15 @@ export async function putObject(
   data: ArrayBuffer | Uint8Array | ReadableStream,
   contentType: string,
 ): Promise<void> {
-  await getMediaBucket().put(key, data, {
+  const bucket = await getMediaBucket();
+  await bucket.put(key, data, {
     httpMetadata: { contentType },
   });
 }
 
 export async function getObject(key: string): Promise<R2ObjectBody | null> {
-  return getMediaBucket().get(key);
+  const bucket = await getMediaBucket();
+  return bucket.get(key);
 }
 
 const ALLOWED_KEY_PREFIXES = ["demo-videos/", "blog-images/"] as const;

@@ -5,7 +5,7 @@ import { requireMediaBucket } from "@/lib/require-media-bucket";
 type RouteContext = { params: Promise<{ key: string[] }> };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const mediaResult = requireMediaBucket();
+  const mediaResult = await requireMediaBucket();
   if ("error" in mediaResult) return mediaResult.error;
 
   const { key: segments } = await context.params;

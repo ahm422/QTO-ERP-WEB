@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import type { AboutContentsType } from "@/types/about";
 import type { FAQsType } from "@/types/faq";
 import type { FeaturesType } from "@/types/feature";
@@ -210,6 +210,13 @@ export const erpModules = sqliteTable(
       .notNull()
       .$type<TestimonialsType>(),
     faqs: text("faqs", { mode: "json" }).notNull().$type<FAQsType>(),
+    orbitRadius: real("orbit_radius"),
+    orbitTilt: real("orbit_tilt"),
+    orbitPhase: real("orbit_phase"),
+    orbitSpeed: real("orbit_speed"),
+    showInHeroOrbit: integer("show_in_hero_orbit", { mode: "boolean" })
+      .notNull()
+      .default(true),
     sortOrder: integer("sort_order").notNull().default(0),
     published: integer("published", { mode: "boolean" }).notNull().default(true),
     createdAt: integer("created_at", { mode: "timestamp" })
@@ -393,6 +400,26 @@ export const subscriptions = sqliteTable(
 export const siteSettings = sqliteTable("site_settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
+
+/** Singleton marketing home hero copy (id = "default"). */
+export const homeHero = sqliteTable("home_hero", {
+  id: text("id").primaryKey(),
+  eyebrowText: text("eyebrow_text").notNull(),
+  titleLine1: text("title_line1").notNull(),
+  titleAccent: text("title_accent").notNull(),
+  subtitle: text("subtitle").notNull(),
+  bullets: text("bullets", { mode: "json" }).notNull().$type<string[]>(),
+  primaryCtaLabel: text("primary_cta_label").notNull(),
+  primaryCtaUrl: text("primary_cta_url").notNull(),
+  secondaryCtaLabel: text("secondary_cta_label").notNull(),
+  secondaryCtaUrl: text("secondary_cta_url").notNull(),
+  poweredByText: text("powered_by_text").notNull(),
+  poweredByUrl: text("powered_by_url").notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date())

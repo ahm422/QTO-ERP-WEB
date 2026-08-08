@@ -259,8 +259,9 @@ function RaysLayer({ reduced }: { reduced: boolean }) {
 function AuroraLayer({ reduced }: { reduced: boolean }) {
   return (
     <div className='absolute inset-0 text-hero-accent'>
-      {/* Depth veil — warm cream lift, not a dark vignette */}
-      <div className='absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_40%,transparent_20%,color-mix(in_oklab,var(--hero-foreground)_6%,transparent)_100%)]' />
+      {/* Depth veil — layered atmosphere without vignette cliché */}
+      <div className='absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_40%,transparent_18%,color-mix(in_oklab,var(--hero-foreground)_5%,transparent)_100%)]' />
+      <div className='absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_25%_75%,color-mix(in_oklab,var(--hero-glow-alt)_55%,transparent),transparent_70%)]' />
 
       {/* Left editorial glow */}
       <motion.div
@@ -268,12 +269,31 @@ function AuroraLayer({ reduced }: { reduced: boolean }) {
         animate={
           reduced
             ? undefined
-            : { opacity: [0.45, 0.7, 0.45], scale: [1, 1.06, 1] }
+            : { opacity: [0.45, 0.72, 0.45], scale: [1, 1.07, 1] }
         }
         transition={
           reduced
             ? undefined
             : { duration: 12, repeat: Infinity, ease: 'easeInOut' }
+        }
+      />
+
+      {/* Mid accent ribbon — adds depth between left wash and orbit stage */}
+      <motion.div
+        className='absolute left-[35%] top-[20%] size-[28rem] -translate-x-1/2 rounded-full opacity-50 blur-[110px]'
+        style={{
+          background:
+            'radial-gradient(circle, color-mix(in oklab, var(--hero-accent) 28%, transparent), transparent 68%)',
+        }}
+        animate={
+          reduced
+            ? undefined
+            : { opacity: [0.28, 0.5, 0.28], x: [-12, 12, -12] }
+        }
+        transition={
+          reduced
+            ? undefined
+            : { duration: 16, repeat: Infinity, ease: 'easeInOut' }
         }
       />
 
@@ -305,19 +325,19 @@ function AuroraLayer({ reduced }: { reduced: boolean }) {
         <defs>
           <linearGradient id='auroraArc' x1='0' y1='0' x2='1' y2='1'>
             <stop offset='0%' stopColor='currentColor' stopOpacity='0' />
-            <stop offset='35%' stopColor='currentColor' stopOpacity='0.35' />
-            <stop offset='65%' stopColor='currentColor' stopOpacity='0.12' />
+            <stop offset='35%' stopColor='currentColor' stopOpacity='0.38' />
+            <stop offset='65%' stopColor='currentColor' stopOpacity='0.14' />
             <stop offset='100%' stopColor='currentColor' stopOpacity='0' />
           </linearGradient>
         </defs>
-        {[118, 148, 178, 208].map((r, i) => (
+        {[108, 138, 168, 198, 228].map((r, i) => (
           <motion.circle
             key={r}
             cx='200'
             cy='200'
             r={r}
             stroke='url(#auroraArc)'
-            strokeWidth={i === 1 ? 1.4 : 1}
+            strokeWidth={i === 2 ? 1.5 : 1}
             strokeDasharray={i % 2 === 0 ? '4 10' : undefined}
             animate={
               reduced
@@ -328,7 +348,7 @@ function AuroraLayer({ reduced }: { reduced: boolean }) {
               reduced
                 ? undefined
                 : {
-                    duration: 90 + i * 18,
+                    duration: 90 + i * 16,
                     repeat: Infinity,
                     ease: 'linear',
                   }
@@ -341,13 +361,13 @@ function AuroraLayer({ reduced }: { reduced: boolean }) {
           cy='200'
           r='64'
           fill='currentColor'
-          fillOpacity='0.06'
+          fillOpacity='0.07'
         />
       </svg>
 
       {/* Fine horizontal rule accents — editorial calm */}
-      <div className='absolute inset-x-0 top-[18%] h-px bg-gradient-to-r from-transparent via-hero-accent/20 to-transparent' />
-      <div className='absolute inset-x-0 bottom-[14%] h-px bg-gradient-to-r from-transparent via-hero-accent/15 to-transparent' />
+      <div className='absolute inset-x-0 top-[18%] h-px bg-gradient-to-r from-transparent via-hero-accent/22 to-transparent' />
+      <div className='absolute inset-x-0 bottom-[14%] h-px bg-gradient-to-r from-transparent via-hero-accent/16 to-transparent' />
     </div>
   );
 }

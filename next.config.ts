@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
-if (process.env.NODE_ENV === "development") {
-  void initOpenNextCloudflareForDev();
-}
+// Hydrate Cloudflare bindings for `next dev`. Safe to fire-and-forget; request
+// paths use getCloudflareContext({ async: true }) as a fallback if this races.
+initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
   reactCompiler: true,

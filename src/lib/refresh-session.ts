@@ -45,7 +45,7 @@ async function tryGraceRotationReplay(
     return null;
   }
 
-  const db = getDb();
+  const db = await getDb();
   const [successor] = await db
     .select()
     .from(refreshTokens)
@@ -80,14 +80,14 @@ async function tryGraceRotationReplay(
 
 export async function revokeAllRefreshTokensForUser(userId: string): Promise<void> {
   const now = new Date();
-  await getDb()
+  await (await getDb())
     .update(refreshTokens)
     .set({ revokedAt: now })
     .where(and(eq(refreshTokens.userId, userId), isNull(refreshTokens.revokedAt)));
 }
 
 async function loadUserById(userId: string): Promise<AuthUser | null> {
-  const [user] = await getDb()
+  const [user] = await (await getDb())
     .select({ id: users.id, email: users.email, role: users.role })
     .from(users)
     .where(eq(users.id, userId))
@@ -102,7 +102,7 @@ export async function rotateRefreshSession(
   options?: { revokeAllOnReuse?: boolean },
 ): Promise<RefreshResult> {
   const tokenHash = await hashRefreshToken(rawRefreshToken);
-  const db = getDb();
+  const db = await getDb();
 
   const [row] = await db
     .select()
@@ -176,7 +176,7 @@ export async function createRefreshSession(
   const rawRefresh = generateRefreshToken();
   const tokenHash = await hashRefreshToken(rawRefresh);
 
-  await getDb().insert(refreshTokens).values({
+  await (await getDb()).insert(refreshTokens).values({
     userId: user.id,
     tokenHash,
     expiresAt: refreshExpiresAt(),
@@ -197,7 +197,7 @@ export async function revokeRefreshSession(
 ): Promise<void> {
   const tokenHash = await hashRefreshToken(rawRefreshToken);
   const now = new Date();
-  await getDb()
+  await (await getDb())
     .update(refreshTokens)
     .set({ revokedAt: now })
     .where(

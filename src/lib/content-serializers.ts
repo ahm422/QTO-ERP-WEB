@@ -3,6 +3,7 @@ import {
   blogPosts,
   comparisonFeatures,
   erpModules,
+  homeHero,
   pricingPlans,
   solutions,
 } from "@/db/schema";
@@ -14,6 +15,8 @@ import type {
   BlogPostDetail,
   BlogPostSummary,
   ComparisonRow,
+  HomeHero,
+  HeroOrbitModule,
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
 
@@ -22,6 +25,7 @@ type Solution = InferSelectModel<typeof solutions>;
 type BlogPost = InferSelectModel<typeof blogPosts>;
 type ComparisonFeature = InferSelectModel<typeof comparisonFeatures>;
 type PricingPlan = InferSelectModel<typeof pricingPlans>;
+type HomeHeroRow = InferSelectModel<typeof homeHero>;
 
 export function serializeModuleSummary(m: ErpModule): ModuleSummary {
   return {
@@ -59,6 +63,40 @@ export function serializeModuleDetail(m: ErpModule): ModuleDetail {
     useCases: m.useCases,
     testimonials: m.testimonials,
     faqs: m.faqs,
+  };
+}
+
+export function serializeHomeHero(row: HomeHeroRow): HomeHero {
+  return {
+    eyebrowText: row.eyebrowText,
+    titleLine1: row.titleLine1,
+    titleAccent: row.titleAccent,
+    subtitle: row.subtitle,
+    bullets: row.bullets,
+    primaryCtaLabel: row.primaryCtaLabel,
+    primaryCtaUrl: row.primaryCtaUrl,
+    secondaryCtaLabel: row.secondaryCtaLabel,
+    secondaryCtaUrl: row.secondaryCtaUrl,
+    poweredByText: row.poweredByText,
+    poweredByUrl: row.poweredByUrl,
+  };
+}
+
+export function serializeHeroOrbitModule(m: ErpModule): HeroOrbitModule {
+  return {
+    id: m.id,
+    slug: m.slug,
+    name: m.name,
+    shortDescription: m.shortDescription,
+    cardTagline: m.cardTagline ?? undefined,
+    iconKey: m.iconKey,
+    sortOrder: m.sortOrder,
+    published: m.published,
+    showInHeroOrbit: m.showInHeroOrbit,
+    orbitRadius: m.orbitRadius ?? null,
+    orbitTilt: m.orbitTilt ?? null,
+    orbitPhase: m.orbitPhase ?? null,
+    orbitSpeed: m.orbitSpeed ?? null,
   };
 }
 

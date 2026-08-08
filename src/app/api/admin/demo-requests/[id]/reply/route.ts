@@ -29,7 +29,7 @@ export async function POST(request: Request, context: RouteContext) {
     return validationErrorResponse(parsed.error);
   }
 
-  const [demoRequest] = await getDb()
+  const [demoRequest] = await (await getDb())
     .select()
     .from(demoRequests)
     .where(eq(demoRequests.id, id))
@@ -55,7 +55,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const [updated] = await getDb()
+    const [updated] = await (await getDb())
       .update(demoRequests)
       .set({ status: "READ" })
       .where(eq(demoRequests.id, id))

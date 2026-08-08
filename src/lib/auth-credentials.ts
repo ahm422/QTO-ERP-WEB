@@ -7,7 +7,7 @@ export async function verifyUserCredentials(
   email: string,
   password: string,
 ): Promise<{ id: string; email: string; name: string | null; role: string } | null> {
-  const [user] = await getDb()
+  const [user] = await (await getDb())
     .select()
     .from(users)
     .where(eq(users.email, email))

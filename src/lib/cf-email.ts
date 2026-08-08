@@ -31,7 +31,7 @@ export async function sendViaCloudflareEmail({
 }): Promise<CfSendEmailResult> {
   let emailBinding: SendEmail | undefined;
   try {
-    const { env } = getCloudflareContext();
+    const { env } = await getCloudflareContext({ async: true });
     emailBinding = env.EMAIL;
   } catch (err) {
     console.error("[email] Cloudflare context unavailable:", err);

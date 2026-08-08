@@ -20,7 +20,7 @@ const sections = [
 ];
 
 export default async function AdminDashboardPage() {
-  const db = getDb();
+  const db = await getDb();
   const [
     [{ value: demoRequestCount }],
     [{ value: blogPostCount }],

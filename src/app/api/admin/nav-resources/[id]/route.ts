@@ -33,14 +33,14 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const [existing] = await getDb()
+    const [existing] = await (await getDb())
       .select()
       .from(navResources)
       .where(eq(navResources.id, id))
       .limit(1);
     if (!existing) return jsonError("Nav resource not found", 404);
 
-    const [item] = await getDb()
+    const [item] = await (await getDb())
       .update(navResources)
       .set(parsed.data)
       .where(eq(navResources.id, id))
@@ -69,14 +69,14 @@ export async function DELETE(request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   try {
-    const [existing] = await getDb()
+    const [existing] = await (await getDb())
       .select()
       .from(navResources)
       .where(eq(navResources.id, id))
       .limit(1);
     if (!existing) return jsonError("Nav resource not found", 404);
 
-    await getDb().delete(navResources).where(eq(navResources.id, id));
+    await (await getDb()).delete(navResources).where(eq(navResources.id, id));
 
     revalidatePath("/", "layout");
 
