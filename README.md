@@ -11,7 +11,7 @@ Next.js marketing site and admin panel deployed on **Cloudflare Workers** (OpenN
 | Deployment (Workers, CI/CD) | [docs/deployment-cloudflare.md](docs/deployment-cloudflare.md) |
 | E2E testing checklist | [docs/testing-cloudflare.md](docs/testing-cloudflare.md) |
 | Admin panel | [docs/admin.md](docs/admin.md) |
-| Email (Resend) | [docs/email.md](docs/email.md) |
+| Email (Cloudflare Email Sending) | [docs/email.md](docs/email.md) |
 | Content APIs | [docs/content-api.md](docs/content-api.md) |
 | Stripe payments | [docs/payments.md](docs/payments.md) |
 
@@ -20,7 +20,8 @@ Next.js marketing site and admin panel deployed on **Cloudflare Workers** (OpenN
 ```bash
 npm install
 cp .env.example .env
-# Edit .env: JWT_ACCESS_SECRET, JWT_REFRESH_PEPPER, AUTH_URL, ADMIN_*, RESEND_*, STRIPE_*
+# Edit .env: JWT_ACCESS_SECRET, JWT_REFRESH_PEPPER, AUTH_URL, ADMIN_*, EMAIL_FROM, ADMIN_NOTIFICATION_EMAIL, STRIPE_*
+# For transactional email via Cloudflare, prefer: npm run dev:workers (EMAIL binding)
 
 # For wrangler dev (dev:workers / preview) — create .dev.vars (gitignored) with the same
 # secrets plus NEXTJS_ENV=development. Use AUTH_URL=http://localhost:8787 for dev:workers.

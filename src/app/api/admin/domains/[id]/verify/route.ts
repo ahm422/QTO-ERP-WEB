@@ -1,25 +1,12 @@
-import { NextResponse } from "next/server";
+import { adminDomainsGoneResponse } from "@/lib/admin-domains-gone";
 import { requireAdminApi } from "@/lib/require-admin-api";
-import { requireResend } from "@/lib/require-resend";
-import { resendErrorResponse } from "@/lib/resend-api-error";
-
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function POST(request: Request, context: RouteContext) {
+export async function POST(request: Request, _context: RouteContext) {
   const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
-
-  const resendResult = requireResend();
-  if ("error" in resendResult) return resendResult.error;
-
-  const { id } = await context.params;
-  const { data, error } = await resendResult.resend.domains.verify(id);
-  if (error) {
-    return resendErrorResponse(error);
-  }
-
-  return NextResponse.json({ ok: true, data });
+  return adminDomainsGoneResponse();
 }

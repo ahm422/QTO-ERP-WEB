@@ -15,10 +15,12 @@ import * as THREE from "three";
 import { cn } from "@/lib/utils";
 
 /**
- * R3F 9 still constructs THREE.Clock; three ≥ r183 warns on every Canvas mount.
- * Filter that known upstream noise until R3F 10 ships (Clock → Timer).
+ * Filter known upstream Three.js console noise:
+ * - R3F 9 still constructs THREE.Clock (deprecated in three ≥ r183)
+ * - PMREM / Environment GGX convolution emits harmless X4122 precision
+ *   warnings on some GPUs (three.js#32692) — not actionable in app code
  */
-function silenceR3FClockDeprecation() {
+function silenceKnownThreeConsoleNoise() {
   if (typeof window === "undefined") return;
   const setConsoleFunction = (
     THREE as typeof THREE & {
@@ -30,13 +32,17 @@ function silenceR3FClockDeprecation() {
   if (!setConsoleFunction) return;
 
   setConsoleFunction((type, message, ...params) => {
-    if (
-      type === "warn" &&
-      typeof message === "string" &&
-      message.includes("Clock:") &&
-      message.includes("deprecated")
-    ) {
-      return;
+    if (type === "warn" && typeof message === "string") {
+      if (message.includes("Clock:") && message.includes("deprecated")) {
+        return;
+      }
+      if (
+        message.includes("WebGLProgram") &&
+        (message.includes("X4122") ||
+          message.includes("cannot be represented accurately"))
+      ) {
+        return;
+      }
     }
     const sink =
       type === "error"
@@ -48,7 +54,7 @@ function silenceR3FClockDeprecation() {
   });
 }
 
-silenceR3FClockDeprecation();
+silenceKnownThreeConsoleNoise();
 
 export type OrbitModuleDef = {
   id: string;
@@ -589,7 +595,7 @@ export function OrbitMotif({
       </Canvas>
 
       {showHints ? (
-        <AnimatePresence mode="wait">
+        <AnimatePresence initial={false}>
           {active ? (
             <motion.div
               key={active.id}

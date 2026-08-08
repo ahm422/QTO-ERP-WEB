@@ -607,7 +607,8 @@ export default function NavbarV3({
                           </div>
 
                           <div className="relative z-10 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                            <AnimatePresence mode="wait">
+                            {/* sync (not wait): multiple grid cards must animate together */}
+                            <AnimatePresence initial={false}>
                               {sectionLinks.map((links, idx) => (
                                 <motion.div
                                   key={`${hoveredApp}-${links.label}`}
@@ -781,7 +782,8 @@ export default function NavbarV3({
                             </div>
 
                             <div className="relative z-10 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                              <AnimatePresence mode="wait">
+                              {/* sync (not wait): multiple use-case cards must animate together */}
+                              <AnimatePresence initial={false}>
                                 {(currentSol.useCases &&
                                 currentSol.useCases.length > 0
                                   ? currentSol.useCases
