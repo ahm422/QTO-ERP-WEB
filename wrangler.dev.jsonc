@@ -1,0 +1,44 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "qto-erp-web-next-dev",
+	"main": "scripts/wrangler-dev-stub.ts",
+	"compatibility_date": "2026-07-03",
+	"compatibility_flags": ["nodejs_compat"],
+	"account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID",
+	// Bindings for `npm run dev` only. Omits OpenNext ISR Durable Objects and
+	// WORKER_SELF_REFERENCE — those cannot run under next+Miniflare and spam
+	// the Next overlay with workerd "DOQueueHandler" / "Failed to get handler" errors.
+	// Production / preview / deploy still use wrangler.jsonc (full config).
+	"vars": {
+		"AUTH_URL": "http://localhost:3000",
+		"EMAIL_FROM": "QTO ERP <noreply@qtoerp.com>",
+		"ADMIN_NOTIFICATION_EMAIL": "you@example.com",
+		"STRIPE_PRICE_STARTER_MONTHLY": "price_1TdaTH9eEHYHd6KjFyT5uAd8",
+		"STRIPE_PRICE_STARTER_YEARLY": "price_1TdaTe9eEHYHd6KjTXWdPuAo",
+		"STRIPE_PRICE_GROWTH_MONTHLY": "price_1TdaTx9eEHYHd6KjGMBPjZto",
+		"STRIPE_PRICE_GROWTH_YEARLY": "price_1TdaUK9eEHYHd6KjkcYxPpC9"
+	},
+	"images": {
+		"binding": "IMAGES"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "qto-erp-db-production",
+			"database_id": "YOUR_D1_DATABASE_ID",
+			"migrations_dir": "drizzle/migrations"
+		},
+		{
+			"binding": "NEXT_TAG_CACHE_D1",
+			"database_name": "qto-erp-db-production",
+			"database_id": "YOUR_D1_DATABASE_ID",
+			"migrations_dir": "drizzle/migrations"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA_BUCKET",
+			"bucket_name": "qto-erp-media-production"
+		}
+	]
+}

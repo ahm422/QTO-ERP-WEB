@@ -8,6 +8,9 @@ import {
   Settings2,
   Link2,
   Sparkles,
+  BadgeCheck,
+  BarChart3,
+  HardHat,
   type LucideIcon,
 } from "lucide-react";
 
@@ -30,6 +33,9 @@ export const adminNavItems: AdminNavItem[] = [
   { href: "/admin/demo-videos", label: "Demo videos", icon: Video },
   { href: "/admin/comparison", label: "Comparison", icon: Table2 },
   { href: "/admin/home-hero", label: "Home hero", icon: Sparkles },
+  { href: "/admin/trusted-logos", label: "Trusted logos", icon: BadgeCheck },
+  { href: "/admin/home-stats", label: "Home stats", icon: BarChart3 },
+  { href: "/admin/built-for", label: "Built for", icon: HardHat },
   { href: "/admin/site-settings", label: "Site settings", icon: Settings2 },
   { href: "/admin/nav-resources", label: "Nav resources", icon: Link2 },
 ];
@@ -105,6 +111,27 @@ const breadcrumbRoutes: Array<{
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
       { label: "Home hero" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/trusted-logos$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Trusted logos" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/home-stats$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Home stats" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/built-for$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Built for" },
     ],
   },
   {

@@ -23,6 +23,11 @@ const SEED_TABLES = [
   "pricing_plans",
   "site_settings",
   "nav_resources",
+  "home_hero",
+  "trusted_logos",
+  "home_stats",
+  "home_sections",
+  "built_for_cards",
   "blog_posts",
 ] as const;
 

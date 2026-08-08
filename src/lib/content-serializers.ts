@@ -1,11 +1,15 @@
 import type { InferSelectModel } from "drizzle-orm";
 import {
   blogPosts,
+  builtForCards,
   comparisonFeatures,
   erpModules,
   homeHero,
+  homeSections,
+  homeStats,
   pricingPlans,
   solutions,
+  trustedLogos,
 } from "@/db/schema";
 import type {
   ModuleDetail,
@@ -17,8 +21,13 @@ import type {
   ComparisonRow,
   HomeHero,
   HeroOrbitModule,
+  TrustedLogo,
+  HomeStat,
+  HomeSectionHeader,
+  BuiltForCard,
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
+import { mediaUrl } from "@/lib/media";
 
 type ErpModule = InferSelectModel<typeof erpModules>;
 type Solution = InferSelectModel<typeof solutions>;
@@ -26,6 +35,10 @@ type BlogPost = InferSelectModel<typeof blogPosts>;
 type ComparisonFeature = InferSelectModel<typeof comparisonFeatures>;
 type PricingPlan = InferSelectModel<typeof pricingPlans>;
 type HomeHeroRow = InferSelectModel<typeof homeHero>;
+type TrustedLogoRow = InferSelectModel<typeof trustedLogos>;
+type HomeStatRow = InferSelectModel<typeof homeStats>;
+type BuiltForCardRow = InferSelectModel<typeof builtForCards>;
+type HomeSectionRow = InferSelectModel<typeof homeSections>;
 
 export function serializeModuleSummary(m: ErpModule): ModuleSummary {
   return {
@@ -157,5 +170,45 @@ export function serializePricingPlan(p: PricingPlan): PricingPlanPublic {
     popular: p.popular,
     features: p.features,
     cta: p.cta,
+  };
+}
+
+export function serializeTrustedLogo(row: TrustedLogoRow): TrustedLogo {
+  return {
+    id: row.id,
+    name: row.name,
+    imageUrl: row.logoImageKey ? mediaUrl(row.logoImageKey) : null,
+    linkUrl: row.linkUrl ?? null,
+    sortOrder: row.sortOrder,
+  };
+}
+
+export function serializeHomeStat(row: HomeStatRow): HomeStat {
+  return {
+    id: row.id,
+    label: row.label,
+    value: row.value,
+    suffix: row.suffix,
+    iconKey: row.iconKey,
+    sortOrder: row.sortOrder,
+  };
+}
+
+export function serializeHomeSection(row: HomeSectionRow): HomeSectionHeader {
+  return {
+    tag: row.tag,
+    title: row.title,
+    accent: row.accent,
+    description: row.description,
+  };
+}
+
+export function serializeBuiltForCard(row: BuiltForCardRow): BuiltForCard {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    iconKey: row.iconKey,
+    sortOrder: row.sortOrder,
   };
 }

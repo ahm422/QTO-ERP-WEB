@@ -1,14 +1,18 @@
-import { and, asc, desc, eq, inArray, isNotNull } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, max } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
 import type { BlogPostStatus } from "@/db/enums";
 import {
   blogPosts,
+  builtForCards,
   comparisonFeatures,
   erpModules,
   homeHero,
+  homeSections,
+  homeStats,
   navResources,
   pricingPlans,
   solutions,
+  trustedLogos,
 } from "@/db/schema";
 import { getDb } from "@/lib/db";
 import {
@@ -16,19 +20,51 @@ import {
   HOME_HERO_ID,
 } from "@/lib/home-hero-defaults";
 import {
+  BUILT_FOR_CARDS_DEFAULTS,
+  BUILT_FOR_SECTION_DEFAULT,
+  BUILT_FOR_SECTION_KEY,
+  HOME_STATS_DEFAULTS,
+  TRUSTED_LOGOS_DEFAULTS,
+} from "@/lib/home-sections-defaults";
+import {
   serializeBlogDetail,
   serializeBlogSummary,
+  serializeBuiltForCard,
   serializeComparisonRow,
   serializeHeroOrbitModule,
   serializeHomeHero,
+  serializeHomeSection,
+  serializeHomeStat,
   serializePricingPlan,
   serializeModuleDetail,
   serializeModuleSummary,
   serializeSolutionDetail,
   serializeSolutionSummary,
+  serializeTrustedLogo,
 } from "@/lib/content-serializers";
-import type { HomeHero } from "@/types/content";
+import type {
+  BuiltForCard,
+  BuiltForSection,
+  HomeHero,
+  HomeSectionHeader,
+  HomeStat,
+  TrustedLogo,
+} from "@/types/content";
 import type { UpdateHomeHeroInput } from "@/lib/validations/admin-home-hero";
+import type {
+  CreateBuiltForCardInput,
+  UpdateBuiltForCardInput,
+  UpdateHomeSectionInput,
+} from "@/lib/validations/admin-built-for";
+import type {
+  CreateHomeStatInput,
+  UpdateHomeStatInput,
+} from "@/lib/validations/admin-home-stats";
+import type {
+  CreateTrustedLogoInput,
+  UpdateTrustedLogoInput,
+} from "@/lib/validations/admin-trusted-logos";
+import { mediaUrl } from "@/lib/media";
 
 export type BlogPostRow = InferSelectModel<typeof blogPosts>;
 export type ComparisonFeatureRow = InferSelectModel<typeof comparisonFeatures>;
@@ -462,4 +498,416 @@ export async function updateModuleSortOrdersAdmin(
         .where(eq(erpModules.id, id)),
     ),
   );
+}
+
+// ─── Trusted logos ───────────────────────────────────────────────────────────
+
+function trustedLogoFromDefault(
+  d: (typeof TRUSTED_LOGOS_DEFAULTS)[number],
+  index: number,
+): TrustedLogo {
+  return {
+    id: `default-logo-${index}`,
+    name: d.name,
+    imageUrl: d.logoImageKey ? mediaUrl(d.logoImageKey) : null,
+    linkUrl: d.linkUrl,
+    sortOrder: d.sortOrder,
+  };
+}
+
+function isMissingRelationError(err: unknown): boolean {
+  const msg =
+    err instanceof Error
+      ? `${err.message} ${err.cause instanceof Error ? err.cause.message : ""}`
+      : String(err);
+  return /no such table/i.test(msg);
+}
+
+export async function listPublishedTrustedLogos(): Promise<TrustedLogo[]> {
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(trustedLogos)
+      .where(eq(trustedLogos.published, true))
+      .orderBy(asc(trustedLogos.sortOrder));
+    if (rows.length === 0) {
+      return TRUSTED_LOGOS_DEFAULTS.map(trustedLogoFromDefault);
+    }
+    return rows.map(serializeTrustedLogo);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] trusted_logos missing — using defaults (run db:migrate:local)",
+      );
+      return TRUSTED_LOGOS_DEFAULTS.map(trustedLogoFromDefault);
+    }
+    throw err;
+  }
+}
+
+export async function listTrustedLogosAdmin() {
+  const rows = await (await getDb())
+    .select()
+    .from(trustedLogos)
+    .orderBy(asc(trustedLogos.sortOrder));
+  return rows.map((row) => ({
+    ...serializeTrustedLogo(row),
+    logoImageKey: row.logoImageKey,
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  }));
+}
+
+export async function createTrustedLogoAdmin(data: CreateTrustedLogoInput) {
+  const db = await getDb();
+  let sortOrder = data.sortOrder;
+  if (sortOrder === undefined) {
+    const [result] = await db
+      .select({ maxSort: max(trustedLogos.sortOrder) })
+      .from(trustedLogos);
+    sortOrder = (result?.maxSort ?? -1) + 1;
+  }
+  const [row] = await db
+    .insert(trustedLogos)
+    .values({
+      name: data.name,
+      logoImageKey: data.logoImageKey ?? null,
+      linkUrl: data.linkUrl ?? null,
+      published: data.published ?? true,
+      sortOrder,
+    })
+    .returning();
+  return {
+    ...serializeTrustedLogo(row),
+    logoImageKey: row.logoImageKey,
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function updateTrustedLogoAdmin(
+  id: string,
+  data: UpdateTrustedLogoInput,
+) {
+  const [row] = await (await getDb())
+    .update(trustedLogos)
+    .set(data)
+    .where(eq(trustedLogos.id, id))
+    .returning();
+  if (!row) return null;
+  return {
+    ...serializeTrustedLogo(row),
+    logoImageKey: row.logoImageKey,
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function deleteTrustedLogoAdmin(id: string) {
+  const [existing] = await (await getDb())
+    .select({ id: trustedLogos.id })
+    .from(trustedLogos)
+    .where(eq(trustedLogos.id, id))
+    .limit(1);
+  if (!existing) return false;
+  await (await getDb()).delete(trustedLogos).where(eq(trustedLogos.id, id));
+  return true;
+}
+
+export async function getTrustedLogoByIdAdmin(id: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(trustedLogos)
+    .where(eq(trustedLogos.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+// ─── Home stats ──────────────────────────────────────────────────────────────
+
+function homeStatFromDefault(
+  d: (typeof HOME_STATS_DEFAULTS)[number],
+  index: number,
+): HomeStat {
+  return {
+    id: `default-stat-${index}`,
+    label: d.label,
+    value: d.value,
+    suffix: d.suffix,
+    iconKey: d.iconKey,
+    sortOrder: d.sortOrder,
+  };
+}
+
+export async function listPublishedHomeStats(): Promise<HomeStat[]> {
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(homeStats)
+      .where(eq(homeStats.published, true))
+      .orderBy(asc(homeStats.sortOrder));
+    if (rows.length === 0) {
+      return HOME_STATS_DEFAULTS.map(homeStatFromDefault);
+    }
+    return rows.map(serializeHomeStat);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] home_stats missing — using defaults (run db:migrate:local)",
+      );
+      return HOME_STATS_DEFAULTS.map(homeStatFromDefault);
+    }
+    throw err;
+  }
+}
+
+export async function listHomeStatsAdmin() {
+  const rows = await (await getDb())
+    .select()
+    .from(homeStats)
+    .orderBy(asc(homeStats.sortOrder));
+  return rows.map((row) => ({
+    ...serializeHomeStat(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  }));
+}
+
+export async function createHomeStatAdmin(data: CreateHomeStatInput) {
+  const db = await getDb();
+  let sortOrder = data.sortOrder;
+  if (sortOrder === undefined) {
+    const [result] = await db
+      .select({ maxSort: max(homeStats.sortOrder) })
+      .from(homeStats);
+    sortOrder = (result?.maxSort ?? -1) + 1;
+  }
+  const [row] = await db
+    .insert(homeStats)
+    .values({
+      label: data.label,
+      value: data.value,
+      suffix: data.suffix,
+      iconKey: data.iconKey,
+      published: data.published ?? true,
+      sortOrder,
+    })
+    .returning();
+  return {
+    ...serializeHomeStat(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function updateHomeStatAdmin(id: string, data: UpdateHomeStatInput) {
+  const [row] = await (await getDb())
+    .update(homeStats)
+    .set(data)
+    .where(eq(homeStats.id, id))
+    .returning();
+  if (!row) return null;
+  return {
+    ...serializeHomeStat(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function deleteHomeStatAdmin(id: string) {
+  const [existing] = await (await getDb())
+    .select({ id: homeStats.id })
+    .from(homeStats)
+    .where(eq(homeStats.id, id))
+    .limit(1);
+  if (!existing) return false;
+  await (await getDb()).delete(homeStats).where(eq(homeStats.id, id));
+  return true;
+}
+
+export async function getHomeStatByIdAdmin(id: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(homeStats)
+    .where(eq(homeStats.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+// ─── Built for ───────────────────────────────────────────────────────────────
+
+function builtForCardFromDefault(
+  d: (typeof BUILT_FOR_CARDS_DEFAULTS)[number],
+  index: number,
+): BuiltForCard {
+  return {
+    id: `default-built-for-${index}`,
+    title: d.title,
+    description: d.description,
+    iconKey: d.iconKey,
+    sortOrder: d.sortOrder,
+  };
+}
+
+export async function getHomeSection(
+  sectionKey: string = BUILT_FOR_SECTION_KEY,
+): Promise<HomeSectionHeader> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(homeSections)
+      .where(eq(homeSections.sectionKey, sectionKey))
+      .limit(1);
+    if (row) return serializeHomeSection(row);
+  } catch (err) {
+    if (!isMissingRelationError(err)) throw err;
+    console.warn(
+      "[content-db] home_sections missing — using defaults (run db:migrate:local)",
+    );
+  }
+  if (sectionKey === BUILT_FOR_SECTION_KEY) {
+    return {
+      tag: BUILT_FOR_SECTION_DEFAULT.tag,
+      title: BUILT_FOR_SECTION_DEFAULT.title,
+      accent: BUILT_FOR_SECTION_DEFAULT.accent,
+      description: BUILT_FOR_SECTION_DEFAULT.description,
+    };
+  }
+  return { tag: "", title: "", accent: "", description: "" };
+}
+
+export async function updateHomeSectionAdmin(
+  sectionKey: string,
+  data: UpdateHomeSectionInput,
+): Promise<HomeSectionHeader> {
+  const existing = await getHomeSection(sectionKey);
+  const next = {
+    tag: data.tag ?? existing.tag,
+    title: data.title ?? existing.title,
+    accent: data.accent ?? existing.accent,
+    description: data.description ?? existing.description,
+  };
+  const [row] = await (await getDb())
+    .insert(homeSections)
+    .values({ sectionKey, ...next })
+    .onConflictDoUpdate({
+      target: homeSections.sectionKey,
+      set: next,
+    })
+    .returning();
+  return serializeHomeSection(row);
+}
+
+export async function listPublishedBuiltForCards(): Promise<BuiltForCard[]> {
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(builtForCards)
+      .where(eq(builtForCards.published, true))
+      .orderBy(asc(builtForCards.sortOrder));
+    if (rows.length === 0) {
+      return BUILT_FOR_CARDS_DEFAULTS.map(builtForCardFromDefault);
+    }
+    return rows.map(serializeBuiltForCard);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] built_for_cards missing — using defaults (run db:migrate:local)",
+      );
+      return BUILT_FOR_CARDS_DEFAULTS.map(builtForCardFromDefault);
+    }
+    throw err;
+  }
+}
+
+export async function getBuiltForSection(): Promise<BuiltForSection> {
+  const [section, cards] = await Promise.all([
+    getHomeSection(BUILT_FOR_SECTION_KEY),
+    listPublishedBuiltForCards(),
+  ]);
+  return { section, cards };
+}
+
+export async function listBuiltForCardsAdmin() {
+  const rows = await (await getDb())
+    .select()
+    .from(builtForCards)
+    .orderBy(asc(builtForCards.sortOrder));
+  return rows.map((row) => ({
+    ...serializeBuiltForCard(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  }));
+}
+
+export async function createBuiltForCardAdmin(data: CreateBuiltForCardInput) {
+  const db = await getDb();
+  let sortOrder = data.sortOrder;
+  if (sortOrder === undefined) {
+    const [result] = await db
+      .select({ maxSort: max(builtForCards.sortOrder) })
+      .from(builtForCards);
+    sortOrder = (result?.maxSort ?? -1) + 1;
+  }
+  const [row] = await db
+    .insert(builtForCards)
+    .values({
+      title: data.title,
+      description: data.description,
+      iconKey: data.iconKey,
+      published: data.published ?? true,
+      sortOrder,
+    })
+    .returning();
+  return {
+    ...serializeBuiltForCard(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function updateBuiltForCardAdmin(
+  id: string,
+  data: UpdateBuiltForCardInput,
+) {
+  const [row] = await (await getDb())
+    .update(builtForCards)
+    .set(data)
+    .where(eq(builtForCards.id, id))
+    .returning();
+  if (!row) return null;
+  return {
+    ...serializeBuiltForCard(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function deleteBuiltForCardAdmin(id: string) {
+  const [existing] = await (await getDb())
+    .select({ id: builtForCards.id })
+    .from(builtForCards)
+    .where(eq(builtForCards.id, id))
+    .limit(1);
+  if (!existing) return false;
+  await (await getDb()).delete(builtForCards).where(eq(builtForCards.id, id));
+  return true;
+}
+
+export async function getBuiltForCardByIdAdmin(id: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(builtForCards)
+    .where(eq(builtForCards.id, id))
+    .limit(1);
+  return row ?? null;
 }
