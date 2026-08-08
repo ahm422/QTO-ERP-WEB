@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     return validationErrorResponse(parsed.error);
   }
 
-  const [user] = await getDb()
+  const [user] = await (await getDb())
     .select()
     .from(users)
     .where(eq(users.email, admin.user.email))

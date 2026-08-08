@@ -13,7 +13,7 @@ export async function POST(request: Request, context: RouteContext) {
   const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
-  const mediaResult = requireMediaBucket();
+  const mediaResult = await requireMediaBucket();
   if ("error" in mediaResult) return mediaResult.error;
   const { bucket } = mediaResult;
 

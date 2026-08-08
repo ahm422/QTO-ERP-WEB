@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   const admin = await requireAdminApi(request);
   if ("error" in admin) return admin.error;
 
-  const mediaResult = requireMediaBucket();
+  const mediaResult = await requireMediaBucket();
   if ("error" in mediaResult) return mediaResult.error;
 
   let body: unknown;
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   const { slug, title, contentType, fileName, moduleSlug } = parsed.data;
 
   if (moduleSlug) {
-    const [erpModule] = await getDb()
+    const [erpModule] = await (await getDb())
       .select()
       .from(erpModules)
       .where(eq(erpModules.slug, moduleSlug))

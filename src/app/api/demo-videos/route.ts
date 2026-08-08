@@ -9,7 +9,7 @@ import { requireMediaBucket } from "@/lib/require-media-bucket";
 
 
 export async function GET(request: Request) {
-  const mediaResult = requireMediaBucket();
+  const mediaResult = await requireMediaBucket();
   if ("error" in mediaResult) return mediaResult.error;
 
   const { searchParams } = new URL(request.url);

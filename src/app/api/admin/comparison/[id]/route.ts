@@ -36,7 +36,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const [existing] = await getDb()
+    const [existing] = await (await getDb())
       .select()
       .from(comparisonFeatures)
       .where(eq(comparisonFeatures.id, id))
@@ -67,7 +67,7 @@ export async function DELETE(request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   try {
-    const [existing] = await getDb()
+    const [existing] = await (await getDb())
       .select()
       .from(comparisonFeatures)
       .where(eq(comparisonFeatures.id, id))

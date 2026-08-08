@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   const data = parsed.data;
 
   try {
-    const [inquiry] = await getDb()
+    const [inquiry] = await (await getDb())
       .insert(contactInquiries)
       .values({
         name: data.name,

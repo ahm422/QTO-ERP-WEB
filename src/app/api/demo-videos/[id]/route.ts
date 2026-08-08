@@ -42,7 +42,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   const { title, description, sortOrder, moduleSlug, status } = parsed.data;
 
   if (moduleSlug !== undefined && moduleSlug !== null) {
-    const [erpModule] = await getDb()
+    const [erpModule] = await (await getDb())
       .select()
       .from(erpModules)
       .where(eq(erpModules.slug, moduleSlug))

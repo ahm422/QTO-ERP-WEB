@@ -23,7 +23,7 @@ export async function GET(request: Request) {
       : null;
 
   try {
-    const requests = await getDb()
+    const requests = await (await getDb())
       .select()
       .from(demoRequests)
       .where(

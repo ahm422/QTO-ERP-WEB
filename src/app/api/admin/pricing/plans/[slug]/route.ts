@@ -33,7 +33,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const [existing] = await getDb()
+    const [existing] = await (await getDb())
       .select()
       .from(pricingPlans)
       .where(eq(pricingPlans.slug, slug))

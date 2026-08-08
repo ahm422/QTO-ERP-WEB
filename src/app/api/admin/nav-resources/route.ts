@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   if ("error" in admin) return admin.error;
 
   try {
-    const items = await getDb()
+    const items = await (await getDb())
       .select()
       .from(navResources)
       .orderBy(asc(navResources.sortOrder));
@@ -50,13 +50,13 @@ export async function POST(request: Request) {
   try {
     let { sortOrder } = parsed.data;
     if (sortOrder === undefined) {
-      const [result] = await getDb()
+      const [result] = await (await getDb())
         .select({ maxSort: max(navResources.sortOrder) })
         .from(navResources);
       sortOrder = (result?.maxSort ?? -1) + 1;
     }
 
-    const [item] = await getDb()
+    const [item] = await (await getDb())
       .insert(navResources)
       .values({
         label: parsed.data.label,

@@ -30,7 +30,7 @@ export async function requireAdminApi(
     };
   }
 
-  const [user] = await getDb()
+  const [user] = await (await getDb())
     .select({ id: users.id, email: users.email, role: users.role })
     .from(users)
     .where(eq(users.id, payload.sub))
