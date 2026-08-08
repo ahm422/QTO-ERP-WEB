@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { sendViaCloudflareEmail } from "@/lib/cf-email";
 import { getResend } from "@/lib/resend";
 
 type SendEmailParams = {
@@ -9,17 +10,16 @@ type SendEmailParams = {
 
 export type SendEmailResult = { ok: true } | { ok: false; error: string };
 
-export async function sendEmail({
+function useResendProvider(): boolean {
+  return process.env.EMAIL_PROVIDER?.trim().toLowerCase() === "resend";
+}
+
+async function sendViaResend({
   to,
+  from,
   subject,
   react,
-}: SendEmailParams): Promise<SendEmailResult> {
-  const from = process.env.EMAIL_FROM;
-  if (!from) {
-    console.error("[email] EMAIL_FROM is not configured");
-    return { ok: false, error: "Email not configured" };
-  }
-
+}: SendEmailParams & { from: string }): Promise<SendEmailResult> {
   const resend = getResend();
   if (!resend) {
     console.error("[email] RESEND_API_KEY is not configured");
@@ -41,12 +41,37 @@ export async function sendEmail({
 
     return { ok: true };
   } catch (err) {
-    console.error("[email] Unexpected error:", err);
+    console.error("[email] Unexpected Resend error:", err);
     return {
       ok: false,
       error: err instanceof Error ? err.message : "Unknown email error",
     };
   }
+}
+
+/**
+ * Public transactional sender. Call sites pass React Email elements; rendering
+ * for Cloudflare Email Sending happens inside this module.
+ *
+ * Provider: Cloudflare Email (`env.EMAIL`) by default.
+ * Set `EMAIL_PROVIDER=resend` to use Resend (legacy fallback).
+ */
+export async function sendEmail({
+  to,
+  subject,
+  react,
+}: SendEmailParams): Promise<SendEmailResult> {
+  const from = process.env.EMAIL_FROM;
+  if (!from) {
+    console.error("[email] EMAIL_FROM is not configured");
+    return { ok: false, error: "Email not configured" };
+  }
+
+  if (useResendProvider()) {
+    return sendViaResend({ to, from, subject, react });
+  }
+
+  return sendViaCloudflareEmail({ to, from, subject, react });
 }
 
 export function getAdminNotificationEmail(): string | null {

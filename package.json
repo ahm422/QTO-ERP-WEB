@@ -18,7 +18,7 @@
     "db:create-admin:remote": "tsx --env-file=.env scripts/create-admin.ts production",
     "db:seed:staging": "tsx --env-file=.env scripts/seed-remote.ts staging",
     "db:seed:remote": "tsx --env-file=.env scripts/seed-remote.ts production",
-    "resend:domains": "tsx --env-file=.env scripts/resend-domains.ts",
+    "email:sending": "wrangler email sending list",
     "stripe:check": "tsx --env-file=.env scripts/stripe-check.ts",
     "stripe:webhook-test": "tsx --env-file=.env scripts/stripe-webhook-test.ts",
     "verify:jwt": "tsx --env-file=.env scripts/verify-jwt.ts",

@@ -58,6 +58,12 @@
 			"bucket_name": "qto-erp-next-cache-production"
 		}
 	],
+	"send_email": [
+		{
+			"name": "EMAIL",
+			"remote": true
+		}
+	],
 	"durable_objects": {
 		"bindings": [
 			{
@@ -82,7 +88,7 @@
 			},
 			"vars": {
 				"AUTH_URL": "https://qto-erp-web-staging.your-subdomain.workers.dev",
-				"EMAIL_FROM": "QTO ERP <onboarding@resend.dev>",
+				"EMAIL_FROM": "QTO ERP Staging <noreply@qtoerp.com>",
 				"ADMIN_NOTIFICATION_EMAIL": "you@example.com",
 				"STRIPE_PRICE_STARTER_MONTHLY": "price_1TdaTH9eEHYHd6KjFyT5uAd8",
 				"STRIPE_PRICE_STARTER_YEARLY": "price_1TdaTe9eEHYHd6KjTXWdPuAo",
@@ -120,6 +126,12 @@
 				{
 					"binding": "NEXT_INC_CACHE_R2_BUCKET",
 					"bucket_name": "qto-erp-next-cache-staging"
+				}
+			],
+			"send_email": [
+				{
+					"name": "EMAIL",
+					"remote": true
 				}
 			],
 			"durable_objects": {
