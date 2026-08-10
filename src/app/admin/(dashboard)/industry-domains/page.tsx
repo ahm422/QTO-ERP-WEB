@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -13,6 +18,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 type SectionForm = {
   tag: string;
@@ -264,6 +278,43 @@ function DomainFields({
   );
 }
 
+function OrderControls({
+  index,
+  total,
+  onMove,
+}: {
+  index: number;
+  total: number;
+  onMove: (dir: -1 | 1) => void;
+}) {
+  return (
+    <div className="flex gap-1">
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="size-8"
+        aria-label="Move up"
+        disabled={index === 0}
+        onClick={() => onMove(-1)}
+      >
+        <ChevronUp className="size-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="size-8"
+        aria-label="Move down"
+        disabled={index === total - 1}
+        onClick={() => onMove(1)}
+      >
+        <ChevronDown className="size-4" />
+      </Button>
+    </div>
+  );
+}
+
 export default function IndustryDomainsAdminPage() {
   const [section, setSection] = useState<SectionForm>({
     tag: ECOSYSTEM_SECTION_DEFAULT.tag,
@@ -279,6 +330,7 @@ export default function IndustryDomainsAdminPage() {
   const [newDomain, setNewDomain] = useState<DraftDomain>(emptyDomain());
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -376,6 +428,7 @@ export default function IndustryDomainsAdminPage() {
         sortRows(prev.map((r) => (r.id === row.id ? data.item : r))),
       );
       toast.success("Saved");
+      setEditingId(null);
     } catch (err) {
       toast.error(
         err instanceof AdminFetchError ? err.message : "Failed to save",
@@ -418,6 +471,29 @@ export default function IndustryDomainsAdminPage() {
     swapped[index] = swapped[j];
     swapped[j] = tmp;
     void persistOrder(swapped);
+  };
+
+  const togglePublished = async (row: DomainRow, published: boolean) => {
+    update(row.id, "published", published);
+    try {
+      const data = await adminFetch<{ ok: true; item: DomainRow }>(
+        `/api/admin/industry-domains/${row.id}`,
+        {
+          method: "PATCH",
+          json: { published },
+        },
+      );
+      setRows((prev) =>
+        sortRows(prev.map((r) => (r.id === row.id ? data.item : r))),
+      );
+    } catch (err) {
+      update(row.id, "published", row.published);
+      toast.error(
+        err instanceof AdminFetchError
+          ? err.message
+          : "Failed to update publish state",
+      );
+    }
   };
 
   const createRow = async () => {
@@ -468,6 +544,7 @@ export default function IndustryDomainsAdminPage() {
         method: "DELETE",
       });
       toast.success("Deleted");
+      if (editingId === deleteId) setEditingId(null);
       setDeleteId(null);
       await load();
     } catch (err) {
@@ -480,9 +557,12 @@ export default function IndustryDomainsAdminPage() {
   };
 
   const ordered = sortRows(rows);
+  const editingRow = editingId
+    ? ordered.find((r) => r.id === editingId) ?? null
+    : null;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="w-full space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">Industry domains</h1>
         <p className="text-sm text-muted-foreground">
@@ -561,54 +641,164 @@ export default function IndustryDomainsAdminPage() {
               </p>
             </div>
 
-            <div className="space-y-4">
-              {ordered.map((row, index) => (
-                <article
-                  key={row.id}
-                  className="space-y-4 rounded-md border p-4 sm:p-5"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className="rounded-md border bg-muted/50 px-2 py-1 font-mono text-xs text-muted-foreground">
-                        {row.orderIndex}
-                      </span>
+            {/* Desktop / tablet table */}
+            <div className="hidden overflow-x-auto rounded-md border md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-24">Order</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead className="hidden lg:table-cell">Slug</TableHead>
+                    <TableHead className="w-20 text-right">Systems</TableHead>
+                    <TableHead className="w-24">Published</TableHead>
+                    <TableHead className="w-36 text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {ordered.map((row, index) => {
+                    const isEditing = editingId === row.id;
+                    return (
+                      <TableRow
+                        key={row.id}
+                        className={cn(isEditing && "bg-muted/30")}
+                      >
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <OrderControls
+                              index={index}
+                              total={ordered.length}
+                              onMove={(dir) => moveRow(index, dir)}
+                            />
+                            <span className="font-mono text-xs text-muted-foreground">
+                              {row.orderIndex}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="min-w-0">
+                            <p className="truncate font-medium">
+                              {row.name || "Untitled"}
+                            </p>
+                            <p className="truncate text-xs text-muted-foreground lg:hidden">
+                              {row.slug}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          <span className="block truncate font-mono text-xs text-muted-foreground">
+                            {row.slug}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {row.systemsCount}
+                        </TableCell>
+                        <TableCell>
+                          <Switch
+                            checked={row.published}
+                            onCheckedChange={(v) => togglePublished(row, v)}
+                            aria-label={`Publish ${row.name}`}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={isEditing ? "secondary" : "outline"}
+                              onClick={() =>
+                                setEditingId(isEditing ? null : row.id)
+                              }
+                            >
+                              <Pencil className="mr-1 size-3.5" />
+                              {isEditing ? "Close" : "Edit"}
+                            </Button>
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              className="size-8 text-destructive hover:text-destructive"
+                              aria-label={`Delete ${row.name}`}
+                              onClick={() => setDeleteId(row.id)}
+                            >
+                              <Trash2 className="size-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  {ordered.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        className="py-8 text-center text-sm text-muted-foreground"
+                      >
+                        No industry domains yet. Add one below.
+                      </TableCell>
+                    </TableRow>
+                  ) : null}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="space-y-3 md:hidden">
+              {ordered.length === 0 ? (
+                <p className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+                  No industry domains yet. Add one below.
+                </p>
+              ) : null}
+              {ordered.map((row, index) => {
+                const isEditing = editingId === row.id;
+                return (
+                  <article
+                    key={row.id}
+                    className={cn(
+                      "rounded-md border p-4",
+                      isEditing && "border-primary/40 bg-muted/20",
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="truncate font-medium">
-                          {row.name || "Untitled domain"}
-                        </p>
-                        <p className="truncate font-mono text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded border bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+                            {row.orderIndex}
+                          </span>
+                          <p className="truncate font-medium">
+                            {row.name || "Untitled"}
+                          </p>
+                        </div>
+                        <p className="mt-1 truncate font-mono text-xs text-muted-foreground">
                           {row.slug || "—"}
                         </p>
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          {row.systemsCount} systems
+                          {row.published ? "" : " · Draft"}
+                        </p>
                       </div>
+                      <Switch
+                        checked={row.published}
+                        onCheckedChange={(v) => togglePublished(row, v)}
+                        aria-label={`Publish ${row.name}`}
+                      />
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        aria-label="Move up"
-                        disabled={index === 0}
-                        onClick={() => moveRow(index, -1)}
-                      >
-                        <ChevronUp className="size-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        aria-label="Move down"
-                        disabled={index === ordered.length - 1}
-                        onClick={() => moveRow(index, 1)}
-                      >
-                        <ChevronDown className="size-4" />
-                      </Button>
+
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <OrderControls
+                        index={index}
+                        total={ordered.length}
+                        onMove={(dir) => moveRow(index, dir)}
+                      />
                       <Button
                         type="button"
                         size="sm"
-                        onClick={() => saveRow(row)}
-                        disabled={savingId === row.id}
+                        variant={isEditing ? "secondary" : "outline"}
+                        onClick={() =>
+                          setEditingId(isEditing ? null : row.id)
+                        }
                       >
-                        Save
+                        <Pencil className="mr-1 size-3.5" />
+                        {isEditing ? "Close" : "Edit"}
                       </Button>
                       <Button
                         type="button"
@@ -619,31 +809,61 @@ export default function IndustryDomainsAdminPage() {
                         Delete
                       </Button>
                     </div>
-                  </div>
-
-                  <DomainFields
-                    name={row.name}
-                    slug={row.slug}
-                    systemsCount={row.systemsCount}
-                    iconKey={row.iconKey}
-                    description={row.description}
-                    leaders={row.leaders}
-                    ctaLabel={row.ctaLabel ?? ""}
-                    ctaUrl={row.ctaUrl ?? ""}
-                    published={row.published}
-                    onName={(v) => update(row.id, "name", v)}
-                    onSlug={(v) => update(row.id, "slug", v)}
-                    onSystemsCount={(v) => update(row.id, "systemsCount", v)}
-                    onIconKey={(v) => update(row.id, "iconKey", v)}
-                    onDescription={(v) => update(row.id, "description", v)}
-                    onLeaders={(v) => update(row.id, "leaders", v)}
-                    onCtaLabel={(v) => update(row.id, "ctaLabel", v || null)}
-                    onCtaUrl={(v) => update(row.id, "ctaUrl", v || null)}
-                    onPublished={(v) => update(row.id, "published", v)}
-                  />
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
+
+            {editingRow ? (
+              <div className="space-y-4 rounded-md border p-4 sm:p-5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-base font-medium">
+                    Edit {editingRow.name || "domain"}
+                  </h3>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setEditingId(null)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                <DomainFields
+                  name={editingRow.name}
+                  slug={editingRow.slug}
+                  systemsCount={editingRow.systemsCount}
+                  iconKey={editingRow.iconKey}
+                  description={editingRow.description}
+                  leaders={editingRow.leaders}
+                  ctaLabel={editingRow.ctaLabel ?? ""}
+                  ctaUrl={editingRow.ctaUrl ?? ""}
+                  published={editingRow.published}
+                  onName={(v) => update(editingRow.id, "name", v)}
+                  onSlug={(v) => update(editingRow.id, "slug", v)}
+                  onSystemsCount={(v) =>
+                    update(editingRow.id, "systemsCount", v)
+                  }
+                  onIconKey={(v) => update(editingRow.id, "iconKey", v)}
+                  onDescription={(v) =>
+                    update(editingRow.id, "description", v)
+                  }
+                  onLeaders={(v) => update(editingRow.id, "leaders", v)}
+                  onCtaLabel={(v) =>
+                    update(editingRow.id, "ctaLabel", v || null)
+                  }
+                  onCtaUrl={(v) => update(editingRow.id, "ctaUrl", v || null)}
+                  onPublished={(v) => update(editingRow.id, "published", v)}
+                />
+                <Button
+                  type="button"
+                  onClick={() => saveRow(editingRow)}
+                  disabled={savingId === editingRow.id}
+                >
+                  {savingId === editingRow.id ? "Saving…" : "Save domain"}
+                </Button>
+              </div>
+            ) : null}
           </section>
 
           <section className="space-y-4 rounded-md border border-dashed p-4 sm:p-5">

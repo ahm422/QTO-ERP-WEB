@@ -2,13 +2,19 @@
  * Defaults for home Trusted By / Stats / Built For CMS sections.
  * Used by seed + runtime fallback when D1 rows are missing.
  *
- * Phase 5: additional section headers (Integrated Modules, Ecosystems, FAQ, …)
- * should add rows to `home_sections` rather than new singleton tables or
- * scattered site_settings keys. Keep home_hero as the rich singleton pattern.
+ * Phase 5: section headers (Integrated Modules, Ecosystems, FAQ, …) add rows to
+ * `home_sections`. Freeform CTA singletons use site_settings JSON
+ * (e.g. home_final_cta). Keep home_hero as the rich typed singleton pattern.
+ *
+ * Dual FAQ patterns:
+ * A — Shared page FAQs in the `faqs` table (pageKey); home FAQ header here.
+ * B — Entity-embedded FAQs in erp_modules.faqs / solutions.solution_faqs JSON
+ *     (module + solution detail pages) — intentionally not migrated.
  */
 
 export const BUILT_FOR_SECTION_KEY = "built_for" as const;
 export const ECOSYSTEM_SECTION_KEY = "ecosystem" as const;
+export const FAQ_SECTION_KEY = "faq" as const;
 
 export const TRUSTED_LOGO_QTO_HOUSE_KEY = "trusted-logos/qto-house.svg";
 export const TRUSTED_LOGO_QTO_SOLUTIONS_KEY = "trusted-logos/qto-solutions.avif";

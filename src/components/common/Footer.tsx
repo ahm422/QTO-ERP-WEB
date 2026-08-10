@@ -3,41 +3,25 @@
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { AlertCircle, CheckCircle, ExternalLink, Mail } from 'lucide-react';
-import { QTO_DEV_URL } from '@/lib/constants';
 import { MarketingButton } from '@/components/ui/marketing-button';
+import type { FooterContent } from '@/types/content';
 
-const footerLinks = {
-  Platform: [
-    { label: 'Attendance & Time', href: '/erp/attendance' },
-    { label: 'HRM', href: '/erp/hrm' },
-    { label: 'Project Management', href: '/erp/project-management' },
-    { label: 'All Apps', href: '/allApps' },
-  ],
-  Solutions: [
-    { label: 'HR Teams', href: '/solution/hr-teams' },
-    { label: 'Project Teams', href: '/solution/project-teams' },
-    { label: 'Business Owners', href: '/solution/owners' },
-  ],
-  Resources: [
-    { label: 'FAQ', href: '/#faq' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'About', href: '/about' },
-    { label: 'QTO Dev', href: QTO_DEV_URL, external: true },
-  ],
-  Company: [
-    { label: 'Pricing', href: '/pricing' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Book a Demo', href: '/demo' },
-  ],
+type FooterProps = {
+  content: FooterContent;
 };
 
-export default function Footer() {
+export default function Footer({ content }: FooterProps) {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'duplicate' | 'error'>(
     'idle'
   );
   const [errorMessage, setErrorMessage] = useState('');
+
+  const copyright = content.copyrightText.replace(
+    '{year}',
+    String(new Date().getFullYear()),
+  );
 
   const handleSubscribe = async (e: FormEvent) => {
     e.preventDefault();
@@ -92,30 +76,29 @@ export default function Footer() {
               <span className='text-gradient'>QTO</span>-ERP
             </Link>
             <p className='mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground'>
-              Modern ERP for growing teams. Attendance, HR, and projects — all in
-              one place.
+              {content.brandBlurb}
             </p>
             <a
-              href={QTO_DEV_URL}
+              href={content.builtByUrl}
               target='_blank'
               rel='noopener noreferrer'
               className='mt-4 inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground'
             >
-              Built by QTO Dev <ExternalLink className='h-3 w-3' />
+              {content.builtByLabel} <ExternalLink className='h-3 w-3' />
             </a>
           </div>
 
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title} className='md:col-span-1 lg:col-span-2'>
+          {content.linkGroups.map((group) => (
+            <div key={group.title} className='md:col-span-1 lg:col-span-2'>
               <h4 className='mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-foreground'>
-                {title}
+                {group.title}
               </h4>
               <ul className='space-y-2.5'>
-                {links.map((link) => (
-                  <li key={link.href}>
-                    {'external' in link && link.external ? (
+                {group.links.map((link) => (
+                  <li key={`${group.title}-${link.url}-${link.label}`}>
+                    {link.external ? (
                       <a
-                        href={link.href}
+                        href={link.url}
                         target='_blank'
                         rel='noopener noreferrer'
                         className='inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground'
@@ -125,7 +108,7 @@ export default function Footer() {
                       </a>
                     ) : (
                       <Link
-                        href={link.href}
+                        href={link.url}
                         className='text-sm text-muted-foreground transition-colors hover:text-foreground'
                       >
                         {link.label}
@@ -140,10 +123,10 @@ export default function Footer() {
           {/* Newsletter */}
           <div className='col-span-2 md:col-span-6 lg:col-span-3'>
             <h4 className='mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-foreground'>
-              Newsletter
+              {content.newsletterHeading}
             </h4>
             <p className='mb-5 text-sm leading-relaxed text-muted-foreground'>
-              Product updates and construction ops insights — no spam.
+              {content.newsletterCopy}
             </p>
             <form onSubmit={handleSubscribe} className='space-y-3'>
               <label className='sr-only' htmlFor='footer-newsletter-email'>
@@ -203,22 +186,29 @@ export default function Footer() {
         </div>
 
         <div className='mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row'>
-          <p className='text-xs text-muted-foreground'>
-            © {new Date().getFullYear()} QTO-ERP. A product by QTO Dev.
-          </p>
+          <p className='text-xs text-muted-foreground'>{copyright}</p>
           <div className='flex gap-4'>
-            <Link
-              href='/contact'
-              className='text-xs text-muted-foreground transition-colors hover:text-foreground'
-            >
-              Contact
-            </Link>
-            <Link
-              href='/demo'
-              className='text-xs text-muted-foreground transition-colors hover:text-foreground'
-            >
-              Book a Demo
-            </Link>
+            {content.bottomLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={`${link.url}-${link.label}`}
+                  href={link.url}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-xs text-muted-foreground transition-colors hover:text-foreground'
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={`${link.url}-${link.label}`}
+                  href={link.url}
+                  className='text-xs text-muted-foreground transition-colors hover:text-foreground'
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
           </div>
         </div>
       </div>

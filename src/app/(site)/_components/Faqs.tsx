@@ -1,21 +1,27 @@
 'use client';
-import { HeaderSections } from '@/components/ui/HeaderSections'
-import { FAQAccordion } from '@/components/ui/faq'
-import { generalFaqs } from '@/lib/testimonials'
 
-const Faqs = () => {
+import { HeaderSections } from '@/components/ui/HeaderSections';
+import { FAQAccordion } from '@/components/ui/faq';
+import type { FaqItem, HomeSectionHeader } from '@/types/content';
+
+type FaqsProps = {
+  section: HomeSectionHeader;
+  faqs: FaqItem[];
+};
+
+const Faqs = ({ section, faqs }: FaqsProps) => {
   return (
-    <>
-    {/* FAQ */}
-      <section id="faq" className="section-padding">
-        <div className="container-main">
-          <HeaderSections tag="FAQ" title="Common" accent="Questions" />
-          <FAQAccordion faqs={generalFaqs.slice(0, 5)} showNumbers={false} />
-        </div>
-      </section>
+    <section id="faq" className="section-padding">
+      <div className="container-main">
+        <HeaderSections
+          tag={section.tag}
+          title={section.title}
+          accent={section.accent}
+        />
+        <FAQAccordion faqs={faqs} showNumbers={false} />
+      </div>
+    </section>
+  );
+};
 
-</>
-  )
-}
-
-export default Faqs
+export default Faqs;

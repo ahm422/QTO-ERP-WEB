@@ -25,7 +25,7 @@ export const updateHomeSectionSchema = z
     tag: z.string().trim().min(1).max(80),
     title: z.string().trim().min(1).max(160),
     accent: z.string().trim().min(1).max(80),
-    description: z.string().trim().min(1).max(500),
+    description: z.string().trim().max(500),
   })
   .strict()
   .partial();

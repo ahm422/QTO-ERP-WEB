@@ -12,6 +12,9 @@ import {
   BarChart3,
   HardHat,
   Factory,
+  CircleHelp,
+  Megaphone,
+  PanelBottom,
   type LucideIcon,
 } from "lucide-react";
 
@@ -42,6 +45,9 @@ export const adminNavItems: AdminNavItem[] = [
     label: "Industry domains",
     icon: Factory,
   },
+  { href: "/admin/faqs", label: "FAQs", icon: CircleHelp },
+  { href: "/admin/home-cta", label: "Home CTA", icon: Megaphone },
+  { href: "/admin/footer", label: "Footer", icon: PanelBottom },
   { href: "/admin/site-settings", label: "Site settings", icon: Settings2 },
   { href: "/admin/nav-resources", label: "Nav resources", icon: Link2 },
 ];
@@ -146,6 +152,18 @@ const breadcrumbRoutes: Array<{
       { label: "QTO ERP", href: "/admin" },
       { label: "Industry domains" },
     ],
+  },
+  {
+    pattern: /^\/admin\/faqs$/,
+    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "FAQs" }],
+  },
+  {
+    pattern: /^\/admin\/home-cta$/,
+    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Home CTA" }],
+  },
+  {
+    pattern: /^\/admin\/footer$/,
+    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Footer" }],
   },
   {
     pattern: /^\/admin\/nav-resources$/,

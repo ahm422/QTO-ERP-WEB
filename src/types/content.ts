@@ -171,3 +171,49 @@ export type IndustryEcosystemSection = {
   section: HomeSectionHeader;
   domains: IndustryDomainSummary[];
 };
+
+/** Public DTO for Pattern A shared page FAQ items. */
+export type FaqItem = {
+  id: string;
+  question: string;
+  answer: string;
+  category: string | null;
+  sortOrder: number;
+};
+
+export type HomeFaqsSection = {
+  section: HomeSectionHeader;
+  faqs: FaqItem[];
+};
+
+/** Public DTO for home final CTA (site_settings home_final_cta JSON). */
+export type HomeFinalCta = {
+  tag: string;
+  title: string;
+  description: string;
+  primaryCta: { label: string; url: string };
+  secondaryCta: { label: string; url: string };
+};
+
+/** Public DTO for global footer singleton. */
+export type FooterLinkDto = {
+  label: string;
+  url: string;
+  external?: boolean;
+};
+
+export type FooterLinkGroupDto = {
+  title: string;
+  links: FooterLinkDto[];
+};
+
+export type FooterContent = {
+  brandBlurb: string;
+  builtByLabel: string;
+  builtByUrl: string;
+  newsletterHeading: string;
+  newsletterCopy: string;
+  linkGroups: FooterLinkGroupDto[];
+  copyrightText: string;
+  bottomLinks: FooterLinkDto[];
+};

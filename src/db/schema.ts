@@ -569,6 +569,8 @@ export const industryDomains = sqliteTable(
  * Shared home section header copy (one row per sectionKey).
  * Phase 5: add Integrated Modules / Ecosystems / FAQ / etc. as new rows here
  * instead of new singleton tables or scattered site_settings keys.
+ * Typed columns (tag/title/accent/description) are for section headers only —
+ * freeform CTA blocks use site_settings JSON (e.g. home_final_cta).
  */
 export const homeSections = sqliteTable("home_sections", {
   sectionKey: text("section_key").primaryKey(),
@@ -576,6 +578,72 @@ export const homeSections = sqliteTable("home_sections", {
   title: text("title").notNull(),
   accent: text("accent").notNull(),
   description: text("description").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
+
+/**
+ * Dual FAQ patterns:
+ * A — Shared page FAQs (this table): marketing pages keyed by pageKey
+ *     (home, later pricing/contact). Supports list CRUD, reorder, publish.
+ * B — Entity-embedded FAQs: erp_modules.faqs JSON / solutions.solution_faqs
+ *     JSON on module + solution detail pages. Intentionally not migrated here.
+ */
+export const faqs = sqliteTable(
+  "faqs",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    pageKey: text("page_key").notNull(),
+    question: text("question").notNull(),
+    answer: text("answer").notNull(),
+    category: text("category"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    published: integer("published", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    index("faqs_page_key_idx").on(t.pageKey),
+    index("faqs_page_key_published_idx").on(t.pageKey, t.published),
+    index("faqs_page_key_sort_order_idx").on(t.pageKey, t.sortOrder),
+  ],
+);
+
+export type FooterLink = {
+  label: string;
+  url: string;
+  external?: boolean;
+};
+
+export type FooterLinkGroup = {
+  title: string;
+  links: FooterLink[];
+};
+
+/** Singleton global footer copy + link groups (id = "default"). */
+export const footerContent = sqliteTable("footer_content", {
+  id: text("id").primaryKey(),
+  brandBlurb: text("brand_blurb").notNull(),
+  builtByLabel: text("built_by_label").notNull(),
+  builtByUrl: text("built_by_url").notNull(),
+  newsletterHeading: text("newsletter_heading").notNull(),
+  newsletterCopy: text("newsletter_copy").notNull(),
+  linkGroups: text("link_groups", { mode: "json" })
+    .notNull()
+    .$type<FooterLinkGroup[]>(),
+  copyrightText: text("copyright_text").notNull(),
+  bottomLinks: text("bottom_links", { mode: "json" })
+    .notNull()
+    .$type<FooterLink[]>(),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date())
