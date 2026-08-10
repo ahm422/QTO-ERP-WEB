@@ -2,6 +2,8 @@ import { and, asc, desc, eq, inArray, isNotNull, max } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
 import type { BlogPostStatus } from "@/db/enums";
 import {
+  aboutStory,
+  aboutValues,
   blogPosts,
   builtForCards,
   comparisonFeatures,
@@ -47,11 +49,21 @@ import {
   HOME_FINAL_CTA_DEFAULTS,
   HOME_FINAL_CTA_KEY,
 } from "@/lib/home-cta-defaults";
+import {
+  ABOUT_FINAL_CTA_DEFAULTS,
+  ABOUT_FINAL_CTA_KEY,
+} from "@/lib/about-cta-defaults";
+import {
+  ABOUT_STORY_DEFAULTS,
+  ABOUT_STORY_ID,
+} from "@/lib/about-story-defaults";
+import { ABOUT_VALUES_DEFAULTS } from "@/lib/about-values-defaults";
 import { FOOTER_CONTENT_DEFAULTS } from "@/lib/footer-defaults";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
 import { PRICING_PAGE_CONTENT_DEFAULTS } from "@/lib/pricing-page-defaults";
 import {
   pageHeroFromDefaults,
+  PAGE_HERO_KEY_ABOUT,
   type PageHeroPageKey,
 } from "@/lib/page-hero-defaults";
 import {
@@ -59,6 +71,10 @@ import {
   orderIndexFromSortOrder,
 } from "@/lib/industry-domains-defaults";
 import {
+  aboutStoryFromDefaults,
+  serializeAboutFinalCta,
+  serializeAboutStory,
+  serializeAboutValue,
   serializeBlogDetail,
   serializeBlogSummary,
   serializeBuiltForCard,
@@ -82,6 +98,9 @@ import {
   serializeTrustedLogo,
 } from "@/lib/content-serializers";
 import type {
+  AboutPageContent,
+  AboutStory,
+  AboutValue,
   BuiltForCard,
   BuiltForSection,
   DemoPageContent,
@@ -125,7 +144,14 @@ import type { UpsertFooterContentInput } from "@/lib/validations/admin-footer";
 import type { UpsertDemoPageContentInput } from "@/lib/validations/admin-demo-page";
 import type { UpsertPricingPageContentInput } from "@/lib/validations/admin-pricing-page";
 import type { UpsertPageHeroContentInput } from "@/lib/validations/admin-page-hero";
+import type {
+  CreateAboutValueInput,
+  UpdateAboutValueInput,
+  UpsertAboutFinalCtaInput,
+  UpsertAboutStoryInput,
+} from "@/lib/validations/admin-about";
 import { mediaUrl } from "@/lib/media";
+import { createId } from "@paralleldrive/cuid2";
 
 export type BlogPostRow = InferSelectModel<typeof blogPosts>;
 export type ComparisonFeatureRow = InferSelectModel<typeof comparisonFeatures>;
@@ -1532,4 +1558,279 @@ export async function upsertPageHeroContentAdmin(
     })
     .returning();
   return serializePageHeroContent(row);
+}
+
+// ─── About page content ──────────────────────────────────────────────────────
+
+export async function getAboutStory(): Promise<AboutStory> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(aboutStory)
+      .where(eq(aboutStory.id, ABOUT_STORY_ID))
+      .limit(1);
+    if (!row) return aboutStoryFromDefaults();
+    return serializeAboutStory(row);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] about_story missing — using defaults (run db:migrate:local)",
+      );
+      return aboutStoryFromDefaults();
+    }
+    throw err;
+  }
+}
+
+export async function getAboutStoryAdmin() {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(aboutStory)
+      .where(eq(aboutStory.id, ABOUT_STORY_ID))
+      .limit(1);
+    if (!row) {
+      return { ...aboutStoryFromDefaults(), imageKey: null as string | null };
+    }
+    return {
+      ...serializeAboutStory(row),
+      imageKey: row.imageKey,
+    };
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      return { ...aboutStoryFromDefaults(), imageKey: null as string | null };
+    }
+    throw err;
+  }
+}
+
+export async function upsertAboutStoryAdmin(
+  data: UpsertAboutStoryInput,
+): Promise<AboutStory & { imageKey: string | null }> {
+  const values = {
+    id: ABOUT_STORY_ID,
+    imageKey:
+      data.imageKey === undefined
+        ? ABOUT_STORY_DEFAULTS.imageKey
+        : data.imageKey,
+    imageAlt: data.imageAlt,
+    badge: data.badge,
+    title: data.title,
+    paragraph1: data.paragraph1,
+    paragraph2: data.paragraph2,
+    calloutIconKey: data.calloutIconKey,
+    calloutTitle: data.calloutTitle,
+    calloutBody: data.calloutBody,
+    calloutLinkLabel: data.calloutLinkLabel,
+    calloutLinkUrl: data.calloutLinkUrl,
+  };
+
+  const setValues =
+    data.imageKey === undefined
+      ? {
+          imageAlt: data.imageAlt,
+          badge: data.badge,
+          title: data.title,
+          paragraph1: data.paragraph1,
+          paragraph2: data.paragraph2,
+          calloutIconKey: data.calloutIconKey,
+          calloutTitle: data.calloutTitle,
+          calloutBody: data.calloutBody,
+          calloutLinkLabel: data.calloutLinkLabel,
+          calloutLinkUrl: data.calloutLinkUrl,
+        }
+      : {
+          imageKey: data.imageKey,
+          imageAlt: data.imageAlt,
+          badge: data.badge,
+          title: data.title,
+          paragraph1: data.paragraph1,
+          paragraph2: data.paragraph2,
+          calloutIconKey: data.calloutIconKey,
+          calloutTitle: data.calloutTitle,
+          calloutBody: data.calloutBody,
+          calloutLinkLabel: data.calloutLinkLabel,
+          calloutLinkUrl: data.calloutLinkUrl,
+        };
+
+  const [row] = await (await getDb())
+    .insert(aboutStory)
+    .values(values)
+    .onConflictDoUpdate({
+      target: aboutStory.id,
+      set: setValues,
+    })
+    .returning();
+  return {
+    ...serializeAboutStory(row),
+    imageKey: row.imageKey,
+  };
+}
+
+function aboutValueFromDefault(
+  d: (typeof ABOUT_VALUES_DEFAULTS)[number],
+  index: number,
+): AboutValue {
+  return {
+    id: `default-about-value-${index}`,
+    title: d.title,
+    description: d.description,
+    sortOrder: d.sortOrder,
+  };
+}
+
+export async function listPublishedAboutValues(): Promise<AboutValue[]> {
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(aboutValues)
+      .where(eq(aboutValues.published, true))
+      .orderBy(asc(aboutValues.sortOrder));
+    if (rows.length === 0) {
+      return ABOUT_VALUES_DEFAULTS.map(aboutValueFromDefault);
+    }
+    return rows.map(serializeAboutValue);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] about_values missing — using defaults (run db:migrate:local)",
+      );
+      return ABOUT_VALUES_DEFAULTS.map(aboutValueFromDefault);
+    }
+    throw err;
+  }
+}
+
+export async function listAboutValuesAdmin() {
+  const rows = await (await getDb())
+    .select()
+    .from(aboutValues)
+    .orderBy(asc(aboutValues.sortOrder));
+  return rows.map((row) => ({
+    ...serializeAboutValue(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  }));
+}
+
+export async function createAboutValueAdmin(data: CreateAboutValueInput) {
+  const db = await getDb();
+  let sortOrder = data.sortOrder;
+  if (sortOrder === undefined) {
+    const [result] = await db
+      .select({ maxSort: max(aboutValues.sortOrder) })
+      .from(aboutValues);
+    sortOrder = (result?.maxSort ?? -1) + 1;
+  }
+  const [row] = await db
+    .insert(aboutValues)
+    .values({
+      id: createId(),
+      title: data.title,
+      description: data.description,
+      published: data.published ?? true,
+      sortOrder,
+    })
+    .returning();
+  return {
+    ...serializeAboutValue(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function updateAboutValueAdmin(
+  id: string,
+  data: UpdateAboutValueInput,
+) {
+  const [row] = await (await getDb())
+    .update(aboutValues)
+    .set(data)
+    .where(eq(aboutValues.id, id))
+    .returning();
+  if (!row) return null;
+  return {
+    ...serializeAboutValue(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function deleteAboutValueAdmin(id: string) {
+  const [existing] = await (await getDb())
+    .select({ id: aboutValues.id })
+    .from(aboutValues)
+    .where(eq(aboutValues.id, id))
+    .limit(1);
+  if (!existing) return false;
+  await (await getDb()).delete(aboutValues).where(eq(aboutValues.id, id));
+  return true;
+}
+
+export async function getAboutValueByIdAdmin(id: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(aboutValues)
+    .where(eq(aboutValues.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+export async function reorderAboutValuesAdmin(ids: string[]) {
+  const db = await getDb();
+  await Promise.all(
+    ids.map((id, index) =>
+      db
+        .update(aboutValues)
+        .set({ sortOrder: index })
+        .where(eq(aboutValues.id, id)),
+    ),
+  );
+  return listAboutValuesAdmin();
+}
+
+export async function getAboutFinalCta(): Promise<HomeFinalCta> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(siteSettings)
+      .where(eq(siteSettings.key, ABOUT_FINAL_CTA_KEY))
+      .limit(1);
+    return serializeAboutFinalCta(row?.value);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] site_settings missing — using about CTA defaults",
+      );
+      return { ...ABOUT_FINAL_CTA_DEFAULTS };
+    }
+    throw err;
+  }
+}
+
+export async function upsertAboutFinalCtaAdmin(
+  data: UpsertAboutFinalCtaInput,
+): Promise<HomeFinalCta> {
+  const value = JSON.stringify(data);
+  await (await getDb())
+    .insert(siteSettings)
+    .values({ key: ABOUT_FINAL_CTA_KEY, value })
+    .onConflictDoUpdate({
+      target: siteSettings.key,
+      set: { value },
+    });
+  return serializeAboutFinalCta(value);
+}
+
+export async function getAboutPageContent(): Promise<AboutPageContent> {
+  const [hero, story, values, cta] = await Promise.all([
+    getPageHeroContent(PAGE_HERO_KEY_ABOUT),
+    getAboutStory(),
+    listPublishedAboutValues(),
+    getAboutFinalCta(),
+  ]);
+  return { hero, story, values, cta };
 }

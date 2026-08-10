@@ -64,6 +64,13 @@
       "when": 1786346861923,
       "tag": "0008_clever_lionheart",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1786354237277,
+      "tag": "0009_typical_inhumans",
+      "breakpoints": true
     }
   ]
 }

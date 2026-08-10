@@ -10,6 +10,7 @@ import {
   HardHat,
   HeartPulse,
   Landmark,
+  Lightbulb,
   ShoppingBag,
   Smile,
   Star,
@@ -79,6 +80,9 @@ export const ALLOWED_DEMO_ICON_KEYS = [
   "target",
 ] as const;
 
+/** Icons used by /about story callout. */
+export const ALLOWED_ABOUT_ICON_KEYS = ["lightbulb"] as const;
+
 const MARKETING_ICONS: Record<string, LucideIcon> = {
   users: Users,
   star: Star,
@@ -96,10 +100,15 @@ const DEMO_ICONS: Record<string, LucideIcon> = {
   target: Target,
 };
 
+const ABOUT_ICONS: Record<string, LucideIcon> = {
+  lightbulb: Lightbulb,
+};
+
 const DEFAULT_ICON = Clock;
 const DEFAULT_DOMAIN_ICON = Building2;
 const DEFAULT_MARKETING_ICON = Users;
 const DEFAULT_DEMO_ICON = Clock;
+const DEFAULT_ABOUT_ICON = Lightbulb;
 
 export function getModuleIcon(iconKey: string): LucideIcon {
   return MODULE_ICONS[iconKey] ?? DEFAULT_ICON;
@@ -122,4 +131,9 @@ export function getMarketingIcon(iconKey: string): LucideIcon {
 /** Resolve Lucide icon for demo page CMS steps / benefits. */
 export function getDemoIcon(iconKey: string): LucideIcon {
   return DEMO_ICONS[iconKey] ?? DEFAULT_DEMO_ICON;
+}
+
+/** Resolve Lucide icon for about page CMS callouts. */
+export function getAboutIcon(iconKey: string): LucideIcon {
+  return ABOUT_ICONS[iconKey] ?? DEFAULT_ABOUT_ICON;
 }

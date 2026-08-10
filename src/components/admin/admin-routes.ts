@@ -18,6 +18,7 @@ import {
   CalendarCheck,
   Tags,
   LayoutTemplate,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -41,6 +42,7 @@ export const adminNavItems: AdminNavItem[] = [
     label: "Page heroes",
     icon: LayoutTemplate,
   },
+  { href: "/admin/about", label: "About page", icon: Building2 },
   { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
   { href: "/admin/pricing-page", label: "Pricing page", icon: Tags },
   { href: "/admin/demo-videos", label: "Demo videos", icon: Video },
@@ -112,6 +114,10 @@ const breadcrumbRoutes: Array<{
       { label: "QTO ERP", href: "/admin" },
       { label: "Page heroes" },
     ],
+  },
+  {
+    pattern: /^\/admin\/about$/,
+    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "About page" }],
   },
   {
     pattern: /^\/admin\/pricing$/,

@@ -34,6 +34,8 @@ const SEED_TABLES = [
   "demo_page_content",
   "pricing_page_content",
   "page_hero_content",
+  "about_story",
+  "about_values",
   "blog_posts",
 ] as const;
 

@@ -281,3 +281,36 @@ export type PageHeroContent = {
   title: string;
   subtitle: string;
 };
+
+/** Public DTO for /about Our Story singleton. */
+export type AboutStory = {
+  imageUrl: string;
+  imageAlt: string;
+  badge: string;
+  title: string;
+  paragraph1: string;
+  paragraph2: string;
+  callout: {
+    iconKey: string;
+    title: string;
+    body: string;
+    linkLabel: string;
+    linkUrl: string;
+  };
+};
+
+/** Public DTO for a published /about values card. */
+export type AboutValue = {
+  id: string;
+  title: string;
+  description: string;
+  sortOrder: number;
+};
+
+/** Bundled /about page payload. */
+export type AboutPageContent = {
+  hero: PageHeroContent;
+  story: AboutStory;
+  values: AboutValue[];
+  cta: HomeFinalCta;
+};

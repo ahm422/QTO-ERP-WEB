@@ -10,7 +10,13 @@ import {
   getStaggerItem,
 } from '@/lib/motion';
 
-export default function AboutHero() {
+type AboutHeroProps = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+};
+
+export default function AboutHero({ eyebrow, title, subtitle }: AboutHeroProps) {
   const reduced = useReducedMotion();
   const container = getStaggerContainer(reduced);
   const item = getStaggerItem(reduced);
@@ -30,7 +36,7 @@ export default function AboutHero() {
           <motion.div variants={item} className='mb-6 flex justify-center'>
             <EyebrowBadge
               icon={Building2}
-              label='Our Company'
+              label={eyebrow}
               variant='hero'
             />
           </motion.div>
@@ -38,14 +44,13 @@ export default function AboutHero() {
             variants={fadeUp}
             className='mb-4 font-display text-4xl font-bold text-hero-foreground md:text-5xl'
           >
-            About QTO-ERP
+            {title}
           </motion.h1>
           <motion.p
             variants={item}
             className='mx-auto max-w-2xl text-lg text-hero-muted-foreground'
           >
-            We&apos;re building the modern ERP that growing teams actually love
-            to use.
+            {subtitle}
           </motion.p>
         </motion.div>
       </div>
