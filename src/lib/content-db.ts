@@ -5,6 +5,7 @@ import {
   blogPosts,
   builtForCards,
   comparisonFeatures,
+  demoPageContent,
   erpModules,
   faqs,
   footerContent,
@@ -43,6 +44,7 @@ import {
   HOME_FINAL_CTA_KEY,
 } from "@/lib/home-cta-defaults";
 import { FOOTER_CONTENT_DEFAULTS } from "@/lib/footer-defaults";
+import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
 import {
   INDUSTRY_DOMAINS_DEFAULTS,
   orderIndexFromSortOrder,
@@ -52,6 +54,7 @@ import {
   serializeBlogSummary,
   serializeBuiltForCard,
   serializeComparisonRow,
+  serializeDemoPageContent,
   serializeFaq,
   serializeFooterContent,
   serializeHeroOrbitModule,
@@ -70,6 +73,7 @@ import {
 import type {
   BuiltForCard,
   BuiltForSection,
+  DemoPageContent,
   FaqItem,
   FooterContent,
   HomeFaqsSection,
@@ -105,6 +109,7 @@ import type {
 } from "@/lib/validations/admin-faqs";
 import type { UpsertHomeFinalCtaInput } from "@/lib/validations/admin-home-cta";
 import type { UpsertFooterContentInput } from "@/lib/validations/admin-footer";
+import type { UpsertDemoPageContentInput } from "@/lib/validations/admin-demo-page";
 import { mediaUrl } from "@/lib/media";
 
 export type BlogPostRow = InferSelectModel<typeof blogPosts>;
@@ -1355,4 +1360,64 @@ export async function upsertFooterContentAdmin(
     })
     .returning();
   return serializeFooterContent(row);
+}
+
+// ─── Demo page content ───────────────────────────────────────────────────────
+
+function demoPageFromDefaults(): DemoPageContent {
+  return {
+    heroBadge: DEMO_PAGE_CONTENT_DEFAULTS.heroBadge,
+    heroTitle: DEMO_PAGE_CONTENT_DEFAULTS.heroTitle,
+    heroAccent: DEMO_PAGE_CONTENT_DEFAULTS.heroAccent,
+    heroDescription: DEMO_PAGE_CONTENT_DEFAULTS.heroDescription,
+    heroBadges: DEMO_PAGE_CONTENT_DEFAULTS.heroBadges,
+    processTag: DEMO_PAGE_CONTENT_DEFAULTS.processTag,
+    processTitle: DEMO_PAGE_CONTENT_DEFAULTS.processTitle,
+    processDescription: DEMO_PAGE_CONTENT_DEFAULTS.processDescription,
+    whatToExpect: DEMO_PAGE_CONTENT_DEFAULTS.whatToExpect,
+    sideTitle: DEMO_PAGE_CONTENT_DEFAULTS.sideTitle,
+    sideDescription: DEMO_PAGE_CONTENT_DEFAULTS.sideDescription,
+    benefits: DEMO_PAGE_CONTENT_DEFAULTS.benefits,
+    testimonialQuote: DEMO_PAGE_CONTENT_DEFAULTS.testimonialQuote,
+    testimonialAuthor: DEMO_PAGE_CONTENT_DEFAULTS.testimonialAuthor,
+    testimonialRole: DEMO_PAGE_CONTENT_DEFAULTS.testimonialRole,
+    formFieldOptions: DEMO_PAGE_CONTENT_DEFAULTS.formFieldOptions,
+  };
+}
+
+export async function getDemoPageContent(): Promise<DemoPageContent> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(demoPageContent)
+      .where(eq(demoPageContent.id, DEMO_PAGE_CONTENT_DEFAULTS.id))
+      .limit(1);
+    if (!row) return demoPageFromDefaults();
+    return serializeDemoPageContent(row);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] demo_page_content missing — using defaults (run db:migrate:local)",
+      );
+      return demoPageFromDefaults();
+    }
+    throw err;
+  }
+}
+
+export async function upsertDemoPageContentAdmin(
+  data: UpsertDemoPageContentInput,
+): Promise<DemoPageContent> {
+  const [row] = await (await getDb())
+    .insert(demoPageContent)
+    .values({
+      id: DEMO_PAGE_CONTENT_DEFAULTS.id,
+      ...data,
+    })
+    .onConflictDoUpdate({
+      target: demoPageContent.id,
+      set: data,
+    })
+    .returning();
+  return serializeDemoPageContent(row);
 }

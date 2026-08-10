@@ -31,6 +31,7 @@ const SEED_TABLES = [
   "industry_domains",
   "faqs",
   "footer_content",
+  "demo_page_content",
   "blog_posts",
 ] as const;
 

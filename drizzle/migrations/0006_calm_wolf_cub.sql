@@ -1,0 +1,20 @@
+CREATE TABLE `demo_page_content` (
+	`id` text PRIMARY KEY NOT NULL,
+	`hero_badge` text NOT NULL,
+	`hero_title` text NOT NULL,
+	`hero_accent` text NOT NULL,
+	`hero_description` text NOT NULL,
+	`hero_badges` text NOT NULL,
+	`process_tag` text NOT NULL,
+	`process_title` text NOT NULL,
+	`process_description` text NOT NULL,
+	`what_to_expect` text NOT NULL,
+	`side_title` text NOT NULL,
+	`side_description` text NOT NULL,
+	`benefits` text NOT NULL,
+	`testimonial_quote` text NOT NULL,
+	`testimonial_author` text NOT NULL,
+	`testimonial_role` text NOT NULL,
+	`form_field_options` text NOT NULL,
+	`updated_at` integer NOT NULL
+);

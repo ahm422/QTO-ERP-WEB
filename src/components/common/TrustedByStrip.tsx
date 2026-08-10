@@ -36,14 +36,14 @@ export function TrustedByStrip({
           {label}
         </p>
       ) : null}
-      <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-80 sm:gap-x-14">
+      <ul className="flex flex-wrap items-center justify-center gap-x-14 gap-y-8 opacity-95 sm:gap-x-24">
         {logos.map((logo) => {
           const content = logo.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- R2 media URLs; next/image not required for CMS logos
             <img
               src={logo.imageUrl}
               alt={logo.label ?? logo.name}
-              className="h-7 w-auto max-w-[7.5rem] object-contain sm:h-8"
+              className="h-16 w-auto max-w-[16rem] object-contain sm:h-20 sm:max-w-[18rem]"
             />
           ) : (
             <span className="font-display text-sm font-semibold tracking-wide text-muted-foreground sm:text-base">

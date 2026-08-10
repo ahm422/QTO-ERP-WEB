@@ -1,3 +1,5 @@
+import { QTO_HOUSE_URL, QTO_SOLUTIONS_URL } from "@/lib/constants";
+
 /**
  * Defaults for home Trusted By / Stats / Built For CMS sections.
  * Used by seed + runtime fallback when D1 rows are missing.
@@ -53,64 +55,21 @@ export type HomeSectionDefault = {
 };
 
 /**
- * Brand logos first (R2 keys), then current text-only customer names.
- * Seed uploads House/Solutions assets to the keys below when R2 is available.
+ * Brand logos only (R2 keys). Seed uploads House/Solutions assets when R2 is available.
  */
 export const TRUSTED_LOGOS_DEFAULTS: TrustedLogoDefault[] = [
   {
     name: "QTO House",
     logoImageKey: TRUSTED_LOGO_QTO_HOUSE_KEY,
-    linkUrl: null,
+    linkUrl: QTO_HOUSE_URL,
     sortOrder: 0,
     published: true,
   },
   {
     name: "QTO Solutions",
     logoImageKey: TRUSTED_LOGO_QTO_SOLUTIONS_KEY,
-    linkUrl: null,
+    linkUrl: QTO_SOLUTIONS_URL,
     sortOrder: 1,
-    published: true,
-  },
-  {
-    name: "Nesma",
-    logoImageKey: null,
-    linkUrl: null,
-    sortOrder: 2,
-    published: true,
-  },
-  {
-    name: "Amreli Steels",
-    logoImageKey: null,
-    linkUrl: null,
-    sortOrder: 3,
-    published: true,
-  },
-  {
-    name: "KAPC",
-    logoImageKey: null,
-    linkUrl: null,
-    sortOrder: 4,
-    published: true,
-  },
-  {
-    name: "Haier",
-    logoImageKey: null,
-    linkUrl: null,
-    sortOrder: 5,
-    published: true,
-  },
-  {
-    name: "AkzoNobel",
-    logoImageKey: null,
-    linkUrl: null,
-    sortOrder: 6,
-    published: true,
-  },
-  {
-    name: "Honda Ring Road",
-    logoImageKey: null,
-    linkUrl: null,
-    sortOrder: 7,
     published: true,
   },
 ];

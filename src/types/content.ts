@@ -217,3 +217,51 @@ export type FooterContent = {
   copyrightText: string;
   bottomLinks: FooterLinkDto[];
 };
+
+export type DemoIconStepDto = {
+  iconKey: string;
+  title: string;
+  description: string;
+};
+
+export type DemoFormFieldOptionsDto = {
+  labels: {
+    name: string;
+    email: string;
+    phone: string;
+    country: string;
+    company: string;
+    businessType: string;
+  };
+  placeholders: {
+    name: string;
+    email: string;
+    phone: string;
+    company: string;
+    country: string;
+    businessType: string;
+  };
+  countries: string[];
+  businessTypes: Array<{ value: string; label: string }>;
+  successMessage?: string;
+  submitLabel?: string;
+};
+
+export type DemoPageContent = {
+  heroBadge: string;
+  heroTitle: string;
+  heroAccent: string;
+  heroDescription: string;
+  heroBadges: string[];
+  processTag: string;
+  processTitle: string;
+  processDescription: string;
+  whatToExpect: DemoIconStepDto[];
+  sideTitle: string;
+  sideDescription: string;
+  benefits: DemoIconStepDto[];
+  testimonialQuote: string;
+  testimonialAuthor: string;
+  testimonialRole: string;
+  formFieldOptions: DemoFormFieldOptionsDto;
+};
