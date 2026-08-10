@@ -9,6 +9,7 @@ import { CTASection } from "@/components/ui/CTASection";
 import {
   getBuiltForSection,
   getHomeHero,
+  getIndustryEcosystemSection,
   listHeroOrbitModules,
   listPublishedHomeStats,
   listPublishedModules,
@@ -18,15 +19,23 @@ import { toOrbitModuleDefs } from "@/lib/hero-orbit";
 import { ORBIT_DEFAULT_MODULES } from "@/components/ui/orbit-motif";
 
 export default async function Home() {
-  const [hero, modules, orbitSource, trustedLogos, stats, builtFor] =
-    await Promise.all([
-      getHomeHero(),
-      listPublishedModules(),
-      listHeroOrbitModules(),
-      listPublishedTrustedLogos(),
-      listPublishedHomeStats(),
-      getBuiltForSection(),
-    ]);
+  const [
+    hero,
+    modules,
+    orbitSource,
+    trustedLogos,
+    stats,
+    builtFor,
+    ecosystem,
+  ] = await Promise.all([
+    getHomeHero(),
+    listPublishedModules(),
+    listHeroOrbitModules(),
+    listPublishedTrustedLogos(),
+    listPublishedHomeStats(),
+    getBuiltForSection(),
+    getIndustryEcosystemSection(),
+  ]);
   const mapped = toOrbitModuleDefs(orbitSource);
   const orbitModules = mapped.length > 0 ? mapped : ORBIT_DEFAULT_MODULES;
 
@@ -37,7 +46,7 @@ export default async function Home() {
       <HomeStats stats={stats} />
       <BuiltFor data={builtFor} />
       <IntegratedModules modules={modules} />
-      <IndustryEcosystems />
+      <IndustryEcosystems data={ecosystem} />
       <Faqs />
       <CTASection
         eyebrow="Next step"

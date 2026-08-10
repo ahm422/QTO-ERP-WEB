@@ -8,6 +8,7 @@
  */
 
 export const BUILT_FOR_SECTION_KEY = "built_for" as const;
+export const ECOSYSTEM_SECTION_KEY = "ecosystem" as const;
 
 export const TRUSTED_LOGO_QTO_HOUSE_KEY = "trusted-logos/qto-house.svg";
 export const TRUSTED_LOGO_QTO_SOLUTIONS_KEY = "trusted-logos/qto-solutions.avif";
@@ -178,3 +179,12 @@ export const BUILT_FOR_CARDS_DEFAULTS: BuiltForCardDefault[] = [
     published: true,
   },
 ];
+
+export const ECOSYSTEM_SECTION_DEFAULT: HomeSectionDefault = {
+  sectionKey: ECOSYSTEM_SECTION_KEY,
+  tag: "Ecosystem",
+  title: "Connected",
+  accent: "Ecosystem",
+  description:
+    "See how QTO House modules map to the industries you operate in — pick a domain to preview systems, leaders, and next steps.",
+};

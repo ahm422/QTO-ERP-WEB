@@ -532,6 +532,39 @@ export const builtForCards = sqliteTable(
   ],
 );
 
+/** Home page Connected Ecosystem industry domains. */
+export const industryDomains = sqliteTable(
+  "industry_domains",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    orderIndex: text("order_index").notNull(),
+    systemsCount: integer("systems_count").notNull(),
+    iconKey: text("icon_key").notNull(),
+    description: text("description").notNull(),
+    /** JSON string[] of industry leader names. */
+    leaders: text("leaders").notNull(),
+    ctaLabel: text("cta_label"),
+    ctaUrl: text("cta_url"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    published: integer("published", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    index("industry_domains_published_idx").on(t.published),
+    index("industry_domains_sort_order_idx").on(t.sortOrder),
+  ],
+);
+
 /**
  * Shared home section header copy (one row per sectionKey).
  * Phase 5: add Integrated Modules / Ecosystems / FAQ / etc. as new rows here

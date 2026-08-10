@@ -7,6 +7,7 @@ import {
   homeHero,
   homeSections,
   homeStats,
+  industryDomains,
   pricingPlans,
   solutions,
   trustedLogos,
@@ -25,6 +26,7 @@ import type {
   HomeStat,
   HomeSectionHeader,
   BuiltForCard,
+  IndustryDomainSummary,
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
 import { mediaUrl } from "@/lib/media";
@@ -39,6 +41,7 @@ type TrustedLogoRow = InferSelectModel<typeof trustedLogos>;
 type HomeStatRow = InferSelectModel<typeof homeStats>;
 type BuiltForCardRow = InferSelectModel<typeof builtForCards>;
 type HomeSectionRow = InferSelectModel<typeof homeSections>;
+type IndustryDomainRow = InferSelectModel<typeof industryDomains>;
 
 export function serializeModuleSummary(m: ErpModule): ModuleSummary {
   return {
@@ -209,6 +212,34 @@ export function serializeBuiltForCard(row: BuiltForCardRow): BuiltForCard {
     title: row.title,
     description: row.description,
     iconKey: row.iconKey,
+    sortOrder: row.sortOrder,
+  };
+}
+
+function parseLeadersJson(raw: string): string[] {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((v): v is string => typeof v === "string");
+  } catch {
+    return [];
+  }
+}
+
+export function serializeIndustryDomain(
+  row: IndustryDomainRow,
+): IndustryDomainSummary {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    orderIndex: row.orderIndex,
+    systemsCount: row.systemsCount,
+    iconKey: row.iconKey,
+    description: row.description,
+    leaders: parseLeadersJson(row.leaders),
+    ctaLabel: row.ctaLabel ?? null,
+    ctaUrl: row.ctaUrl ?? null,
     sortOrder: row.sortOrder,
   };
 }
