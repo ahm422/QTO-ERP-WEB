@@ -1,6 +1,7 @@
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import {
+  getFooterContent,
   listPublishedModulesFull,
   listPublishedSolutionsFull,
   listPublishedNavResources,
@@ -14,12 +15,14 @@ export default async function SiteLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [modules, solutions, settings, navResources] = await Promise.all([
-    listPublishedModulesFull(),
-    listPublishedSolutionsFull(),
-    getSiteSettings(),
-    listPublishedNavResources(),
-  ]);
+  const [modules, solutions, settings, navResources, footer] =
+    await Promise.all([
+      listPublishedModulesFull(),
+      listPublishedSolutionsFull(),
+      getSiteSettings(),
+      listPublishedNavResources(),
+      getFooterContent(),
+    ]);
 
   return (
     <>
@@ -34,7 +37,7 @@ export default async function SiteLayout({
         navResources={navResources}
       />
       {children}
-      <Footer />
+      <Footer content={footer} />
     </>
   );
 }

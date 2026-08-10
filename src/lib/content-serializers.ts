@@ -4,6 +4,8 @@ import {
   builtForCards,
   comparisonFeatures,
   erpModules,
+  faqs,
+  footerContent,
   homeHero,
   homeSections,
   homeStats,
@@ -27,9 +29,13 @@ import type {
   HomeSectionHeader,
   BuiltForCard,
   IndustryDomainSummary,
+  FaqItem,
+  FooterContent,
+  HomeFinalCta,
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
 import { mediaUrl } from "@/lib/media";
+import { HOME_FINAL_CTA_DEFAULTS } from "@/lib/home-cta-defaults";
 
 type ErpModule = InferSelectModel<typeof erpModules>;
 type Solution = InferSelectModel<typeof solutions>;
@@ -42,6 +48,8 @@ type HomeStatRow = InferSelectModel<typeof homeStats>;
 type BuiltForCardRow = InferSelectModel<typeof builtForCards>;
 type HomeSectionRow = InferSelectModel<typeof homeSections>;
 type IndustryDomainRow = InferSelectModel<typeof industryDomains>;
+type FaqRow = InferSelectModel<typeof faqs>;
+type FooterContentRow = InferSelectModel<typeof footerContent>;
 
 export function serializeModuleSummary(m: ErpModule): ModuleSummary {
   return {
@@ -242,4 +250,64 @@ export function serializeIndustryDomain(
     ctaUrl: row.ctaUrl ?? null,
     sortOrder: row.sortOrder,
   };
+}
+
+export function serializeFaq(row: FaqRow): FaqItem {
+  return {
+    id: row.id,
+    question: row.question,
+    answer: row.answer,
+    category: row.category ?? null,
+    sortOrder: row.sortOrder,
+  };
+}
+
+export function serializeFooterContent(row: FooterContentRow): FooterContent {
+  return {
+    brandBlurb: row.brandBlurb,
+    builtByLabel: row.builtByLabel,
+    builtByUrl: row.builtByUrl,
+    newsletterHeading: row.newsletterHeading,
+    newsletterCopy: row.newsletterCopy,
+    linkGroups: row.linkGroups,
+    copyrightText: row.copyrightText,
+    bottomLinks: row.bottomLinks,
+  };
+}
+
+function isCtaLink(value: unknown): value is { label: string; url: string } {
+  if (!value || typeof value !== "object") return false;
+  const obj = value as Record<string, unknown>;
+  return typeof obj.label === "string" && typeof obj.url === "string";
+}
+
+export function serializeHomeFinalCta(raw: string | null | undefined): HomeFinalCta {
+  if (!raw) return { ...HOME_FINAL_CTA_DEFAULTS };
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") {
+      return { ...HOME_FINAL_CTA_DEFAULTS };
+    }
+    const obj = parsed as Record<string, unknown>;
+    return {
+      tag:
+        typeof obj.tag === "string" ? obj.tag : HOME_FINAL_CTA_DEFAULTS.tag,
+      title:
+        typeof obj.title === "string"
+          ? obj.title
+          : HOME_FINAL_CTA_DEFAULTS.title,
+      description:
+        typeof obj.description === "string"
+          ? obj.description
+          : HOME_FINAL_CTA_DEFAULTS.description,
+      primaryCta: isCtaLink(obj.primaryCta)
+        ? obj.primaryCta
+        : HOME_FINAL_CTA_DEFAULTS.primaryCta,
+      secondaryCta: isCtaLink(obj.secondaryCta)
+        ? obj.secondaryCta
+        : HOME_FINAL_CTA_DEFAULTS.secondaryCta,
+    };
+  } catch {
+    return { ...HOME_FINAL_CTA_DEFAULTS };
+  }
 }

@@ -28,6 +28,9 @@ const SEED_TABLES = [
   "home_stats",
   "home_sections",
   "built_for_cards",
+  "industry_domains",
+  "faqs",
+  "footer_content",
   "blog_posts",
 ] as const;
 

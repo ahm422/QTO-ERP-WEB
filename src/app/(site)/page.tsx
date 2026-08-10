@@ -8,6 +8,8 @@ import Faqs from "./_components/Faqs";
 import { CTASection } from "@/components/ui/CTASection";
 import {
   getBuiltForSection,
+  getHomeFaqs,
+  getHomeFinalCta,
   getHomeHero,
   getIndustryEcosystemSection,
   listHeroOrbitModules,
@@ -27,6 +29,8 @@ export default async function Home() {
     stats,
     builtFor,
     ecosystem,
+    homeFaqs,
+    finalCta,
   ] = await Promise.all([
     getHomeHero(),
     listPublishedModules(),
@@ -35,6 +39,8 @@ export default async function Home() {
     listPublishedHomeStats(),
     getBuiltForSection(),
     getIndustryEcosystemSection(),
+    getHomeFaqs(),
+    getHomeFinalCta(),
   ]);
   const mapped = toOrbitModuleDefs(orbitSource);
   const orbitModules = mapped.length > 0 ? mapped : ORBIT_DEFAULT_MODULES;
@@ -47,11 +53,15 @@ export default async function Home() {
       <BuiltFor data={builtFor} />
       <IntegratedModules modules={modules} />
       <IndustryEcosystems data={ecosystem} />
-      <Faqs />
+      <Faqs section={homeFaqs.section} faqs={homeFaqs.faqs} />
       <CTASection
-        eyebrow="Next step"
-        headline="Ready to Transform Your Operations?"
-        description="See how QTO-ERP fits your workflows — book a demo or compare plans."
+        eyebrow={finalCta.tag}
+        headline={finalCta.title}
+        description={finalCta.description}
+        primaryLabel={finalCta.primaryCta.label}
+        primaryHref={finalCta.primaryCta.url}
+        secondaryLabel={finalCta.secondaryCta.label}
+        secondaryHref={finalCta.secondaryCta.url}
       />
     </>
   );

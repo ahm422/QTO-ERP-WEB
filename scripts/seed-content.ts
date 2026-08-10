@@ -9,6 +9,8 @@ import {
   builtForCards,
   comparisonFeatures as comparisonFeaturesTable,
   erpModules,
+  faqs,
+  footerContent,
   homeHero,
   homeSections,
   homeStats,
@@ -27,6 +29,16 @@ import {
   HOME_STATS_DEFAULTS,
   TRUSTED_LOGOS_DEFAULTS,
 } from "../src/lib/home-sections-defaults";
+import {
+  FAQ_PAGE_KEY_HOME,
+  FAQ_SECTION_DEFAULT,
+  HOME_FAQS_DEFAULTS,
+} from "../src/lib/faqs-defaults";
+import {
+  HOME_FINAL_CTA_DEFAULTS,
+  HOME_FINAL_CTA_KEY,
+} from "../src/lib/home-cta-defaults";
+import { FOOTER_CONTENT_DEFAULTS } from "../src/lib/footer-defaults";
 import { INDUSTRY_DOMAINS_DEFAULTS } from "../src/lib/industry-domains-defaults";
 import type { PlatformType } from "../src/types/appModule";
 import type { ScriptDb } from "./db";
@@ -472,8 +484,8 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     .select({ domainsCount: count() })
     .from(industryDomains);
   if ((domainsCount ?? 0) === 0) {
-    await db.insert(industryDomains).values(
-      INDUSTRY_DOMAINS_DEFAULTS.map((domain) => ({
+    for (const domain of INDUSTRY_DOMAINS_DEFAULTS) {
+      await db.insert(industryDomains).values({
         id: createId(),
         slug: domain.slug,
         name: domain.name,
@@ -486,12 +498,70 @@ export async function seedContent(db: ScriptDb, authorId: string) {
         ctaUrl: domain.ctaUrl,
         sortOrder: domain.sortOrder,
         published: domain.published,
-      })),
-    );
+      });
+    }
     console.log(
       `Seeded ${INDUSTRY_DOMAINS_DEFAULTS.length} industry domains`,
     );
   } else {
     console.log("Industry domains already present — skip insert");
   }
+
+  await db
+    .insert(homeSections)
+    .values({
+      sectionKey: FAQ_SECTION_DEFAULT.sectionKey,
+      tag: FAQ_SECTION_DEFAULT.tag,
+      title: FAQ_SECTION_DEFAULT.title,
+      accent: FAQ_SECTION_DEFAULT.accent,
+      description: FAQ_SECTION_DEFAULT.description,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded faq home section header");
+
+  const [{ faqsCount }] = await db
+    .select({ faqsCount: count() })
+    .from(faqs)
+    .where(eq(faqs.pageKey, FAQ_PAGE_KEY_HOME));
+  if ((faqsCount ?? 0) === 0) {
+    await db.insert(faqs).values(
+      HOME_FAQS_DEFAULTS.map((faq) => ({
+        id: createId(),
+        pageKey: faq.pageKey,
+        question: faq.question,
+        answer: faq.answer,
+        category: faq.category,
+        sortOrder: faq.sortOrder,
+        published: faq.published,
+      })),
+    );
+    console.log(`Seeded ${HOME_FAQS_DEFAULTS.length} home FAQs`);
+  } else {
+    console.log("Home FAQs already present — skip insert");
+  }
+
+  await db
+    .insert(siteSettings)
+    .values({
+      key: HOME_FINAL_CTA_KEY,
+      value: JSON.stringify(HOME_FINAL_CTA_DEFAULTS),
+    })
+    .onConflictDoNothing();
+  console.log("Seeded home_final_cta site setting");
+
+  await db
+    .insert(footerContent)
+    .values({
+      id: FOOTER_CONTENT_DEFAULTS.id,
+      brandBlurb: FOOTER_CONTENT_DEFAULTS.brandBlurb,
+      builtByLabel: FOOTER_CONTENT_DEFAULTS.builtByLabel,
+      builtByUrl: FOOTER_CONTENT_DEFAULTS.builtByUrl,
+      newsletterHeading: FOOTER_CONTENT_DEFAULTS.newsletterHeading,
+      newsletterCopy: FOOTER_CONTENT_DEFAULTS.newsletterCopy,
+      linkGroups: FOOTER_CONTENT_DEFAULTS.linkGroups,
+      copyrightText: FOOTER_CONTENT_DEFAULTS.copyrightText,
+      bottomLinks: FOOTER_CONTENT_DEFAULTS.bottomLinks,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded footer content");
 }

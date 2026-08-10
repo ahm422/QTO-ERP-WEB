@@ -6,12 +6,15 @@ import {
   builtForCards,
   comparisonFeatures,
   erpModules,
+  faqs,
+  footerContent,
   homeHero,
   homeSections,
   homeStats,
   industryDomains,
   navResources,
   pricingPlans,
+  siteSettings,
   solutions,
   trustedLogos,
 } from "@/db/schema";
@@ -26,9 +29,20 @@ import {
   BUILT_FOR_SECTION_KEY,
   ECOSYSTEM_SECTION_DEFAULT,
   ECOSYSTEM_SECTION_KEY,
+  FAQ_SECTION_KEY,
   HOME_STATS_DEFAULTS,
   TRUSTED_LOGOS_DEFAULTS,
 } from "@/lib/home-sections-defaults";
+import {
+  FAQ_PAGE_KEY_HOME,
+  FAQ_SECTION_DEFAULT,
+  HOME_FAQS_DEFAULTS,
+} from "@/lib/faqs-defaults";
+import {
+  HOME_FINAL_CTA_DEFAULTS,
+  HOME_FINAL_CTA_KEY,
+} from "@/lib/home-cta-defaults";
+import { FOOTER_CONTENT_DEFAULTS } from "@/lib/footer-defaults";
 import {
   INDUSTRY_DOMAINS_DEFAULTS,
   orderIndexFromSortOrder,
@@ -38,7 +52,10 @@ import {
   serializeBlogSummary,
   serializeBuiltForCard,
   serializeComparisonRow,
+  serializeFaq,
+  serializeFooterContent,
   serializeHeroOrbitModule,
+  serializeHomeFinalCta,
   serializeHomeHero,
   serializeHomeSection,
   serializeHomeStat,
@@ -53,6 +70,10 @@ import {
 import type {
   BuiltForCard,
   BuiltForSection,
+  FaqItem,
+  FooterContent,
+  HomeFaqsSection,
+  HomeFinalCta,
   HomeHero,
   HomeSectionHeader,
   HomeStat,
@@ -78,6 +99,12 @@ import type {
   CreateTrustedLogoInput,
   UpdateTrustedLogoInput,
 } from "@/lib/validations/admin-trusted-logos";
+import type {
+  CreateFaqInput,
+  UpdateFaqInput,
+} from "@/lib/validations/admin-faqs";
+import type { UpsertHomeFinalCtaInput } from "@/lib/validations/admin-home-cta";
+import type { UpsertFooterContentInput } from "@/lib/validations/admin-footer";
 import { mediaUrl } from "@/lib/media";
 
 export type BlogPostRow = InferSelectModel<typeof blogPosts>;
@@ -801,6 +828,14 @@ export async function getHomeSection(
       description: ECOSYSTEM_SECTION_DEFAULT.description,
     };
   }
+  if (sectionKey === FAQ_SECTION_KEY) {
+    return {
+      tag: FAQ_SECTION_DEFAULT.tag,
+      title: FAQ_SECTION_DEFAULT.title,
+      accent: FAQ_SECTION_DEFAULT.accent,
+      description: FAQ_SECTION_DEFAULT.description,
+    };
+  }
   return { tag: "", title: "", accent: "", description: "" };
 }
 
@@ -1102,4 +1137,222 @@ export async function syncIndustryDomainOrderIndexes() {
         .where(eq(industryDomains.id, row.id)),
     ),
   );
+}
+
+// ─── FAQs (Pattern A — shared page FAQs) ─────────────────────────────────────
+
+function faqFromDefault(
+  d: (typeof HOME_FAQS_DEFAULTS)[number],
+  index: number,
+): FaqItem {
+  return {
+    id: `default-faq-${index}`,
+    question: d.question,
+    answer: d.answer,
+    category: d.category,
+    sortOrder: d.sortOrder,
+  };
+}
+
+export async function listPublishedFaqs(
+  pageKey: string = FAQ_PAGE_KEY_HOME,
+): Promise<FaqItem[]> {
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(faqs)
+      .where(and(eq(faqs.pageKey, pageKey), eq(faqs.published, true)))
+      .orderBy(asc(faqs.sortOrder));
+    if (rows.length === 0 && pageKey === FAQ_PAGE_KEY_HOME) {
+      return HOME_FAQS_DEFAULTS.map(faqFromDefault);
+    }
+    return rows.map(serializeFaq);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] faqs missing — using defaults (run db:migrate:local)",
+      );
+      if (pageKey === FAQ_PAGE_KEY_HOME) {
+        return HOME_FAQS_DEFAULTS.map(faqFromDefault);
+      }
+      return [];
+    }
+    throw err;
+  }
+}
+
+export async function getHomeFaqs(): Promise<HomeFaqsSection> {
+  const [section, faqItems] = await Promise.all([
+    getHomeSection(FAQ_SECTION_KEY),
+    listPublishedFaqs(FAQ_PAGE_KEY_HOME),
+  ]);
+  return { section, faqs: faqItems };
+}
+
+export async function listFaqsAdmin(pageKey: string) {
+  const rows = await (await getDb())
+    .select()
+    .from(faqs)
+    .where(eq(faqs.pageKey, pageKey))
+    .orderBy(asc(faqs.sortOrder));
+  return rows.map((row) => ({
+    ...serializeFaq(row),
+    pageKey: row.pageKey,
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  }));
+}
+
+export async function createFaqAdmin(data: CreateFaqInput) {
+  const db = await getDb();
+  let sortOrder = data.sortOrder;
+  if (sortOrder === undefined) {
+    const [result] = await db
+      .select({ maxSort: max(faqs.sortOrder) })
+      .from(faqs)
+      .where(eq(faqs.pageKey, data.pageKey));
+    sortOrder = (result?.maxSort ?? -1) + 1;
+  }
+  const [row] = await db
+    .insert(faqs)
+    .values({
+      pageKey: data.pageKey,
+      question: data.question,
+      answer: data.answer,
+      category: data.category ?? null,
+      published: data.published ?? true,
+      sortOrder,
+    })
+    .returning();
+  return {
+    ...serializeFaq(row),
+    pageKey: row.pageKey,
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function updateFaqAdmin(id: string, data: UpdateFaqInput) {
+  const [row] = await (await getDb())
+    .update(faqs)
+    .set(data)
+    .where(eq(faqs.id, id))
+    .returning();
+  if (!row) return null;
+  return {
+    ...serializeFaq(row),
+    pageKey: row.pageKey,
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function deleteFaqAdmin(id: string) {
+  const [existing] = await (await getDb())
+    .select({ id: faqs.id })
+    .from(faqs)
+    .where(eq(faqs.id, id))
+    .limit(1);
+  if (!existing) return false;
+  await (await getDb()).delete(faqs).where(eq(faqs.id, id));
+  return true;
+}
+
+export async function getFaqByIdAdmin(id: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(faqs)
+    .where(eq(faqs.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+// ─── Home final CTA (site_settings JSON) ─────────────────────────────────────
+
+export async function getHomeFinalCta(): Promise<HomeFinalCta> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(siteSettings)
+      .where(eq(siteSettings.key, HOME_FINAL_CTA_KEY))
+      .limit(1);
+    return serializeHomeFinalCta(row?.value);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] site_settings missing — using home CTA defaults",
+      );
+      return { ...HOME_FINAL_CTA_DEFAULTS };
+    }
+    throw err;
+  }
+}
+
+export async function upsertHomeFinalCtaAdmin(
+  data: UpsertHomeFinalCtaInput,
+): Promise<HomeFinalCta> {
+  const value = JSON.stringify(data);
+  await (await getDb())
+    .insert(siteSettings)
+    .values({ key: HOME_FINAL_CTA_KEY, value })
+    .onConflictDoUpdate({
+      target: siteSettings.key,
+      set: { value },
+    });
+  return serializeHomeFinalCta(value);
+}
+
+// ─── Footer content ──────────────────────────────────────────────────────────
+
+function footerFromDefaults(): FooterContent {
+  return {
+    brandBlurb: FOOTER_CONTENT_DEFAULTS.brandBlurb,
+    builtByLabel: FOOTER_CONTENT_DEFAULTS.builtByLabel,
+    builtByUrl: FOOTER_CONTENT_DEFAULTS.builtByUrl,
+    newsletterHeading: FOOTER_CONTENT_DEFAULTS.newsletterHeading,
+    newsletterCopy: FOOTER_CONTENT_DEFAULTS.newsletterCopy,
+    linkGroups: FOOTER_CONTENT_DEFAULTS.linkGroups,
+    copyrightText: FOOTER_CONTENT_DEFAULTS.copyrightText,
+    bottomLinks: FOOTER_CONTENT_DEFAULTS.bottomLinks,
+  };
+}
+
+export async function getFooterContent(): Promise<FooterContent> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(footerContent)
+      .where(eq(footerContent.id, FOOTER_CONTENT_DEFAULTS.id))
+      .limit(1);
+    if (!row) return footerFromDefaults();
+    return serializeFooterContent(row);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] footer_content missing — using defaults (run db:migrate:local)",
+      );
+      return footerFromDefaults();
+    }
+    throw err;
+  }
+}
+
+export async function upsertFooterContentAdmin(
+  data: UpsertFooterContentInput,
+): Promise<FooterContent> {
+  const [row] = await (await getDb())
+    .insert(footerContent)
+    .values({
+      id: FOOTER_CONTENT_DEFAULTS.id,
+      ...data,
+    })
+    .onConflictDoUpdate({
+      target: footerContent.id,
+      set: data,
+    })
+    .returning();
+  return serializeFooterContent(row);
 }
