@@ -26,12 +26,28 @@ type BlogPost = {
   excerpt: string | null;
   content: string;
   status: "DRAFT" | "PUBLISHED";
+  publishedAt: string | null;
 };
 
 type BlogPostFormProps = {
   mode: "create" | "edit";
   initial?: BlogPost;
 };
+
+function toDatetimeLocalValue(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function fromDatetimeLocalValue(value: string): string | null {
+  if (!value.trim()) return null;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
 
 export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
   const router = useRouter();
@@ -44,6 +60,9 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
   );
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(
     initial?.status ?? "DRAFT",
+  );
+  const [publishedAtLocal, setPublishedAtLocal] = useState(
+    toDatetimeLocalValue(initial?.publishedAt),
   );
   const [saving, setSaving] = useState(false);
   const [postId, setPostId] = useState(initial?.id ?? "");
@@ -63,11 +82,13 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
           excerpt: excerpt || null,
           content,
           status: "DRAFT",
+          publishedAt: fromDatetimeLocalValue(publishedAtLocal),
         },
       },
     );
     setPostId(data.post.id);
     setSlug(data.post.slug);
+    setPublishedAtLocal(toDatetimeLocalValue(data.post.publishedAt));
     router.replace(`/admin/blog/${data.post.id}/edit`);
     return data.post.id;
   };
@@ -76,7 +97,16 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
     setSaving(true);
     try {
       const nextStatus = publish ? "PUBLISHED" : status;
-      const body = {
+      const publishedAtIso = fromDatetimeLocalValue(publishedAtLocal);
+      const body: {
+        title: string;
+        slug: string;
+        category: string;
+        excerpt: string | null;
+        content: string;
+        status: "DRAFT" | "PUBLISHED";
+        publishedAt?: string | null;
+      } = {
         title: title.trim(),
         slug: slug.trim(),
         category,
@@ -84,6 +114,13 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
         content,
         status: nextStatus,
       };
+      // Only send an explicit date when set; omit empty on edit so we do not
+      // clear an existing publishedAt (first-publish fallback stays server-side).
+      if (publishedAtIso !== null) {
+        body.publishedAt = publishedAtIso;
+      } else if (mode === "create" && !postId) {
+        body.publishedAt = null;
+      }
 
       if (mode === "create" && !postId) {
         await adminFetch<{ ok: true; post: BlogPost }>(
@@ -173,6 +210,19 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
               <SelectItem value="PUBLISHED">Published</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div>
+          <Label htmlFor="published-at">Published date</Label>
+          <Input
+            id="published-at"
+            type="datetime-local"
+            className="mt-1"
+            value={publishedAtLocal}
+            onChange={(e) => setPublishedAtLocal(e.target.value)}
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Leave empty to set automatically on first publish.
+          </p>
         </div>
       </div>
 

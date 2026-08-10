@@ -57,6 +57,13 @@
       "when": 1786344899402,
       "tag": "0007_first_spot",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1786346861923,
+      "tag": "0008_clever_lionheart",
+      "breakpoints": true
     }
   ]
 }

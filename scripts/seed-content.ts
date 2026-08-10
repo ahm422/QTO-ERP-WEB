@@ -17,6 +17,7 @@ import {
   homeStats,
   industryDomains,
   navResources,
+  pageHeroContent,
   pricingPageContent,
   pricingPlans,
   siteSettings,
@@ -45,6 +46,10 @@ import {
 import { FOOTER_CONTENT_DEFAULTS } from "../src/lib/footer-defaults";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "../src/lib/demo-page-defaults";
 import { PRICING_PAGE_CONTENT_DEFAULTS } from "../src/lib/pricing-page-defaults";
+import {
+  PAGE_HERO_DEFAULTS,
+  PAGE_HERO_KEYS,
+} from "../src/lib/page-hero-defaults";
 import { INDUSTRY_DOMAINS_DEFAULTS } from "../src/lib/industry-domains-defaults";
 import type { PlatformType } from "../src/types/appModule";
 import type { ScriptDb } from "./db";
@@ -624,6 +629,19 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     })
     .onConflictDoNothing();
   console.log("Seeded pricing page content");
+
+  for (const pageKey of PAGE_HERO_KEYS) {
+    await db
+      .insert(pageHeroContent)
+      .values({
+        pageKey,
+        content: PAGE_HERO_DEFAULTS[pageKey],
+      })
+      .onConflictDoNothing();
+  }
+  console.log(
+    `Seeded page_hero_content for: ${PAGE_HERO_KEYS.join(", ")}`,
+  );
 
   const [{ pricingFaqsCount }] = await db
     .select({ pricingFaqsCount: count() })

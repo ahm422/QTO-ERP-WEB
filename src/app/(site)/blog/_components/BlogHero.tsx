@@ -9,8 +9,15 @@ import {
   getStaggerContainer,
   getStaggerItem,
 } from '@/lib/motion';
+import type { PageHeroContent } from '@/types/content';
 
-export default function BlogHero() {
+type BlogHeroProps = PageHeroContent;
+
+export default function BlogHero({
+  eyebrow,
+  title,
+  subtitle,
+}: BlogHeroProps) {
   const reduced = useReducedMotion();
   const container = getStaggerContainer(reduced);
   const item = getStaggerItem(reduced);
@@ -30,7 +37,7 @@ export default function BlogHero() {
           <motion.div variants={item} className='mb-6 flex justify-center'>
             <EyebrowBadge
               icon={Newspaper}
-              label='Insights'
+              label={eyebrow}
               variant='hero'
             />
           </motion.div>
@@ -38,13 +45,13 @@ export default function BlogHero() {
             variants={fadeUp}
             className='mb-4 font-display text-4xl font-bold text-hero-foreground md:text-5xl'
           >
-            Blog
+            {title}
           </motion.h1>
           <motion.p
             variants={item}
             className='text-lg leading-relaxed text-hero-muted-foreground'
           >
-            Insights, guides, and best practices for modern teams.
+            {subtitle}
           </motion.p>
         </motion.div>
       </div>

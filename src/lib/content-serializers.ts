@@ -13,6 +13,7 @@ import {
   industryDomains,
   pricingPageContent,
   pricingPlans,
+  pageHeroContent,
   solutions,
   trustedLogos,
 } from "@/db/schema";
@@ -35,6 +36,7 @@ import type {
   FooterContent,
   DemoPageContent,
   PricingPageContent,
+  PageHeroContent,
   HomeFinalCta,
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
@@ -56,6 +58,7 @@ type FaqRow = InferSelectModel<typeof faqs>;
 type FooterContentRow = InferSelectModel<typeof footerContent>;
 type DemoPageContentRow = InferSelectModel<typeof demoPageContent>;
 type PricingPageContentRow = InferSelectModel<typeof pricingPageContent>;
+type PageHeroContentRow = InferSelectModel<typeof pageHeroContent>;
 
 export function serializeModuleSummary(m: ErpModule): ModuleSummary {
   return {
@@ -313,6 +316,16 @@ export function serializePricingPageContent(
     heroSubtitle: row.heroSubtitle,
     faqTag: row.faqTag,
     faqTitle: row.faqTitle,
+  };
+}
+
+export function serializePageHeroContent(
+  row: PageHeroContentRow,
+): PageHeroContent {
+  return {
+    eyebrow: row.content.eyebrow,
+    title: row.content.title,
+    subtitle: row.content.subtitle,
   };
 }
 

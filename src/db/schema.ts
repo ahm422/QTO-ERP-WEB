@@ -726,6 +726,24 @@ export const pricingPageContent = sqliteTable("pricing_page_content", {
     .$onUpdateFn(() => new Date()),
 });
 
+/** Shared marketing page heroes keyed by pageKey (blog / about / contact / …). */
+export type PageHeroContentJson = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+};
+
+export const pageHeroContent = sqliteTable("page_hero_content", {
+  pageKey: text("page_key").primaryKey(),
+  content: text("content", { mode: "json" })
+    .notNull()
+    .$type<PageHeroContentJson>(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   blogPosts: many(blogPosts),
 }));

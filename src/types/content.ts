@@ -274,3 +274,10 @@ export type PricingPageContent = {
   faqTag: string;
   faqTitle: string;
 };
+
+/** Shared marketing page hero (page_hero_content JSON). */
+export type PageHeroContent = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+};
