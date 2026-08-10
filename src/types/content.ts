@@ -265,3 +265,12 @@ export type DemoPageContent = {
   testimonialRole: string;
   formFieldOptions: DemoFormFieldOptionsDto;
 };
+
+/** Public DTO for /pricing page singleton (hero + FAQ section chrome). */
+export type PricingPageContent = {
+  heroBadge: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  faqTag: string;
+  faqTitle: string;
+};

@@ -102,7 +102,7 @@ export default function EditPricingPlanPage() {
     !plan.stripePriceIdMonthly || !plan.stripePriceIdYearly;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Edit {plan.name}</h1>

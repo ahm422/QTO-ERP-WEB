@@ -3,7 +3,6 @@
 import { Suspense, useState } from "react";
 import { Tag } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import { pricingFaqs } from "@/lib/pricing";
 import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
 import { GridBackground } from "@/components/ui/grid-background";
 import { HeaderSections } from "@/components/ui/HeaderSections";
@@ -12,7 +11,7 @@ import PricingToggle from "./PricingToggle";
 import PricingCards from "./PricingCards";
 import ComparisonTable from "./ComparisonTable";
 import CheckoutBanner from "./CheckoutBanner";
-import type { ComparisonRow } from "@/types/content";
+import type { ComparisonRow, FaqItem, PricingPageContent } from "@/types/content";
 import type { PricingPlan } from "@/types/pricingPlan";
 import {
   getFadeInUp,
@@ -21,13 +20,17 @@ import {
 } from "@/lib/motion";
 
 type PricingPageClientProps = {
+  page: PricingPageContent;
   comparisonFeatures: ComparisonRow[];
   plans: PricingPlan[];
+  faqs: FaqItem[];
 };
 
 export default function PricingPageClient({
+  page,
   comparisonFeatures,
   plans,
+  faqs,
 }: PricingPageClientProps) {
   const [yearly, setYearly] = useState(false);
   const reduced = useReducedMotion();
@@ -54,7 +57,7 @@ export default function PricingPageClient({
             <motion.div variants={item} className="mb-6 flex justify-center">
               <EyebrowBadge
                 icon={Tag}
-                label="Pricing"
+                label={page.heroBadge}
                 variant="hero"
               />
             </motion.div>
@@ -62,13 +65,13 @@ export default function PricingPageClient({
               variants={fadeUp}
               className="mb-4 font-display text-4xl font-bold text-hero-foreground md:text-5xl"
             >
-              Simple, Transparent Pricing
+              {page.heroTitle}
             </motion.h1>
             <motion.p
               variants={item}
               className="mx-auto max-w-2xl text-lg text-hero-muted-foreground"
             >
-              Start free. Scale as you grow. No hidden fees.
+              {page.heroSubtitle}
             </motion.p>
           </motion.div>
         </div>
@@ -88,8 +91,8 @@ export default function PricingPageClient({
 
       <section className="section-padding">
         <div className="container-main">
-          <HeaderSections tag="FAQ" title="Pricing Questions" />
-          <FAQAccordion faqs={pricingFaqs} />
+          <HeaderSections tag={page.faqTag} title={page.faqTitle} />
+          <FAQAccordion faqs={faqs} />
         </div>
       </section>
     </>

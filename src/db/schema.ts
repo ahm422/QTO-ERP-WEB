@@ -712,6 +712,20 @@ export const demoPageContent = sqliteTable("demo_page_content", {
     .$onUpdateFn(() => new Date()),
 });
 
+/** Singleton /pricing page CMS content (id = "default") — hero + FAQ section chrome. */
+export const pricingPageContent = sqliteTable("pricing_page_content", {
+  id: text("id").primaryKey(),
+  heroBadge: text("hero_badge").notNull(),
+  heroTitle: text("hero_title").notNull(),
+  heroSubtitle: text("hero_subtitle").notNull(),
+  faqTag: text("faq_tag").notNull(),
+  faqTitle: text("faq_title").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   blogPosts: many(blogPosts),
 }));
