@@ -1,6 +1,10 @@
 import type { AboutContentsType } from "./about";
 import type { FAQsType } from "./faq";
 import type { FeaturesType } from "./feature";
+import type {
+  ModuleCapabilitiesType,
+  ModuleRolloutStepsType,
+} from "./module-cms";
 import type { ProblemsType } from "./problem";
 import type { TestimonialsType } from "./testimonial";
 import type { UseCasesType } from "./useCase";
@@ -10,6 +14,11 @@ import type {
   SolutionUseCase,
 } from "./solution";
 import type { TestimonialType } from "./testimonial";
+import type {
+  ContactFormFieldOptions,
+  ContactResponseTimes,
+  ContactSupportCard,
+} from "@/lib/contact-page-defaults";
 
 export type ModuleSummary = {
   slug: string;
@@ -35,6 +44,11 @@ export type ModuleDetail = ModuleSummary & {
   aboutContents?: AboutContentsType;
   featuresSectionTitle?: string;
   features: FeaturesType;
+  capabilities: ModuleCapabilitiesType;
+  rolloutTag?: string;
+  rolloutTitleTemplate?: string;
+  rolloutDescription?: string;
+  rolloutSteps: ModuleRolloutStepsType;
   problems: ProblemsType;
   testimonialsSectionTag?: string;
   testimonialsSectionTitle?: string;
@@ -42,6 +56,33 @@ export type ModuleDetail = ModuleSummary & {
   useCases: UseCasesType;
   testimonials: TestimonialsType;
   faqs: FAQsType;
+};
+
+export type ContactSupportContent = {
+  tag: string;
+  title: string;
+  description: string;
+  cards: ContactSupportCard[];
+  responseTimes: ContactResponseTimes;
+};
+
+export type ContactChannel = {
+  id: string;
+  type: string;
+  label: string;
+  value: string;
+  iconKey: string;
+  sortOrder: number;
+  published: boolean;
+};
+
+export type ContactPageContent = {
+  sideTitle: string;
+  sideDescription: string;
+  formFieldOptions: ContactFormFieldOptions;
+  faqTag: string;
+  faqTitle: string;
+  faqDescription: string;
 };
 
 export type SolutionSummary = {

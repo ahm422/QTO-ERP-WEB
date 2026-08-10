@@ -32,12 +32,16 @@ function PageHeroAdminInner() {
         <h1 className="text-2xl font-semibold">Page heroes</h1>
         <p className="text-sm text-muted-foreground">
           Shared eyebrow / title / subtitle for marketing page heroes. Public
-          wiring is live for <code className="text-xs">/blog</code> and{" "}
+          wiring is live for <code className="text-xs">/blog</code>,{" "}
           <code className="text-xs">/about</code> (also editable under{" "}
           <Link href="/admin/about?tab=hero" className="underline underline-offset-2">
             About page
           </Link>
-          ); contact is seeded for a later phase.
+          ), and <code className="text-xs">/contact</code> (also editable under{" "}
+          <Link href="/admin/contact" className="underline underline-offset-2">
+            Contact page
+          </Link>
+          ).
         </p>
       </div>
 

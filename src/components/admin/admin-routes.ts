@@ -1,6 +1,10 @@
 import {
   LayoutDashboard,
   MessageSquare,
+  Mail,
+  Phone,
+  Boxes,
+  Layers,
   FileText,
   DollarSign,
   Video,
@@ -36,6 +40,14 @@ export const adminNavItems: AdminNavItem[] = [
     label: "Demo requests",
     icon: MessageSquare,
   },
+  {
+    href: "/admin/contact-inquiries",
+    label: "Contact inquiries",
+    icon: Mail,
+  },
+  { href: "/admin/contact", label: "Contact page", icon: Phone },
+  { href: "/admin/modules", label: "Modules", icon: Boxes },
+  { href: "/admin/solutions", label: "Solutions", icon: Layers },
   { href: "/admin/blog", label: "Blog", icon: FileText },
   {
     href: "/admin/page-hero",
@@ -102,6 +114,60 @@ const breadcrumbRoutes: Array<{
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
       { label: "Demo requests" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/contact-inquiries$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Contact inquiries" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/contact$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Contact page" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/modules$/,
+    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Modules" }],
+  },
+  {
+    pattern: /^\/admin\/modules\/new$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Modules", href: "/admin/modules" },
+      { label: "New module" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/modules\/[^/]+\/edit$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Modules", href: "/admin/modules" },
+      { label: "Edit module" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/solutions$/,
+    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Solutions" }],
+  },
+  {
+    pattern: /^\/admin\/solutions\/new$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Solutions", href: "/admin/solutions" },
+      { label: "New solution" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/solutions\/[^/]+\/edit$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Solutions", href: "/admin/solutions" },
+      { label: "Edit solution" },
     ],
   },
   {

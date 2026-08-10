@@ -10,6 +10,9 @@ import {
   blogPosts,
   builtForCards,
   comparisonFeatures as comparisonFeaturesTable,
+  contactChannels,
+  contactPageContent,
+  contactSupportContent,
   demoPageContent,
   erpModules,
   faqs,
@@ -35,12 +38,21 @@ import {
   TRUSTED_LOGOS_DEFAULTS,
 } from "../src/lib/home-sections-defaults";
 import {
+  CONTACT_FAQS_DEFAULTS,
+  FAQ_PAGE_KEY_CONTACT,
   FAQ_PAGE_KEY_HOME,
   FAQ_PAGE_KEY_PRICING,
   FAQ_SECTION_DEFAULT,
   HOME_FAQS_DEFAULTS,
   PRICING_FAQS_DEFAULTS,
 } from "../src/lib/faqs-defaults";
+import {
+  CONTACT_CHANNELS_DEFAULTS,
+  CONTACT_PAGE_CONTENT_DEFAULTS,
+  CONTACT_SUPPORT_CONTENT_DEFAULTS,
+  DEFAULT_MODULE_ROLLOUT_SECTION,
+  DEFAULT_MODULE_ROLLOUT_STEPS,
+} from "../src/lib/contact-page-defaults";
 import {
   HOME_FINAL_CTA_DEFAULTS,
   HOME_FINAL_CTA_KEY,
@@ -62,8 +74,19 @@ import { INDUSTRY_DOMAINS_DEFAULTS } from "../src/lib/industry-domains-defaults"
 import type { PlatformType } from "../src/types/appModule";
 import type { ScriptDb } from "./db";
 import { seedTrustedLogoObjectsToR2 } from "./seed-trusted-logos-r2";
+import { seedModuleImageObjectsToR2 } from "./seed-module-images-r2";
 import { and, count, eq, isNull, notInArray } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
+
+/** Map public /assets path → R2 object key under module-images/. */
+function toModuleImageKey(path: string | undefined): string | null {
+  if (!path) return null;
+  if (path.startsWith("module-images/")) return path;
+  const match = path.match(/\/assets\/images\/([^/]+)$/);
+  if (match) return `module-images/${match[1]}`;
+  if (path.startsWith("/")) return null;
+  return path;
+}
 
 const PRICING_PLANS_SEED = [
   {
@@ -159,12 +182,31 @@ const SLUG_ICON_KEYS: Record<string, string> = {
 function moduleToDbData(app: PlatformType, sortOrder: number) {
   const { icon: _icon, ...rest } = app as PlatformType & { icon: unknown };
   const iconKey = SLUG_ICON_KEYS[rest.slug] ?? "clock";
+  const imageKey = toModuleImageKey(rest.image) ?? rest.image ?? null;
+  const aboutContents = rest.aboutContents
+    ? rest.aboutContents.map((c) => ({
+        ...c,
+        image: toModuleImageKey(c.image) ?? c.image,
+      }))
+    : null;
+  const features = rest.features.map((f) => ({
+    title: f.title,
+    description: f.description,
+    icon: f.icon,
+    imageKey: imageKey ?? undefined,
+  }));
+  const capabilities = rest.features.slice(0, 3).map((f) => ({
+    iconKey,
+    title: f.title,
+    description: f.description,
+    href: "#features",
+  }));
 
   return {
     slug: rest.slug,
     name: rest.name,
     shortDescription: rest.shortDescription,
-    image: rest.image ?? null,
+    image: imageKey,
     highlights: rest.highlights,
     bestFor: rest.bestFor,
     cardTagline: rest.cardTagline ?? null,
@@ -178,9 +220,14 @@ function moduleToDbData(app: PlatformType, sortOrder: number) {
     aboutTitle: rest.aboutTitle,
     aboutTag: rest.aboutTag ?? null,
     aboutDescription: rest.aboutDescription,
-    aboutContents: rest.aboutContents ?? null,
+    aboutContents,
     featuresSectionTitle: rest.featuresSectionTitle ?? null,
-    features: rest.features,
+    features,
+    capabilities,
+    rolloutTag: DEFAULT_MODULE_ROLLOUT_SECTION.tag,
+    rolloutTitleTemplate: DEFAULT_MODULE_ROLLOUT_SECTION.titleTemplate,
+    rolloutDescription: DEFAULT_MODULE_ROLLOUT_SECTION.description,
+    rolloutSteps: [...DEFAULT_MODULE_ROLLOUT_STEPS],
     problems: rest.problems,
     testimonialsSectionTag: rest.testimonialsSectionTag ?? null,
     testimonialsSectionTitle: rest.testimonialsSectionTitle ?? null,
@@ -717,4 +764,74 @@ export async function seedContent(db: ScriptDb, authorId: string) {
   } else {
     console.log("Pricing FAQs already present — skip insert");
   }
+
+  await db
+    .insert(contactSupportContent)
+    .values({
+      id: CONTACT_SUPPORT_CONTENT_DEFAULTS.id,
+      tag: CONTACT_SUPPORT_CONTENT_DEFAULTS.tag,
+      title: CONTACT_SUPPORT_CONTENT_DEFAULTS.title,
+      description: CONTACT_SUPPORT_CONTENT_DEFAULTS.description,
+      cards: CONTACT_SUPPORT_CONTENT_DEFAULTS.cards,
+      responseTimes: CONTACT_SUPPORT_CONTENT_DEFAULTS.responseTimes,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded contact_support_content");
+
+  await db
+    .insert(contactPageContent)
+    .values({
+      id: CONTACT_PAGE_CONTENT_DEFAULTS.id,
+      sideTitle: CONTACT_PAGE_CONTENT_DEFAULTS.sideTitle,
+      sideDescription: CONTACT_PAGE_CONTENT_DEFAULTS.sideDescription,
+      formFieldOptions: CONTACT_PAGE_CONTENT_DEFAULTS.formFieldOptions,
+      faqTag: CONTACT_PAGE_CONTENT_DEFAULTS.faqTag,
+      faqTitle: CONTACT_PAGE_CONTENT_DEFAULTS.faqTitle,
+      faqDescription: CONTACT_PAGE_CONTENT_DEFAULTS.faqDescription,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded contact_page_content");
+
+  const [{ contactChannelsCount }] = await db
+    .select({ contactChannelsCount: count() })
+    .from(contactChannels);
+  if ((contactChannelsCount ?? 0) === 0) {
+    await db.insert(contactChannels).values(
+      CONTACT_CHANNELS_DEFAULTS.map((ch) => ({
+        id: createId(),
+        type: ch.type,
+        label: ch.label,
+        value: ch.value,
+        iconKey: ch.iconKey,
+        sortOrder: ch.sortOrder,
+        published: ch.published,
+      })),
+    );
+    console.log(`Seeded ${CONTACT_CHANNELS_DEFAULTS.length} contact channels`);
+  } else {
+    console.log("Contact channels already present — skip insert");
+  }
+
+  const [{ contactFaqsCount }] = await db
+    .select({ contactFaqsCount: count() })
+    .from(faqs)
+    .where(eq(faqs.pageKey, FAQ_PAGE_KEY_CONTACT));
+  if ((contactFaqsCount ?? 0) === 0) {
+    await db.insert(faqs).values(
+      CONTACT_FAQS_DEFAULTS.map((faq) => ({
+        id: createId(),
+        pageKey: faq.pageKey,
+        question: faq.question,
+        answer: faq.answer,
+        category: faq.category,
+        sortOrder: faq.sortOrder,
+        published: faq.published,
+      })),
+    );
+    console.log(`Seeded ${CONTACT_FAQS_DEFAULTS.length} contact FAQs`);
+  } else {
+    console.log("Contact FAQs already present — skip insert");
+  }
+
+  seedModuleImageObjectsToR2();
 }

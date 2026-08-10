@@ -6,7 +6,12 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { FAQ_PAGE_KEY_HOME, FAQ_PAGE_KEY_PRICING, FAQ_SECTION_DEFAULT } from "@/lib/faqs-defaults";
+import {
+  FAQ_PAGE_KEY_CONTACT,
+  FAQ_PAGE_KEY_HOME,
+  FAQ_PAGE_KEY_PRICING,
+  FAQ_SECTION_DEFAULT,
+} from "@/lib/faqs-defaults";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +31,7 @@ import { cn } from "@/lib/utils";
 const FAQ_PAGE_KEYS = [
   { key: FAQ_PAGE_KEY_HOME, label: "Home" },
   { key: FAQ_PAGE_KEY_PRICING, label: "Pricing" },
+  { key: FAQ_PAGE_KEY_CONTACT, label: "Contact" },
 ] as const;
 
 type SectionForm = {
