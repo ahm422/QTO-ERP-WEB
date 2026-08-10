@@ -16,6 +16,7 @@ type BlogPost = {
   excerpt: string | null;
   content: string;
   status: "DRAFT" | "PUBLISHED";
+  publishedAt: string | null;
 };
 
 export default function EditBlogPostPage() {

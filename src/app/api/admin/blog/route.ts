@@ -74,7 +74,12 @@ export async function POST(request: Request) {
   }
 
   const status = (parsed.data.status ?? "DRAFT") as BlogPostStatus;
-  const publishedAt = status === "PUBLISHED" ? new Date() : null;
+  let publishedAt: Date | null = null;
+  if (parsed.data.publishedAt) {
+    publishedAt = new Date(parsed.data.publishedAt);
+  } else if (status === "PUBLISHED") {
+    publishedAt = new Date();
+  }
 
   try {
     const post = await createBlogPostAdmin({

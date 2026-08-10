@@ -9,6 +9,12 @@ const blogImageContentTypes = [
   "image/webp",
 ] as const;
 
+const publishedAtSchema = z
+  .string()
+  .datetime({ offset: true })
+  .nullable()
+  .optional();
+
 export const createBlogPostSchema = z.object({
   slug: z
     .string()
@@ -21,6 +27,7 @@ export const createBlogPostSchema = z.object({
   excerpt: z.string().trim().max(500).nullable().optional(),
   content: z.string().min(1).max(500000),
   status: z.enum(blogStatuses).optional(),
+  publishedAt: publishedAtSchema,
 });
 
 export const updateBlogPostSchema = z.object({
@@ -36,6 +43,7 @@ export const updateBlogPostSchema = z.object({
   excerpt: z.string().trim().max(500).nullable().optional(),
   content: z.string().min(1).max(500000).optional(),
   status: z.enum(blogStatuses).optional(),
+  publishedAt: publishedAtSchema,
 });
 
 export const blogImageUploadSchema = z.object({

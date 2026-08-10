@@ -14,6 +14,7 @@ import {
   homeStats,
   industryDomains,
   navResources,
+  pageHeroContent,
   pricingPageContent,
   pricingPlans,
   siteSettings,
@@ -50,6 +51,10 @@ import { FOOTER_CONTENT_DEFAULTS } from "@/lib/footer-defaults";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
 import { PRICING_PAGE_CONTENT_DEFAULTS } from "@/lib/pricing-page-defaults";
 import {
+  pageHeroFromDefaults,
+  type PageHeroPageKey,
+} from "@/lib/page-hero-defaults";
+import {
   INDUSTRY_DOMAINS_DEFAULTS,
   orderIndexFromSortOrder,
 } from "@/lib/industry-domains-defaults";
@@ -68,6 +73,7 @@ import {
   serializeHomeStat,
   serializeIndustryDomain,
   serializePricingPageContent,
+  serializePageHeroContent,
   serializePricingPlan,
   serializeModuleDetail,
   serializeModuleSummary,
@@ -84,6 +90,7 @@ import type {
   HomeFaqsSection,
   HomeFinalCta,
   PricingPageContent,
+  PageHeroContent,
   HomeHero,
   HomeSectionHeader,
   HomeStat,
@@ -117,6 +124,7 @@ import type { UpsertHomeFinalCtaInput } from "@/lib/validations/admin-home-cta";
 import type { UpsertFooterContentInput } from "@/lib/validations/admin-footer";
 import type { UpsertDemoPageContentInput } from "@/lib/validations/admin-demo-page";
 import type { UpsertPricingPageContentInput } from "@/lib/validations/admin-pricing-page";
+import type { UpsertPageHeroContentInput } from "@/lib/validations/admin-page-hero";
 import { mediaUrl } from "@/lib/media";
 
 export type BlogPostRow = InferSelectModel<typeof blogPosts>;
@@ -1484,4 +1492,44 @@ export async function upsertPricingPageContentAdmin(
     })
     .returning();
   return serializePricingPageContent(row);
+}
+
+export async function getPageHeroContent(
+  pageKey: PageHeroPageKey,
+): Promise<PageHeroContent> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(pageHeroContent)
+      .where(eq(pageHeroContent.pageKey, pageKey))
+      .limit(1);
+    if (!row) return pageHeroFromDefaults(pageKey);
+    return serializePageHeroContent(row);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] page_hero_content missing — using defaults (run db:migrate:local)",
+      );
+      return pageHeroFromDefaults(pageKey);
+    }
+    throw err;
+  }
+}
+
+export async function upsertPageHeroContentAdmin(
+  pageKey: PageHeroPageKey,
+  data: UpsertPageHeroContentInput,
+): Promise<PageHeroContent> {
+  const [row] = await (await getDb())
+    .insert(pageHeroContent)
+    .values({
+      pageKey,
+      content: data,
+    })
+    .onConflictDoUpdate({
+      target: pageHeroContent.pageKey,
+      set: { content: data },
+    })
+    .returning();
+  return serializePageHeroContent(row);
 }

@@ -77,11 +77,21 @@ export async function PATCH(request: Request, context: RouteContext) {
       return jsonError("Blog post not found", 404);
     }
 
-    const data: Parameters<typeof updateBlogPostAdmin>[1] = { ...parsed.data };
+    const { publishedAt: publishedAtRaw, ...rest } = parsed.data;
+    const data: Parameters<typeof updateBlogPostAdmin>[1] = { ...rest };
+
+    if (publishedAtRaw !== undefined) {
+      data.publishedAt =
+        publishedAtRaw === null ? null : new Date(publishedAtRaw);
+    }
 
     if (parsed.data.status === "PUBLISHED") {
       data.status = "PUBLISHED" as BlogPostStatus;
-      if (!existing.publishedAt) {
+      const effective =
+        data.publishedAt !== undefined
+          ? data.publishedAt
+          : existing.publishedAt;
+      if (!effective) {
         data.publishedAt = new Date();
       }
     } else if (parsed.data.status === "DRAFT") {
