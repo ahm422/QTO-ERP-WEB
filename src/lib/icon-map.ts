@@ -1,6 +1,7 @@
 import {
   Briefcase,
   Building2,
+  CheckCircle2,
   Clock,
   DollarSign,
   Factory,
@@ -12,9 +13,11 @@ import {
   ShoppingBag,
   Smile,
   Star,
+  Target,
   TrendingUp,
   Truck,
   Users,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -67,6 +70,15 @@ export const ALLOWED_DOMAIN_ICON_KEYS = [
   "building-2",
 ] as const;
 
+/** Icons used by /demo CMS process steps + form-side benefits. */
+export const ALLOWED_DEMO_ICON_KEYS = [
+  "clock",
+  "users",
+  "zap",
+  "check-circle-2",
+  "target",
+] as const;
+
 const MARKETING_ICONS: Record<string, LucideIcon> = {
   users: Users,
   star: Star,
@@ -76,9 +88,18 @@ const MARKETING_ICONS: Record<string, LucideIcon> = {
   briefcase: Briefcase,
 };
 
+const DEMO_ICONS: Record<string, LucideIcon> = {
+  clock: Clock,
+  users: Users,
+  zap: Zap,
+  "check-circle-2": CheckCircle2,
+  target: Target,
+};
+
 const DEFAULT_ICON = Clock;
 const DEFAULT_DOMAIN_ICON = Building2;
 const DEFAULT_MARKETING_ICON = Users;
+const DEFAULT_DEMO_ICON = Clock;
 
 export function getModuleIcon(iconKey: string): LucideIcon {
   return MODULE_ICONS[iconKey] ?? DEFAULT_ICON;
@@ -96,4 +117,9 @@ export function getStatIcon(iconKey: string): LucideIcon {
 /** Shared getter for stats + built-for marketing icon keys. */
 export function getMarketingIcon(iconKey: string): LucideIcon {
   return MARKETING_ICONS[iconKey] ?? DEFAULT_MARKETING_ICON;
+}
+
+/** Resolve Lucide icon for demo page CMS steps / benefits. */
+export function getDemoIcon(iconKey: string): LucideIcon {
+  return DEMO_ICONS[iconKey] ?? DEFAULT_DEMO_ICON;
 }

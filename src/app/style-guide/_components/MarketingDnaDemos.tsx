@@ -564,11 +564,16 @@ export function TrustedByStripDemo() {
     <ThemeFrame>
       <TrustedByStrip
         logos={[
-          { name: "Nesma" },
-          { name: "Amreli Steels" },
-          { name: "KAPC" },
-          { name: "Haier" },
-          { name: "AkzoNobel" },
+          {
+            name: "QTO House",
+            imageUrl: "/api/media/trusted-logos/qto-house.svg",
+            href: "https://qtohouse.com/",
+          },
+          {
+            name: "QTO Solutions",
+            imageUrl: "/api/media/trusted-logos/qto-solutions.avif",
+            href: "https://qtosol.com/",
+          },
         ]}
       />
     </ThemeFrame>

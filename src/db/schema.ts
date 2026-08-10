@@ -650,6 +650,68 @@ export const footerContent = sqliteTable("footer_content", {
     .$onUpdateFn(() => new Date()),
 });
 
+export type DemoIconStep = {
+  iconKey: string;
+  title: string;
+  description: string;
+};
+
+export type DemoFormFieldOptions = {
+  labels: {
+    name: string;
+    email: string;
+    phone: string;
+    country: string;
+    company: string;
+    businessType: string;
+  };
+  placeholders: {
+    name: string;
+    email: string;
+    phone: string;
+    company: string;
+    country: string;
+    businessType: string;
+  };
+  countries: string[];
+  businessTypes: Array<{ value: string; label: string }>;
+  successMessage?: string;
+  submitLabel?: string;
+};
+
+/** Singleton /demo page CMS content (id = "default"). */
+export const demoPageContent = sqliteTable("demo_page_content", {
+  id: text("id").primaryKey(),
+  heroBadge: text("hero_badge").notNull(),
+  heroTitle: text("hero_title").notNull(),
+  heroAccent: text("hero_accent").notNull(),
+  heroDescription: text("hero_description").notNull(),
+  heroBadges: text("hero_badges", { mode: "json" })
+    .notNull()
+    .$type<string[]>(),
+  processTag: text("process_tag").notNull(),
+  processTitle: text("process_title").notNull(),
+  processDescription: text("process_description").notNull(),
+  whatToExpect: text("what_to_expect", { mode: "json" })
+    .notNull()
+    .$type<DemoIconStep[]>(),
+  sideTitle: text("side_title").notNull(),
+  sideDescription: text("side_description").notNull(),
+  benefits: text("benefits", { mode: "json" })
+    .notNull()
+    .$type<DemoIconStep[]>(),
+  testimonialQuote: text("testimonial_quote").notNull(),
+  testimonialAuthor: text("testimonial_author").notNull(),
+  testimonialRole: text("testimonial_role").notNull(),
+  formFieldOptions: text("form_field_options", { mode: "json" })
+    .notNull()
+    .$type<DemoFormFieldOptions>(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   blogPosts: many(blogPosts),
 }));

@@ -8,6 +8,7 @@ import {
   blogPosts,
   builtForCards,
   comparisonFeatures as comparisonFeaturesTable,
+  demoPageContent,
   erpModules,
   faqs,
   footerContent,
@@ -39,11 +40,12 @@ import {
   HOME_FINAL_CTA_KEY,
 } from "../src/lib/home-cta-defaults";
 import { FOOTER_CONTENT_DEFAULTS } from "../src/lib/footer-defaults";
+import { DEMO_PAGE_CONTENT_DEFAULTS } from "../src/lib/demo-page-defaults";
 import { INDUSTRY_DOMAINS_DEFAULTS } from "../src/lib/industry-domains-defaults";
 import type { PlatformType } from "../src/types/appModule";
 import type { ScriptDb } from "./db";
 import { seedTrustedLogoObjectsToR2 } from "./seed-trusted-logos-r2";
-import { and, count, eq, isNull } from "drizzle-orm";
+import { and, count, eq, isNull, notInArray } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 
 const PRICING_PLANS_SEED = [
@@ -405,7 +407,24 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     );
     console.log(`Seeded ${TRUSTED_LOGOS_DEFAULTS.length} trusted logos`);
   } else {
-    console.log("Trusted logos already present — skip insert");
+    const keepNames = TRUSTED_LOGOS_DEFAULTS.map((l) => l.name);
+    await db
+      .delete(trustedLogos)
+      .where(notInArray(trustedLogos.name, keepNames));
+    for (const logo of TRUSTED_LOGOS_DEFAULTS) {
+      await db
+        .update(trustedLogos)
+        .set({
+          logoImageKey: logo.logoImageKey,
+          linkUrl: logo.linkUrl,
+          sortOrder: logo.sortOrder,
+          published: logo.published,
+        })
+        .where(eq(trustedLogos.name, logo.name));
+    }
+    console.log(
+      "Trusted logos pruned/synced to QTO House / QTO Solutions (extras removed if any)",
+    );
   }
 
   try {
@@ -564,4 +583,28 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     })
     .onConflictDoNothing();
   console.log("Seeded footer content");
+
+  await db
+    .insert(demoPageContent)
+    .values({
+      id: DEMO_PAGE_CONTENT_DEFAULTS.id,
+      heroBadge: DEMO_PAGE_CONTENT_DEFAULTS.heroBadge,
+      heroTitle: DEMO_PAGE_CONTENT_DEFAULTS.heroTitle,
+      heroAccent: DEMO_PAGE_CONTENT_DEFAULTS.heroAccent,
+      heroDescription: DEMO_PAGE_CONTENT_DEFAULTS.heroDescription,
+      heroBadges: DEMO_PAGE_CONTENT_DEFAULTS.heroBadges,
+      processTag: DEMO_PAGE_CONTENT_DEFAULTS.processTag,
+      processTitle: DEMO_PAGE_CONTENT_DEFAULTS.processTitle,
+      processDescription: DEMO_PAGE_CONTENT_DEFAULTS.processDescription,
+      whatToExpect: DEMO_PAGE_CONTENT_DEFAULTS.whatToExpect,
+      sideTitle: DEMO_PAGE_CONTENT_DEFAULTS.sideTitle,
+      sideDescription: DEMO_PAGE_CONTENT_DEFAULTS.sideDescription,
+      benefits: DEMO_PAGE_CONTENT_DEFAULTS.benefits,
+      testimonialQuote: DEMO_PAGE_CONTENT_DEFAULTS.testimonialQuote,
+      testimonialAuthor: DEMO_PAGE_CONTENT_DEFAULTS.testimonialAuthor,
+      testimonialRole: DEMO_PAGE_CONTENT_DEFAULTS.testimonialRole,
+      formFieldOptions: DEMO_PAGE_CONTENT_DEFAULTS.formFieldOptions,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded demo page content");
 }

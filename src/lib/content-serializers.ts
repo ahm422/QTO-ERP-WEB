@@ -3,6 +3,7 @@ import {
   blogPosts,
   builtForCards,
   comparisonFeatures,
+  demoPageContent,
   erpModules,
   faqs,
   footerContent,
@@ -31,6 +32,7 @@ import type {
   IndustryDomainSummary,
   FaqItem,
   FooterContent,
+  DemoPageContent,
   HomeFinalCta,
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
@@ -50,6 +52,7 @@ type HomeSectionRow = InferSelectModel<typeof homeSections>;
 type IndustryDomainRow = InferSelectModel<typeof industryDomains>;
 type FaqRow = InferSelectModel<typeof faqs>;
 type FooterContentRow = InferSelectModel<typeof footerContent>;
+type DemoPageContentRow = InferSelectModel<typeof demoPageContent>;
 
 export function serializeModuleSummary(m: ErpModule): ModuleSummary {
   return {
@@ -272,6 +275,29 @@ export function serializeFooterContent(row: FooterContentRow): FooterContent {
     linkGroups: row.linkGroups,
     copyrightText: row.copyrightText,
     bottomLinks: row.bottomLinks,
+  };
+}
+
+export function serializeDemoPageContent(
+  row: DemoPageContentRow,
+): DemoPageContent {
+  return {
+    heroBadge: row.heroBadge,
+    heroTitle: row.heroTitle,
+    heroAccent: row.heroAccent,
+    heroDescription: row.heroDescription,
+    heroBadges: row.heroBadges,
+    processTag: row.processTag,
+    processTitle: row.processTitle,
+    processDescription: row.processDescription,
+    whatToExpect: row.whatToExpect,
+    sideTitle: row.sideTitle,
+    sideDescription: row.sideDescription,
+    benefits: row.benefits,
+    testimonialQuote: row.testimonialQuote,
+    testimonialAuthor: row.testimonialAuthor,
+    testimonialRole: row.testimonialRole,
+    formFieldOptions: row.formFieldOptions,
   };
 }
 

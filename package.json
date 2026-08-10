@@ -23,6 +23,7 @@
     "stripe:webhook-test": "tsx --env-file=.env scripts/stripe-webhook-test.ts",
     "verify:jwt": "tsx --env-file=.env scripts/verify-jwt.ts",
     "verify:auth-flow": "tsx --env-file=.env scripts/verify-auth-flow.ts",
+    "verify:demo": "tsx --env-file=.env scripts/verify-demo-flow.ts",
     "cf:types": "wrangler types --env-interface CloudflareEnv",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:wrangler": "OPEN_NEXT_DEPLOY=true CLOUDFLARE_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID WRANGLER_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID wrangler deploy --env=\"\"",
