@@ -5,6 +5,8 @@ import { stripePriceIdsFromEnv } from "../src/lib/stripe-prices";
 import { SITE_SETTING_DEFAULTS } from "../src/lib/site-settings";
 import { QTO_DEV_URL } from "../src/lib/constants";
 import {
+  aboutStory,
+  aboutValues,
   blogPosts,
   builtForCards,
   comparisonFeatures as comparisonFeaturesTable,
@@ -43,6 +45,12 @@ import {
   HOME_FINAL_CTA_DEFAULTS,
   HOME_FINAL_CTA_KEY,
 } from "../src/lib/home-cta-defaults";
+import {
+  ABOUT_FINAL_CTA_DEFAULTS,
+  ABOUT_FINAL_CTA_KEY,
+} from "../src/lib/about-cta-defaults";
+import { ABOUT_STORY_DEFAULTS } from "../src/lib/about-story-defaults";
+import { ABOUT_VALUES_DEFAULTS } from "../src/lib/about-values-defaults";
 import { FOOTER_CONTENT_DEFAULTS } from "../src/lib/footer-defaults";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "../src/lib/demo-page-defaults";
 import { PRICING_PAGE_CONTENT_DEFAULTS } from "../src/lib/pricing-page-defaults";
@@ -642,6 +650,52 @@ export async function seedContent(db: ScriptDb, authorId: string) {
   console.log(
     `Seeded page_hero_content for: ${PAGE_HERO_KEYS.join(", ")}`,
   );
+
+  await db
+    .insert(aboutStory)
+    .values({
+      id: ABOUT_STORY_DEFAULTS.id,
+      imageKey: ABOUT_STORY_DEFAULTS.imageKey,
+      imageAlt: ABOUT_STORY_DEFAULTS.imageAlt,
+      badge: ABOUT_STORY_DEFAULTS.badge,
+      title: ABOUT_STORY_DEFAULTS.title,
+      paragraph1: ABOUT_STORY_DEFAULTS.paragraph1,
+      paragraph2: ABOUT_STORY_DEFAULTS.paragraph2,
+      calloutIconKey: ABOUT_STORY_DEFAULTS.calloutIconKey,
+      calloutTitle: ABOUT_STORY_DEFAULTS.calloutTitle,
+      calloutBody: ABOUT_STORY_DEFAULTS.calloutBody,
+      calloutLinkLabel: ABOUT_STORY_DEFAULTS.calloutLinkLabel,
+      calloutLinkUrl: ABOUT_STORY_DEFAULTS.calloutLinkUrl,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded about_story");
+
+  const [{ aboutValuesCount }] = await db
+    .select({ aboutValuesCount: count() })
+    .from(aboutValues);
+  if ((aboutValuesCount ?? 0) === 0) {
+    await db.insert(aboutValues).values(
+      ABOUT_VALUES_DEFAULTS.map((value) => ({
+        id: createId(),
+        title: value.title,
+        description: value.description,
+        sortOrder: value.sortOrder,
+        published: value.published,
+      })),
+    );
+    console.log(`Seeded ${ABOUT_VALUES_DEFAULTS.length} about values`);
+  } else {
+    console.log("About values already present — skip insert");
+  }
+
+  await db
+    .insert(siteSettings)
+    .values({
+      key: ABOUT_FINAL_CTA_KEY,
+      value: JSON.stringify(ABOUT_FINAL_CTA_DEFAULTS),
+    })
+    .onConflictDoNothing();
+  console.log("Seeded about_final_cta site setting");
 
   const [{ pricingFaqsCount }] = await db
     .select({ pricingFaqsCount: count() })

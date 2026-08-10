@@ -1,5 +1,7 @@
 import type { InferSelectModel } from "drizzle-orm";
 import {
+  aboutStory,
+  aboutValues,
   blogPosts,
   builtForCards,
   comparisonFeatures,
@@ -38,10 +40,17 @@ import type {
   PricingPageContent,
   PageHeroContent,
   HomeFinalCta,
+  AboutStory,
+  AboutValue,
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
 import { mediaUrl } from "@/lib/media";
 import { HOME_FINAL_CTA_DEFAULTS } from "@/lib/home-cta-defaults";
+import {
+  ABOUT_STORY_DEFAULTS,
+  FALLBACK_STORY_IMAGE_URL,
+} from "@/lib/about-story-defaults";
+import { ABOUT_FINAL_CTA_DEFAULTS } from "@/lib/about-cta-defaults";
 
 type ErpModule = InferSelectModel<typeof erpModules>;
 type Solution = InferSelectModel<typeof solutions>;
@@ -59,6 +68,8 @@ type FooterContentRow = InferSelectModel<typeof footerContent>;
 type DemoPageContentRow = InferSelectModel<typeof demoPageContent>;
 type PricingPageContentRow = InferSelectModel<typeof pricingPageContent>;
 type PageHeroContentRow = InferSelectModel<typeof pageHeroContent>;
+type AboutStoryRow = InferSelectModel<typeof aboutStory>;
+type AboutValueRow = InferSelectModel<typeof aboutValues>;
 
 export function serializeModuleSummary(m: ErpModule): ModuleSummary {
   return {
@@ -336,32 +347,84 @@ function isCtaLink(value: unknown): value is { label: string; url: string } {
 }
 
 export function serializeHomeFinalCta(raw: string | null | undefined): HomeFinalCta {
-  if (!raw) return { ...HOME_FINAL_CTA_DEFAULTS };
+  return serializeFinalCta(raw, HOME_FINAL_CTA_DEFAULTS);
+}
+
+export function serializeAboutFinalCta(raw: string | null | undefined): HomeFinalCta {
+  return serializeFinalCta(raw, ABOUT_FINAL_CTA_DEFAULTS);
+}
+
+function serializeFinalCta(
+  raw: string | null | undefined,
+  defaults: HomeFinalCta,
+): HomeFinalCta {
+  if (!raw) return { ...defaults };
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") {
-      return { ...HOME_FINAL_CTA_DEFAULTS };
+      return { ...defaults };
     }
     const obj = parsed as Record<string, unknown>;
     return {
-      tag:
-        typeof obj.tag === "string" ? obj.tag : HOME_FINAL_CTA_DEFAULTS.tag,
-      title:
-        typeof obj.title === "string"
-          ? obj.title
-          : HOME_FINAL_CTA_DEFAULTS.title,
+      tag: typeof obj.tag === "string" ? obj.tag : defaults.tag,
+      title: typeof obj.title === "string" ? obj.title : defaults.title,
       description:
         typeof obj.description === "string"
           ? obj.description
-          : HOME_FINAL_CTA_DEFAULTS.description,
+          : defaults.description,
       primaryCta: isCtaLink(obj.primaryCta)
         ? obj.primaryCta
-        : HOME_FINAL_CTA_DEFAULTS.primaryCta,
+        : defaults.primaryCta,
       secondaryCta: isCtaLink(obj.secondaryCta)
         ? obj.secondaryCta
-        : HOME_FINAL_CTA_DEFAULTS.secondaryCta,
+        : defaults.secondaryCta,
     };
   } catch {
-    return { ...HOME_FINAL_CTA_DEFAULTS };
+    return { ...defaults };
   }
+}
+
+export function aboutStoryFromDefaults(): AboutStory {
+  return {
+    imageUrl: FALLBACK_STORY_IMAGE_URL,
+    imageAlt: ABOUT_STORY_DEFAULTS.imageAlt,
+    badge: ABOUT_STORY_DEFAULTS.badge,
+    title: ABOUT_STORY_DEFAULTS.title,
+    paragraph1: ABOUT_STORY_DEFAULTS.paragraph1,
+    paragraph2: ABOUT_STORY_DEFAULTS.paragraph2,
+    callout: {
+      iconKey: ABOUT_STORY_DEFAULTS.calloutIconKey,
+      title: ABOUT_STORY_DEFAULTS.calloutTitle,
+      body: ABOUT_STORY_DEFAULTS.calloutBody,
+      linkLabel: ABOUT_STORY_DEFAULTS.calloutLinkLabel,
+      linkUrl: ABOUT_STORY_DEFAULTS.calloutLinkUrl,
+    },
+  };
+}
+
+export function serializeAboutStory(row: AboutStoryRow): AboutStory {
+  return {
+    imageUrl: row.imageKey ? mediaUrl(row.imageKey) : FALLBACK_STORY_IMAGE_URL,
+    imageAlt: row.imageAlt,
+    badge: row.badge,
+    title: row.title,
+    paragraph1: row.paragraph1,
+    paragraph2: row.paragraph2,
+    callout: {
+      iconKey: row.calloutIconKey,
+      title: row.calloutTitle,
+      body: row.calloutBody,
+      linkLabel: row.calloutLinkLabel,
+      linkUrl: row.calloutLinkUrl,
+    },
+  };
+}
+
+export function serializeAboutValue(row: AboutValueRow): AboutValue {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    sortOrder: row.sortOrder,
+  };
 }

@@ -10,31 +10,20 @@ import {
   viewportOnce,
 } from '@/lib/motion';
 
-interface Value {
+type ValueCard = {
   title: string;
-  desc: string;
-}
+  description: string;
+};
 
-export default function ValuesSection() {
+type ValuesSectionProps = {
+  values: ValueCard[];
+};
+
+export default function ValuesSection({ values }: ValuesSectionProps) {
   const reduced = useReducedMotion();
   const container = getStaggerContainer(reduced);
   const item = getStaggerItem(reduced);
   const hover = getCardHover(reduced);
-
-  const values: Value[] = [
-    {
-      title: 'Simplicity First',
-      desc: 'Complex problems deserve simple solutions. We cut the clutter so you can focus.',
-    },
-    {
-      title: 'Built to Scale',
-      desc: "Whether you're 10 or 10,000 people, QTO-ERP grows with your organization.",
-    },
-    {
-      title: 'Customer Obsessed',
-      desc: 'Every feature starts with a real customer problem. We listen, build, and iterate.',
-    },
-  ];
 
   return (
     <section className='section-padding bg-muted/30'>
@@ -54,7 +43,7 @@ export default function ValuesSection() {
                   {v.title}
                 </h4>
                 <p className='text-sm leading-relaxed text-muted-foreground'>
-                  {v.desc}
+                  {v.description}
                 </p>
               </Card>
             </motion.div>

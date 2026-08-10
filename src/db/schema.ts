@@ -744,6 +744,51 @@ export const pageHeroContent = sqliteTable("page_hero_content", {
     .$onUpdateFn(() => new Date()),
 });
 
+/** Singleton Our Story block on /about (id = "default"). */
+export const aboutStory = sqliteTable("about_story", {
+  id: text("id").primaryKey(),
+  imageKey: text("image_key"),
+  imageAlt: text("image_alt").notNull(),
+  badge: text("badge").notNull(),
+  title: text("title").notNull(),
+  paragraph1: text("paragraph_1").notNull(),
+  paragraph2: text("paragraph_2").notNull(),
+  calloutIconKey: text("callout_icon_key").notNull(),
+  calloutTitle: text("callout_title").notNull(),
+  calloutBody: text("callout_body").notNull(),
+  calloutLinkLabel: text("callout_link_label").notNull(),
+  calloutLinkUrl: text("callout_link_url").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
+
+/** Values cards on /about. */
+export const aboutValues = sqliteTable(
+  "about_values",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    published: integer("published", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    index("about_values_published_idx").on(t.published),
+    index("about_values_sort_order_idx").on(t.sortOrder),
+  ],
+);
+
 export const usersRelations = relations(users, ({ many }) => ({
   blogPosts: many(blogPosts),
 }));
