@@ -8,6 +8,7 @@ import { FAQ_SECTION_KEY } from "@/lib/home-sections-defaults";
 
 export const FAQ_PAGE_KEY_HOME = "home" as const;
 export const FAQ_PAGE_KEY_PRICING = "pricing" as const;
+export const FAQ_PAGE_KEY_CONTACT = "contact" as const;
 
 export type FaqDefault = {
   pageKey: string;
@@ -166,6 +167,34 @@ export const PRICING_FAQS_DEFAULTS: FaqDefault[] = [
       "Yes. Cancel anytime with no penalties. You'll retain access until the end of your billing period.",
     category: null,
     sortOrder: 4,
+    published: true,
+  },
+];
+
+/** Contact page FAQs — source of truth for seed + runtime fallbacks. */
+export const CONTACT_FAQS_DEFAULTS: FaqDefault[] = [
+  {
+    pageKey: FAQ_PAGE_KEY_CONTACT,
+    question: "What are your business hours?",
+    answer: "Monday - Friday, 9AM - 6PM EST",
+    category: null,
+    sortOrder: 0,
+    published: true,
+  },
+  {
+    pageKey: FAQ_PAGE_KEY_CONTACT,
+    question: "How long does implementation take?",
+    answer: "Typically 2-8 weeks depending on complexity",
+    category: null,
+    sortOrder: 1,
+    published: true,
+  },
+  {
+    pageKey: FAQ_PAGE_KEY_CONTACT,
+    question: "Do you offer training?",
+    answer: "Yes, comprehensive training included with all plans",
+    category: null,
+    sortOrder: 2,
     published: true,
   },
 ];

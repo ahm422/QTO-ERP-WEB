@@ -4,6 +4,10 @@ import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core
 import type { AboutContentsType } from "@/types/about";
 import type { FAQsType } from "@/types/faq";
 import type { FeaturesType } from "@/types/feature";
+import type {
+  ModuleCapabilitiesType,
+  ModuleRolloutStepsType,
+} from "@/types/module-cms";
 import type { ProblemsType } from "@/types/problem";
 import type {
   SolutionFAQType,
@@ -12,6 +16,11 @@ import type {
 } from "@/types/solution";
 import type { TestimonialsType, TestimonialType } from "@/types/testimonial";
 import type { UseCasesType } from "@/types/useCase";
+import type {
+  ContactFormFieldOptions,
+  ContactResponseTimes,
+  ContactSupportCard,
+} from "@/lib/contact-page-defaults";
 import {
   blogPostStatuses,
   demoVideoStatuses,
@@ -197,6 +206,17 @@ export const erpModules = sqliteTable(
     features: text("features", { mode: "json" })
       .notNull()
       .$type<FeaturesType>(),
+    capabilities: text("capabilities", { mode: "json" })
+      .notNull()
+      .$type<ModuleCapabilitiesType>()
+      .default([]),
+    rolloutTag: text("rollout_tag"),
+    rolloutTitleTemplate: text("rollout_title_template"),
+    rolloutDescription: text("rollout_description"),
+    rolloutSteps: text("rollout_steps", { mode: "json" })
+      .notNull()
+      .$type<ModuleRolloutStepsType>()
+      .default([]),
     problems: text("problems", { mode: "json" })
       .notNull()
       .$type<ProblemsType>(),
@@ -788,6 +808,69 @@ export const aboutValues = sqliteTable(
     index("about_values_sort_order_idx").on(t.sortOrder),
   ],
 );
+
+/** Singleton /contact support section (id = "default"). */
+export const contactSupportContent = sqliteTable("contact_support_content", {
+  id: text("id").primaryKey(),
+  tag: text("tag").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  cards: text("cards", { mode: "json" })
+    .notNull()
+    .$type<ContactSupportCard[]>(),
+  responseTimes: text("response_times", { mode: "json" })
+    .notNull()
+    .$type<ContactResponseTimes>(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
+
+/** Contact channels for side panel + bottom cards. */
+export const contactChannels = sqliteTable(
+  "contact_channels",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    type: text("type").notNull(),
+    label: text("label").notNull(),
+    value: text("value").notNull(),
+    iconKey: text("icon_key").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    published: integer("published", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    index("contact_channels_published_idx").on(t.published),
+    index("contact_channels_sort_order_idx").on(t.sortOrder),
+    index("contact_channels_type_idx").on(t.type),
+  ],
+);
+
+/** Singleton /contact page form + FAQ chrome (id = "default"). */
+export const contactPageContent = sqliteTable("contact_page_content", {
+  id: text("id").primaryKey(),
+  sideTitle: text("side_title").notNull(),
+  sideDescription: text("side_description").notNull(),
+  formFieldOptions: text("form_field_options", { mode: "json" })
+    .notNull()
+    .$type<ContactFormFieldOptions>(),
+  faqTag: text("faq_tag").notNull(),
+  faqTitle: text("faq_title").notNull(),
+  faqDescription: text("faq_description").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+});
 
 export const usersRelations = relations(users, ({ many }) => ({
   blogPosts: many(blogPosts),

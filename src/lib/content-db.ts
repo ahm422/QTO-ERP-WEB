@@ -7,6 +7,9 @@ import {
   blogPosts,
   builtForCards,
   comparisonFeatures,
+  contactChannels,
+  contactPageContent,
+  contactSupportContent,
   demoPageContent,
   erpModules,
   faqs,
@@ -39,12 +42,23 @@ import {
   TRUSTED_LOGOS_DEFAULTS,
 } from "@/lib/home-sections-defaults";
 import {
+  FAQ_PAGE_KEY_CONTACT,
   FAQ_PAGE_KEY_HOME,
   FAQ_PAGE_KEY_PRICING,
   FAQ_SECTION_DEFAULT,
+  CONTACT_FAQS_DEFAULTS,
   HOME_FAQS_DEFAULTS,
   PRICING_FAQS_DEFAULTS,
 } from "@/lib/faqs-defaults";
+import {
+  CONTACT_CHANNELS_DEFAULTS,
+  CONTACT_PAGE_CONTENT_DEFAULTS,
+  CONTACT_PAGE_CONTENT_ID,
+  CONTACT_SUPPORT_CONTENT_DEFAULTS,
+  CONTACT_SUPPORT_CONTENT_ID,
+  DEFAULT_MODULE_ROLLOUT_SECTION,
+  DEFAULT_MODULE_ROLLOUT_STEPS,
+} from "@/lib/contact-page-defaults";
 import {
   HOME_FINAL_CTA_DEFAULTS,
   HOME_FINAL_CTA_KEY,
@@ -103,6 +117,9 @@ import type {
   AboutValue,
   BuiltForCard,
   BuiltForSection,
+  ContactChannel,
+  ContactPageContent,
+  ContactSupportContent,
   DemoPageContent,
   FaqItem,
   FooterContent,
@@ -117,6 +134,20 @@ import type {
   IndustryEcosystemSection,
   TrustedLogo,
 } from "@/types/content";
+import type { UpsertContactPageContentInput } from "@/lib/validations/admin-contact";
+import type { UpsertContactSupportContentInput } from "@/lib/validations/admin-contact";
+import type {
+  CreateContactChannelInput,
+  UpdateContactChannelInput,
+} from "@/lib/validations/admin-contact";
+import type {
+  CreateModuleInput,
+  UpdateModuleInput,
+} from "@/lib/validations/admin-modules";
+import type {
+  CreateSolutionInput,
+  UpdateSolutionInput,
+} from "@/lib/validations/admin-solutions";
 import type { UpdateHomeHeroInput } from "@/lib/validations/admin-home-hero";
 import type {
   CreateBuiltForCardInput,
@@ -1216,6 +1247,9 @@ export async function listPublishedFaqs(
       if (pageKey === FAQ_PAGE_KEY_PRICING) {
         return PRICING_FAQS_DEFAULTS.map(faqFromDefault);
       }
+      if (pageKey === FAQ_PAGE_KEY_CONTACT) {
+        return CONTACT_FAQS_DEFAULTS.map(faqFromDefault);
+      }
     }
     return rows.map(serializeFaq);
   } catch (err) {
@@ -1228,6 +1262,9 @@ export async function listPublishedFaqs(
       }
       if (pageKey === FAQ_PAGE_KEY_PRICING) {
         return PRICING_FAQS_DEFAULTS.map(faqFromDefault);
+      }
+      if (pageKey === FAQ_PAGE_KEY_CONTACT) {
+        return CONTACT_FAQS_DEFAULTS.map(faqFromDefault);
       }
       return [];
     }
@@ -1834,3 +1871,494 @@ export async function getAboutPageContent(): Promise<AboutPageContent> {
   ]);
   return { hero, story, values, cta };
 }
+
+// ─── Contact page CMS ────────────────────────────────────────────────────────
+
+function contactSupportFromDefaults(): ContactSupportContent {
+  return {
+    tag: CONTACT_SUPPORT_CONTENT_DEFAULTS.tag,
+    title: CONTACT_SUPPORT_CONTENT_DEFAULTS.title,
+    description: CONTACT_SUPPORT_CONTENT_DEFAULTS.description,
+    cards: CONTACT_SUPPORT_CONTENT_DEFAULTS.cards,
+    responseTimes: CONTACT_SUPPORT_CONTENT_DEFAULTS.responseTimes,
+  };
+}
+
+function serializeContactSupport(
+  row: InferSelectModel<typeof contactSupportContent>,
+): ContactSupportContent {
+  return {
+    tag: row.tag,
+    title: row.title,
+    description: row.description,
+    cards: row.cards,
+    responseTimes: row.responseTimes,
+  };
+}
+
+export async function getContactSupportContent(): Promise<ContactSupportContent> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(contactSupportContent)
+      .where(eq(contactSupportContent.id, CONTACT_SUPPORT_CONTENT_ID))
+      .limit(1);
+    if (!row) return contactSupportFromDefaults();
+    return serializeContactSupport(row);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] contact_support_content missing — using defaults",
+      );
+      return contactSupportFromDefaults();
+    }
+    throw err;
+  }
+}
+
+export async function upsertContactSupportContentAdmin(
+  data: UpsertContactSupportContentInput,
+): Promise<ContactSupportContent> {
+  const [row] = await (await getDb())
+    .insert(contactSupportContent)
+    .values({
+      id: CONTACT_SUPPORT_CONTENT_ID,
+      ...data,
+    })
+    .onConflictDoUpdate({
+      target: contactSupportContent.id,
+      set: data,
+    })
+    .returning();
+  return serializeContactSupport(row);
+}
+
+function contactPageFromDefaults(): ContactPageContent {
+  return {
+    sideTitle: CONTACT_PAGE_CONTENT_DEFAULTS.sideTitle,
+    sideDescription: CONTACT_PAGE_CONTENT_DEFAULTS.sideDescription,
+    formFieldOptions: CONTACT_PAGE_CONTENT_DEFAULTS.formFieldOptions,
+    faqTag: CONTACT_PAGE_CONTENT_DEFAULTS.faqTag,
+    faqTitle: CONTACT_PAGE_CONTENT_DEFAULTS.faqTitle,
+    faqDescription: CONTACT_PAGE_CONTENT_DEFAULTS.faqDescription,
+  };
+}
+
+function serializeContactPage(
+  row: InferSelectModel<typeof contactPageContent>,
+): ContactPageContent {
+  return {
+    sideTitle: row.sideTitle,
+    sideDescription: row.sideDescription,
+    formFieldOptions: row.formFieldOptions,
+    faqTag: row.faqTag,
+    faqTitle: row.faqTitle,
+    faqDescription: row.faqDescription,
+  };
+}
+
+export async function getContactPageContent(): Promise<ContactPageContent> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(contactPageContent)
+      .where(eq(contactPageContent.id, CONTACT_PAGE_CONTENT_ID))
+      .limit(1);
+    if (!row) return contactPageFromDefaults();
+    return serializeContactPage(row);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] contact_page_content missing — using defaults",
+      );
+      return contactPageFromDefaults();
+    }
+    throw err;
+  }
+}
+
+export async function upsertContactPageContentAdmin(
+  data: UpsertContactPageContentInput,
+): Promise<ContactPageContent> {
+  const [row] = await (await getDb())
+    .insert(contactPageContent)
+    .values({
+      id: CONTACT_PAGE_CONTENT_ID,
+      ...data,
+    })
+    .onConflictDoUpdate({
+      target: contactPageContent.id,
+      set: data,
+    })
+    .returning();
+  return serializeContactPage(row);
+}
+
+function serializeContactChannel(
+  row: InferSelectModel<typeof contactChannels>,
+): ContactChannel {
+  return {
+    id: row.id,
+    type: row.type,
+    label: row.label,
+    value: row.value,
+    iconKey: row.iconKey,
+    sortOrder: row.sortOrder,
+    published: row.published,
+  };
+}
+
+export async function listPublishedContactChannels(): Promise<ContactChannel[]> {
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(contactChannels)
+      .where(eq(contactChannels.published, true))
+      .orderBy(asc(contactChannels.sortOrder));
+    if (rows.length === 0) {
+      return CONTACT_CHANNELS_DEFAULTS.map((d, i) => ({
+        id: `default-channel-${i}`,
+        ...d,
+      }));
+    }
+    return rows.map(serializeContactChannel);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn("[content-db] contact_channels missing — using defaults");
+      return CONTACT_CHANNELS_DEFAULTS.map((d, i) => ({
+        id: `default-channel-${i}`,
+        ...d,
+      }));
+    }
+    throw err;
+  }
+}
+
+export async function listContactChannelsAdmin(): Promise<ContactChannel[]> {
+  const rows = await (await getDb())
+    .select()
+    .from(contactChannels)
+    .orderBy(asc(contactChannels.sortOrder));
+  return rows.map(serializeContactChannel);
+}
+
+export async function createContactChannelAdmin(
+  data: CreateContactChannelInput,
+): Promise<ContactChannel> {
+  const [{ maxSort }] = await (await getDb())
+    .select({ maxSort: max(contactChannels.sortOrder) })
+    .from(contactChannels);
+  const sortOrder = data.sortOrder ?? (maxSort ?? -1) + 1;
+  const [row] = await (await getDb())
+    .insert(contactChannels)
+    .values({
+      type: data.type,
+      label: data.label,
+      value: data.value,
+      iconKey: data.iconKey,
+      sortOrder,
+      published: data.published ?? true,
+    })
+    .returning();
+  return serializeContactChannel(row);
+}
+
+export async function updateContactChannelAdmin(
+  id: string,
+  data: UpdateContactChannelInput,
+): Promise<ContactChannel | null> {
+  const [row] = await (await getDb())
+    .update(contactChannels)
+    .set(data)
+    .where(eq(contactChannels.id, id))
+    .returning();
+  return row ? serializeContactChannel(row) : null;
+}
+
+export async function deleteContactChannelAdmin(id: string): Promise<boolean> {
+  const deleted = await (await getDb())
+    .delete(contactChannels)
+    .where(eq(contactChannels.id, id))
+    .returning({ id: contactChannels.id });
+  return deleted.length > 0;
+}
+
+export async function reorderContactChannelsAdmin(
+  orderedIds: string[],
+): Promise<void> {
+  await Promise.all(
+    orderedIds.map((id, index) =>
+      (async () => {
+        await (await getDb())
+          .update(contactChannels)
+          .set({ sortOrder: index })
+          .where(eq(contactChannels.id, id));
+      })(),
+    ),
+  );
+}
+
+// ─── Modules admin CRUD ──────────────────────────────────────────────────────
+
+export async function listModulesAdmin() {
+  const rows = await (await getDb())
+    .select()
+    .from(erpModules)
+    .orderBy(asc(erpModules.sortOrder), asc(erpModules.name));
+  return rows.map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    published: row.published,
+    sortOrder: row.sortOrder,
+    showInHeroOrbit: row.showInHeroOrbit,
+    iconKey: row.iconKey,
+    updatedAt: row.updatedAt.toISOString(),
+  }));
+}
+
+export async function getModuleAdminBySlug(slug: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(erpModules)
+    .where(eq(erpModules.slug, slug))
+    .limit(1);
+  if (!row) return null;
+  return {
+    ...serializeModuleDetail(row),
+    id: row.id,
+    published: row.published,
+    sortOrder: row.sortOrder,
+    showInHeroOrbit: row.showInHeroOrbit,
+    orbitRadius: row.orbitRadius,
+    orbitTilt: row.orbitTilt,
+    orbitPhase: row.orbitPhase,
+    orbitSpeed: row.orbitSpeed,
+    /** Raw DB image key (not mediaUrl-resolved) for admin editors. */
+    imageKey: row.image,
+    features: row.features,
+    aboutContents: row.aboutContents,
+    capabilities: row.capabilities ?? [],
+    rolloutTag: row.rolloutTag,
+    rolloutTitleTemplate: row.rolloutTitleTemplate,
+    rolloutDescription: row.rolloutDescription,
+    rolloutSteps: row.rolloutSteps ?? [],
+  };
+}
+
+export async function createModuleAdmin(data: CreateModuleInput) {
+  const [{ maxSort }] = await (await getDb())
+    .select({ maxSort: max(erpModules.sortOrder) })
+    .from(erpModules);
+  const sortOrder = data.sortOrder ?? (maxSort ?? -1) + 1;
+  const [row] = await (await getDb())
+    .insert(erpModules)
+    .values({
+      slug: data.slug,
+      name: data.name,
+      shortDescription: data.shortDescription,
+      image: data.image ?? null,
+      highlights: data.highlights,
+      bestFor: data.bestFor,
+      cardTagline: data.cardTagline ?? null,
+      iconKey: data.iconKey,
+      videoUrl: data.videoUrl,
+      videoCtaTitle: data.videoCtaTitle ?? null,
+      videoCtaDescription: data.videoCtaDescription ?? null,
+      heroHeadline: data.heroHeadline,
+      heroSubheadline: data.heroSubheadline,
+      heroCtaLabel: data.heroCtaLabel ?? null,
+      aboutTitle: data.aboutTitle,
+      aboutTag: data.aboutTag ?? null,
+      aboutDescription: data.aboutDescription,
+      aboutContents: (data.aboutContents as never) ?? null,
+      featuresSectionTitle: data.featuresSectionTitle ?? null,
+      features: data.features,
+      capabilities: data.capabilities ?? [],
+      rolloutTag:
+        data.rolloutTag ?? DEFAULT_MODULE_ROLLOUT_SECTION.tag,
+      rolloutTitleTemplate:
+        data.rolloutTitleTemplate ??
+        DEFAULT_MODULE_ROLLOUT_SECTION.titleTemplate,
+      rolloutDescription:
+        data.rolloutDescription ?? DEFAULT_MODULE_ROLLOUT_SECTION.description,
+      rolloutSteps:
+        data.rolloutSteps?.length
+          ? data.rolloutSteps
+          : [...DEFAULT_MODULE_ROLLOUT_STEPS],
+      problems: (data.problems as never) ?? [],
+      testimonialsSectionTag: data.testimonialsSectionTag ?? null,
+      testimonialsSectionTitle: data.testimonialsSectionTitle ?? null,
+      testimonialsSectionDescription:
+        data.testimonialsSectionDescription ?? null,
+      useCases: (data.useCases as never) ?? [],
+      testimonials: (data.testimonials as never) ?? [],
+      faqs: (data.faqs as never) ?? [],
+      sortOrder,
+      published: data.published ?? false,
+      showInHeroOrbit: data.showInHeroOrbit ?? false,
+      orbitRadius: data.orbitRadius ?? null,
+      orbitTilt: data.orbitTilt ?? null,
+      orbitPhase: data.orbitPhase ?? null,
+      orbitSpeed: data.orbitSpeed ?? null,
+    })
+    .returning();
+  return getModuleAdminBySlug(row.slug);
+}
+
+export async function updateModuleAdmin(slug: string, data: UpdateModuleInput) {
+  const [existing] = await (await getDb())
+    .select({ id: erpModules.id })
+    .from(erpModules)
+    .where(eq(erpModules.slug, slug))
+    .limit(1);
+  if (!existing) return null;
+
+  const patch: Record<string, unknown> = { ...data };
+  if ("aboutContents" in data) {
+    patch.aboutContents = data.aboutContents as never;
+  }
+  if ("problems" in data) patch.problems = data.problems as never;
+  if ("useCases" in data) patch.useCases = data.useCases as never;
+  if ("testimonials" in data) patch.testimonials = data.testimonials as never;
+  if ("faqs" in data) patch.faqs = data.faqs as never;
+
+  const [row] = await (await getDb())
+    .update(erpModules)
+    .set(patch)
+    .where(eq(erpModules.slug, slug))
+    .returning();
+  return row ? getModuleAdminBySlug(row.slug) : null;
+}
+
+export async function deleteModuleAdmin(slug: string): Promise<boolean> {
+  const deleted = await (await getDb())
+    .delete(erpModules)
+    .where(eq(erpModules.slug, slug))
+    .returning({ id: erpModules.id });
+  return deleted.length > 0;
+}
+
+export async function reorderModulesAdmin(orderedIds: string[]): Promise<void> {
+  await Promise.all(
+    orderedIds.map((id, index) =>
+      (async () => {
+        await (await getDb())
+          .update(erpModules)
+          .set({ sortOrder: index })
+          .where(eq(erpModules.id, id));
+      })(),
+    ),
+  );
+}
+
+// ─── Solutions admin CRUD ────────────────────────────────────────────────────
+
+export async function listSolutionsAdmin() {
+  const rows = await (await getDb())
+    .select()
+    .from(solutions)
+    .orderBy(asc(solutions.sortOrder), asc(solutions.title));
+  return rows.map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    audience: row.audience,
+    published: row.published,
+    sortOrder: row.sortOrder,
+    updatedAt: row.updatedAt.toISOString(),
+  }));
+}
+
+export async function getSolutionAdminBySlug(slug: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(solutions)
+    .where(eq(solutions.slug, slug))
+    .limit(1);
+  if (!row) return null;
+  return {
+    ...serializeSolutionDetail(row),
+    id: row.id,
+    published: row.published,
+    sortOrder: row.sortOrder,
+  };
+}
+
+export async function createSolutionAdmin(data: CreateSolutionInput) {
+  const [{ maxSort }] = await (await getDb())
+    .select({ maxSort: max(solutions.sortOrder) })
+    .from(solutions);
+  const sortOrder = data.sortOrder ?? (maxSort ?? -1) + 1;
+  const [row] = await (await getDb())
+    .insert(solutions)
+    .values({
+      slug: data.slug,
+      title: data.title,
+      audience: data.audience,
+      heroHeadline: data.heroHeadline,
+      heroSubheadline: data.heroSubheadline,
+      problems: (data.problems as never) ?? [],
+      recommendedModules: data.recommendedModules,
+      testimonial: (data.testimonial as never) ?? {
+        quote: "",
+        author: "",
+        role: "",
+      },
+      solutionFaqs: (data.solutionFaqs as never) ?? [],
+      useCases: (data.useCases as never) ?? null,
+      sortOrder,
+      published: data.published ?? false,
+    })
+    .returning();
+  return getSolutionAdminBySlug(row.slug);
+}
+
+export async function updateSolutionAdmin(
+  slug: string,
+  data: UpdateSolutionInput,
+) {
+  const [existing] = await (await getDb())
+    .select({ id: solutions.id })
+    .from(solutions)
+    .where(eq(solutions.slug, slug))
+    .limit(1);
+  if (!existing) return null;
+
+  const patch: Record<string, unknown> = { ...data };
+  if ("problems" in data) patch.problems = data.problems as never;
+  if ("testimonial" in data) patch.testimonial = data.testimonial as never;
+  if ("solutionFaqs" in data) patch.solutionFaqs = data.solutionFaqs as never;
+  if ("useCases" in data) patch.useCases = data.useCases as never;
+
+  const [row] = await (await getDb())
+    .update(solutions)
+    .set(patch)
+    .where(eq(solutions.slug, slug))
+    .returning();
+  return row ? getSolutionAdminBySlug(row.slug) : null;
+}
+
+export async function deleteSolutionAdmin(slug: string): Promise<boolean> {
+  const deleted = await (await getDb())
+    .delete(solutions)
+    .where(eq(solutions.slug, slug))
+    .returning({ id: solutions.id });
+  return deleted.length > 0;
+}
+
+export async function reorderSolutionsAdmin(
+  orderedIds: string[],
+): Promise<void> {
+  await Promise.all(
+    orderedIds.map((id, index) =>
+      (async () => {
+        await (await getDb())
+          .update(solutions)
+          .set({ sortOrder: index })
+          .where(eq(solutions.id, id));
+      })(),
+    ),
+  );
+}
+

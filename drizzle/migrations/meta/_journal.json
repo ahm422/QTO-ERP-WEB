@@ -71,6 +71,13 @@
       "when": 1786354237277,
       "tag": "0009_typical_inhumans",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1786358648558,
+      "tag": "0010_curved_krista_starr",
+      "breakpoints": true
     }
   ]
 }

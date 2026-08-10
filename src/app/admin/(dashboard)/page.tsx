@@ -4,15 +4,21 @@ import { getDb } from "@/lib/db";
 import {
   blogPosts,
   comparisonFeatures,
+  contactInquiries,
   demoRequests,
   demoVideos,
+  erpModules,
   pricingPlans,
+  solutions,
 } from "@/db/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-
 const sections = [
   { href: "/admin/demo-requests", label: "Demo requests" },
+  { href: "/admin/contact-inquiries", label: "Contact inquiries" },
+  { href: "/admin/contact", label: "Contact page" },
+  { href: "/admin/modules", label: "Modules" },
+  { href: "/admin/solutions", label: "Solutions" },
   { href: "/admin/blog", label: "Blog" },
   { href: "/admin/pricing", label: "Pricing" },
   { href: "/admin/demo-videos", label: "Demo videos" },
@@ -23,20 +29,29 @@ export default async function AdminDashboardPage() {
   const db = await getDb();
   const [
     [{ value: demoRequestCount }],
+    [{ value: contactInquiryCount }],
     [{ value: blogPostCount }],
     [{ value: pricingPlanCount }],
     [{ value: demoVideoCount }],
     [{ value: comparisonRowCount }],
+    [{ value: moduleCount }],
+    [{ value: solutionCount }],
   ] = await Promise.all([
     db.select({ value: count() }).from(demoRequests),
+    db.select({ value: count() }).from(contactInquiries),
     db.select({ value: count() }).from(blogPosts),
     db.select({ value: count() }).from(pricingPlans),
     db.select({ value: count() }).from(demoVideos),
     db.select({ value: count() }).from(comparisonFeatures),
+    db.select({ value: count() }).from(erpModules),
+    db.select({ value: count() }).from(solutions),
   ]);
 
   const counts = [
     { label: "Demo requests", value: demoRequestCount },
+    { label: "Contact inquiries", value: contactInquiryCount },
+    { label: "Modules", value: moduleCount },
+    { label: "Solutions", value: solutionCount },
     { label: "Blog posts", value: blogPostCount },
     { label: "Pricing plans", value: pricingPlanCount },
     { label: "Demo videos", value: demoVideoCount },

@@ -53,6 +53,39 @@ import {
 import { ABOUT_FINAL_CTA_DEFAULTS } from "@/lib/about-cta-defaults";
 
 type ErpModule = InferSelectModel<typeof erpModules>;
+
+/** Resolve stored image path: R2 key → /api/media/…; leave absolute/public paths as-is. */
+function resolveMediaPath(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  if (
+    value.startsWith("/") ||
+    value.startsWith("http://") ||
+    value.startsWith("https://")
+  ) {
+    return value;
+  }
+  return mediaUrl(value);
+}
+
+function serializeFeatures(features: ErpModule["features"]): ModuleDetail["features"] {
+  return features.map((f) => ({
+    title: f.title,
+    description: f.description,
+    icon: f.icon,
+    imageKey: f.imageKey,
+    imageUrl: resolveMediaPath(f.imageKey) ?? f.imageUrl,
+  }));
+}
+
+function serializeAboutContents(
+  contents: ErpModule["aboutContents"],
+): ModuleDetail["aboutContents"] {
+  if (!contents) return undefined;
+  return contents.map((c) => ({
+    ...c,
+    image: resolveMediaPath(c.image) ?? c.image,
+  }));
+}
 type Solution = InferSelectModel<typeof solutions>;
 type BlogPost = InferSelectModel<typeof blogPosts>;
 type ComparisonFeature = InferSelectModel<typeof comparisonFeatures>;
@@ -76,7 +109,7 @@ export function serializeModuleSummary(m: ErpModule): ModuleSummary {
     slug: m.slug,
     name: m.name,
     shortDescription: m.shortDescription,
-    image: m.image ?? undefined,
+    image: resolveMediaPath(m.image) ?? undefined,
     iconKey: m.iconKey,
     cardTagline: m.cardTagline ?? undefined,
     highlights: m.highlights,
@@ -96,9 +129,14 @@ export function serializeModuleDetail(m: ErpModule): ModuleDetail {
     aboutTitle: m.aboutTitle,
     aboutTag: m.aboutTag ?? undefined,
     aboutDescription: m.aboutDescription,
-    aboutContents: m.aboutContents ?? undefined,
+    aboutContents: serializeAboutContents(m.aboutContents),
     featuresSectionTitle: m.featuresSectionTitle ?? undefined,
-    features: m.features,
+    features: serializeFeatures(m.features),
+    capabilities: m.capabilities ?? [],
+    rolloutTag: m.rolloutTag ?? undefined,
+    rolloutTitleTemplate: m.rolloutTitleTemplate ?? undefined,
+    rolloutDescription: m.rolloutDescription ?? undefined,
+    rolloutSteps: m.rolloutSteps ?? [],
     problems: m.problems,
     testimonialsSectionTag: m.testimonialsSectionTag ?? undefined,
     testimonialsSectionTitle: m.testimonialsSectionTitle ?? undefined,

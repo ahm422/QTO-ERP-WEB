@@ -12,12 +12,16 @@ import {
   Briefcase,
   MessageCircle,
   Tag,
-  PhoneCall,
   Zap,
-  type LucideIcon,
 } from 'lucide-react';
 import { MarketingButton } from '@/components/ui/marketing-button';
+import { getContactIcon } from '@/lib/icon-map';
 import { getFadeInUp, viewportOnce } from '@/lib/motion';
+import type {
+  ContactPageContent,
+  ContactChannel,
+} from '@/types/content';
+import type { ContactResponseTimes } from '@/lib/contact-page-defaults';
 
 interface FormData {
   name: string;
@@ -33,25 +37,14 @@ interface FormErrors {
   [key: string]: string;
 }
 
-const companySizes = [
-  { value: '1-10', label: '1-10 Employees' },
-  { value: '11-50', label: '11-50 Employees' },
-  { value: '51-200', label: '51-200 Employees' },
-  { value: '201-500', label: '201-500 Employees' },
-  { value: '501-1000', label: '501-1000 Employees' },
-  { value: '1000+', label: '1000+ Employees' },
-];
+type ContactFormProps = {
+  page: ContactPageContent;
+  channels: ContactChannel[];
+  responseTimes: ContactResponseTimes;
+};
 
-const subjectOptions = [
-  { value: 'general', label: 'General Inquiry' },
-  { value: 'sales', label: 'Sales Inquiry' },
-  { value: 'support', label: 'Technical Support' },
-  { value: 'partnership', label: 'Partnership Opportunity' },
-  { value: 'feedback', label: 'Feedback' },
-  { value: 'other', label: 'Other' },
-];
-
-const ContactForm = () => {
+const ContactForm = ({ page, channels, responseTimes }: ContactFormProps) => {
+  const { formFieldOptions } = page;
   const reduced = useReducedMotion();
   const fadeUp = getFadeInUp(reduced);
 
@@ -164,7 +157,8 @@ const ContactForm = () => {
 
       setStatus('success');
       setStatusMessage(
-        'Thank you for reaching out! We will get back to you shortly.',
+        formFieldOptions.successMessage ??
+          'Thank you for reaching out! We will get back to you shortly.',
       );
       setFormData({
         name: '',
@@ -176,11 +170,10 @@ const ContactForm = () => {
         message: '',
       });
 
-      // Reset success state after 5 seconds
       setTimeout(() => {
         setStatus('idle');
       }, 5000);
-    } catch (error) {
+    } catch {
       setStatus('error');
       setStatusMessage('Something went wrong. Please try again.');
     } finally {
@@ -192,7 +185,6 @@ const ContactForm = () => {
     <section className='relative section-padding overflow-hidden bg-background'>
       <div className='container-main relative z-10'>
         <div className='grid grid-cols-1 items-start gap-8 lg:grid-cols-3'>
-          {/* Left Column - Info */}
           <motion.div
             variants={fadeUp}
             initial='hidden'
@@ -202,54 +194,33 @@ const ContactForm = () => {
           >
             <div>
               <h2 className='mb-3 font-display text-3xl font-bold leading-tight text-foreground md:text-4xl'>
-                We&apos;re Here To Help
+                {page.sideTitle}
               </h2>
               <p className='text-lg text-muted-foreground leading-relaxed'>
-                Questions? Issues? Ideas? Send us a message and our dedicated
-                support team will get back to you as soon as possible.
+                {page.sideDescription}
               </p>
             </div>
-            {/* Contact Methods */}
             <div className='space-y-4'>
-              {(
-                [
-                  {
-                    icon: Mail,
-                    title: 'Email Support',
-                    desc: 'support@erpqto.com',
-                  },
-                  {
-                    icon: PhoneCall,
-                    title: 'Phone Support',
-                    desc: '+1 (800) 123-4567',
-                  },
-                  {
-                    icon: MessageCircle,
-                    title: 'Live Chat',
-                    desc: 'Real-time assistance',
-                  },
-                ] satisfies { icon: LucideIcon; title: string; desc: string }[]
-              ).map((item) => {
-                const Icon = item.icon;
+              {channels.map((item) => {
+                const Icon = getContactIcon(item.iconKey);
                 return (
-                <div
-                  key={item.title}
-                  className='flex items-start gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-accent/40 hover:bg-muted'
-                >
-                  <div className='flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent/10'>
-                    <Icon className='size-4 text-accent' />
+                  <div
+                    key={item.id}
+                    className='flex items-start gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-accent/40 hover:bg-muted'
+                  >
+                    <div className='flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent/10'>
+                      <Icon className='size-4 text-accent' />
+                    </div>
+                    <div>
+                      <p className='text-sm font-semibold text-foreground'>
+                        {item.label}
+                      </p>
+                      <p className='text-xs text-muted-foreground'>{item.value}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className='text-sm font-semibold text-foreground'>
-                       {item.title}
-                    </p>
-                    <p className='text-xs text-muted-foreground'>{item.desc}</p>
-                  </div>
-                </div>
-              );
+                );
               })}
             </div>
-            {/* Response Time Card */}
             <div className='rounded-xl border border-border bg-muted/50 p-4'>
               <p className='mb-2 flex items-center gap-1.5 text-sm font-semibold text-foreground'>
                 <Zap className='size-4 shrink-0 text-accent' />
@@ -257,18 +228,17 @@ const ContactForm = () => {
               </p>
               <p className='mb-1 text-xs text-muted-foreground'>
                 <span className='font-semibold text-foreground'>Typical: </span>
-                2-4 hours
+                {responseTimes.typical}
               </p>
               <p className='text-xs text-muted-foreground'>
                 <span className='font-semibold text-foreground'>
                   Priority Issues:{' '}
                 </span>
-                Within 1 hour
+                {responseTimes.priority}
               </p>
             </div>
           </motion.div>
 
-          {/* Right Column - Form */}
           <motion.div
             variants={fadeUp}
             initial='hidden'
@@ -281,15 +251,13 @@ const ContactForm = () => {
               className='relative space-y-6 overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-[var(--card-shadow)]'
             >
               <div className='relative z-10 space-y-6'>
-                {/* Name Field */}
-                <div
-                  className='flex flex-col'
-                >
+                <div className='flex flex-col'>
                   <label
                     htmlFor='name'
                     className='text-sm font-semibold text-foreground mb-2'
                   >
-                    Full Name <span className='text-accent'>*</span>
+                    {formFieldOptions.labels.name}{' '}
+                    <span className='text-accent'>*</span>
                   </label>
                   <div className='relative flex items-center'>
                     <User className='absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none' />
@@ -299,7 +267,7 @@ const ContactForm = () => {
                       name='name'
                       value={formData.name}
                       onChange={handleChange}
-                      placeholder='John Doe'
+                      placeholder={formFieldOptions.placeholders.name}
                       disabled={isLoading || status === 'success'}
                       className={`w-full pl-11 pr-4 py-3.5 rounded-xl border bg-background/50 text-foreground placeholder-muted-foreground transition-all focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm ${
                         errors.name
@@ -315,17 +283,14 @@ const ContactForm = () => {
                   )}
                 </div>
 
-                {/* Two Column Row - Email and Phone */}
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {/* Email Field */}
-                  <div
-                    className='flex flex-col'
-                  >
+                  <div className='flex flex-col'>
                     <label
                       htmlFor='email'
                       className='text-sm font-semibold text-foreground mb-2'
                     >
-                      Email Address <span className='text-accent'>*</span>
+                      {formFieldOptions.labels.email}{' '}
+                      <span className='text-accent'>*</span>
                     </label>
                     <div className='relative flex items-center'>
                       <Mail className='absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none' />
@@ -335,7 +300,7 @@ const ContactForm = () => {
                         name='email'
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder='john@company.com'
+                        placeholder={formFieldOptions.placeholders.email}
                         disabled={isLoading || status === 'success'}
                         className={`w-full pl-11 pr-4 py-3.5 rounded-xl border bg-background/50 text-foreground placeholder-muted-foreground transition-all focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm ${
                           errors.email
@@ -351,15 +316,13 @@ const ContactForm = () => {
                     )}
                   </div>
 
-                  {/* Phone Field */}
-                  <div
-                    className='flex flex-col'
-                  >
+                  <div className='flex flex-col'>
                     <label
                       htmlFor='phone'
                       className='text-sm font-semibold text-foreground mb-2'
                     >
-                      Phone Number <span className='text-accent'>*</span>
+                      {formFieldOptions.labels.phone}{' '}
+                      <span className='text-accent'>*</span>
                     </label>
                     <div className='relative flex items-center'>
                       <Phone className='absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none' />
@@ -369,7 +332,7 @@ const ContactForm = () => {
                         name='phone'
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder='+1 (555) 123-4567'
+                        placeholder={formFieldOptions.placeholders.phone}
                         disabled={isLoading || status === 'success'}
                         className={`w-full pl-11 pr-4 py-3.5 rounded-xl border bg-background/50 text-foreground placeholder-muted-foreground transition-all focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm ${
                           errors.phone
@@ -386,17 +349,14 @@ const ContactForm = () => {
                   </div>
                 </div>
 
-                {/* Two Column Row - Company and Company Size */}
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {/* Company Field */}
-                  <div
-                    className='flex flex-col'
-                  >
+                  <div className='flex flex-col'>
                     <label
                       htmlFor='company'
                       className='text-sm font-semibold text-foreground mb-2'
                     >
-                      Company Name <span className='text-accent'>*</span>
+                      {formFieldOptions.labels.company}{' '}
+                      <span className='text-accent'>*</span>
                     </label>
                     <div className='relative flex items-center'>
                       <Building2 className='absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none' />
@@ -406,7 +366,7 @@ const ContactForm = () => {
                         name='company'
                         value={formData.company}
                         onChange={handleChange}
-                        placeholder='Acme Corporation'
+                        placeholder={formFieldOptions.placeholders.company}
                         disabled={isLoading || status === 'success'}
                         className={`w-full pl-11 pr-4 py-3.5 rounded-xl border bg-background/50 text-foreground placeholder-muted-foreground transition-all focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm ${
                           errors.company
@@ -422,15 +382,13 @@ const ContactForm = () => {
                     )}
                   </div>
 
-                  {/* Company Size Field */}
-                  <div
-                    className='flex flex-col'
-                  >
+                  <div className='flex flex-col'>
                     <label
                       htmlFor='companySize'
                       className='text-sm font-semibold text-foreground mb-2'
                     >
-                      Company Size <span className='text-accent'>*</span>
+                      {formFieldOptions.labels.companySize}{' '}
+                      <span className='text-accent'>*</span>
                     </label>
                     <div className='relative flex items-center'>
                       <Briefcase className='absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none' />
@@ -446,8 +404,10 @@ const ContactForm = () => {
                             : 'border-border/50 hover:border-border/80 focus:bg-background/80'
                         }`}
                       >
-                        <option value=''>Select size</option>
-                        {companySizes.map((size) => (
+                        <option value=''>
+                          {formFieldOptions.placeholders.companySize}
+                        </option>
+                        {formFieldOptions.companySizes.map((size) => (
                           <option key={size.value} value={size.value}>
                             {size.label}
                           </option>
@@ -462,15 +422,13 @@ const ContactForm = () => {
                   </div>
                 </div>
 
-                {/* Subject Field */}
-                <div
-                  className='flex flex-col'
-                >
+                <div className='flex flex-col'>
                   <label
                     htmlFor='subject'
                     className='text-sm font-semibold text-foreground mb-2'
                   >
-                    Subject <span className='text-accent'>*</span>
+                    {formFieldOptions.labels.subject}{' '}
+                    <span className='text-accent'>*</span>
                   </label>
                   <div className='relative flex items-center'>
                     <Tag className='absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none' />
@@ -486,8 +444,10 @@ const ContactForm = () => {
                           : 'border-border/50 hover:border-border/80 focus:bg-background/80'
                       }`}
                     >
-                      <option value=''>Select subject</option>
-                      {subjectOptions.map((subject) => (
+                      <option value=''>
+                        {formFieldOptions.placeholders.subject}
+                      </option>
+                      {formFieldOptions.subjects.map((subject) => (
                         <option key={subject.value} value={subject.value}>
                           {subject.label}
                         </option>
@@ -501,15 +461,13 @@ const ContactForm = () => {
                   )}
                 </div>
 
-                {/* Message Field */}
-                <div
-                  className='flex flex-col'
-                >
+                <div className='flex flex-col'>
                   <label
                     htmlFor='message'
                     className='text-sm font-semibold text-foreground mb-2'
                   >
-                    Message <span className='text-accent'>*</span>
+                    {formFieldOptions.labels.message}{' '}
+                    <span className='text-accent'>*</span>
                   </label>
                   <div className='relative flex items-start'>
                     <MessageCircle className='absolute left-4 top-3.5 h-5 w-5 text-muted-foreground pointer-events-none' />
@@ -518,7 +476,7 @@ const ContactForm = () => {
                       name='message'
                       value={formData.message}
                       onChange={handleChange}
-                      placeholder='Tell us more about your inquiry...'
+                      placeholder={formFieldOptions.placeholders.message}
                       disabled={isLoading || status === 'success'}
                       rows={5}
                       className={`w-full pl-11 pr-4 py-3.5 rounded-xl border bg-background/50 text-foreground placeholder-muted-foreground transition-all focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm resize-none ${
@@ -535,10 +493,7 @@ const ContactForm = () => {
                   )}
                 </div>
 
-                {/* Submit Button */}
-                <div
-                  className='flex gap-3 pt-4'
-                >
+                <div className='flex gap-3 pt-4'>
                   <MarketingButton
                     type='submit'
                     disabled={isLoading || status === 'success'}
@@ -558,25 +513,20 @@ const ContactForm = () => {
                         Message Sent!
                       </>
                     ) : (
-                      'Send Message'
+                      formFieldOptions.submitLabel ?? 'Send Message'
                     )}
                   </MarketingButton>
                 </div>
 
-                {/* Status Messages */}
                 {status === 'error' && (
-                  <div
-                    className='p-4 rounded-xl bg-destructive/10 border border-destructive/30 flex items-start gap-3'
-                  >
+                  <div className='p-4 rounded-xl bg-destructive/10 border border-destructive/30 flex items-start gap-3'>
                     <AlertCircle className='h-5 w-5 text-destructive shrink-0 mt-0.5' />
                     <p className='text-sm text-destructive'>{statusMessage}</p>
                   </div>
                 )}
 
                 {status === 'success' && (
-                  <div
-                    className='flex items-start gap-3 rounded-xl border border-success/30 bg-success/10 p-4'
-                  >
+                  <div className='flex items-start gap-3 rounded-xl border border-success/30 bg-success/10 p-4'>
                     <Check className='mt-0.5 size-5 shrink-0 text-success' />
                     <p className='text-sm text-success'>{statusMessage}</p>
                   </div>
