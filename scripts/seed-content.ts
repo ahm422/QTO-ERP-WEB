@@ -12,6 +12,7 @@ import {
   homeHero,
   homeSections,
   homeStats,
+  industryDomains,
   navResources,
   pricingPlans,
   siteSettings,
@@ -22,9 +23,11 @@ import { HOME_HERO_DEFAULTS, HOME_HERO_ID, ORBIT_SEED_BY_SLUG } from "../src/lib
 import {
   BUILT_FOR_CARDS_DEFAULTS,
   BUILT_FOR_SECTION_DEFAULT,
+  ECOSYSTEM_SECTION_DEFAULT,
   HOME_STATS_DEFAULTS,
   TRUSTED_LOGOS_DEFAULTS,
 } from "../src/lib/home-sections-defaults";
+import { INDUSTRY_DOMAINS_DEFAULTS } from "../src/lib/industry-domains-defaults";
 import type { PlatformType } from "../src/types/appModule";
 import type { ScriptDb } from "./db";
 import { seedTrustedLogoObjectsToR2 } from "./seed-trusted-logos-r2";
@@ -451,5 +454,44 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     console.log(`Seeded ${BUILT_FOR_CARDS_DEFAULTS.length} built-for cards`);
   } else {
     console.log("Built-for cards already present — skip insert");
+  }
+
+  await db
+    .insert(homeSections)
+    .values({
+      sectionKey: ECOSYSTEM_SECTION_DEFAULT.sectionKey,
+      tag: ECOSYSTEM_SECTION_DEFAULT.tag,
+      title: ECOSYSTEM_SECTION_DEFAULT.title,
+      accent: ECOSYSTEM_SECTION_DEFAULT.accent,
+      description: ECOSYSTEM_SECTION_DEFAULT.description,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded ecosystem home section header");
+
+  const [{ domainsCount }] = await db
+    .select({ domainsCount: count() })
+    .from(industryDomains);
+  if ((domainsCount ?? 0) === 0) {
+    await db.insert(industryDomains).values(
+      INDUSTRY_DOMAINS_DEFAULTS.map((domain) => ({
+        id: createId(),
+        slug: domain.slug,
+        name: domain.name,
+        orderIndex: domain.orderIndex,
+        systemsCount: domain.systemsCount,
+        iconKey: domain.iconKey,
+        description: domain.description,
+        leaders: JSON.stringify(domain.leaders),
+        ctaLabel: domain.ctaLabel,
+        ctaUrl: domain.ctaUrl,
+        sortOrder: domain.sortOrder,
+        published: domain.published,
+      })),
+    );
+    console.log(
+      `Seeded ${INDUSTRY_DOMAINS_DEFAULTS.length} industry domains`,
+    );
+  } else {
+    console.log("Industry domains already present — skip insert");
   }
 }

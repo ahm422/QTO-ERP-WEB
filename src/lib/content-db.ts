@@ -9,6 +9,7 @@ import {
   homeHero,
   homeSections,
   homeStats,
+  industryDomains,
   navResources,
   pricingPlans,
   solutions,
@@ -23,9 +24,15 @@ import {
   BUILT_FOR_CARDS_DEFAULTS,
   BUILT_FOR_SECTION_DEFAULT,
   BUILT_FOR_SECTION_KEY,
+  ECOSYSTEM_SECTION_DEFAULT,
+  ECOSYSTEM_SECTION_KEY,
   HOME_STATS_DEFAULTS,
   TRUSTED_LOGOS_DEFAULTS,
 } from "@/lib/home-sections-defaults";
+import {
+  INDUSTRY_DOMAINS_DEFAULTS,
+  orderIndexFromSortOrder,
+} from "@/lib/industry-domains-defaults";
 import {
   serializeBlogDetail,
   serializeBlogSummary,
@@ -35,6 +42,7 @@ import {
   serializeHomeHero,
   serializeHomeSection,
   serializeHomeStat,
+  serializeIndustryDomain,
   serializePricingPlan,
   serializeModuleDetail,
   serializeModuleSummary,
@@ -48,6 +56,8 @@ import type {
   HomeHero,
   HomeSectionHeader,
   HomeStat,
+  IndustryDomainSummary,
+  IndustryEcosystemSection,
   TrustedLogo,
 } from "@/types/content";
 import type { UpdateHomeHeroInput } from "@/lib/validations/admin-home-hero";
@@ -56,6 +66,10 @@ import type {
   UpdateBuiltForCardInput,
   UpdateHomeSectionInput,
 } from "@/lib/validations/admin-built-for";
+import type {
+  CreateIndustryDomainInput,
+  UpdateIndustryDomainInput,
+} from "@/lib/validations/admin-industry-domains";
 import type {
   CreateHomeStatInput,
   UpdateHomeStatInput,
@@ -779,6 +793,14 @@ export async function getHomeSection(
       description: BUILT_FOR_SECTION_DEFAULT.description,
     };
   }
+  if (sectionKey === ECOSYSTEM_SECTION_KEY) {
+    return {
+      tag: ECOSYSTEM_SECTION_DEFAULT.tag,
+      title: ECOSYSTEM_SECTION_DEFAULT.title,
+      accent: ECOSYSTEM_SECTION_DEFAULT.accent,
+      description: ECOSYSTEM_SECTION_DEFAULT.description,
+    };
+  }
   return { tag: "", title: "", accent: "", description: "" };
 }
 
@@ -910,4 +932,174 @@ export async function getBuiltForCardByIdAdmin(id: string) {
     .where(eq(builtForCards.id, id))
     .limit(1);
   return row ?? null;
+}
+
+// ─── Industry ecosystems ─────────────────────────────────────────────────────
+
+function industryDomainFromDefault(
+  d: (typeof INDUSTRY_DOMAINS_DEFAULTS)[number],
+  index: number,
+): IndustryDomainSummary {
+  return {
+    id: `default-industry-domain-${index}`,
+    slug: d.slug,
+    name: d.name,
+    orderIndex: d.orderIndex,
+    systemsCount: d.systemsCount,
+    iconKey: d.iconKey,
+    description: d.description,
+    leaders: d.leaders,
+    ctaLabel: d.ctaLabel,
+    ctaUrl: d.ctaUrl,
+    sortOrder: d.sortOrder,
+  };
+}
+
+export async function listPublishedIndustryDomains(): Promise<
+  IndustryDomainSummary[]
+> {
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(industryDomains)
+      .where(eq(industryDomains.published, true))
+      .orderBy(asc(industryDomains.sortOrder), asc(industryDomains.name));
+    if (rows.length === 0) {
+      return INDUSTRY_DOMAINS_DEFAULTS.map(industryDomainFromDefault);
+    }
+    return rows.map(serializeIndustryDomain);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] industry_domains missing — using defaults (run db:migrate:local)",
+      );
+      return INDUSTRY_DOMAINS_DEFAULTS.map(industryDomainFromDefault);
+    }
+    throw err;
+  }
+}
+
+export async function getIndustryEcosystemSection(): Promise<IndustryEcosystemSection> {
+  const [section, domains] = await Promise.all([
+    getHomeSection(ECOSYSTEM_SECTION_KEY),
+    listPublishedIndustryDomains(),
+  ]);
+  return { section, domains };
+}
+
+export async function listIndustryDomainsAdmin() {
+  const rows = await (await getDb())
+    .select()
+    .from(industryDomains)
+    .orderBy(asc(industryDomains.sortOrder), asc(industryDomains.name));
+  return rows.map((row) => ({
+    ...serializeIndustryDomain(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  }));
+}
+
+export async function createIndustryDomainAdmin(
+  data: CreateIndustryDomainInput,
+) {
+  const db = await getDb();
+  let sortOrder = data.sortOrder;
+  if (sortOrder === undefined) {
+    const [result] = await db
+      .select({ maxSort: max(industryDomains.sortOrder) })
+      .from(industryDomains);
+    sortOrder = (result?.maxSort ?? -1) + 1;
+  }
+  const orderIndex =
+    data.orderIndex ?? orderIndexFromSortOrder(sortOrder);
+  const [row] = await db
+    .insert(industryDomains)
+    .values({
+      slug: data.slug,
+      name: data.name,
+      orderIndex,
+      systemsCount: data.systemsCount,
+      iconKey: data.iconKey,
+      description: data.description,
+      leaders: JSON.stringify(data.leaders ?? []),
+      ctaLabel: data.ctaLabel ?? null,
+      ctaUrl: data.ctaUrl ?? null,
+      published: data.published ?? true,
+      sortOrder,
+    })
+    .returning();
+  return {
+    ...serializeIndustryDomain(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function updateIndustryDomainAdmin(
+  id: string,
+  data: UpdateIndustryDomainInput,
+) {
+  const patch: Record<string, unknown> = { ...data };
+  if (data.leaders !== undefined) {
+    patch.leaders = JSON.stringify(data.leaders);
+  }
+  if (data.sortOrder !== undefined && data.orderIndex === undefined) {
+    patch.orderIndex = orderIndexFromSortOrder(data.sortOrder);
+  }
+  const [row] = await (await getDb())
+    .update(industryDomains)
+    .set(patch)
+    .where(eq(industryDomains.id, id))
+    .returning();
+  if (!row) return null;
+  return {
+    ...serializeIndustryDomain(row),
+    published: row.published,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export async function deleteIndustryDomainAdmin(id: string) {
+  const [existing] = await (await getDb())
+    .select({ id: industryDomains.id })
+    .from(industryDomains)
+    .where(eq(industryDomains.id, id))
+    .limit(1);
+  if (!existing) return false;
+  await (await getDb())
+    .delete(industryDomains)
+    .where(eq(industryDomains.id, id));
+  return true;
+}
+
+export async function getIndustryDomainByIdAdmin(id: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(industryDomains)
+    .where(eq(industryDomains.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+/** After reorder, rewrite orderIndex to 01…N for all domains in sort order. */
+export async function syncIndustryDomainOrderIndexes() {
+  const db = await getDb();
+  const rows = await db
+    .select({ id: industryDomains.id, sortOrder: industryDomains.sortOrder })
+    .from(industryDomains)
+    .orderBy(asc(industryDomains.sortOrder), asc(industryDomains.name));
+  await Promise.all(
+    rows.map((row, index) =>
+      db
+        .update(industryDomains)
+        .set({
+          sortOrder: index,
+          orderIndex: orderIndexFromSortOrder(index),
+        })
+        .where(eq(industryDomains.id, row.id)),
+    ),
+  );
 }

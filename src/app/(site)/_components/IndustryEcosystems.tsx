@@ -6,29 +6,60 @@ import { HeaderSections } from '@/components/ui/HeaderSections';
 import { MarketingButton } from '@/components/ui/marketing-button';
 import { EcosystemTabs } from '@/components/common/EcosystemTabs';
 import { getDomainIcon } from '@/lib/icon-map';
-import {
-  getIndustryDomainById,
-  getIndustryDomains,
-} from '@/lib/industry-domains';
+import { ECOSYSTEM_SECTION_DEFAULT } from '@/lib/home-sections-defaults';
+import { INDUSTRY_DOMAINS_DEFAULTS } from '@/lib/industry-domains-defaults';
+import type { IndustryEcosystemSection } from '@/types/content';
 
-const domains = getIndustryDomains();
+type IndustryEcosystemsProps = {
+  data?: IndustryEcosystemSection;
+};
 
-const selectorItems = domains.map((domain) => ({
-  id: domain.id,
-  label: domain.name,
-  index: domain.order,
-}));
+function defaultEcosystem(): IndustryEcosystemSection {
+  return {
+    section: {
+      tag: ECOSYSTEM_SECTION_DEFAULT.tag,
+      title: ECOSYSTEM_SECTION_DEFAULT.title,
+      accent: ECOSYSTEM_SECTION_DEFAULT.accent,
+      description: ECOSYSTEM_SECTION_DEFAULT.description,
+    },
+    domains: INDUSTRY_DOMAINS_DEFAULTS.map((d, index) => ({
+      id: `default-industry-domain-${index}`,
+      slug: d.slug,
+      name: d.name,
+      orderIndex: d.orderIndex,
+      systemsCount: d.systemsCount,
+      iconKey: d.iconKey,
+      description: d.description,
+      leaders: d.leaders,
+      ctaLabel: d.ctaLabel,
+      ctaUrl: d.ctaUrl,
+      sortOrder: d.sortOrder,
+    })),
+  };
+}
 
 /** Connected Ecosystem — IndustryEcosystems data on EcosystemTabs shell. */
-export default function IndustryEcosystems() {
+export default function IndustryEcosystems({ data }: IndustryEcosystemsProps) {
+  const resolved =
+    data?.domains?.length && data.section ? data : defaultEcosystem();
+  const { section, domains } = resolved;
+
+  const selectorItems = domains.map((domain) => ({
+    id: domain.slug,
+    label: domain.name,
+    index: Number.parseInt(domain.orderIndex, 10) || domain.sortOrder + 1,
+  }));
+
+  const domainBySlug = new Map(domains.map((d) => [d.slug, d]));
+
   return (
     <section className='section-padding'>
       <div className='container-main'>
         <HeaderSections
-          tag='Ecosystem'
-          title='Connected'
-          accent='Ecosystem'
-          description='See how QTO House modules map to the industries you operate in — pick a domain to preview systems, leaders, and next steps.'
+          tag={section.tag}
+          title={section.title}
+          accent={section.accent}
+          description={section.description}
         />
 
         <EcosystemTabs
@@ -36,11 +67,13 @@ export default function IndustryEcosystems() {
           defaultValue={selectorItems[0]?.id}
           className='mt-10'
           renderDetail={(item) => {
-            const domain = getIndustryDomainById(item.id);
+            const domain = domainBySlug.get(item.id);
             if (!domain) return null;
 
             const Icon = getDomainIcon(domain.iconKey);
-            const href = domain.href ?? '/allApps';
+            const href = domain.ctaUrl ?? '/allApps';
+            const ctaLabel =
+              domain.ctaLabel ?? `Explore ${domain.name} Solutions`;
 
             return (
               <div className='relative space-y-6 overflow-hidden'>
@@ -59,7 +92,7 @@ export default function IndustryEcosystems() {
                         {domain.name}
                       </h3>
                       <Badge variant='secondary'>
-                        {domain.systemCount} Systems
+                        {domain.systemsCount} Systems
                       </Badge>
                     </div>
                     <p className='max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base'>
@@ -83,7 +116,7 @@ export default function IndustryEcosystems() {
 
                 <div className='relative pt-1'>
                   <MarketingButton asChild variant='primary'>
-                    <Link href={href}>Explore {domain.name} Solutions</Link>
+                    <Link href={href}>{ctaLabel}</Link>
                   </MarketingButton>
                 </div>
               </div>

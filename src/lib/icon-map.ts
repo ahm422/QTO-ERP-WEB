@@ -54,6 +54,19 @@ export const ALLOWED_BUILT_FOR_ICON_KEYS = [
   "briefcase",
 ] as const;
 
+/** Icons used by Connected Ecosystem industry domains. */
+export const ALLOWED_DOMAIN_ICON_KEYS = [
+  "factory",
+  "landmark",
+  "heart-pulse",
+  "shopping-bag",
+  "hard-hat",
+  "briefcase",
+  "graduation-cap",
+  "truck",
+  "building-2",
+] as const;
+
 const MARKETING_ICONS: Record<string, LucideIcon> = {
   users: Users,
   star: Star,

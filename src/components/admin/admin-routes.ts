@@ -11,6 +11,7 @@ import {
   BadgeCheck,
   BarChart3,
   HardHat,
+  Factory,
   type LucideIcon,
 } from "lucide-react";
 
@@ -36,6 +37,11 @@ export const adminNavItems: AdminNavItem[] = [
   { href: "/admin/trusted-logos", label: "Trusted logos", icon: BadgeCheck },
   { href: "/admin/home-stats", label: "Home stats", icon: BarChart3 },
   { href: "/admin/built-for", label: "Built for", icon: HardHat },
+  {
+    href: "/admin/industry-domains",
+    label: "Industry domains",
+    icon: Factory,
+  },
   { href: "/admin/site-settings", label: "Site settings", icon: Settings2 },
   { href: "/admin/nav-resources", label: "Nav resources", icon: Link2 },
 ];
@@ -132,6 +138,13 @@ const breadcrumbRoutes: Array<{
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
       { label: "Built for" },
+    ],
+  },
+  {
+    pattern: /^\/admin\/industry-domains$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Industry domains" },
     ],
   },
   {

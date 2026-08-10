@@ -151,3 +151,23 @@ export type BuiltForSection = {
   section: HomeSectionHeader;
   cards: BuiltForCard[];
 };
+
+/** Public DTO for Connected Ecosystem industry domains. */
+export type IndustryDomainSummary = {
+  id: string;
+  slug: string;
+  name: string;
+  orderIndex: string;
+  systemsCount: number;
+  iconKey: string;
+  description: string;
+  leaders: string[];
+  ctaLabel: string | null;
+  ctaUrl: string | null;
+  sortOrder: number;
+};
+
+export type IndustryEcosystemSection = {
+  section: HomeSectionHeader;
+  domains: IndustryDomainSummary[];
+};
