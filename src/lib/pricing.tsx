@@ -1,4 +1,5 @@
 import { ComparisonFeaturesType, PricingFAQsType } from '@/types';
+import { PRICING_FAQS_DEFAULTS } from '@/lib/faqs-defaults';
 
 export const comparisonFeatures: ComparisonFeaturesType = [
   {
@@ -29,33 +30,7 @@ export const comparisonFeatures: ComparisonFeaturesType = [
   },
 ];
 
-export const pricingFaqs: PricingFAQsType = [
-  {
-    question: 'Is there a free trial?',
-    answer:
-      'Yes! Every plan comes with a 14-day free trial. No credit card required.',
-  },
-  {
-    question: 'Can I switch plans later?',
-    answer:
-      'Absolutely. Upgrade or downgrade anytime. Changes take effect on your next billing cycle.',
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer:
-      'We accept all major credit cards, bank transfers, and can invoice for Enterprise plans.',
-  },
-  {
-    question: 'Is there a setup fee?',
-    answer:
-      'No setup fees for Starter and Growth plans. Enterprise includes complimentary onboarding.',
-  },
-  {
-    question: 'Can I cancel anytime?',
-    answer:
-      "Yes. Cancel anytime with no penalties. You'll retain access until the end of your billing period.",
-  },
-];
-
-
-
+/** Re-export from faqs-defaults to avoid copy drift (seed + legacy consumers). */
+export const pricingFaqs: PricingFAQsType = PRICING_FAQS_DEFAULTS.map(
+  ({ question, answer }) => ({ question, answer }),
+);

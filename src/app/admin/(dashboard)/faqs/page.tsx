@@ -6,7 +6,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { FAQ_PAGE_KEY_HOME, FAQ_SECTION_DEFAULT } from "@/lib/faqs-defaults";
+import { FAQ_PAGE_KEY_HOME, FAQ_PAGE_KEY_PRICING, FAQ_SECTION_DEFAULT } from "@/lib/faqs-defaults";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+
+const FAQ_PAGE_KEYS = [
+  { key: FAQ_PAGE_KEY_HOME, label: "Home" },
+  { key: FAQ_PAGE_KEY_PRICING, label: "Pricing" },
+] as const;
 
 type SectionForm = {
   tag: string;
@@ -266,6 +273,22 @@ function FaqsAdminInner() {
           Shared page FAQs (pageKey: {pageKey}). Unpublished items stay hidden
           on the public site.
         </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {FAQ_PAGE_KEYS.map(({ key, label }) => (
+            <Link
+              key={key}
+              href={`/admin/faqs?pageKey=${key}`}
+              className={cn(
+                "rounded-md border px-3 py-1.5 text-sm",
+                pageKey === key
+                  ? "border-foreground bg-muted font-medium"
+                  : "text-muted-foreground hover:bg-muted/60",
+              )}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {loading ? (

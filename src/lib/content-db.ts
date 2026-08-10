@@ -14,6 +14,7 @@ import {
   homeStats,
   industryDomains,
   navResources,
+  pricingPageContent,
   pricingPlans,
   siteSettings,
   solutions,
@@ -36,8 +37,10 @@ import {
 } from "@/lib/home-sections-defaults";
 import {
   FAQ_PAGE_KEY_HOME,
+  FAQ_PAGE_KEY_PRICING,
   FAQ_SECTION_DEFAULT,
   HOME_FAQS_DEFAULTS,
+  PRICING_FAQS_DEFAULTS,
 } from "@/lib/faqs-defaults";
 import {
   HOME_FINAL_CTA_DEFAULTS,
@@ -45,6 +48,7 @@ import {
 } from "@/lib/home-cta-defaults";
 import { FOOTER_CONTENT_DEFAULTS } from "@/lib/footer-defaults";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
+import { PRICING_PAGE_CONTENT_DEFAULTS } from "@/lib/pricing-page-defaults";
 import {
   INDUSTRY_DOMAINS_DEFAULTS,
   orderIndexFromSortOrder,
@@ -63,6 +67,7 @@ import {
   serializeHomeSection,
   serializeHomeStat,
   serializeIndustryDomain,
+  serializePricingPageContent,
   serializePricingPlan,
   serializeModuleDetail,
   serializeModuleSummary,
@@ -78,6 +83,7 @@ import type {
   FooterContent,
   HomeFaqsSection,
   HomeFinalCta,
+  PricingPageContent,
   HomeHero,
   HomeSectionHeader,
   HomeStat,
@@ -110,6 +116,7 @@ import type {
 import type { UpsertHomeFinalCtaInput } from "@/lib/validations/admin-home-cta";
 import type { UpsertFooterContentInput } from "@/lib/validations/admin-footer";
 import type { UpsertDemoPageContentInput } from "@/lib/validations/admin-demo-page";
+import type { UpsertPricingPageContentInput } from "@/lib/validations/admin-pricing-page";
 import { mediaUrl } from "@/lib/media";
 
 export type BlogPostRow = InferSelectModel<typeof blogPosts>;
@@ -1168,8 +1175,13 @@ export async function listPublishedFaqs(
       .from(faqs)
       .where(and(eq(faqs.pageKey, pageKey), eq(faqs.published, true)))
       .orderBy(asc(faqs.sortOrder));
-    if (rows.length === 0 && pageKey === FAQ_PAGE_KEY_HOME) {
-      return HOME_FAQS_DEFAULTS.map(faqFromDefault);
+    if (rows.length === 0) {
+      if (pageKey === FAQ_PAGE_KEY_HOME) {
+        return HOME_FAQS_DEFAULTS.map(faqFromDefault);
+      }
+      if (pageKey === FAQ_PAGE_KEY_PRICING) {
+        return PRICING_FAQS_DEFAULTS.map(faqFromDefault);
+      }
     }
     return rows.map(serializeFaq);
   } catch (err) {
@@ -1179,6 +1191,9 @@ export async function listPublishedFaqs(
       );
       if (pageKey === FAQ_PAGE_KEY_HOME) {
         return HOME_FAQS_DEFAULTS.map(faqFromDefault);
+      }
+      if (pageKey === FAQ_PAGE_KEY_PRICING) {
+        return PRICING_FAQS_DEFAULTS.map(faqFromDefault);
       }
       return [];
     }
@@ -1420,4 +1435,53 @@ export async function upsertDemoPageContentAdmin(
     })
     .returning();
   return serializeDemoPageContent(row);
+}
+
+// ─── Pricing page content ────────────────────────────────────────────────────
+
+function pricingPageFromDefaults(): PricingPageContent {
+  return {
+    heroBadge: PRICING_PAGE_CONTENT_DEFAULTS.heroBadge,
+    heroTitle: PRICING_PAGE_CONTENT_DEFAULTS.heroTitle,
+    heroSubtitle: PRICING_PAGE_CONTENT_DEFAULTS.heroSubtitle,
+    faqTag: PRICING_PAGE_CONTENT_DEFAULTS.faqTag,
+    faqTitle: PRICING_PAGE_CONTENT_DEFAULTS.faqTitle,
+  };
+}
+
+export async function getPricingPageContent(): Promise<PricingPageContent> {
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(pricingPageContent)
+      .where(eq(pricingPageContent.id, PRICING_PAGE_CONTENT_DEFAULTS.id))
+      .limit(1);
+    if (!row) return pricingPageFromDefaults();
+    return serializePricingPageContent(row);
+  } catch (err) {
+    if (isMissingRelationError(err)) {
+      console.warn(
+        "[content-db] pricing_page_content missing — using defaults (run db:migrate:local)",
+      );
+      return pricingPageFromDefaults();
+    }
+    throw err;
+  }
+}
+
+export async function upsertPricingPageContentAdmin(
+  data: UpsertPricingPageContentInput,
+): Promise<PricingPageContent> {
+  const [row] = await (await getDb())
+    .insert(pricingPageContent)
+    .values({
+      id: PRICING_PAGE_CONTENT_DEFAULTS.id,
+      ...data,
+    })
+    .onConflictDoUpdate({
+      target: pricingPageContent.id,
+      set: data,
+    })
+    .returning();
+  return serializePricingPageContent(row);
 }

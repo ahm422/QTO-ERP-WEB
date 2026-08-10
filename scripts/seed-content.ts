@@ -17,6 +17,7 @@ import {
   homeStats,
   industryDomains,
   navResources,
+  pricingPageContent,
   pricingPlans,
   siteSettings,
   solutions as solutionsTable,
@@ -32,8 +33,10 @@ import {
 } from "../src/lib/home-sections-defaults";
 import {
   FAQ_PAGE_KEY_HOME,
+  FAQ_PAGE_KEY_PRICING,
   FAQ_SECTION_DEFAULT,
   HOME_FAQS_DEFAULTS,
+  PRICING_FAQS_DEFAULTS,
 } from "../src/lib/faqs-defaults";
 import {
   HOME_FINAL_CTA_DEFAULTS,
@@ -41,6 +44,7 @@ import {
 } from "../src/lib/home-cta-defaults";
 import { FOOTER_CONTENT_DEFAULTS } from "../src/lib/footer-defaults";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "../src/lib/demo-page-defaults";
+import { PRICING_PAGE_CONTENT_DEFAULTS } from "../src/lib/pricing-page-defaults";
 import { INDUSTRY_DOMAINS_DEFAULTS } from "../src/lib/industry-domains-defaults";
 import type { PlatformType } from "../src/types/appModule";
 import type { ScriptDb } from "./db";
@@ -607,4 +611,38 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     })
     .onConflictDoNothing();
   console.log("Seeded demo page content");
+
+  await db
+    .insert(pricingPageContent)
+    .values({
+      id: PRICING_PAGE_CONTENT_DEFAULTS.id,
+      heroBadge: PRICING_PAGE_CONTENT_DEFAULTS.heroBadge,
+      heroTitle: PRICING_PAGE_CONTENT_DEFAULTS.heroTitle,
+      heroSubtitle: PRICING_PAGE_CONTENT_DEFAULTS.heroSubtitle,
+      faqTag: PRICING_PAGE_CONTENT_DEFAULTS.faqTag,
+      faqTitle: PRICING_PAGE_CONTENT_DEFAULTS.faqTitle,
+    })
+    .onConflictDoNothing();
+  console.log("Seeded pricing page content");
+
+  const [{ pricingFaqsCount }] = await db
+    .select({ pricingFaqsCount: count() })
+    .from(faqs)
+    .where(eq(faqs.pageKey, FAQ_PAGE_KEY_PRICING));
+  if ((pricingFaqsCount ?? 0) === 0) {
+    await db.insert(faqs).values(
+      PRICING_FAQS_DEFAULTS.map((faq) => ({
+        id: createId(),
+        pageKey: faq.pageKey,
+        question: faq.question,
+        answer: faq.answer,
+        category: faq.category,
+        sortOrder: faq.sortOrder,
+        published: faq.published,
+      })),
+    );
+    console.log(`Seeded ${PRICING_FAQS_DEFAULTS.length} pricing FAQs`);
+  } else {
+    console.log("Pricing FAQs already present — skip insert");
+  }
 }
