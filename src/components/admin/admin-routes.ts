@@ -37,69 +37,219 @@ export type AdminNavItem = {
   capability?: Capability;
 };
 
-export const adminNavItems: AdminNavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+export type AdminNavGroup = {
+  id: string;
+  label: string;
+  items: AdminNavItem[];
+};
+
+export type AdminNavSection = {
+  id: string;
+  label: string;
+  /** Flat links (Overview, Leads, Site config, Administration). */
+  items?: AdminNavItem[];
+  /** Page-grouped links (Site content). Prefer groups when present. */
+  groups?: AdminNavGroup[];
+};
+
+function filterNavItems(
+  items: AdminNavItem[],
+  can: (capability: Capability) => boolean,
+): AdminNavItem[] {
+  return items.filter((item) => !item.capability || can(item.capability));
+}
+
+function sectionNavItems(section: AdminNavSection): AdminNavItem[] {
+  if (section.groups?.length) {
+    return section.groups.flatMap((group) => group.items);
+  }
+  return section.items ?? [];
+}
+
+/** Flatten a section's links whether it uses `groups` or flat `items`. */
+export function getSectionNavItems(section: AdminNavSection): AdminNavItem[] {
+  return sectionNavItems(section);
+}
+
+export const adminNavSections: AdminNavSection[] = [
   {
-    href: "/admin/demo-requests",
-    label: "Demo requests",
-    icon: MessageSquare,
+    id: "overview",
+    label: "Overview",
+    items: [
+      { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    ],
   },
   {
-    href: "/admin/contact-inquiries",
-    label: "Contact inquiries",
-    icon: Mail,
-  },
-  { href: "/admin/contact", label: "Contact page", icon: Phone },
-  { href: "/admin/modules", label: "Modules", icon: Boxes },
-  { href: "/admin/solutions", label: "Solutions", icon: Layers },
-  { href: "/admin/blog", label: "Blog", icon: FileText },
-  {
-    href: "/admin/page-hero",
-    label: "Page heroes",
-    icon: LayoutTemplate,
-  },
-  { href: "/admin/about", label: "About page", icon: Building2 },
-  { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
-  { href: "/admin/pricing-page", label: "Pricing page", icon: Tags },
-  { href: "/admin/demo-videos", label: "Demo videos", icon: Video },
-  { href: "/admin/demo-page", label: "Demo page", icon: CalendarCheck },
-  { href: "/admin/comparison", label: "Comparison", icon: Table2 },
-  { href: "/admin/home-hero", label: "Home hero", icon: Sparkles },
-  { href: "/admin/trusted-logos", label: "Trusted logos", icon: BadgeCheck },
-  { href: "/admin/home-stats", label: "Home stats", icon: BarChart3 },
-  { href: "/admin/built-for", label: "Built for", icon: HardHat },
-  {
-    href: "/admin/industry-domains",
-    label: "Industry domains",
-    icon: Factory,
-  },
-  { href: "/admin/faqs", label: "FAQs", icon: CircleHelp },
-  { href: "/admin/home-cta", label: "Home CTA", icon: Megaphone },
-  {
-    href: "/admin/footer",
-    label: "Footer",
-    icon: PanelBottom,
-    capability: "settings:edit",
+    id: "leads",
+    label: "Leads",
+    items: [
+      {
+        href: "/admin/demo-requests",
+        label: "Demo requests",
+        icon: MessageSquare,
+      },
+      {
+        href: "/admin/contact-inquiries",
+        label: "Contact inquiries",
+        icon: Mail,
+      },
+    ],
   },
   {
-    href: "/admin/site-settings",
-    label: "Site settings",
-    icon: Settings2,
-    capability: "settings:edit",
+    id: "site-content",
+    label: "Site content",
+    groups: [
+      {
+        id: "home",
+        label: "Home",
+        items: [
+          { href: "/admin/home-hero", label: "Home hero", icon: Sparkles },
+          {
+            href: "/admin/trusted-logos",
+            label: "Trusted logos",
+            icon: BadgeCheck,
+          },
+          { href: "/admin/home-stats", label: "Home stats", icon: BarChart3 },
+          { href: "/admin/built-for", label: "Built for", icon: HardHat },
+          {
+            href: "/admin/industry-domains",
+            label: "Industry domains",
+            icon: Factory,
+          },
+          { href: "/admin/home-cta", label: "Home CTA", icon: Megaphone },
+        ],
+      },
+      {
+        id: "modules",
+        label: "Modules",
+        items: [
+          { href: "/admin/modules", label: "Modules", icon: Boxes },
+          { href: "/admin/demo-videos", label: "Demo videos", icon: Video },
+        ],
+      },
+      {
+        id: "solutions",
+        label: "Solutions",
+        items: [
+          { href: "/admin/solutions", label: "Solutions", icon: Layers },
+        ],
+      },
+      {
+        id: "pricing",
+        label: "Pricing",
+        items: [
+          { href: "/admin/pricing-page", label: "Pricing page", icon: Tags },
+          { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
+          { href: "/admin/comparison", label: "Comparison", icon: Table2 },
+        ],
+      },
+      {
+        id: "demo",
+        label: "Demo",
+        items: [
+          {
+            href: "/admin/demo-page",
+            label: "Demo page",
+            icon: CalendarCheck,
+          },
+        ],
+      },
+      {
+        id: "about",
+        label: "About",
+        items: [
+          { href: "/admin/about", label: "About page", icon: Building2 },
+        ],
+      },
+      {
+        id: "blog",
+        label: "Blog",
+        items: [{ href: "/admin/blog", label: "Blog", icon: FileText }],
+      },
+      {
+        id: "shared",
+        label: "Shared",
+        items: [
+          { href: "/admin/faqs", label: "FAQs", icon: CircleHelp },
+          {
+            href: "/admin/page-hero",
+            label: "Page heroes",
+            icon: LayoutTemplate,
+          },
+        ],
+      },
+    ],
   },
   {
-    href: "/admin/nav-resources",
-    label: "Nav resources",
-    icon: Link2,
-    capability: "settings:edit",
+    id: "site-config",
+    label: "Site configuration",
+    items: [
+      {
+        href: "/admin/site-settings",
+        label: "Site settings",
+        icon: Settings2,
+        capability: "settings:edit",
+      },
+      {
+        href: "/admin/footer",
+        label: "Footer",
+        icon: PanelBottom,
+        capability: "settings:edit",
+      },
+      {
+        href: "/admin/nav-resources",
+        label: "Nav resources",
+        icon: Link2,
+        capability: "settings:edit",
+      },
+      { href: "/admin/contact", label: "Contact page", icon: Phone },
+    ],
   },
   {
-    href: "/admin/users",
-    label: "Users",
-    icon: Users,
-    capability: "users:manage",
+    id: "administration",
+    label: "Administration",
+    items: [
+      {
+        href: "/admin/users",
+        label: "Users",
+        icon: Users,
+        capability: "users:manage",
+      },
+    ],
   },
 ];
+
+/** Flat list derived from sections (for any consumers that need it). */
+export const adminNavItems: AdminNavItem[] = adminNavSections.flatMap(
+  (section) => sectionNavItems(section),
+);
+
+export function getVisibleSections(
+  can: (capability: Capability) => boolean,
+): AdminNavSection[] {
+  return adminNavSections
+    .map((section) => {
+      if (section.groups?.length) {
+        const groups = section.groups
+          .map((group) => ({
+            ...group,
+            items: filterNavItems(group.items, can),
+          }))
+          .filter((group) => group.items.length > 0);
+        return { ...section, groups, items: undefined };
+      }
+
+      return {
+        ...section,
+        items: filterNavItems(section.items ?? [], can),
+        groups: undefined,
+      };
+    })
+    .filter((section) => {
+      if (section.groups?.length) return true;
+      return (section.items?.length ?? 0) > 0;
+    });
+}
 
 export type BreadcrumbSegment = {
   label: string;

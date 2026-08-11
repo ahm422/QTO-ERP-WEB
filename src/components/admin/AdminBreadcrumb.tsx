@@ -9,16 +9,16 @@ export function AdminBreadcrumb() {
   const crumbs = resolveBreadcrumbs(pathname);
 
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className="border-b border-border bg-background px-4 py-2 text-sm md:px-6"
-    >
+    <nav aria-label="Breadcrumb" className="min-w-0 text-sm">
       <ol className="flex flex-wrap items-center gap-1.5">
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbs.length - 1;
 
           return (
-            <li key={`${crumb.label}-${index}`} className="flex items-center gap-1.5">
+            <li
+              key={`${crumb.label}-${index}`}
+              className="flex min-w-0 items-center gap-1.5"
+            >
               {index > 0 ? (
                 <span className="text-muted-foreground" aria-hidden>
                   /
@@ -28,7 +28,7 @@ export function AdminBreadcrumb() {
                 <span
                   className={
                     isLast
-                      ? "font-medium text-foreground"
+                      ? "truncate font-medium text-foreground"
                       : "text-muted-foreground"
                   }
                   aria-current={isLast ? "page" : undefined}

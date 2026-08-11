@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Bell, Monitor, Moon, Search, Sun, User } from "lucide-react";
+import { AdminBreadcrumb } from "@/components/admin/AdminBreadcrumb";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,19 +36,23 @@ export function AdminHeader({ email }: AdminHeaderProps) {
   const canEditSettings = can("settings:edit");
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4 md:px-6">
-      <div className="relative hidden w-64 sm:max-w-xs md:flex">
-        <Search className="pointer-events-none absolute inset-y-0 left-3 my-auto size-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search…"
-          disabled
-          aria-label="Search (coming soon)"
-          className="border-border bg-muted/50 pl-9 text-foreground placeholder:text-muted-foreground"
-        />
+    <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4 md:px-6">
+      <div className="min-w-0 flex-1">
+        <AdminBreadcrumb />
       </div>
 
-      <div className="ml-auto flex items-center gap-1">
+      <div className="flex shrink-0 items-center gap-1">
+        <div className="relative mr-1 hidden w-48 md:block lg:w-64">
+          <Search className="pointer-events-none absolute inset-y-0 left-3 my-auto size-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search…"
+            disabled
+            aria-label="Search (coming soon)"
+            className="border-border bg-muted/50 pl-9 text-foreground placeholder:text-muted-foreground"
+          />
+        </div>
+
         <Button
           type="button"
           variant="ghost"
