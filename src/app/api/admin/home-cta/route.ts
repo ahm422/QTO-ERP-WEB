@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { getHomeFinalCta, upsertHomeFinalCtaAdmin } from "@/lib/content-db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { upsertHomeFinalCtaSchema } from "@/lib/validations/admin-home-cta";
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   try {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   let body: unknown;

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,8 @@ const emptyRow = (): DraftRow => ({
 });
 
 export default function NavResourcesAdminPage() {
+  const { can } = useAuth();
+  const canDelete = can("settings:edit");
   const [rows, setRows]         = useState<NavResource[]>([]);
   const [loading, setLoading]   = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -196,9 +199,11 @@ export default function NavResourcesAdminPage() {
                       <Button type="button" size="sm" onClick={() => saveRow(row)} disabled={savingId === row.id}>
                         Save
                       </Button>
-                      <Button type="button" size="sm" variant="destructive" onClick={() => setDeleteId(row.id)}>
-                        Delete
-                      </Button>
+                      {canDelete ? (
+                        <Button type="button" size="sm" variant="destructive" onClick={() => setDeleteId(row.id)}>
+                          Delete
+                        </Button>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -254,14 +259,16 @@ export default function NavResourcesAdminPage() {
         </div>
       </div>
 
-      <ConfirmDialog
-        open={!!deleteId}
-        onOpenChange={() => setDeleteId(null)}
-        title="Delete nav resource"
-        description="This link will be removed from the navbar Resources dropdown."
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={!!deleteId}
+          onOpenChange={() => setDeleteId(null)}
+          title="Delete nav resource"
+          description="This link will be removed from the navbar Resources dropdown."
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,8 @@ const emptyRow = (): DraftRow => ({
 });
 
 export default function ComparisonAdminPage() {
+  const { can } = useAuth();
+  const canDelete = can("content:delete");
   const [rows, setRows] = useState<ComparisonRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -214,14 +217,16 @@ export default function ComparisonAdminPage() {
                       >
                         Save
                       </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => setDeleteId(row.id)}
-                      >
-                        Delete
-                      </Button>
+                      {canDelete ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => setDeleteId(row.id)}
+                        >
+                          Delete
+                        </Button>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -277,14 +282,16 @@ export default function ComparisonAdminPage() {
         </div>
       </div>
 
-      <ConfirmDialog
-        open={!!deleteId}
-        onOpenChange={() => setDeleteId(null)}
-        title="Delete comparison row"
-        description="This row will be removed from the public pricing comparison table."
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={!!deleteId}
+          onOpenChange={() => setDeleteId(null)}
+          title="Delete comparison row"
+          description="This row will be removed from the public pricing comparison table."
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

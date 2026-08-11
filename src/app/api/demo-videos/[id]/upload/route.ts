@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { jsonError } from "@/lib/api-errors";
 import { getDemoVideoById } from "@/lib/demo-videos-db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { requireMediaBucket } from "@/lib/require-media-bucket";
 
 const MAX_BYTES = 500 * 1024 * 1024;
@@ -10,7 +10,7 @@ const ALLOWED_TYPES = new Set(["video/mp4", "video/webm"]);
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:create");
   if ("error" in admin) return admin.error;
 
   const mediaResult = await requireMediaBucket();

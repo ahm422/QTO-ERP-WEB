@@ -4,9 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { adminNavItems } from "@/components/admin/admin-routes";
+import { useAuth } from "@/lib/auth-context";
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const { can } = useAuth();
+
+  const visibleItems = adminNavItems.filter(
+    (item) => !item.capability || can(item.capability),
+  );
 
   return (
     <aside className="flex w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
@@ -19,7 +25,7 @@ export function AdminSidebar() {
         </Link>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 p-3">
-        {adminNavItems.map(({ href, label, icon: Icon, exact }) => {
+        {visibleItems.map(({ href, label, icon: Icon, exact }) => {
           const active = exact
             ? pathname === href
             : pathname === href || pathname.startsWith(`${href}/`);

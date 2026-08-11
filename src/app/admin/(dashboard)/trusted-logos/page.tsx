@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch, adminUpload } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,8 @@ function sortRows(rows: TrustedLogoRow[]) {
 }
 
 export default function TrustedLogosAdminPage() {
+  const { can } = useAuth();
+  const canDelete = can("content:delete");
   const [rows, setRows] = useState<TrustedLogoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -349,14 +352,16 @@ export default function TrustedLogosAdminPage() {
                       >
                         Save
                       </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => setDeleteId(row.id)}
-                      >
-                        Delete
-                      </Button>
+                      {canDelete ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => setDeleteId(row.id)}
+                        >
+                          Delete
+                        </Button>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -429,17 +434,19 @@ export default function TrustedLogosAdminPage() {
         </div>
       )}
 
-      <ConfirmDialog
-        open={deleteId !== null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteId(null);
-        }}
-        title="Delete trusted logo?"
-        description="This removes the logo from the Trusted By strip."
-        confirmLabel="Delete"
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={deleteId !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeleteId(null);
+          }}
+          title="Delete trusted logo?"
+          description="This removes the logo from the Trusted By strip."
+          confirmLabel="Delete"
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 /**
- * Create or update the admin superuser (role: ADMIN).
+ * Create or update the bootstrap superuser (role: SUPER_ADMIN).
  *
  * Usage:
  *   npx tsx --env-file=.env scripts/create-admin.ts [local|staging|production]
@@ -42,10 +42,10 @@ function upsertRemoteAdmin(
   const id = createId();
   const now = Math.floor(Date.now() / 1000);
   const sql = `INSERT INTO users (id, email, password_hash, name, role, created_at, updated_at)
-VALUES ('${id}', '${escapeSql(email)}', '${escapeSql(passwordHash)}', 'Admin', 'ADMIN', ${now}, ${now})
+VALUES ('${id}', '${escapeSql(email)}', '${escapeSql(passwordHash)}', 'Admin', 'SUPER_ADMIN', ${now}, ${now})
 ON CONFLICT(email) DO UPDATE SET
   password_hash = excluded.password_hash,
-  role = 'ADMIN',
+  role = 'SUPER_ADMIN',
   name = 'Admin',
   updated_at = ${now};`;
 
@@ -85,14 +85,14 @@ async function upsertLocalAdmin(email: string, passwordHash: string) {
       .values({
         email,
         passwordHash,
-        role: "ADMIN",
+        role: "SUPER_ADMIN",
         name: "Admin",
       })
       .onConflictDoUpdate({
         target: users.email,
         set: {
           passwordHash,
-          role: "ADMIN",
+          role: "SUPER_ADMIN",
           name: "Admin",
         },
       });
@@ -124,7 +124,7 @@ async function main() {
     upsertRemoteAdmin(target, email, passwordHash);
   }
 
-  console.log(`Admin user ready on ${target} D1: ${email} (ADMIN)`);
+  console.log(`Admin user ready on ${target} D1: ${email} (SUPER_ADMIN)`);
 }
 
 main().catch((err) => {

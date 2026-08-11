@@ -2,21 +2,26 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { roles } from "@/db/enums";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { AdminToaster } from "@/components/admin/AdminToaster";
 import { useAuth } from "@/lib/auth-context";
+
+function isStaffRole(role: string): boolean {
+  return roles.includes(role as (typeof roles)[number]);
+}
 
 function AdminAuthGate({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== "ADMIN")) {
+    if (!loading && (!user || !isStaffRole(user.role))) {
       router.replace("/admin/login");
     }
   }, [loading, user, router]);
 
-  if (loading || !user || user.role !== "ADMIN") {
+  if (loading || !user || !isStaffRole(user.role)) {
     return null;
   }
 

@@ -7,11 +7,11 @@ import {
   updateHomeHeroAdmin,
   updateModuleOrbitAdmin,
 } from "@/lib/content-db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { updateHomeHeroSchema } from "@/lib/validations/admin-home-hero";
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   try {
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   let body: unknown;

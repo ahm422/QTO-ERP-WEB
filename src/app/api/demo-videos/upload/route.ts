@@ -5,7 +5,7 @@ import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { createDemoVideoDraft } from "@/lib/demo-videos-db";
 import { getDb } from "@/lib/db";
 import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { requireMediaBucket } from "@/lib/require-media-bucket";
 import {
   buildObjectKey,
@@ -14,7 +14,7 @@ import {
 
 
 export async function POST(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:create");
   if ("error" in admin) return admin.error;
 
   const mediaResult = await requireMediaBucket();

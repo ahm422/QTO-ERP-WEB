@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { reorderAboutValuesAdmin } from "@/lib/content-db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { reorderAboutValuesSchema } from "@/lib/validations/admin-about";
 
 export async function PUT(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   let body: unknown;

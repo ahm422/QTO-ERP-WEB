@@ -5,12 +5,12 @@ import { leadStatuses } from "@/db/enums";
 import { contactInquiries } from "@/db/schema";
 import { jsonError } from "@/lib/api-errors";
 import { getDb } from "@/lib/db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 
 const validStatuses = new Set<string>(leadStatuses);
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   const { searchParams } = new URL(request.url);

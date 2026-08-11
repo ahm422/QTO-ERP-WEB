@@ -7,7 +7,7 @@ import {
   updateBlogPostAdmin,
 } from "@/lib/content-db";
 import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { updateBlogPostSchema } from "@/lib/validations/admin-blog";
 
 
@@ -32,7 +32,7 @@ function serializePost(
 }
 
 export async function GET(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;
@@ -50,7 +50,7 @@ export async function GET(request: Request, context: RouteContext) {
 }
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;
@@ -114,7 +114,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:delete");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;

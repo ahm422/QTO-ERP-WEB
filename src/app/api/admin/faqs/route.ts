@@ -3,11 +3,11 @@ import { revalidatePath } from "next/cache";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { createFaqAdmin, listFaqsAdmin } from "@/lib/content-db";
 import { FAQ_PAGE_KEY_HOME } from "@/lib/faqs-defaults";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { createFaqSchema } from "@/lib/validations/admin-faqs";
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   const { searchParams } = new URL(request.url);
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:create");
   if ("error" in admin) return admin.error;
 
   let body: unknown;

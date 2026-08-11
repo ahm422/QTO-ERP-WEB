@@ -10,7 +10,7 @@ import {
   PAGE_HERO_KEY_BLOG,
   PAGE_HERO_KEY_CONTACT,
 } from "@/lib/page-hero-defaults";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import {
   parsePageHeroPageKey,
   upsertPageHeroContentSchema,
@@ -24,7 +24,7 @@ function revalidateForPageKey(pageKey: string) {
 }
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   const pageKey = parsePageHeroPageKey(
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   const pageKey = parsePageHeroPageKey(

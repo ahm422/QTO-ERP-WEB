@@ -10,14 +10,14 @@ import {
   updateDemoVideo,
 } from "@/lib/demo-videos-db";
 import { getDb } from "@/lib/db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { updateDemoVideoSchema } from "@/lib/validations/demo-video";
 
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;

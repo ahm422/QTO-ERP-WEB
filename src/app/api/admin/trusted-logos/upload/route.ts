@@ -2,7 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { NextResponse } from "next/server";
 import { jsonError } from "@/lib/api-errors";
 import { mediaUrl } from "@/lib/media";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { requireMediaBucket } from "@/lib/require-media-bucket";
 
 const ALLOWED_TYPES = new Set([
@@ -23,7 +23,7 @@ const EXT_BY_TYPE: Record<string, string> = {
 };
 
 export async function POST(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:create");
   if ("error" in admin) return admin.error;
 
   const mediaResult = await requireMediaBucket();

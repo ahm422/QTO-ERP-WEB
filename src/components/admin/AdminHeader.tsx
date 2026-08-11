@@ -30,8 +30,9 @@ function getEmailInitial(email: string): string {
 }
 
 export function AdminHeader({ email }: AdminHeaderProps) {
-  const { logout } = useAuth();
+  const { logout, can } = useAuth();
   const { setTheme } = useTheme();
+  const canEditSettings = can("settings:edit");
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4 md:px-6">
@@ -82,12 +83,14 @@ export function AdminHeader({ email }: AdminHeaderProps) {
               {email}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/admin/site-settings">
-                <User className="h-4 w-4" />
-                Profile
-              </Link>
-            </DropdownMenuItem>
+            {canEditSettings ? (
+              <DropdownMenuItem asChild>
+                <Link href="/admin/site-settings">
+                  <User className="h-4 w-4" />
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+            ) : null}
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 <Monitor className="h-4 w-4" />

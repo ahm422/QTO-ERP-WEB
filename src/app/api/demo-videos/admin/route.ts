@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { jsonError } from "@/lib/api-errors";
 import { listAllDemoVideos } from "@/lib/demo-videos-db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   try {

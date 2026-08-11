@@ -25,12 +25,15 @@ import {
   Building2,
   type LucideIcon,
 } from "lucide-react";
+import type { Capability } from "@/lib/permission-matrix";
 
 export type AdminNavItem = {
   href: string;
   label: string;
   icon: LucideIcon;
   exact?: boolean;
+  /** When set, nav item is shown only if the user has this capability. */
+  capability?: Capability;
 };
 
 export const adminNavItems: AdminNavItem[] = [
@@ -71,9 +74,24 @@ export const adminNavItems: AdminNavItem[] = [
   },
   { href: "/admin/faqs", label: "FAQs", icon: CircleHelp },
   { href: "/admin/home-cta", label: "Home CTA", icon: Megaphone },
-  { href: "/admin/footer", label: "Footer", icon: PanelBottom },
-  { href: "/admin/site-settings", label: "Site settings", icon: Settings2 },
-  { href: "/admin/nav-resources", label: "Nav resources", icon: Link2 },
+  {
+    href: "/admin/footer",
+    label: "Footer",
+    icon: PanelBottom,
+    capability: "settings:edit",
+  },
+  {
+    href: "/admin/site-settings",
+    label: "Site settings",
+    icon: Settings2,
+    capability: "settings:edit",
+  },
+  {
+    href: "/admin/nav-resources",
+    label: "Nav resources",
+    icon: Link2,
+    capability: "settings:edit",
+  },
 ];
 
 export type BreadcrumbSegment = {

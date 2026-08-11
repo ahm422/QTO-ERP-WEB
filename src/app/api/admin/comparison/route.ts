@@ -4,12 +4,12 @@ import {
   createComparisonAdmin,
   listAllComparisonAdmin,
 } from "@/lib/content-db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { createComparisonSchema } from "@/lib/validations/admin-comparison";
 
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   try {
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:create");
   if ("error" in admin) return admin.error;
 
   let body: unknown;

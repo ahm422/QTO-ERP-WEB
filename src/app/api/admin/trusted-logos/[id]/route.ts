@@ -6,13 +6,13 @@ import {
   getTrustedLogoByIdAdmin,
   updateTrustedLogoAdmin,
 } from "@/lib/content-db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { updateTrustedLogoSchema } from "@/lib/validations/admin-trusted-logos";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;
@@ -47,7 +47,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:delete");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;
