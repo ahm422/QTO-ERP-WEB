@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFetchError, adminFetch, adminUpload } from "@/lib/admin-fetch";
 import { ABOUT_STORY_DEFAULTS } from "@/lib/about-story-defaults";
 import { ALLOWED_ABOUT_ICON_KEYS } from "@/lib/icon-map";
 import { Button } from "@/components/ui/button";
@@ -79,19 +79,13 @@ export function AboutStoryEditor() {
     formData.append("file", file);
     setUploading(true);
     try {
-      const res = await fetch("/api/admin/about/story/upload", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-      const data = (await res.json()) as {
+      const data = await adminUpload<{
         ok?: boolean;
         objectKey?: string;
         imageUrl?: string;
-        error?: string;
-      };
-      if (!res.ok || !data.objectKey || !data.imageUrl) {
-        throw new Error(data.error ?? "Upload failed");
+      }>("/api/admin/about/story/upload", formData);
+      if (!data.objectKey || !data.imageUrl) {
+        throw new Error("Upload failed");
       }
       setStory((s) => ({
         ...s,

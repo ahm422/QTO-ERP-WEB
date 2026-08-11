@@ -52,7 +52,8 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    await bucket.put(video.objectKey, file.stream(), {
+    // arrayBuffer (not stream): workerd R2 requires a body with known length
+    await bucket.put(video.objectKey, await file.arrayBuffer(), {
       httpMetadata: { contentType: video.contentType },
     });
 

@@ -6,6 +6,7 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { adminUpload } from "@/lib/admin-fetch";
 import { Button } from "@/components/ui/button";
 
 type BlogEditorProps = {
@@ -48,27 +49,10 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
         formData.append("file", file);
         formData.append("postId", postId);
 
-        const uploadRes = await fetch("/api/admin/blog/upload-image", {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-        });
-
-        if (!uploadRes.ok) {
-          let message = `Image upload failed (${uploadRes.status})`;
-          try {
-            const errBody = (await uploadRes.json()) as { error?: string };
-            if (errBody.error) message = errBody.error;
-          } catch {
-            /* ignore */
-          }
-          throw new Error(message);
-        }
-
-        const result = (await uploadRes.json()) as {
+        const result = await adminUpload<{
           ok: true;
           imageUrl: string;
-        };
+        }>("/api/admin/blog/upload-image", formData);
 
         editor.chain().focus().setImage({ src: result.imageUrl }).run();
         toast.success("Image inserted");

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFetchError, adminFetch, adminUpload } from "@/lib/admin-fetch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,25 +124,7 @@ export default function DemoVideosAdminPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const uploadRes = await fetch(
-        `/api/demo-videos/${init.video.id}/upload`,
-        {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-        },
-      );
-
-      if (!uploadRes.ok) {
-        let message = `Upload failed (${uploadRes.status})`;
-        try {
-          const errBody = (await uploadRes.json()) as { error?: string };
-          if (errBody.error) message = errBody.error;
-        } catch {
-          /* ignore */
-        }
-        throw new Error(message);
-      }
+      await adminUpload(`/api/demo-videos/${init.video.id}/upload`, formData);
 
       await adminFetch(`/api/demo-videos/${init.video.id}`, {
         method: "PATCH",

@@ -11,11 +11,14 @@ export function mediaUrl(objectKey: string): string {
 
 export async function putObject(
   key: string,
-  data: ArrayBuffer | Uint8Array | ReadableStream,
+  data: ArrayBuffer | Uint8Array | Blob,
   contentType: string,
 ): Promise<void> {
   const bucket = await getMediaBucket();
-  await bucket.put(key, data, {
+  // Prefer known-length bodies; raw ReadableStream fails in workerd R2
+  const body =
+    data instanceof Blob ? await data.arrayBuffer() : data;
+  await bucket.put(key, body, {
     httpMetadata: { contentType },
   });
 }

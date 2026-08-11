@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFetchError, adminFetch, adminUpload } from "@/lib/admin-fetch";
 import { ALLOWED_ROLLOUT_ICON_KEYS } from "@/lib/icon-map";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,19 +129,13 @@ function moduleToForm(item: Record<string, unknown>): ModuleForm {
 async function uploadModuleImage(file: File) {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch("/api/admin/modules/upload", {
-    method: "POST",
-    body: formData,
-    credentials: "include",
-  });
-  const data = (await res.json()) as {
+  const data = await adminUpload<{
     ok?: boolean;
     objectKey?: string;
     imageUrl?: string;
-    error?: string;
-  };
-  if (!res.ok || !data.objectKey || !data.imageUrl) {
-    throw new Error(data.error ?? "Upload failed");
+  }>("/api/admin/modules/upload", formData);
+  if (!data.objectKey || !data.imageUrl) {
+    throw new Error("Upload failed");
   }
   return { objectKey: data.objectKey, imageUrl: data.imageUrl };
 }

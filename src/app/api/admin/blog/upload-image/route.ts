@@ -65,7 +65,8 @@ export async function POST(request: Request) {
   const objectKey = buildBlogImageKey(validPostId, fileName, contentType);
 
   try {
-    await bucket.put(objectKey, file.stream(), {
+    // arrayBuffer (not stream): workerd R2 requires a body with known length
+    await bucket.put(objectKey, await file.arrayBuffer(), {
       httpMetadata: { contentType },
     });
 

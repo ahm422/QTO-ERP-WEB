@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
-import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFetchError, adminFetch, adminUpload } from "@/lib/admin-fetch";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -156,19 +156,13 @@ export default function TrustedLogosAdminPage() {
     formData.append("file", file);
     setUploadingId(target);
     try {
-      const res = await fetch("/api/admin/trusted-logos/upload", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-      const data = (await res.json()) as {
+      const data = await adminUpload<{
         ok?: boolean;
         objectKey?: string;
         imageUrl?: string;
-        error?: string;
-      };
-      if (!res.ok || !data.objectKey || !data.imageUrl) {
-        throw new Error(data.error ?? "Upload failed");
+      }>("/api/admin/trusted-logos/upload", formData);
+      if (!data.objectKey || !data.imageUrl) {
+        throw new Error("Upload failed");
       }
       return { objectKey: data.objectKey, imageUrl: data.imageUrl };
     } catch (err) {
