@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -189,13 +192,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Profile</h1>
-        <p className="text-sm text-muted-foreground">
-          Your account details, password, and active sessions.
-        </p>
-      </div>
+    <AdminPage>
+      <AdminFormWidth size="md" className="space-y-8">
+      <AdminPageHeader
+        title="Profile"
+        description="Your account details, password, and active sessions."
+      />
 
       <section className="space-y-4">
         <h2 className="text-lg font-medium">Account</h2>
@@ -341,6 +343,7 @@ export default function ProfilePage() {
           </ul>
         )}
       </section>
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }

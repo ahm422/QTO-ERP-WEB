@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,18 +58,17 @@ export default function NewSolutionPage() {
   };
 
   return (
-    <div className="w-full max-w-lg space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">New solution</h1>
-          <p className="text-sm text-muted-foreground">
-            Creates a draft solution with placeholder content.
-          </p>
-        </div>
-        <Button type="button" variant="outline" asChild>
-          <Link href="/admin/solutions">Back</Link>
-        </Button>
-      </div>
+    <AdminPage spacing="md">
+      <AdminFormWidth size="sm" className="space-y-6">
+      <AdminPageHeader
+        title="New solution"
+        description="Creates a draft solution with placeholder content."
+        actions={
+          <Button type="button" variant="outline" asChild>
+            <Link href="/admin/solutions">Back</Link>
+          </Button>
+        }
+      />
       <div className="space-y-4 rounded-md border p-4">
         <div>
           <Label>Title</Label>
@@ -90,6 +92,7 @@ export default function NewSolutionPage() {
           {creating ? "Creating…" : "Create solution"}
         </Button>
       </div>
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }

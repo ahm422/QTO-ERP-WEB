@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { HOME_FINAL_CTA_DEFAULTS } from "@/lib/home-cta-defaults";
 import type { HomeFinalCta } from "@/types/content";
 import { Button } from "@/components/ui/button";
@@ -63,14 +66,12 @@ export default function HomeCtaAdminPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Home final CTA</h1>
-        <p className="text-sm text-muted-foreground">
-          Edit the closing CTA band on the home page (site_settings key
-          home_final_cta).
-        </p>
-      </div>
+    <AdminPage>
+      <AdminFormWidth size="md" className="space-y-8">
+      <AdminPageHeader
+        title="Home final CTA"
+        description="Edit the closing CTA band on the home page (site_settings key home_final_cta)."
+      />
 
       <section className="space-y-4">
         <div>
@@ -165,6 +166,7 @@ export default function HomeCtaAdminPage() {
           {saving ? "Saving…" : "Save CTA"}
         </Button>
       </section>
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }

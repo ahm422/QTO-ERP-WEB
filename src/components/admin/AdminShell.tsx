@@ -12,7 +12,8 @@ export function AdminShell({ email, children }: AdminShellProps) {
       <AdminSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <AdminHeader email={email} />
-        <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+        {/* Full-bleed content column: padding only — pages must not reintroduce mx-auto max-w-* page chrome; use AdminFormWidth / AdminPage for full-width stacks. */}
+        <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

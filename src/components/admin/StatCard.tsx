@@ -36,7 +36,7 @@ export function StatCard({
     trend?.direction === "up" ? "text-success" : "text-destructive"
 
   return (
-    <Card className={className}>
+    <Card className={cn("h-full w-full", className)}>
       <CardContent className="space-y-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
           {icon}

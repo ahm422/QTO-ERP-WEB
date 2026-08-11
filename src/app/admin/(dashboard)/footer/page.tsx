@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { FOOTER_CONTENT_DEFAULTS } from "@/lib/footer-defaults";
 import type {
   FooterContent,
@@ -160,14 +163,12 @@ export default function FooterAdminPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Footer</h1>
-        <p className="text-sm text-muted-foreground">
-          Global footer brand copy, link groups, newsletter text, and bottom
-          links. Newsletter subscribe still posts to /api/subscribe.
-        </p>
-      </div>
+    <AdminPage>
+      <AdminFormWidth size="lg" className="space-y-8">
+      <AdminPageHeader
+        title="Footer"
+        description="Global footer brand copy, link groups, newsletter text, and bottom links. Newsletter subscribe still posts to /api/subscribe."
+      />
 
       <section className="space-y-4 rounded-md border p-4">
         <h2 className="text-lg font-medium">Brand</h2>
@@ -456,6 +457,7 @@ export default function FooterAdminPage() {
       <Button type="button" onClick={save} disabled={saving}>
         {saving ? "Saving…" : "Save footer"}
       </Button>
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }

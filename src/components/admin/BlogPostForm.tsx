@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
 import { slugifyTitle } from "@/lib/validations/admin-blog";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
 import { BlogEditor } from "@/components/admin/BlogEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -156,7 +157,7 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
   const editorPostId = postId || initial?.id;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <AdminFormWidth size="lg" className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <Label>Title</Label>
@@ -288,6 +289,6 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
           </Button>
         )}
       </div>
-    </div>
+    </AdminFormWidth>
   );
 }

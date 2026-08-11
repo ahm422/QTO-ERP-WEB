@@ -1,102 +1,205 @@
 import Link from "next/link";
-import { count } from "drizzle-orm";
-import { getDb } from "@/lib/db";
 import {
-  blogPosts,
-  comparisonFeatures,
-  contactInquiries,
-  demoRequests,
-  demoVideos,
-  erpModules,
-  pricingPlans,
-  solutions,
-} from "@/db/schema";
+  FileText,
+  Inbox,
+  MessageSquare,
+  Sparkles,
+} from "lucide-react";
+import { count, desc, eq } from "drizzle-orm";
+import { getDb } from "@/lib/db";
+import { blogPosts, contactInquiries, demoRequests } from "@/db/schema";
+import { AdminContentWithSidebar } from "@/components/admin/AdminContentWithSidebar";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminStatGrid } from "@/components/admin/AdminStatGrid";
+import { EmptyState } from "@/components/admin/EmptyState";
+import { StatCard } from "@/components/admin/StatCard";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { demoRequestStatusVariant } from "@/lib/status-variants";
 
-const sections = [
+const quickActions = [
   { href: "/admin/demo-requests", label: "Demo requests" },
   { href: "/admin/contact-inquiries", label: "Contact inquiries" },
-  { href: "/admin/contact", label: "Contact page" },
+  { href: "/admin/blog", label: "Blog" },
   { href: "/admin/modules", label: "Modules" },
   { href: "/admin/solutions", label: "Solutions" },
-  { href: "/admin/blog", label: "Blog" },
-  { href: "/admin/pricing", label: "Pricing" },
-  { href: "/admin/demo-videos", label: "Demo videos" },
-  { href: "/admin/comparison", label: "Comparison" },
-];
+  { href: "/admin/home-hero", label: "Home hero" },
+  { href: "/admin/site-settings", label: "Site settings" },
+] as const;
 
 export default async function AdminDashboardPage() {
   const db = await getDb();
   const [
     [{ value: demoRequestCount }],
     [{ value: contactInquiryCount }],
-    [{ value: blogPostCount }],
-    [{ value: pricingPlanCount }],
-    [{ value: demoVideoCount }],
-    [{ value: comparisonRowCount }],
-    [{ value: moduleCount }],
-    [{ value: solutionCount }],
+    [{ value: publishedBlogCount }],
+    [{ value: newDemoCount }],
+    recentDemos,
   ] = await Promise.all([
     db.select({ value: count() }).from(demoRequests),
     db.select({ value: count() }).from(contactInquiries),
-    db.select({ value: count() }).from(blogPosts),
-    db.select({ value: count() }).from(pricingPlans),
-    db.select({ value: count() }).from(demoVideos),
-    db.select({ value: count() }).from(comparisonFeatures),
-    db.select({ value: count() }).from(erpModules),
-    db.select({ value: count() }).from(solutions),
+    db
+      .select({ value: count() })
+      .from(blogPosts)
+      .where(eq(blogPosts.status, "PUBLISHED")),
+    db
+      .select({ value: count() })
+      .from(demoRequests)
+      .where(eq(demoRequests.status, "NEW")),
+    db
+      .select({
+        id: demoRequests.id,
+        name: demoRequests.name,
+        email: demoRequests.email,
+        company: demoRequests.company,
+        businessType: demoRequests.businessType,
+        country: demoRequests.country,
+        status: demoRequests.status,
+        createdAt: demoRequests.createdAt,
+      })
+      .from(demoRequests)
+      .orderBy(desc(demoRequests.createdAt))
+      .limit(8),
   ]);
 
-  const counts = [
-    { label: "Demo requests", value: demoRequestCount },
-    { label: "Contact inquiries", value: contactInquiryCount },
-    { label: "Modules", value: moduleCount },
-    { label: "Solutions", value: solutionCount },
-    { label: "Blog posts", value: blogPostCount },
-    { label: "Pricing plans", value: pricingPlanCount },
-    { label: "Demo videos", value: demoVideoCount },
-    { label: "Comparison rows", value: comparisonRowCount },
-  ];
+  const totalLeads = demoRequestCount + contactInquiryCount;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage marketing content and inbound leads.
-        </p>
-      </div>
+    <AdminPage>
+      <AdminPageHeader
+        title="Dashboard"
+        description="Manage marketing content and inbound leads."
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {counts.map(({ label, value }) => (
-          <Card key={label}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {label}
-              </CardTitle>
+      <AdminStatGrid>
+        <StatCard
+          icon={<Inbox className="h-5 w-5" />}
+          label="Total leads"
+          value={totalLeads}
+        />
+        <StatCard
+          icon={<MessageSquare className="h-5 w-5" />}
+          label="Demo requests"
+          value={demoRequestCount}
+        />
+        <StatCard
+          icon={<FileText className="h-5 w-5" />}
+          label="Pages live"
+          value={publishedBlogCount}
+        />
+        <StatCard
+          icon={<Sparkles className="h-5 w-5" />}
+          label="New demos"
+          value={newDemoCount}
+        />
+      </AdminStatGrid>
+
+      <AdminContentWithSidebar
+        sidebar={
+          <Card className="w-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Quick actions</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-semibold">{value}</p>
+            <CardContent className="p-0 pb-3">
+              <ul className="grid grid-cols-2 gap-0 md:grid-cols-1">
+                {quickActions.map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className="block px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted sm:px-6"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
-        ))}
-      </div>
-
-      <div>
-        <h2 className="mb-3 text-lg font-medium">Quick links</h2>
-        <ul className="grid gap-2 sm:grid-cols-2">
-          {sections.map(({ href, label }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className="block rounded-md border border-border px-4 py-3 text-sm font-medium hover:bg-muted"
-              >
-                {label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+        }
+      >
+        <Card className="w-full min-w-0">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-3">
+            <CardTitle className="text-base">Recent demo requests</CardTitle>
+            <Link
+              href="/admin/demo-requests"
+              className="shrink-0 text-sm font-medium text-primary hover:underline"
+            >
+              View all
+            </Link>
+          </CardHeader>
+          <CardContent className="p-0">
+            {recentDemos.length === 0 ? (
+              <EmptyState
+                title="No demo requests yet"
+                description="Inbound demo form submissions will appear here."
+              />
+            ) : (
+              <div className="w-full overflow-x-auto">
+                <Table className="min-w-[36rem]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email / company</TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Business
+                      </TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="hidden md:table-cell">Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentDemos.map((r) => (
+                      <TableRow key={r.id}>
+                        <TableCell className="font-medium">{r.name}</TableCell>
+                        <TableCell>
+                          <div className="space-y-0.5">
+                            <p className="break-all">{r.email}</p>
+                            {r.company ? (
+                              <p className="text-xs text-muted-foreground">
+                                {r.company}
+                              </p>
+                            ) : null}
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          {r.businessType}
+                          {r.country ? (
+                            <span className="text-muted-foreground">
+                              {" "}
+                              · {r.country}
+                            </span>
+                          ) : null}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={demoRequestStatusVariant[r.status]}
+                          >
+                            {r.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
+                          {r.createdAt
+                            ? new Date(r.createdAt).toLocaleDateString()
+                            : "—"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </AdminContentWithSidebar>
+    </AdminPage>
   );
 }

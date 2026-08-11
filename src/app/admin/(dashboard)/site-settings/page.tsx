@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -81,13 +84,12 @@ export default function SiteSettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Site settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Control global branding and the header CTA button.
-        </p>
-      </div>
+    <AdminPage spacing="md">
+      <AdminFormWidth size="md" className="space-y-6">
+      <AdminPageHeader
+        title="Site settings"
+        description="Control global branding and the header CTA button."
+      />
 
       <div className="space-y-4">
         <div>
@@ -162,6 +164,7 @@ export default function SiteSettingsPage() {
           {saving ? "Saving…" : "Save settings"}
         </Button>
       </div>
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }
