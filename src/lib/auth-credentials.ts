@@ -22,6 +22,10 @@ export async function verifyUserCredentials(
     return null;
   }
 
+  if (user.disabledAt != null) {
+    return null;
+  }
+
   return {
     id: user.id,
     email: user.email,

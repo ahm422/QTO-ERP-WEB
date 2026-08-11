@@ -53,8 +53,10 @@ async function sendViaResend({
  * Public transactional sender. Call sites pass React Email elements; rendering
  * for Cloudflare Email Sending happens inside this module.
  *
- * Provider: Cloudflare Email (`env.EMAIL`) by default.
- * Set `EMAIL_PROVIDER=resend` to use Resend (legacy fallback).
+ * Provider: Cloudflare Email by default (`env.EMAIL` Worker binding, or
+ * Email Sending REST API with `CLOUDFLARE_API_TOKEN` under plain `npm run dev`).
+ * Set `EMAIL_PROVIDER=resend` only for the explicit legacy fallback — never
+ * auto-selected.
  */
 export async function sendEmail({
   to,

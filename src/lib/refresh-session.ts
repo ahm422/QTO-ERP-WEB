@@ -88,11 +88,16 @@ export async function revokeAllRefreshTokensForUser(userId: string): Promise<voi
 
 async function loadUserById(userId: string): Promise<AuthUser | null> {
   const [user] = await (await getDb())
-    .select({ id: users.id, email: users.email, role: users.role })
+    .select({
+      id: users.id,
+      email: users.email,
+      role: users.role,
+      disabledAt: users.disabledAt,
+    })
     .from(users)
     .where(eq(users.id, userId))
     .limit(1);
-  if (!user) return null;
+  if (!user || user.disabledAt != null) return null;
   return { id: user.id, email: user.email, role: user.role };
 }
 

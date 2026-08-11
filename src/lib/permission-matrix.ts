@@ -10,7 +10,7 @@ import type { Role } from "@/db/enums";
  * - Content DELETE → content:delete
  * - site-settings / footer / nav-resources mutations → settings:edit
  *   (nav-resources POST/PATCH/DELETE use settings:edit only; no separate content:delete)
- * - /api/admin/users/** (future) → users:manage
+ * - /api/admin/users/** → users:manage
  */
 export const capabilities = [
   "content:view",

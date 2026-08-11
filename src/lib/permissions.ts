@@ -47,12 +47,17 @@ export async function requireRole(
   }
 
   const [user] = await (await getDb())
-    .select({ id: users.id, email: users.email, role: users.role })
+    .select({
+      id: users.id,
+      email: users.email,
+      role: users.role,
+      disabledAt: users.disabledAt,
+    })
     .from(users)
     .where(eq(users.id, payload.sub))
     .limit(1);
 
-  if (!user?.email) {
+  if (!user?.email || user.disabledAt != null) {
     return {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     };
