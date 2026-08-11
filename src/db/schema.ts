@@ -38,6 +38,7 @@ export const users = sqliteTable(
     passwordHash: text("password_hash").notNull(),
     name: text("name"),
     role: text("role", { enum: roles }).notNull().default("ADMIN"),
+    disabledAt: integer("disabled_at", { mode: "timestamp" }),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -70,6 +71,29 @@ export const refreshTokens = sqliteTable(
   (t) => [
     index("refresh_tokens_user_id_idx").on(t.userId),
     index("refresh_tokens_token_hash_idx").on(t.tokenHash),
+  ],
+);
+
+/** Invite + forgot-password tokens (hashed only; raw appears once in email URL). TTL: 1h. */
+export const passwordResetTokens = sqliteTable(
+  "password_reset_tokens",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+    usedAt: integer("used_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (t) => [
+    index("password_reset_tokens_user_id_idx").on(t.userId),
+    index("password_reset_tokens_token_hash_idx").on(t.tokenHash),
   ],
 );
 
@@ -874,7 +898,19 @@ export const contactPageContent = sqliteTable("contact_page_content", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   blogPosts: many(blogPosts),
+  refreshTokens: many(refreshTokens),
+  passwordResetTokens: many(passwordResetTokens),
 }));
+
+export const passwordResetTokensRelations = relations(
+  passwordResetTokens,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [passwordResetTokens.userId],
+      references: [users.id],
+    }),
+  }),
+);
 
 export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
   author: one(users, {

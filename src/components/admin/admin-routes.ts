@@ -23,6 +23,7 @@ import {
   Tags,
   LayoutTemplate,
   Building2,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import type { Capability } from "@/lib/permission-matrix";
@@ -91,6 +92,12 @@ export const adminNavItems: AdminNavItem[] = [
     label: "Nav resources",
     icon: Link2,
     capability: "settings:edit",
+  },
+  {
+    href: "/admin/users",
+    label: "Users",
+    icon: Users,
+    capability: "users:manage",
   },
 ];
 
@@ -292,6 +299,10 @@ const breadcrumbRoutes: Array<{
       { label: "QTO ERP", href: "/admin" },
       { label: "Nav resources" },
     ],
+  },
+  {
+    pattern: /^\/admin\/users$/,
+    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Users" }],
   },
   {
     pattern: /^\/admin$/,
