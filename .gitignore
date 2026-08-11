@@ -47,3 +47,6 @@ coverage/
 # Misc
 *.log
 .turbo/
+
+# Generated visual-regression baselines (heavy, regenerate via scripts/capture-hero-cms.mjs)
+docs/baseline-screenshots/
