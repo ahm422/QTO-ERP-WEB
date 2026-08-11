@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, isNull } from "drizzle-orm";
+import { and, desc, eq, gt, gte, isNull, ne } from "drizzle-orm";
 import type { Role } from "@/db/enums";
 import { refreshTokens, users } from "@/db/schema";
 import { getDb } from "@/lib/db";
@@ -12,6 +12,14 @@ import {
   COOKIE_REFRESH,
   readAllCookies,
 } from "@/lib/session-cookies";
+
+export type ActiveSessionRow = {
+  id: string;
+  userAgent: string | null;
+  ip: string | null;
+  createdAt: Date;
+  tokenHash: string;
+};
 
 export type AuthUser = {
   id: string;
@@ -84,6 +92,75 @@ export async function revokeAllRefreshTokensForUser(userId: string): Promise<voi
     .update(refreshTokens)
     .set({ revokedAt: now })
     .where(and(eq(refreshTokens.userId, userId), isNull(refreshTokens.revokedAt)));
+}
+
+/** Active = non-revoked and not yet expired. Includes tokenHash for server-side isCurrent checks only. */
+export async function listActiveSessionsForUser(
+  userId: string,
+): Promise<ActiveSessionRow[]> {
+  const now = new Date();
+  return (await getDb())
+    .select({
+      id: refreshTokens.id,
+      userAgent: refreshTokens.userAgent,
+      ip: refreshTokens.ip,
+      createdAt: refreshTokens.createdAt,
+      tokenHash: refreshTokens.tokenHash,
+    })
+    .from(refreshTokens)
+    .where(
+      and(
+        eq(refreshTokens.userId, userId),
+        isNull(refreshTokens.revokedAt),
+        gt(refreshTokens.expiresAt, now),
+      ),
+    )
+    .orderBy(desc(refreshTokens.createdAt));
+}
+
+/** Revoke a single active refresh token owned by the user. Returns true if a row was revoked. */
+export async function revokeRefreshTokenById(
+  userId: string,
+  id: string,
+): Promise<boolean> {
+  const now = new Date();
+  const result = await (await getDb())
+    .update(refreshTokens)
+    .set({ revokedAt: now })
+    .where(
+      and(
+        eq(refreshTokens.id, id),
+        eq(refreshTokens.userId, userId),
+        isNull(refreshTokens.revokedAt),
+      ),
+    );
+  return (result.meta.changes ?? 0) > 0;
+}
+
+/**
+ * Revoke all active refresh tokens for the user except the one matching currentTokenHash.
+ * If currentTokenHash is null/empty, revokes all active tokens.
+ */
+export async function revokeOtherRefreshTokensForUser(
+  userId: string,
+  currentTokenHash: string | null,
+): Promise<void> {
+  if (!currentTokenHash) {
+    await revokeAllRefreshTokensForUser(userId);
+    return;
+  }
+
+  const now = new Date();
+  await (await getDb())
+    .update(refreshTokens)
+    .set({ revokedAt: now })
+    .where(
+      and(
+        eq(refreshTokens.userId, userId),
+        isNull(refreshTokens.revokedAt),
+        ne(refreshTokens.tokenHash, currentTokenHash),
+      ),
+    );
 }
 
 async function loadUserById(userId: string): Promise<AuthUser | null> {

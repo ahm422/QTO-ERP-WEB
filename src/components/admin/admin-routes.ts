@@ -455,6 +455,10 @@ const breadcrumbRoutes: Array<{
     crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Users" }],
   },
   {
+    pattern: /^\/admin\/profile$/,
+    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Profile" }],
+  },
+  {
     pattern: /^\/admin$/,
     crumbs: [{ label: "QTO ERP" }],
   },

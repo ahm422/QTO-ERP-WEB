@@ -26,7 +26,12 @@ export async function GET(request: Request) {
   }
 
   const [dbUser] = await (await getDb())
-    .select({ email: users.email, role: users.role })
+    .select({
+      email: users.email,
+      role: users.role,
+      name: users.name,
+      createdAt: users.createdAt,
+    })
     .from(users)
     .where(eq(users.id, user.id))
     .limit(1);
@@ -38,5 +43,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     email: dbUser.email,
     role: dbUser.role,
+    name: dbUser.name ?? null,
+    createdAt: dbUser.createdAt.toISOString(),
   });
 }
