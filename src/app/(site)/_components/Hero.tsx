@@ -19,15 +19,20 @@ import { MarketingButton } from '@/components/ui/marketing-button';
 import type { HomeHero } from '@/types/content';
 import { HeroMotifBackdrop } from './HeroMotif';
 
-const HeroApiConstellation = dynamic(() => import('./HeroApiConstellation'), {
-  ssr: false,
-  loading: () => (
+function GlobeSkeleton() {
+  return (
     <div
       className='aspect-square w-full max-w-xl animate-pulse rounded-full bg-hero-glow/25'
       aria-hidden='true'
     />
-  ),
+  );
+}
+
+const HeroGlobe = dynamic(() => import('@/components/ui/hero-globe'), {
+  ssr: false,
+  loading: () => <GlobeSkeleton />,
 });
+
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -47,9 +52,6 @@ const Hero = ({ hero, orbitModules }: HeroProps) => {
   const spotX = useTransform(smoothX, (v) => v * 100);
   const spotY = useTransform(smoothY, (v) => v * 100);
   const spotBg = useMotionTemplate`radial-gradient(36rem 28rem at ${spotX}% ${spotY}%, color-mix(in oklab, var(--hero-accent) 22%, transparent), transparent 70%)`;
-
-  const tiltX = useSpring(0, { stiffness: 100, damping: 18 });
-  const tiltY = useSpring(0, { stiffness: 100, damping: 18 });
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -75,10 +77,8 @@ const Hero = ({ hero, orbitModules }: HeroProps) => {
       const py = (e.clientY - rect.top) / rect.height;
       mx.set(px);
       my.set(py);
-      tiltY.set((px - 0.5) * 8);
-      tiltX.set((0.5 - py) * 6);
     },
-    [reduced, mx, my, tiltX, tiltY],
+    [reduced, mx, my],
   );
 
   const wordReveal = (text: string, delayBase = 0.35) =>
@@ -236,29 +236,32 @@ const Hero = ({ hero, orbitModules }: HeroProps) => {
               >
                 {hero.poweredByText} <ExternalLink className='size-3.5' />
               </motion.a>
+
+              {orbitModules.length > 0 ? (
+                <ul className='sr-only'>
+                  {orbitModules.map((m) => (
+                    <li key={m.id}>
+                      {m.label}
+                      {m.blurb ? `: ${m.blurb}` : ''}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
 
             <motion.div
               className='relative mx-auto hidden w-full max-w-[38rem] overflow-visible lg:block'
-              style={
-                reduced
-                  ? undefined
-                  : {
-                      rotateX: tiltX,
-                      rotateY: tiltY,
-                      transformPerspective: 1100,
-                    }
-              }
               initial={reduced ? false : { opacity: 0, scale: 0.92, y: 36 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 1.1, delay: 0.45, ease }}
             >
-              <div className='pointer-events-none absolute left-1/2 top-1/2 size-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-hero-glow/55 blur-[90px]' />
-              <div className='pointer-events-none absolute left-1/2 top-[58%] size-[22rem] -translate-x-1/2 rounded-full bg-hero-glow-alt/45 blur-[70px]' />
-              <div className='relative mx-auto aspect-square w-full max-w-full overflow-visible p-6 sm:p-8'>
-                <HeroApiConstellation
-                  className='drop-shadow-[0_30px_60px_color-mix(in_oklab,var(--hero-accent)_18%,transparent)]'
+              <div className='pointer-events-none absolute left-1/2 top-1/2 size-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-hero-glow/40 blur-[110px]' />
+              <div className='pointer-events-none absolute left-1/2 top-[58%] size-[24rem] -translate-x-1/2 rounded-full bg-hero-glow-alt/30 blur-[90px]' />
+              <div className='relative mx-auto aspect-square w-full max-w-full overflow-visible'>
+                <HeroGlobe
+                  className='drop-shadow-[0_24px_48px_color-mix(in_oklab,var(--hero-accent)_22%,transparent)]'
                   modules={orbitModules}
+                  reducedMotion={!!reduced}
                 />
               </div>
             </motion.div>

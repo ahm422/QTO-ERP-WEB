@@ -47,3 +47,35 @@ export const ORBIT_INDEX_DEFAULTS: [number, number, number, number][] = [
   [2.25, 0.25, 1.2, 0.2],
   [2.35, -0.35, 4.2, 0.26],
 ];
+
+/**
+ * Fixed lat/lng pins for the hero WebGL globe, keyed by live erp_modules slugs.
+ * Four well-spaced continents so nodes read clearly at idle orientation.
+ */
+export const GLOBE_LATLNG_BY_SLUG: Record<string, [number, number]> = {
+  attendance: [40, -100], // North America
+  hrm: [48, 8], // Europe
+  "project-management": [28, 105], // East Asia
+  crms: [-15, -55], // South America
+};
+
+/** Index-based lat/lng fallback when a module slug has no globe seed. */
+export const GLOBE_INDEX_DEFAULTS: [number, number][] = [
+  [40, -100],
+  [48, 8],
+  [28, 105],
+  [-15, -55],
+  [-26, 133],
+  [5, 15],
+];
+
+/** Resolve lat/lng for a globe node by slug, then index fallback. */
+export function globeLatLngFor(
+  slug: string,
+  index: number,
+): [number, number] {
+  return (
+    GLOBE_LATLNG_BY_SLUG[slug] ??
+    GLOBE_INDEX_DEFAULTS[index % GLOBE_INDEX_DEFAULTS.length]
+  );
+}
