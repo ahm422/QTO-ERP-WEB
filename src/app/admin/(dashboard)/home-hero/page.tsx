@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { HOME_HERO_DEFAULTS } from "@/lib/home-hero-defaults";
 import type { HeroOrbitModule, HomeHero } from "@/types/content";
 import { Button } from "@/components/ui/button";
@@ -122,14 +125,12 @@ export default function HomeHeroAdminPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Home hero</h1>
-        <p className="text-sm text-muted-foreground">
-          Edit marketing hero copy and orbit constellation layout. Orbit nodes
-          come from published ERP modules.
-        </p>
-      </div>
+    <AdminPage>
+      <AdminFormWidth size="lg" className="space-y-8">
+      <AdminPageHeader
+        title="Home hero"
+        description="Edit marketing hero copy and orbit constellation layout. Orbit nodes come from published ERP modules."
+      />
 
       <section className="space-y-4">
         <h2 className="text-lg font-medium">Copy</h2>
@@ -411,6 +412,7 @@ export default function HomeHeroAdminPage() {
       <Button type="button" onClick={save} disabled={saving}>
         {saving ? "Saving…" : "Save home hero"}
       </Button>
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }

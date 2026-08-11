@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
 import { ALLOWED_DEMO_ICON_KEYS } from "@/lib/icon-map";
 import type {
@@ -151,19 +154,17 @@ export default function DemoPageAdminPage() {
   const opts = page.formFieldOptions;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Demo page</h1>
-          <p className="text-sm text-muted-foreground">
-            Hero, process steps, form-side copy, testimonial, and select lists
-            for /demo. Lead submissions stay in Demo requests.
-          </p>
-        </div>
-        <Button onClick={save} disabled={saving}>
-          {saving ? "Saving…" : "Save"}
-        </Button>
-      </div>
+    <AdminPage>
+      <AdminFormWidth size="lg" className="space-y-8">
+      <AdminPageHeader
+        title="Demo page"
+        description="Hero, process steps, form-side copy, testimonial, and select lists for /demo. Lead submissions stay in Demo requests."
+        actions={
+          <Button onClick={save} disabled={saving}>
+            {saving ? "Saving…" : "Save"}
+          </Button>
+        }
+      />
 
       <section className="space-y-4 rounded-md border p-4">
         <h2 className="text-lg font-medium">Hero</h2>
@@ -758,6 +759,7 @@ export default function DemoPageAdminPage() {
           {saving ? "Saving…" : "Save"}
         </Button>
       </div>
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }

@@ -3,6 +3,9 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { PageHeroEditor } from "@/components/admin/PageHeroEditor";
 import {
   PAGE_HERO_KEY_ABOUT,
@@ -27,23 +30,33 @@ function PageHeroAdminInner() {
     : PAGE_HERO_KEY_BLOG;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Page heroes</h1>
-        <p className="text-sm text-muted-foreground">
-          Shared eyebrow / title / subtitle for marketing page heroes. Public
-          wiring is live for <code className="text-xs">/blog</code>,{" "}
-          <code className="text-xs">/about</code> (also editable under{" "}
-          <Link href="/admin/about?tab=hero" className="underline underline-offset-2">
-            About page
-          </Link>
-          ), and <code className="text-xs">/contact</code> (also editable under{" "}
-          <Link href="/admin/contact" className="underline underline-offset-2">
-            Contact page
-          </Link>
-          ).
-        </p>
-      </div>
+    <AdminPage spacing="md">
+      <AdminFormWidth size="md" className="space-y-6">
+      <AdminPageHeader
+        title="Page heroes"
+        description={
+          <>
+            Shared eyebrow / title / subtitle for marketing page heroes. Public
+            wiring is live for <code className="text-xs">/blog</code>,{" "}
+            <code className="text-xs">/about</code> (also editable under{" "}
+            <Link
+              href="/admin/about?tab=hero"
+              className="underline underline-offset-2"
+            >
+              About page
+            </Link>
+            ), and <code className="text-xs">/contact</code> (also editable
+            under{" "}
+            <Link
+              href="/admin/contact"
+              className="underline underline-offset-2"
+            >
+              Contact page
+            </Link>
+            ).
+          </>
+        }
+      />
 
       <div className="flex flex-wrap gap-2">
         {PAGE_HERO_TABS.map((tab) => (
@@ -63,7 +76,8 @@ function PageHeroAdminInner() {
       </div>
 
       <PageHeroEditor key={pageKey} pageKey={pageKey} />
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }
 

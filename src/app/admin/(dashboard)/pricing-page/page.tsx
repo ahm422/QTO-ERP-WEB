@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { FAQ_PAGE_KEY_PRICING } from "@/lib/faqs-defaults";
 import { PRICING_PAGE_CONTENT_DEFAULTS } from "@/lib/pricing-page-defaults";
 import type { PricingPageContent } from "@/types/content";
@@ -78,21 +81,24 @@ export default function PricingPageAdminPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Pricing page</h1>
-        <p className="text-sm text-muted-foreground">
-          Hero copy and FAQ section header for{" "}
-          <code className="text-xs">/pricing</code>. Manage FAQ questions at{" "}
-          <Link
-            href={`/admin/faqs?pageKey=${FAQ_PAGE_KEY_PRICING}`}
-            className="underline underline-offset-2"
-          >
-            FAQs (pricing)
-          </Link>
-          . Plans and comparison use their own screens.
-        </p>
-      </div>
+    <AdminPage>
+      <AdminFormWidth size="md" className="space-y-8">
+      <AdminPageHeader
+        title="Pricing page"
+        description={
+          <>
+            Hero copy and FAQ section header for{" "}
+            <code className="text-xs">/pricing</code>. Manage FAQ questions at{" "}
+            <Link
+              href={`/admin/faqs?pageKey=${FAQ_PAGE_KEY_PRICING}`}
+              className="underline underline-offset-2"
+            >
+              FAQs (pricing)
+            </Link>
+            . Plans and comparison use their own screens.
+          </>
+        }
+      />
 
       <section className="space-y-4 rounded-md border p-4">
         <h2 className="text-lg font-medium">Hero</h2>
@@ -165,6 +171,7 @@ export default function PricingPageAdminPage() {
       <Button type="button" onClick={save} disabled={saving}>
         {saving ? "Saving…" : "Save"}
       </Button>
-    </div>
+      </AdminFormWidth>
+    </AdminPage>
   );
 }

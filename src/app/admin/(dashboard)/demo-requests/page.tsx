@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { demoRequestStatusVariant } from "@/lib/status-variants";
 
 type LeadStatus = "NEW" | "READ" | "ARCHIVED";
 
@@ -45,16 +46,6 @@ type DemoRequest = {
   status: LeadStatus;
   createdAt: string;
 };
-
-const statusVariant: Record<
-  LeadStatus,
-  "default" | "secondary" | "outline"
-> = {
-  NEW: "default",
-  READ: "secondary",
-  ARCHIVED: "outline",
-};
-// Phase 5: replace with demoRequestStatusVariant from @/lib/status-variants
 
 export default function DemoRequestsPage() {
   const [requests, setRequests] = useState<DemoRequest[]>([]);
@@ -190,7 +181,9 @@ export default function DemoRequestsPage() {
                     <TableCell>{r.country}</TableCell>
                     <TableCell>{r.businessType}</TableCell>
                     <TableCell>
-                      <Badge variant={statusVariant[r.status]}>{r.status}</Badge>
+                      <Badge variant={demoRequestStatusVariant[r.status]}>
+                        {r.status}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {new Date(r.createdAt).toLocaleDateString()}
