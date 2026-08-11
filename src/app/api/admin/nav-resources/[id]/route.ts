@@ -4,14 +4,14 @@ import { revalidatePath } from "next/cache";
 import { navResources } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { getDb } from "@/lib/db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { updateNavResourceSchema } from "@/lib/validations/admin-nav-resources";
 
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "settings:edit");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;
@@ -63,7 +63,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "settings:edit");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;

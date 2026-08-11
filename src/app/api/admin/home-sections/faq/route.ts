@@ -3,11 +3,11 @@ import { revalidatePath } from "next/cache";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { getHomeSection, updateHomeSectionAdmin } from "@/lib/content-db";
 import { FAQ_SECTION_KEY } from "@/lib/home-sections-defaults";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { updateHomeSectionSchema } from "@/lib/validations/admin-built-for";
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   try {
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   let body: unknown;

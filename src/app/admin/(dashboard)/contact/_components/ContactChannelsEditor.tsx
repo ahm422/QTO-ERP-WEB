@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ALLOWED_CONTACT_ICON_KEYS } from "@/lib/icon-map";
 import type { ContactChannel } from "@/types/content";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -40,6 +41,8 @@ function sortRows(rows: ContactChannel[]) {
 }
 
 export function ContactChannelsEditor() {
+  const { can } = useAuth();
+  const canDelete = can("content:delete");
   const [rows, setRows] = useState<ContactChannel[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -269,14 +272,16 @@ export function ContactChannelsEditor() {
                     >
                       Save
                     </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => setDeleteId(row.id)}
-                    >
-                      Delete
-                    </Button>
+                    {canDelete ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => setDeleteId(row.id)}
+                      >
+                        Delete
+                      </Button>
+                    ) : null}
                   </div>
                 </TableCell>
               </TableRow>
@@ -343,17 +348,19 @@ export function ContactChannelsEditor() {
         </Table>
       </div>
 
-      <ConfirmDialog
-        open={deleteId !== null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteId(null);
-        }}
-        title="Delete channel?"
-        description="This removes the channel from the public contact page."
-        confirmLabel="Delete"
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={deleteId !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeleteId(null);
+          }}
+          title="Delete channel?"
+          description="This removes the channel from the public contact page."
+          confirmLabel="Delete"
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

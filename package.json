@@ -22,6 +22,7 @@
     "stripe:check": "tsx --env-file=.env scripts/stripe-check.ts",
     "stripe:webhook-test": "tsx --env-file=.env scripts/stripe-webhook-test.ts",
     "verify:jwt": "tsx --env-file=.env scripts/verify-jwt.ts",
+    "verify:permissions": "tsx --env-file=.env scripts/verify-permissions.ts",
     "verify:auth-flow": "tsx --env-file=.env scripts/verify-auth-flow.ts",
     "verify:demo": "tsx --env-file=.env scripts/verify-demo-flow.ts",
     "cf:types": "wrangler types --env-interface CloudflareEnv",

@@ -5,11 +5,11 @@ import {
   getAboutStoryAdmin,
   upsertAboutStoryAdmin,
 } from "@/lib/content-db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { upsertAboutStorySchema } from "@/lib/validations/admin-about";
 
 export async function GET(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   try {
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   let body: unknown;

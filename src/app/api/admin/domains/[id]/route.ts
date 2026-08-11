@@ -1,24 +1,24 @@
 import { adminDomainsGoneResponse } from "@/lib/admin-domains-gone";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
 export async function GET(request: Request, _context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
   return adminDomainsGoneResponse();
 }
 
 export async function PATCH(request: Request, _context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
   return adminDomainsGoneResponse();
 }
 
 export async function DELETE(request: Request, _context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:delete");
   if ("error" in admin) return admin.error;
   return adminDomainsGoneResponse();
 }

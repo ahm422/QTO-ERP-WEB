@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { getBlogPostByIdAdmin } from "@/lib/content-db";
 import { mediaUrl } from "@/lib/media";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { requireMediaBucket } from "@/lib/require-media-bucket";
 import {
   blogImageUploadSchema,
@@ -13,7 +13,7 @@ const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_BYTES = 10 * 1024 * 1024;
 
 export async function POST(request: Request) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:create");
   if ("error" in admin) return admin.error;
 
   const mediaResult = await requireMediaBucket();

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { ALLOWED_BUILT_FOR_ICON_KEYS } from "@/lib/icon-map";
 import { BUILT_FOR_SECTION_DEFAULT } from "@/lib/home-sections-defaults";
@@ -56,6 +57,8 @@ function sortRows(rows: BuiltForCardRow[]) {
 }
 
 export default function BuiltForAdminPage() {
+  const { can } = useAuth();
+  const canDelete = can("content:delete");
   const [section, setSection] = useState<SectionForm>({
     tag: BUILT_FOR_SECTION_DEFAULT.tag,
     title: BUILT_FOR_SECTION_DEFAULT.title,
@@ -402,14 +405,16 @@ export default function BuiltForAdminPage() {
                           >
                             Save
                           </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => setDeleteId(row.id)}
-                          >
-                            Delete
-                          </Button>
+                          {canDelete ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => setDeleteId(row.id)}
+                            >
+                              Delete
+                            </Button>
+                          ) : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -478,17 +483,19 @@ export default function BuiltForAdminPage() {
         </>
       )}
 
-      <ConfirmDialog
-        open={deleteId !== null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteId(null);
-        }}
-        title="Delete Built For card?"
-        description="This removes the audience card from the home section."
-        confirmLabel="Delete"
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={deleteId !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeleteId(null);
+          }}
+          title="Delete Built For card?"
+          description="This removes the audience card from the home section."
+          confirmLabel="Delete"
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

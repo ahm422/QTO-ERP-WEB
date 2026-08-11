@@ -4,14 +4,14 @@ import { pricingPlans } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { updatePricingPlanAdmin } from "@/lib/content-db";
 import { getDb } from "@/lib/db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { updatePricingPlanSchema } from "@/lib/validations/admin-pricing";
 
 
 type RouteContext = { params: Promise<{ slug: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   const { slug } = await context.params;

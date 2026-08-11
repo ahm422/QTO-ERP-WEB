@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,8 @@ type BlogPost = {
 };
 
 export default function BlogAdminPage() {
+  const { can } = useAuth();
+  const canDelete = can("content:delete");
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -129,14 +132,16 @@ export default function BlogAdminPage() {
                         <Button type="button" size="sm" variant="outline" asChild>
                           <Link href={`/admin/blog/${post.id}/edit`}>Edit</Link>
                         </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => setDeleteId(post.id)}
-                        >
-                          Delete
-                        </Button>
+                        {canDelete ? (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => setDeleteId(post.id)}
+                          >
+                            Delete
+                          </Button>
+                        ) : null}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -147,14 +152,16 @@ export default function BlogAdminPage() {
         </div>
       )}
 
-      <ConfirmDialog
-        open={!!deleteId}
-        onOpenChange={() => setDeleteId(null)}
-        title="Delete blog post"
-        description="This permanently removes the post from the database."
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={!!deleteId}
+          onOpenChange={() => setDeleteId(null)}
+          title="Delete blog post"
+          description="This permanently removes the post from the database."
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

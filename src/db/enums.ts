@@ -1,4 +1,4 @@
-export const roles = ["ADMIN"] as const;
+export const roles = ["SUPER_ADMIN", "ADMIN", "EDITOR"] as const;
 export type Role = (typeof roles)[number];
 
 export const blogPostStatuses = ["DRAFT", "PUBLISHED"] as const;

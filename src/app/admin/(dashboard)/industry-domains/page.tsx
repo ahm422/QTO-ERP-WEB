@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { ALLOWED_DOMAIN_ICON_KEYS } from "@/lib/icon-map";
 import { ECOSYSTEM_SECTION_DEFAULT } from "@/lib/home-sections-defaults";
@@ -316,6 +317,8 @@ function OrderControls({
 }
 
 export default function IndustryDomainsAdminPage() {
+  const { can } = useAuth();
+  const canDelete = can("content:delete");
   const [section, setSection] = useState<SectionForm>({
     tag: ECOSYSTEM_SECTION_DEFAULT.tag,
     title: ECOSYSTEM_SECTION_DEFAULT.title,
@@ -712,16 +715,18 @@ export default function IndustryDomainsAdminPage() {
                               <Pencil className="mr-1 size-3.5" />
                               {isEditing ? "Close" : "Edit"}
                             </Button>
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="ghost"
-                              className="size-8 text-destructive hover:text-destructive"
-                              aria-label={`Delete ${row.name}`}
-                              onClick={() => setDeleteId(row.id)}
-                            >
-                              <Trash2 className="size-4" />
-                            </Button>
+                            {canDelete ? (
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="size-8 text-destructive hover:text-destructive"
+                                aria-label={`Delete ${row.name}`}
+                                onClick={() => setDeleteId(row.id)}
+                              >
+                                <Trash2 className="size-4" />
+                              </Button>
+                            ) : null}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -800,14 +805,16 @@ export default function IndustryDomainsAdminPage() {
                         <Pencil className="mr-1 size-3.5" />
                         {isEditing ? "Close" : "Edit"}
                       </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => setDeleteId(row.id)}
-                      >
-                        Delete
-                      </Button>
+                      {canDelete ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => setDeleteId(row.id)}
+                        >
+                          Delete
+                        </Button>
+                      ) : null}
                     </div>
                   </article>
                 );
@@ -901,17 +908,19 @@ export default function IndustryDomainsAdminPage() {
         </>
       )}
 
-      <ConfirmDialog
-        open={deleteId !== null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteId(null);
-        }}
-        title="Delete industry domain?"
-        description="This removes the domain from the Connected Ecosystem section."
-        confirmLabel="Delete"
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={deleteId !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeleteId(null);
+          }}
+          title="Delete industry domain?"
+          description="This removes the domain from the Connected Ecosystem section."
+          confirmLabel="Delete"
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

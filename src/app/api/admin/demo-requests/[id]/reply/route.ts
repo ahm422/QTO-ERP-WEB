@@ -5,14 +5,14 @@ import { demoRequests } from "@/db/schema";
 import { jsonError, validationErrorResponse } from "@/lib/api-errors";
 import { sendEmail } from "@/lib/email";
 import { getDb } from "@/lib/db";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { demoRequestReplySchema } from "@/lib/validations/admin-demo-request";
 
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   const { id } = await context.params;

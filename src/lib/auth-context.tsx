@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
+import { roles, type Role } from "@/db/enums";
 import {
   bootstrapSessionFromCookie,
   getAccessToken,
@@ -16,10 +17,11 @@ import {
   setAccessToken,
   type RefreshSessionResult,
 } from "@/lib/auth-refresh-client";
+import { hasCapability, type Capability } from "@/lib/permission-matrix";
 
 type AuthUser = {
   email: string;
-  role: string;
+  role: Role;
 };
 
 type LoginResult = { ok: true } | { ok: false; error: string };
@@ -28,6 +30,7 @@ type AuthContextValue = {
   user: AuthUser | null;
   accessToken: string | null;
   loading: boolean;
+  can: (capability: Capability) => boolean;
   login: (email: string, password: string) => Promise<LoginResult>;
   logout: () => Promise<void>;
   refetch: () => Promise<void>;
@@ -37,8 +40,14 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 const LOGIN_PATH = "/admin/login";
 
-function toAuthUser(data: RefreshSessionResult): AuthUser {
-  return { email: data.email, role: data.role };
+function parseRole(role: string): Role | null {
+  return roles.includes(role as Role) ? (role as Role) : null;
+}
+
+function toAuthUser(data: RefreshSessionResult): AuthUser | null {
+  const role = parseRole(data.role);
+  if (!role) return null;
+  return { email: data.email, role };
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -55,9 +64,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         return;
       }
+      const nextUser = toAuthUser(data);
+      if (!nextUser) {
+        setAccessToken(null);
+        setAccessTokenState(null);
+        setUser(null);
+        return;
+      }
       setAccessToken(data.accessToken);
       setAccessTokenState(data.accessToken);
-      setUser(toAuthUser(data));
+      setUser(nextUser);
     },
     [],
   );
@@ -78,8 +94,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         applySession(null);
         return;
       }
-      const data = (await response.json()) as AuthUser;
-      setUser(data);
+      const data = (await response.json()) as { email: string; role: string };
+      const role = parseRole(data.role);
+      if (!role) {
+        applySession(null);
+        return;
+      }
+      setUser({ email: data.email, role });
       setAccessTokenState(token);
     } catch {
       applySession(null);
@@ -122,6 +143,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const can = useCallback(
+    (capability: Capability) => {
+      if (!user) return false;
+      return hasCapability(user.role, capability);
+    },
+    [user],
+  );
+
   useEffect(() => {
     if (pathname === LOGIN_PATH) {
       setLoading(false);
@@ -159,8 +188,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [pathname, applySession, refetch]);
 
   const value = useMemo(
-    () => ({ user, accessToken, loading, login, logout, refetch }),
-    [user, accessToken, loading, login, logout, refetch],
+    () => ({ user, accessToken, loading, can, login, logout, refetch }),
+    [user, accessToken, loading, can, login, logout, refetch],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

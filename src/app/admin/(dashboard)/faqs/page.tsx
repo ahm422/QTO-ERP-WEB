@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import {
   FAQ_PAGE_KEY_CONTACT,
@@ -70,6 +71,8 @@ function sortRows(rows: FaqRow[]) {
 }
 
 function FaqsAdminInner() {
+  const { can } = useAuth();
+  const canDelete = can("content:delete");
   const searchParams = useSearchParams();
   const pageKey = searchParams.get("pageKey")?.trim() || FAQ_PAGE_KEY_HOME;
   const isHome = pageKey === FAQ_PAGE_KEY_HOME;
@@ -449,14 +452,16 @@ function FaqsAdminInner() {
                           >
                             Save
                           </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => setDeleteId(row.id)}
-                          >
-                            Delete
-                          </Button>
+                          {canDelete ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => setDeleteId(row.id)}
+                            >
+                              Delete
+                            </Button>
+                          ) : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -519,17 +524,19 @@ function FaqsAdminInner() {
         </>
       )}
 
-      <ConfirmDialog
-        open={deleteId !== null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteId(null);
-        }}
-        title="Delete FAQ?"
-        description="This removes the question from the public FAQ list."
-        confirmLabel="Delete"
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={deleteId !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeleteId(null);
+          }}
+          title="Delete FAQ?"
+          description="This removes the question from the public FAQ list."
+          confirmLabel="Delete"
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

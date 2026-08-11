@@ -6,13 +6,13 @@ import {
   updateSolutionAdmin,
 } from "@/lib/content-db";
 import { revalidateSolutionPaths } from "@/lib/revalidate-content-paths";
-import { requireAdminApi } from "@/lib/require-admin-api";
+import { requireRole } from "@/lib/permissions";
 import { updateSolutionSchema } from "@/lib/validations/admin-solutions";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 
 export async function GET(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:view");
   if ("error" in admin) return admin.error;
 
   const { slug } = await context.params;
@@ -28,7 +28,7 @@ export async function GET(request: Request, context: RouteContext) {
 }
 
 export async function PUT(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:edit");
   if ("error" in admin) return admin.error;
 
   const { slug } = await context.params;
@@ -73,7 +73,7 @@ export async function PUT(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const admin = await requireAdminApi(request);
+  const admin = await requireRole(request, "content:delete");
   if ("error" in admin) return admin.error;
 
   const { slug } = await context.params;

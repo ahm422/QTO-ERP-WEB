@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { ALLOWED_STAT_ICON_KEYS } from "@/lib/icon-map";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,8 @@ function sortRows(rows: HomeStatRow[]) {
 }
 
 export default function HomeStatsAdminPage() {
+  const { can } = useAuth();
+  const canDelete = can("content:delete");
   const [rows, setRows] = useState<HomeStatRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -303,14 +306,16 @@ export default function HomeStatsAdminPage() {
                       >
                         Save
                       </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => setDeleteId(row.id)}
-                      >
-                        Delete
-                      </Button>
+                      {canDelete ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => setDeleteId(row.id)}
+                        >
+                          Delete
+                        </Button>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -380,17 +385,19 @@ export default function HomeStatsAdminPage() {
         </div>
       )}
 
-      <ConfirmDialog
-        open={deleteId !== null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteId(null);
-        }}
-        title="Delete home stat?"
-        description="This removes the stat from the home strip."
-        confirmLabel="Delete"
-        loading={deleting}
-        onConfirm={confirmDelete}
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          open={deleteId !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeleteId(null);
+          }}
+          title="Delete home stat?"
+          description="This removes the stat from the home strip."
+          confirmLabel="Delete"
+          loading={deleting}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

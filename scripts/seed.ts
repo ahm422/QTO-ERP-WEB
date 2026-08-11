@@ -22,14 +22,14 @@ async function main() {
       .values({
         email,
         passwordHash,
-        role: "ADMIN",
+        role: "SUPER_ADMIN",
         name: "Admin",
       })
       .onConflictDoUpdate({
         target: users.email,
         set: {
           passwordHash,
-          role: "ADMIN",
+          role: "SUPER_ADMIN",
         },
       });
 
