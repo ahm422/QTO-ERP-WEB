@@ -93,7 +93,7 @@ export function AdminHeader({ email }: AdminHeaderProps) {
                 <Monitor className="h-4 w-4" />
                 Appearance
               </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
+              <DropdownMenuSubContent sideOffset={8} collisionPadding={8}>
                 <DropdownMenuItem onClick={() => setTheme("light")}>
                   <Sun className="h-4 w-4" />
                   Light
@@ -110,7 +110,7 @@ export function AdminHeader({ email }: AdminHeaderProps) {
             </DropdownMenuSub>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
+              variant="destructive"
               onClick={() => void logout()}
             >
               Sign out
