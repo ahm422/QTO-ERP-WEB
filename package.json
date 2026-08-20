@@ -26,6 +26,7 @@
     "verify:auth-flow": "tsx --env-file=.env scripts/verify-auth-flow.ts",
     "verify:users-flow": "tsx --env-file=.env scripts/verify-users-flow.ts",
     "verify:demo": "tsx --env-file=.env scripts/verify-demo-flow.ts",
+    "verify:subscribe": "tsx --env-file=.env scripts/verify-subscribe-flow.ts",
     "cf:types": "wrangler types --env-interface CloudflareEnv",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:wrangler": "OPEN_NEXT_DEPLOY=true CLOUDFLARE_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID WRANGLER_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID wrangler deploy --env=\"\"",

@@ -32,6 +32,11 @@ export default function Subscribe() {
         error?: string;
       };
 
+      if (res.status === 409) {
+        setError(data.error ?? 'Already subscribed');
+        return;
+      }
+
       if (!res.ok) {
         setError(data.error ?? 'Something went wrong. Please try again.');
         return;
