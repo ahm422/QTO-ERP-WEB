@@ -18,9 +18,10 @@ export type OrbitModuleSource = Pick<
   | "orbitSpeed"
 >;
 
-function defaultOrbitFor(
+/** Seed orbit tuple for a slug, then index fallback. */
+export function defaultOrbitFor(
   slug: string,
-  index: number,
+  index = 0,
 ): [number, number, number, number] {
   const bySlug = ORBIT_SEED_BY_SLUG[slug];
   if (bySlug) return bySlug;

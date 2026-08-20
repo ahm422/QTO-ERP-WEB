@@ -71,6 +71,7 @@ export default function FeaturesSection({
                       src={imageUrl}
                       alt={feature.title}
                       fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />

@@ -55,7 +55,7 @@ import { ABOUT_FINAL_CTA_DEFAULTS } from "@/lib/about-cta-defaults";
 type ErpModule = InferSelectModel<typeof erpModules>;
 
 /** Resolve stored image path: R2 key → /api/media/…; leave absolute/public paths as-is. */
-function resolveMediaPath(value: string | null | undefined): string | undefined {
+export function resolveMediaPath(value: string | null | undefined): string | undefined {
   if (!value) return undefined;
   if (
     value.startsWith("/") ||
@@ -67,7 +67,7 @@ function resolveMediaPath(value: string | null | undefined): string | undefined 
   return mediaUrl(value);
 }
 
-function serializeFeatures(features: ErpModule["features"]): ModuleDetail["features"] {
+export function serializeFeatures(features: ErpModule["features"]): ModuleDetail["features"] {
   return features.map((f) => ({
     title: f.title,
     description: f.description,
