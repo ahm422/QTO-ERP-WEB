@@ -18,24 +18,32 @@ interface PricingCardsProps {
 
 const CHECKOUT_PLANS = new Set(['starter', 'growth']);
 
+type CheckoutKind = 'trial' | 'paid';
+
 export default function PricingCards({ plans, yearly }: PricingCardsProps) {
-  const [loadingSlug, setLoadingSlug] = useState<string | null>(null);
+  const [loading, setLoading] = useState<{
+    slug: string;
+    kind: CheckoutKind;
+  } | null>(null);
   const [errorBySlug, setErrorBySlug] = useState<Record<string, string>>({});
   const reduced = useReducedMotion();
   const container = getStaggerContainer(reduced);
   const item = getStaggerItem(reduced);
   const hover = getCardHover(reduced);
 
-  async function startCheckout(planSlug: string) {
-    setLoadingSlug(planSlug);
+  async function startCheckout(planSlug: string, kind: CheckoutKind) {
+    setLoading({ slug: planSlug, kind });
     setErrorBySlug((prev) => {
       const next = { ...prev };
       delete next[planSlug];
       return next;
     });
 
+    const path =
+      kind === 'trial' ? '/api/pricing/trial' : '/api/pricing/checkout';
+
     try {
-      const res = await fetch('/api/pricing/checkout', {
+      const res = await fetch(path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -62,7 +70,7 @@ export default function PricingCards({ plans, yearly }: PricingCardsProps) {
         [planSlug]: 'Network error. Please try again.',
       }));
     } finally {
-      setLoadingSlug(null);
+      setLoading(null);
     }
   }
 
@@ -88,9 +96,23 @@ export default function PricingCards({ plans, yearly }: PricingCardsProps) {
               plan={plan}
               yearly={yearly}
               checkoutEnabled={isCheckoutPlan}
-              isLoading={loadingSlug === plan.slug}
+              trialLoading={
+                loading?.slug === plan.slug && loading.kind === 'trial'
+              }
+              subscribeLoading={
+                loading?.slug === plan.slug && loading.kind === 'paid'
+              }
               error={errorBySlug[plan.slug]}
-              onCheckout={isCheckoutPlan ? startCheckout : undefined}
+              onStartTrial={
+                isCheckoutPlan
+                  ? (slug) => startCheckout(slug, 'trial')
+                  : undefined
+              }
+              onSubscribe={
+                isCheckoutPlan
+                  ? (slug) => startCheckout(slug, 'paid')
+                  : undefined
+              }
             />
           </motion.div>
         );

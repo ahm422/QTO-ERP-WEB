@@ -8,6 +8,7 @@
     "dev:workers": "opennextjs-cloudflare build && wrangler dev --persist-to=./.wrangler/state --ip 127.0.0.1",
     "start": "next start",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "test:unit": "tsx --test src/lib/pricing-discount.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply qto-erp-db-production --local",
     "db:migrate:remote": "wrangler d1 migrations apply qto-erp-db-production --remote",

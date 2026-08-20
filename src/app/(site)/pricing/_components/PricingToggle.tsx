@@ -49,7 +49,7 @@ export default function PricingToggle({
         </button>
       </div>
       {yearly ? (
-        <span className='text-xs font-semibold text-accent'>Save 20%</span>
+        <span className='text-xs text-muted-foreground'>Billed annually</span>
       ) : null}
     </div>
   );

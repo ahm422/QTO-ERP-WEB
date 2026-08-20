@@ -31,5 +31,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "open-next.config.ts", "scripts", "cf-worker.ts"]
+  "exclude": ["node_modules", "open-next.config.ts", "scripts", "cf-worker.ts", "**/*.test.ts"]
 }

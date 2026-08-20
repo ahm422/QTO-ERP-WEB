@@ -2,6 +2,7 @@
 
 import { Check, Loader2, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
+import { annualDiscountPercent } from "@/lib/pricing-discount";
 import { cn } from "@/lib/utils";
 import type { PricingPlan } from "@/types/pricingPlan";
 import { Card } from "@/components/ui/card";
@@ -11,11 +12,13 @@ import { MarketingButton } from "@/components/ui/marketing-button";
 export type PlanCardProps = {
   plan: PricingPlan;
   yearly: boolean;
-  /** When true, CTA triggers onCheckout instead of /contact link. */
+  /** When true, primary CTA starts a trial and secondary CTA starts paid checkout. */
   checkoutEnabled?: boolean;
-  isLoading?: boolean;
+  trialLoading?: boolean;
+  subscribeLoading?: boolean;
   error?: string;
-  onCheckout?: (slug: string) => void;
+  onStartTrial?: (slug: string) => void;
+  onSubscribe?: (slug: string) => void;
   className?: string;
 };
 
@@ -27,15 +30,21 @@ export function PlanCard({
   plan,
   yearly,
   checkoutEnabled = false,
-  isLoading = false,
+  trialLoading = false,
+  subscribeLoading = false,
   error,
-  onCheckout,
+  onStartTrial,
+  onSubscribe,
   className,
 }: PlanCardProps) {
   const isPopular = plan.popular;
   const price = yearly ? plan.yearlyPrice : plan.monthlyPrice;
   const showCustom =
     typeof price !== "number" || Number.isNaN(price) || price <= 0;
+  const savePercent = yearly
+    ? annualDiscountPercent(plan.monthlyPrice, plan.yearlyPrice)
+    : null;
+  const showAnnualSave = savePercent !== null && savePercent >= 1;
 
   return (
     <Card
@@ -82,13 +91,34 @@ export function PlanCard({
               Custom
             </span>
           ) : (
-            <div className="flex items-baseline gap-1">
-              <span className="font-display text-5xl font-bold tracking-tight text-foreground">
-                ${price}
-              </span>
-              <span className="text-sm font-medium text-muted-foreground">
-                /mo
-              </span>
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <div className="flex items-baseline gap-1">
+                <span className="font-display text-5xl font-bold tracking-tight text-foreground">
+                  ${price}
+                </span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  /mo
+                </span>
+              </div>
+              {showAnnualSave ? (
+                <>
+                  <span
+                    className="text-sm font-medium text-muted-foreground line-through"
+                    aria-hidden
+                  >
+                    ${plan.monthlyPrice}/mo
+                  </span>
+                  <span className="sr-only">
+                    instead of ${plan.monthlyPrice} per month
+                  </span>
+                  <span
+                    className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent"
+                    aria-label={`Save ${savePercent} percent billed annually`}
+                  >
+                    Save {savePercent}%
+                  </span>
+                </>
+              ) : null}
             </div>
           )}
           {!showCustom ? (
@@ -103,24 +133,50 @@ export function PlanCard({
         </div>
 
         <div className="mb-8">
-          {checkoutEnabled && onCheckout ? (
-            <MarketingButton
-              type="button"
-              onClick={() => onCheckout(plan.slug)}
-              disabled={isLoading}
-              variant={isPopular ? "primary" : "secondary"}
-              className="mb-2 w-full"
-              iconSlide={!isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" aria-hidden />
-                  Processing…
-                </>
-              ) : (
-                plan.cta
-              )}
-            </MarketingButton>
+          {checkoutEnabled && (onStartTrial || onSubscribe) ? (
+            <div className="space-y-2">
+              {onStartTrial ? (
+                <MarketingButton
+                  type="button"
+                  onClick={() => onStartTrial(plan.slug)}
+                  disabled={trialLoading || subscribeLoading}
+                  variant={isPopular ? "primary" : "secondary"}
+                  className="w-full"
+                  iconSlide={!trialLoading}
+                >
+                  {trialLoading ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" aria-hidden />
+                      Processing…
+                    </>
+                  ) : /trial/i.test(plan.cta) ? (
+                    plan.cta
+                  ) : (
+                    "Start Free Trial"
+                  )}
+                </MarketingButton>
+              ) : null}
+              {onSubscribe ? (
+                <MarketingButton
+                  type="button"
+                  onClick={() => onSubscribe(plan.slug)}
+                  disabled={trialLoading || subscribeLoading}
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  iconSlide={false}
+                >
+                  {subscribeLoading ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" aria-hidden />
+                      Processing…
+                    </>
+                  ) : (
+                    "Subscribe"
+                  )}
+                </MarketingButton>
+              ) : null}
+            </div>
           ) : (
             <MarketingButton
               variant={isPopular ? "primary" : "secondary"}

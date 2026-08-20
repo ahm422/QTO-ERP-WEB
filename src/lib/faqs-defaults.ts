@@ -128,7 +128,7 @@ export const PRICING_FAQS_DEFAULTS: FaqDefault[] = [
     pageKey: FAQ_PAGE_KEY_PRICING,
     question: "Is there a free trial?",
     answer:
-      "Yes! Every plan comes with a 14-day free trial. No credit card required.",
+      "Yes. Starter and Growth include a 14-day free trial. Stripe collects a card on file; you will not be charged until the trial ends. Enterprise is custom — contact sales.",
     category: null,
     sortOrder: 0,
     published: true,
