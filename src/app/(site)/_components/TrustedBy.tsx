@@ -31,7 +31,7 @@ export default function TrustedBy({ logos }: TrustedByProps) {
   const resolved = logos?.length ? logos : defaultLogos();
 
   return (
-    <section className="section-padding pt-0 md:pt-4">
+    <section className="section-padding pt-0 pb-0 md:pt-4 md:pb-0">
       <div className="container-main">
         <TrustedByStrip logos={toStripLogos(resolved)} />
       </div>

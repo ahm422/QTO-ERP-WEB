@@ -144,7 +144,7 @@ export function StatsStrip({ stats, className }: StatsStripProps) {
       whileInView="visible"
       viewport={viewportOnce}
       className={cn(
-        "mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-10 px-6 md:mt-16 md:grid-cols-4 md:gap-8",
+        "mx-auto grid max-w-5xl grid-cols-2 gap-10 px-6 md:grid-cols-4 md:gap-8",
         className
       )}
     >
