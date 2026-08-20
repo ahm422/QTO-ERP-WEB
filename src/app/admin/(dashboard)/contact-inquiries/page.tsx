@@ -237,7 +237,7 @@ export default function ContactInquiriesPage() {
       )}
 
       <Dialog open={!!replyTarget} onOpenChange={() => setReplyTarget(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[min(90vh,40rem)] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Reply to {replyTarget?.name}</DialogTitle>
           </DialogHeader>
@@ -253,7 +253,7 @@ export default function ContactInquiriesPage() {
                   ? ` · ${replyTarget.companySize}`
                   : ""}
               </p>
-              <p className="rounded-md border bg-muted/40 p-3 text-foreground">
+              <p className="break-words whitespace-pre-wrap rounded-md border bg-muted/40 p-3 text-foreground">
                 {replyTarget.message}
               </p>
               <div className="space-y-2">
