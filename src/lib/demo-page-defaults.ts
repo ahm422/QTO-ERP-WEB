@@ -87,7 +87,8 @@ export const DEMO_PAGE_CONTENT_DEFAULTS: DemoPageContentDefault = {
     labels: {
       name: "Full Name",
       email: "Email Address",
-      phone: "Phone Number",
+      phone: "Client Contact Number",
+      companyPhone: "Company Contact Number",
       country: "Country",
       company: "Company Name",
       businessType: "Business Type",
@@ -96,6 +97,7 @@ export const DEMO_PAGE_CONTENT_DEFAULTS: DemoPageContentDefault = {
       name: "John Doe",
       email: "john@company.com",
       phone: "+1 (555) 123-4567",
+      companyPhone: "+1 (555) 123-4567",
       company: "Acme Corporation",
       country: "Select a country",
       businessType: "Select business type",

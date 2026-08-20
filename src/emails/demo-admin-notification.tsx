@@ -19,6 +19,7 @@ export function DemoAdminNotificationEmail({
   name,
   email,
   phone,
+  companyPhone,
   country,
   company,
   businessType,
@@ -41,6 +42,9 @@ export function DemoAdminNotificationEmail({
           </Text>
           <Text style={paragraph}>
             <strong>Phone:</strong> {phone}
+          </Text>
+          <Text style={paragraph}>
+            <strong>Company phone:</strong> {companyPhone}
           </Text>
           <Text style={paragraph}>
             <strong>Country:</strong> {country}

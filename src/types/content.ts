@@ -270,6 +270,7 @@ export type DemoFormFieldOptionsDto = {
     name: string;
     email: string;
     phone: string;
+    companyPhone: string;
     country: string;
     company: string;
     businessType: string;
@@ -278,6 +279,7 @@ export type DemoFormFieldOptionsDto = {
     name: string;
     email: string;
     phone: string;
+    companyPhone: string;
     company: string;
     country: string;
     businessType: string;
