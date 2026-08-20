@@ -48,8 +48,10 @@ export default async function Home() {
   return (
     <>
       <Hero hero={hero} orbitModules={orbitModules} />
-      <TrustedBy logos={trustedLogos} />
-      <HomeStats stats={stats} />
+      <div className="flex flex-col gap-8 md:gap-10">
+        <TrustedBy logos={trustedLogos} />
+        <HomeStats stats={stats} />
+      </div>
       <BuiltFor data={builtFor} />
       <IntegratedModules modules={modules} />
       <IndustryEcosystems data={ecosystem} />
