@@ -34,10 +34,43 @@ type ContactPageClientProps = {
 };
 
 type BottomContactCard = {
+  kind: 'email' | 'phone' | 'office';
   iconKey: string;
   title: string;
   details: string[];
 };
+
+const CONTACT_DETAIL_LINK_CLASS =
+  'block rounded-sm text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50';
+
+function ContactDetailLine({
+  kind,
+  detail,
+}: {
+  kind: BottomContactCard['kind'];
+  detail: string;
+}) {
+  if (kind === 'email') {
+    return (
+      <a href={`mailto:${detail}`} className={CONTACT_DETAIL_LINK_CLASS}>
+        {detail}
+      </a>
+    );
+  }
+
+  if (kind === 'phone') {
+    return (
+      <a
+        href={`tel:${detail.replace(/\s/g, '')}`}
+        className={CONTACT_DETAIL_LINK_CLASS}
+      >
+        {detail}
+      </a>
+    );
+  }
+
+  return <p className='text-sm text-muted-foreground'>{detail}</p>;
+}
 
 function splitHeroTitle(title: string): { main: string; accent: string | null } {
   const andIdx = title.indexOf(' And ');
@@ -78,6 +111,7 @@ function groupBottomContactCards(channels: ContactChannel[]): BottomContactCard[
 
   if (emailChannels.length > 0) {
     cards.push({
+      kind: 'email',
       iconKey: emailChannels[0].iconKey,
       title: 'Email',
       details: emailChannels.map((c) => c.value),
@@ -86,6 +120,7 @@ function groupBottomContactCards(channels: ContactChannel[]): BottomContactCard[
 
   if (phoneChannels.length > 0) {
     cards.push({
+      kind: 'phone',
       iconKey: phoneChannels[0].iconKey,
       title: 'Phone',
       details: phoneChannels.map((c) => c.value),
@@ -94,6 +129,7 @@ function groupBottomContactCards(channels: ContactChannel[]): BottomContactCard[
 
   for (const office of officeChannels) {
     cards.push({
+      kind: 'office',
       iconKey: office.iconKey,
       title: office.label || 'Office',
       details: [office.value],
@@ -301,9 +337,11 @@ export default function ContactPageClient({
                       {contact.title}
                     </h3>
                     {contact.details.map((detail) => (
-                      <p key={detail} className='text-sm text-muted-foreground'>
-                        {detail}
-                      </p>
+                      <ContactDetailLine
+                        key={detail}
+                        kind={contact.kind}
+                        detail={detail}
+                      />
                     ))}
                   </Card>
                 </motion.div>
