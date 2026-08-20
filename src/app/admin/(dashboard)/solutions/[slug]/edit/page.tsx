@@ -6,7 +6,7 @@
  * an intentional decorative placeholder on the public page.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -17,6 +17,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import type {
+  SolutionProblem,
+  SolutionUseCase,
+  SolutionUseCaseFeature,
+} from "@/types/solution";
 
 type ModuleOption = {
   id: string;
@@ -31,9 +36,9 @@ type SolutionForm = {
   audience: string;
   heroHeadline: string;
   heroSubheadline: string;
-  problemsJson: string;
+  problems: SolutionProblem[];
   recommendedModules: string[];
-  useCasesJson: string;
+  useCases: SolutionUseCase[];
   testimonialJson: string;
   solutionFaqsJson: string;
   sortOrder: number;
@@ -49,6 +54,72 @@ function parseJsonField(raw: string, fallback: unknown): unknown {
   return JSON.parse(raw) as unknown;
 }
 
+function asProblems(value: unknown): SolutionProblem[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => {
+    if (!item || typeof item !== "object") {
+      return { title: "", description: "" };
+    }
+    const row = item as Record<string, unknown>;
+    return {
+      title: String(row.title ?? ""),
+      description: String(row.description ?? ""),
+    };
+  });
+}
+
+function asUseCases(value: unknown): SolutionUseCase[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => {
+    if (!item || typeof item !== "object") {
+      return emptyUseCase();
+    }
+    const row = item as Record<string, unknown>;
+    const useCase: SolutionUseCase = {
+      slug: String(row.slug ?? ""),
+      industry: String(row.industry ?? ""),
+      description: String(row.description ?? ""),
+      specificNeeds: Array.isArray(row.specificNeeds)
+        ? row.specificNeeds.map((need) => String(need))
+        : [],
+    };
+    if (Array.isArray(row.subNav)) {
+      useCase.subNav = row.subNav.map((nav) => String(nav));
+    }
+    if (Array.isArray(row.features)) {
+      useCase.features = row.features as SolutionUseCaseFeature[];
+    }
+    return useCase;
+  });
+}
+
+function emptyUseCase(): SolutionUseCase {
+  return {
+    slug: "",
+    industry: "",
+    description: "",
+    specificNeeds: [],
+  };
+}
+
+function validateSolutionRows(form: SolutionForm): string | null {
+  for (const problem of form.problems) {
+    if (!problem.title.trim() || !problem.description.trim()) {
+      return "Each problem needs a title and description. Remove empty rows or fill them in.";
+    }
+  }
+  for (const useCase of form.useCases) {
+    if (
+      !useCase.slug.trim() ||
+      !useCase.industry.trim() ||
+      !useCase.description.trim()
+    ) {
+      return "Each use case needs a slug, industry, and description. Remove empty rows or fill them in.";
+    }
+  }
+  return null;
+}
+
 function solutionToForm(item: Record<string, unknown>): SolutionForm {
   return {
     id: String(item.id),
@@ -57,9 +128,9 @@ function solutionToForm(item: Record<string, unknown>): SolutionForm {
     audience: String(item.audience ?? ""),
     heroHeadline: String(item.heroHeadline ?? ""),
     heroSubheadline: String(item.heroSubheadline ?? ""),
-    problemsJson: stringifyJson(item.problems),
+    problems: asProblems(item.problems),
     recommendedModules: (item.recommendedModules as string[]) ?? [],
-    useCasesJson: stringifyJson(item.useCases),
+    useCases: asUseCases(item.useCases),
     testimonialJson: stringifyJson(item.testimonial),
     solutionFaqsJson: stringifyJson(item.solutionFaqs),
     sortOrder: Number(item.sortOrder ?? 0),
@@ -74,6 +145,11 @@ export default function EditSolutionPage() {
   const [modules, setModules] = useState<ModuleOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const rowError = useMemo(
+    () => (form ? validateSolutionRows(form) : null),
+    [form],
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -113,15 +189,16 @@ export default function EditSolutionPage() {
 
   const save = async () => {
     if (!form) return;
+    const error = validateSolutionRows(form);
+    if (error) {
+      toast.error(error);
+      return;
+    }
     setSaving(true);
     try {
-      let problems: unknown;
-      let useCases: unknown;
       let testimonial: unknown;
       let solutionFaqs: unknown;
       try {
-        problems = parseJsonField(form.problemsJson, []);
-        useCases = parseJsonField(form.useCasesJson, []);
         testimonial = parseJsonField(form.testimonialJson, {
           quote: "",
           author: "",
@@ -132,6 +209,17 @@ export default function EditSolutionPage() {
         toast.error("Invalid JSON in one of the JSON fields");
         return;
       }
+
+      const problems = form.problems.map((problem) => ({
+        title: problem.title.trim(),
+        description: problem.description.trim(),
+      }));
+      const useCases = form.useCases.map((useCase) => ({
+        ...useCase,
+        slug: useCase.slug.trim(),
+        industry: useCase.industry.trim(),
+        description: useCase.description.trim(),
+      }));
 
       const data = await adminFetch<{ ok: true; item: Record<string, unknown> }>(
         `/api/admin/solutions/${slug}`,
@@ -179,11 +267,21 @@ export default function EditSolutionPage() {
           <Button type="button" variant="outline" asChild>
             <Link href="/admin/solutions">Back</Link>
           </Button>
-          <Button type="button" onClick={save} disabled={saving}>
+          <Button
+            type="button"
+            onClick={save}
+            disabled={saving || Boolean(rowError)}
+          >
             {saving ? "Saving…" : "Save"}
           </Button>
         </div>
       </div>
+
+      {rowError ? (
+        <p className="text-sm text-destructive" role="alert">
+          {rowError}
+        </p>
+      ) : null}
 
       <div className="flex items-center gap-3">
         <Switch
@@ -280,24 +378,136 @@ export default function EditSolutionPage() {
         ) : null}
       </div>
 
-      <div>
-        <Label>Problems (JSON)</Label>
-        <Textarea
-          className="mt-1 font-mono text-sm"
-          rows={6}
-          value={form.problemsJson}
-          onChange={(e) => setForm({ ...form, problemsJson: e.target.value })}
-        />
+      <div className="space-y-3">
+        <Label>Problems</Label>
+        {form.problems.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No problems yet — add one
+          </p>
+        ) : null}
+        {form.problems.map((problem, i) => (
+          <div key={i} className="space-y-3 rounded-md border p-4">
+            <div className="flex justify-between gap-2">
+              <p className="text-sm font-medium">Problem {i + 1}</p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    problems: form.problems.filter((_, j) => j !== i),
+                  })
+                }
+              >
+                Remove
+              </Button>
+            </div>
+            <Input
+              placeholder="Title"
+              value={problem.title}
+              onChange={(e) => {
+                const problems = [...form.problems];
+                problems[i] = { ...problem, title: e.target.value };
+                setForm({ ...form, problems });
+              }}
+            />
+            <Textarea
+              placeholder="Description"
+              rows={3}
+              value={problem.description}
+              onChange={(e) => {
+                const problems = [...form.problems];
+                problems[i] = { ...problem, description: e.target.value };
+                setForm({ ...form, problems });
+              }}
+            />
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() =>
+            setForm({
+              ...form,
+              problems: [...form.problems, { title: "", description: "" }],
+            })
+          }
+        >
+          Add problem
+        </Button>
       </div>
-      <div>
-        <Label>Use cases (JSON)</Label>
-        <Textarea
-          className="mt-1 font-mono text-sm"
-          rows={6}
-          value={form.useCasesJson}
-          onChange={(e) => setForm({ ...form, useCasesJson: e.target.value })}
-        />
+
+      <div className="space-y-3">
+        <Label>Use cases</Label>
+        {form.useCases.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No use cases yet — add one
+          </p>
+        ) : null}
+        {form.useCases.map((useCase, i) => (
+          <div key={i} className="space-y-3 rounded-md border p-4">
+            <div className="flex justify-between gap-2">
+              <p className="text-sm font-medium">Use case {i + 1}</p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    useCases: form.useCases.filter((_, j) => j !== i),
+                  })
+                }
+              >
+                Remove
+              </Button>
+            </div>
+            <Input
+              className="font-mono text-sm"
+              placeholder="Slug"
+              value={useCase.slug}
+              onChange={(e) => {
+                const useCases = [...form.useCases];
+                useCases[i] = { ...useCase, slug: e.target.value };
+                setForm({ ...form, useCases });
+              }}
+            />
+            <Input
+              placeholder="Industry"
+              value={useCase.industry}
+              onChange={(e) => {
+                const useCases = [...form.useCases];
+                useCases[i] = { ...useCase, industry: e.target.value };
+                setForm({ ...form, useCases });
+              }}
+            />
+            <Textarea
+              placeholder="Description"
+              rows={3}
+              value={useCase.description}
+              onChange={(e) => {
+                const useCases = [...form.useCases];
+                useCases[i] = { ...useCase, description: e.target.value };
+                setForm({ ...form, useCases });
+              }}
+            />
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() =>
+            setForm({
+              ...form,
+              useCases: [...form.useCases, emptyUseCase()],
+            })
+          }
+        >
+          Add use case
+        </Button>
       </div>
+
       <div>
         <Label>Testimonial (JSON)</Label>
         <Textarea

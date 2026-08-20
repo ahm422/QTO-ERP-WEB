@@ -100,6 +100,23 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
+  let status = session.metadata?.trial === "true" ? "trialing" : "active";
+  if (stripeSubscriptionId) {
+    try {
+      const stripe = getStripe();
+      const subscription =
+        await stripe.subscriptions.retrieve(stripeSubscriptionId);
+      if (subscription.status) {
+        status = subscription.status;
+      }
+    } catch (err) {
+      console.error(
+        "[api/webhooks/stripe] Could not retrieve subscription status:",
+        err,
+      );
+    }
+  }
+
   await (await getDb()).insert(subscriptions).values({
     stripeCustomerId,
     stripeSubscriptionId,
@@ -107,7 +124,7 @@ async function handleCheckoutSessionCompleted(
     customerEmail,
     planSlug,
     billingInterval: interval,
-    status: "active",
+    status,
   });
 
   const adminEmail = getAdminNotificationEmail();
