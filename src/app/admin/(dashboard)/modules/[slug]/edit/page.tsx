@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { defaultOrbitFor } from "@/lib/hero-orbit";
 import type { ModuleCapability, ModuleRolloutStep } from "@/types/module-cms";
 import type { Feature } from "@/types/feature";
 
@@ -77,14 +78,24 @@ function stringifyJson(value: unknown): string {
   return JSON.stringify(value ?? null, null, 2);
 }
 
+function orbitString(
+  value: unknown,
+  fallback: number,
+): string {
+  return value != null && value !== "" ? String(value) : String(fallback);
+}
+
 function moduleToForm(item: Record<string, unknown>): ModuleForm {
+  const slug = String(item.slug);
+  const sortOrder = Number(item.sortOrder ?? 0);
+  const [radius, tilt, phase, speed] = defaultOrbitFor(slug, sortOrder);
   return {
     id: String(item.id),
-    slug: String(item.slug),
+    slug,
     name: String(item.name),
     shortDescription: String(item.shortDescription ?? ""),
     imageKey: (item.imageKey as string | null) ?? null,
-    imageUrl: String(item.image ?? ""),
+    imageUrl: String(item.imageUrl ?? item.image ?? ""),
     highlights: (item.highlights as string[]) ?? [],
     bestFor: String(item.bestFor ?? ""),
     cardTagline: String(item.cardTagline ?? ""),
@@ -115,14 +126,13 @@ function moduleToForm(item: Record<string, unknown>): ModuleForm {
     testimonialsSectionDescription: String(
       item.testimonialsSectionDescription ?? "",
     ),
-    sortOrder: Number(item.sortOrder ?? 0),
+    sortOrder,
     published: Boolean(item.published),
     showInHeroOrbit: Boolean(item.showInHeroOrbit),
-    orbitRadius:
-      item.orbitRadius != null ? String(item.orbitRadius) : "",
-    orbitTilt: item.orbitTilt != null ? String(item.orbitTilt) : "",
-    orbitPhase: item.orbitPhase != null ? String(item.orbitPhase) : "",
-    orbitSpeed: item.orbitSpeed != null ? String(item.orbitSpeed) : "",
+    orbitRadius: orbitString(item.orbitRadius, radius),
+    orbitTilt: orbitString(item.orbitTilt, tilt),
+    orbitPhase: orbitString(item.orbitPhase, phase),
+    orbitSpeed: orbitString(item.orbitSpeed, speed),
   };
 }
 
@@ -436,56 +446,75 @@ export default function EditModulePage() {
             <div className="flex items-center gap-3 sm:col-span-2">
               <Switch
                 checked={form.showInHeroOrbit}
-                onCheckedChange={(v) =>
-                  setForm({ ...form, showInHeroOrbit: v })
-                }
+                onCheckedChange={(v) => {
+                  if (!v) {
+                    setForm({ ...form, showInHeroOrbit: v });
+                    return;
+                  }
+                  const [radius, tilt, phase, speed] = defaultOrbitFor(
+                    form.slug,
+                    form.sortOrder,
+                  );
+                  setForm({
+                    ...form,
+                    showInHeroOrbit: v,
+                    orbitRadius: form.orbitRadius.trim() || String(radius),
+                    orbitTilt: form.orbitTilt.trim() || String(tilt),
+                    orbitPhase: form.orbitPhase.trim() || String(phase),
+                    orbitSpeed: form.orbitSpeed.trim() || String(speed),
+                  });
+                }}
               />
               <Label>Show in hero orbit</Label>
             </div>
-            {form.showInHeroOrbit ? (
-              <>
-                <div>
-                  <Label>Orbit radius</Label>
-                  <Input
-                    className="mt-1"
-                    value={form.orbitRadius}
-                    onChange={(e) =>
-                      setForm({ ...form, orbitRadius: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label>Orbit tilt</Label>
-                  <Input
-                    className="mt-1"
-                    value={form.orbitTilt}
-                    onChange={(e) =>
-                      setForm({ ...form, orbitTilt: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label>Orbit phase</Label>
-                  <Input
-                    className="mt-1"
-                    value={form.orbitPhase}
-                    onChange={(e) =>
-                      setForm({ ...form, orbitPhase: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label>Orbit speed</Label>
-                  <Input
-                    className="mt-1"
-                    value={form.orbitSpeed}
-                    onChange={(e) =>
-                      setForm({ ...form, orbitSpeed: e.target.value })
-                    }
-                  />
-                </div>
-              </>
-            ) : null}
+            <div>
+              <Label>Orbit radius</Label>
+              <Input
+                className="mt-1"
+                type="number"
+                step="0.05"
+                value={form.orbitRadius}
+                onChange={(e) =>
+                  setForm({ ...form, orbitRadius: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label>Orbit tilt</Label>
+              <Input
+                className="mt-1"
+                type="number"
+                step="0.05"
+                value={form.orbitTilt}
+                onChange={(e) =>
+                  setForm({ ...form, orbitTilt: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label>Orbit phase</Label>
+              <Input
+                className="mt-1"
+                type="number"
+                step="0.05"
+                value={form.orbitPhase}
+                onChange={(e) =>
+                  setForm({ ...form, orbitPhase: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label>Orbit speed</Label>
+              <Input
+                className="mt-1"
+                type="number"
+                step="0.01"
+                value={form.orbitSpeed}
+                onChange={(e) =>
+                  setForm({ ...form, orbitSpeed: e.target.value })
+                }
+              />
+            </div>
           </div>
         </TabsContent>
 

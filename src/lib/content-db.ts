@@ -105,6 +105,8 @@ import {
   serializePricingPageContent,
   serializePageHeroContent,
   serializePricingPlan,
+  resolveMediaPath,
+  serializeFeatures,
   serializeModuleDetail,
   serializeModuleSummary,
   serializeSolutionDetail,
@@ -2136,7 +2138,8 @@ export async function getModuleAdminBySlug(slug: string) {
     orbitSpeed: row.orbitSpeed,
     /** Raw DB image key (not mediaUrl-resolved) for admin editors. */
     imageKey: row.image,
-    features: row.features,
+    imageUrl: resolveMediaPath(row.image) ?? "",
+    features: serializeFeatures(row.features),
     aboutContents: row.aboutContents,
     capabilities: row.capabilities ?? [],
     rolloutTag: row.rolloutTag,

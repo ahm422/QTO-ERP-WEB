@@ -41,7 +41,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${outfit.variable} ${poppins.variable} ${instrumentSerif.variable}`}
+      className={`relative ${outfit.variable} ${poppins.variable} ${instrumentSerif.variable}`}
     >
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
