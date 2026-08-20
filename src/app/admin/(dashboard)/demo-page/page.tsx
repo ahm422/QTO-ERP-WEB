@@ -590,6 +590,7 @@ export default function DemoPageAdminPage() {
               "name",
               "email",
               "phone",
+              "companyPhone",
               "country",
               "company",
               "businessType",

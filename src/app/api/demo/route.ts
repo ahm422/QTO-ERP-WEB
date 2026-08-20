@@ -34,6 +34,7 @@ export async function POST(request: Request) {
         name: data.name,
         email: data.email,
         phone: data.phone,
+        companyPhone: data.companyPhone,
         country: data.country,
         company: data.company,
         businessType: data.businessType,

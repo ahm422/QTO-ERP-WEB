@@ -1,0 +1,1 @@
+ALTER TABLE `demo_requests` ADD `company_phone` text;

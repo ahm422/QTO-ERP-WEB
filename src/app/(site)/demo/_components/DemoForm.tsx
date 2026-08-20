@@ -24,6 +24,7 @@ interface FormData {
   name: string;
   email: string;
   phone: string;
+  companyPhone: string;
   country: string;
   company: string;
   businessType: string;
@@ -64,6 +65,7 @@ const DemoForm = ({
     name: "",
     email: "",
     phone: "",
+    companyPhone: "",
     country: "",
     company: "",
     businessType: "",
@@ -94,6 +96,15 @@ const DemoForm = ({
       formData.phone.replace(/\D/g, "").length < 10
     ) {
       newErrors.phone = "Please enter a valid phone number";
+    }
+
+    if (!formData.companyPhone.trim()) {
+      newErrors.companyPhone = "Company phone number is required";
+    } else if (
+      !/^[\d\s\-\+\(\)]+$/.test(formData.companyPhone) ||
+      formData.companyPhone.replace(/\D/g, "").length < 10
+    ) {
+      newErrors.companyPhone = "Please enter a valid phone number";
     }
 
     if (!formData.country) {
@@ -164,6 +175,7 @@ const DemoForm = ({
         name: "",
         email: "",
         phone: "",
+        companyPhone: "",
         country: "",
         company: "",
         businessType: "",
@@ -333,6 +345,38 @@ const DemoForm = ({
                   {errors.phone && (
                     <p className="text-xs text-destructive mt-1.5 flex items-center gap-1">
                       <AlertCircle className="h-3 w-3" /> {errors.phone}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="companyPhone"
+                    className="text-sm font-semibold text-foreground mb-2"
+                  >
+                    {labels.companyPhone}{" "}
+                    <span className="text-accent">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Phone className="absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="tel"
+                      id="companyPhone"
+                      name="companyPhone"
+                      value={formData.companyPhone}
+                      onChange={handleChange}
+                      placeholder={placeholders.companyPhone}
+                      disabled={isLoading || status === "success"}
+                      className={`w-full pl-11 pr-4 py-3.5 rounded-xl border bg-background/50 text-foreground placeholder-muted-foreground transition-all focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm ${
+                        errors.companyPhone
+                          ? "border-destructive focus:ring-destructive/50"
+                          : "border-border/50 hover:border-border/80 focus:bg-background/80"
+                      }`}
+                    />
+                  </div>
+                  {errors.companyPhone && (
+                    <p className="text-xs text-destructive mt-1.5 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.companyPhone}
                     </p>
                   )}
                 </div>

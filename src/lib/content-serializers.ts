@@ -45,6 +45,7 @@ import type {
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
 import { mediaUrl } from "@/lib/media";
+import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
 import { HOME_FINAL_CTA_DEFAULTS } from "@/lib/home-cta-defaults";
 import {
   ABOUT_STORY_DEFAULTS,
@@ -352,7 +353,18 @@ export function serializeDemoPageContent(
     testimonialQuote: row.testimonialQuote,
     testimonialAuthor: row.testimonialAuthor,
     testimonialRole: row.testimonialRole,
-    formFieldOptions: row.formFieldOptions,
+    formFieldOptions: {
+      ...DEMO_PAGE_CONTENT_DEFAULTS.formFieldOptions,
+      ...row.formFieldOptions,
+      labels: {
+        ...DEMO_PAGE_CONTENT_DEFAULTS.formFieldOptions.labels,
+        ...row.formFieldOptions.labels,
+      },
+      placeholders: {
+        ...DEMO_PAGE_CONTENT_DEFAULTS.formFieldOptions.placeholders,
+        ...row.formFieldOptions.placeholders,
+      },
+    },
   };
 }
 

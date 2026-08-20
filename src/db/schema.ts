@@ -165,6 +165,7 @@ export const demoRequests = sqliteTable(
     name: text("name").notNull(),
     email: text("email").notNull(),
     phone: text("phone"),
+    companyPhone: text("company_phone"),
     country: text("country").notNull(),
     company: text("company"),
     businessType: text("business_type").notNull(),
@@ -705,6 +706,7 @@ export type DemoFormFieldOptions = {
     name: string;
     email: string;
     phone: string;
+    companyPhone: string;
     country: string;
     company: string;
     businessType: string;
@@ -713,6 +715,7 @@ export type DemoFormFieldOptions = {
     name: string;
     email: string;
     phone: string;
+    companyPhone: string;
     company: string;
     country: string;
     businessType: string;

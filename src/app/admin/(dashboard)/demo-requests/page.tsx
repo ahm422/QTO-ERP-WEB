@@ -40,6 +40,7 @@ type DemoRequest = {
   name: string;
   email: string;
   phone: string | null;
+  companyPhone: string | null;
   country: string;
   company: string | null;
   businessType: string;
@@ -159,6 +160,8 @@ export default function DemoRequestsPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Client phone</TableHead>
+                <TableHead>Company phone</TableHead>
                 <TableHead>Country</TableHead>
                 <TableHead>Business</TableHead>
                 <TableHead>Status</TableHead>
@@ -169,7 +172,7 @@ export default function DemoRequestsPage() {
             <TableBody>
               {requests.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="p-0">
+                  <TableCell colSpan={9} className="p-0">
                     <EmptyState title="No demo requests found." />
                   </TableCell>
                 </TableRow>
@@ -178,6 +181,8 @@ export default function DemoRequestsPage() {
                   <TableRow key={r.id}>
                     <TableCell className="font-medium">{r.name}</TableCell>
                     <TableCell>{r.email}</TableCell>
+                    <TableCell>{r.phone ?? "—"}</TableCell>
+                    <TableCell>{r.companyPhone ?? "—"}</TableCell>
                     <TableCell>{r.country}</TableCell>
                     <TableCell>{r.businessType}</TableCell>
                     <TableCell>
@@ -232,6 +237,18 @@ export default function DemoRequestsPage() {
             <div className="space-y-4 text-sm text-muted-foreground">
               <p>
                 To: <span className="text-foreground">{replyTarget.email}</span>
+              </p>
+              <p>
+                Client phone:{" "}
+                <span className="text-foreground">
+                  {replyTarget.phone ?? "—"}
+                </span>
+              </p>
+              <p>
+                Company phone:{" "}
+                <span className="text-foreground">
+                  {replyTarget.companyPhone ?? "—"}
+                </span>
               </p>
               <p>
                 {replyTarget.country} · {replyTarget.businessType}

@@ -130,6 +130,7 @@ async function main(): Promise<void> {
     name: `Verify Demo ${stamp}`,
     email: `verify-demo-${stamp}@example.com`,
     phone: "+1 (555) 987-6543",
+    companyPhone: "+1 (555) 111-2222",
     country: "United States",
     company: "Verify Co",
     businessType: "startup",
@@ -159,14 +160,29 @@ async function main(): Promise<void> {
   assert(list.ok, `admin demo-requests failed: ${list.status}`);
   const listBody = (await list.json()) as {
     ok?: boolean;
-    requests?: Array<{ id: string; email: string }>;
+    requests?: Array<{
+      id: string;
+      email: string;
+      phone?: string | null;
+      companyPhone?: string | null;
+    }>;
   };
   const rows = listBody.requests ?? [];
-  const found = rows.some(
+  const found = rows.find(
     (r) => r.id === submitBody.id || r.email === payload.email,
   );
-  assert(found, "submitted demo request not found in admin inbox");
-  console.log("Admin demo-requests contains lead");
+  if (!found) {
+    throw new Error("submitted demo request not found in admin inbox");
+  }
+  assert(
+    found.phone === payload.phone,
+    `admin row phone mismatch: ${found.phone}`,
+  );
+  assert(
+    found.companyPhone === payload.companyPhone,
+    `admin row companyPhone mismatch: ${found.companyPhone}`,
+  );
+  console.log("Admin demo-requests contains lead with both phones");
 
   console.log("All demo flow checks passed.");
 }
