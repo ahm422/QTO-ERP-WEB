@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, isNotNull, max, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, like, max, ne, or, sql } from "drizzle-orm";
 import type { InferSelectModel, SQL } from "drizzle-orm";
 import type { BlogPostStatus } from "@/db/enums";
 import {
@@ -286,6 +286,7 @@ export type ListPublishedBlogPostsOptions = {
   limit?: number;
   category?: string;
   tag?: string;
+  search?: string;
 };
 
 function publishedBlogCondition(...extras: Array<SQL | undefined>) {
@@ -300,6 +301,14 @@ function blogTagExists(tag: string) {
   return sql`exists (select 1 from json_each(${blogPosts.tags}) where json_each.value = ${tag})`;
 }
 
+function blogSearchMatches(search: string) {
+  const pattern = `%${search.replace(/[%_]/g, "\\$&")}%`;
+  return or(
+    like(blogPosts.title, pattern),
+    like(blogPosts.excerpt, pattern),
+  );
+}
+
 export async function listPublishedBlogPosts(
   options: ListPublishedBlogPostsOptions = {},
 ) {
@@ -310,6 +319,7 @@ export async function listPublishedBlogPosts(
   );
   const category = options.category?.trim();
   const tag = options.tag?.trim();
+  const search = options.search?.trim().slice(0, 100);
 
   const rows = await (await getDb())
     .select({
@@ -322,6 +332,7 @@ export async function listPublishedBlogPosts(
       publishedBlogCondition(
         category ? eq(blogPosts.category, category) : undefined,
         tag ? blogTagExists(tag) : undefined,
+        search ? blogSearchMatches(search) : undefined,
       ),
     )
     .orderBy(desc(blogPosts.publishedAt))
@@ -408,6 +419,20 @@ export async function listFeaturedBlogPosts(limit = 2) {
     .from(blogPosts)
     .leftJoin(users, eq(blogPosts.authorId, users.id))
     .where(publishedBlogCondition(eq(blogPosts.isFeatured, true)))
+    .orderBy(desc(blogPosts.publishedAt))
+    .limit(Math.max(1, limit));
+  return rows.map((row) => serializeBlogSummary(row.post, row.authorName));
+}
+
+export async function listCompanyNewsBlogPosts(limit = 3) {
+  const rows = await (await getDb())
+    .select({
+      post: blogPosts,
+      authorName: users.name,
+    })
+    .from(blogPosts)
+    .leftJoin(users, eq(blogPosts.authorId, users.id))
+    .where(publishedBlogCondition(eq(blogPosts.isCompanyNews, true)))
     .orderBy(desc(blogPosts.publishedAt))
     .limit(Math.max(1, limit));
   return rows.map((row) => serializeBlogSummary(row.post, row.authorName));
@@ -567,6 +592,7 @@ export async function createBlogPostAdmin(data: {
   coverImageUrl?: string | null;
   tags?: string[];
   isFeatured?: boolean;
+  isCompanyNews?: boolean;
   metaTitle?: string | null;
   metaDescription?: string | null;
   readTimeMinutes?: number | null;
@@ -593,6 +619,7 @@ export async function updateBlogPostAdmin(
       | "coverImageUrl"
       | "tags"
       | "isFeatured"
+      | "isCompanyNews"
       | "metaTitle"
       | "metaDescription"
       | "readTimeMinutes"

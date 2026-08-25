@@ -8,6 +8,7 @@ export async function GET(request: Request) {
   const limit = Number(searchParams.get("limit") ?? "9");
   const category = searchParams.get("category") ?? undefined;
   const tag = searchParams.get("tag") ?? undefined;
+  const search = searchParams.get("q") ?? undefined;
 
   try {
     const result = await listPublishedBlogPosts({
@@ -15,6 +16,7 @@ export async function GET(request: Request) {
       limit: Number.isFinite(limit) ? limit : 9,
       category,
       tag,
+      search,
     });
     return NextResponse.json(result);
   } catch (err) {

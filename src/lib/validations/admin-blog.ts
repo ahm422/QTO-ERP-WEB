@@ -54,6 +54,7 @@ const blogPostFields = {
   coverImageUrl: coverImageUrlSchema,
   tags: tagsSchema,
   isFeatured: z.boolean().optional(),
+  isCompanyNews: z.boolean().optional(),
   metaTitle: z.string().trim().max(70).nullable().optional(),
   metaDescription: z.string().trim().max(160).nullable().optional(),
 };
@@ -71,6 +72,7 @@ export const updateBlogPostSchema = z.object({
   coverImageUrl: coverImageUrlSchema,
   tags: z.array(z.string().trim().min(1).max(40)).max(12).optional(),
   isFeatured: z.boolean().optional(),
+  isCompanyNews: z.boolean().optional(),
   metaTitle: z.string().trim().max(70).nullable().optional(),
   metaDescription: z.string().trim().max(160).nullable().optional(),
 });

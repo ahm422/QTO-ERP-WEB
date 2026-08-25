@@ -44,17 +44,28 @@ describe("createBlogPostSchema", () => {
     tags: ["erp", "construction"],
     coverImageUrl: "/api/media/blog-covers/abc/file.webp",
     isFeatured: true,
+    isCompanyNews: true,
     metaTitle: "Hello World | QTO ERP",
     metaDescription: "A short excerpt for search engines.",
   };
 
-  it("accepts a valid payload with tags, cover, featured, and SEO", () => {
+  it("accepts a valid payload with tags, cover, featured, company news, and SEO", () => {
     const parsed = createBlogPostSchema.safeParse(valid);
     assert.equal(parsed.success, true);
     if (parsed.success) {
       assert.deepEqual(parsed.data.tags, ["erp", "construction"]);
       assert.equal(parsed.data.isFeatured, true);
+      assert.equal(parsed.data.isCompanyNews, true);
       assert.equal(parsed.data.coverImageUrl, valid.coverImageUrl);
+    }
+  });
+
+  it("defaults isCompanyNews to undefined when omitted", () => {
+    const { isCompanyNews: _isCompanyNews, ...withoutFlag } = valid;
+    const parsed = createBlogPostSchema.safeParse(withoutFlag);
+    assert.equal(parsed.success, true);
+    if (parsed.success) {
+      assert.equal(parsed.data.isCompanyNews, undefined);
     }
   });
 

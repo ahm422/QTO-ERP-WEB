@@ -8,6 +8,7 @@ import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
 import { Card } from '@/components/ui/card';
 import { getAboutIcon } from '@/lib/icon-map';
 import { getFadeInUp, viewportOnce } from '@/lib/motion';
+import { CONTENT_PROSE_CLASS } from '@/lib/content-prose';
 import type { AboutStory } from '@/types/content';
 
 type StorySectionProps = {
@@ -100,8 +101,14 @@ export default function StorySection({ story }: StorySectionProps) {
               </h2>
 
               <div className='space-y-6 text-lg leading-relaxed text-muted-foreground'>
-                <p>{story.paragraph1}</p>
-                <p>{story.paragraph2}</p>
+                <div
+                  className={CONTENT_PROSE_CLASS}
+                  dangerouslySetInnerHTML={{ __html: story.paragraph1 }}
+                />
+                <div
+                  className={CONTENT_PROSE_CLASS}
+                  dangerouslySetInnerHTML={{ __html: story.paragraph2 }}
+                />
 
                 <Card
                   variant='interactive'

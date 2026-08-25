@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
+import type { WheelEvent } from "react";
 import {
   Menu,
   X,
@@ -20,7 +21,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { MarketingButton } from "@/components/ui/marketing-button";
-import { platformDeepLinks } from "@/lib/platform-nav";
 import { getModuleIcon } from "@/lib/icon-map";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,37 +28,10 @@ import { QTO_DEV_URL } from "@/lib/constants";
 import type { ModuleDetail, SolutionDetail } from "@/types/content";
 import type { LucideIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
-import { getButtonTap } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-// Module-token tint cycle for nav app tiles
-const navAppColors = [
-  {
-    color: "from-module-hr to-module-crm",
-    bgColor: "bg-module-hr-bg",
-    textColor: "text-module-hr",
-  },
-  {
-    color: "from-module-inventory to-module-mfg",
-    bgColor: "bg-module-inventory-bg",
-    textColor: "text-module-inventory",
-  },
-  {
-    color: "from-module-crm to-module-payroll",
-    bgColor: "bg-module-crm-bg",
-    textColor: "text-module-crm",
-  },
-  {
-    color: "from-accent to-accent-dark",
-    bgColor: "bg-accent/10",
-    textColor: "text-accent",
-  },
-];
-
-const sectionLinks = platformDeepLinks;
-
 function buildNavApps(modules: ModuleDetail[]) {
-  return modules.map((app, idx) => ({
+  return modules.map((app) => ({
     slug: app.slug,
     name: app.name,
     icon: getModuleIcon(app.iconKey),
@@ -67,7 +40,6 @@ function buildNavApps(modules: ModuleDetail[]) {
       label: f.title,
       description: f.description,
     })),
-    ...navAppColors[idx % navAppColors.length],
   }));
 }
 
@@ -96,9 +68,6 @@ function buildSolutionsItems(
       description:
         "Centralize HR workflows with attendance tracking, performance management, and compliance.",
       icon: Clock,
-      color: "from-module-hr to-module-crm",
-      bgColor: "bg-module-hr-bg",
-      textColor: "text-module-hr",
       useCases: solutionUseCases("hr-teams"),
     },
     {
@@ -109,9 +78,6 @@ function buildSolutionsItems(
       description:
         "Manage projects end-to-end with planning, tracking, and resource allocation tools.",
       icon: Briefcase,
-      color: "from-module-inventory to-module-mfg",
-      bgColor: "bg-module-inventory-bg",
-      textColor: "text-module-inventory",
       useCases: solutionUseCases("project-teams"),
     },
     {
@@ -122,9 +88,6 @@ function buildSolutionsItems(
       description:
         "Unified platform for operations, people, projects, and financials across your organization.",
       icon: TrendingUp,
-      color: "from-module-crm to-module-payroll",
-      bgColor: "bg-module-crm-bg",
-      textColor: "text-module-crm",
       useCases: solutionUseCases("owners"),
     },
     {
@@ -135,9 +98,6 @@ function buildSolutionsItems(
       description:
         "Manage leads, generate proposals, estimate projects, and track deals from inquiry to completion.",
       icon: Building2,
-      color: "from-accent to-accent-dark",
-      bgColor: "bg-accent/10",
-      textColor: "text-accent",
       useCases: moduleUseCases("crms"),
     },
     {
@@ -148,9 +108,6 @@ function buildSolutionsItems(
       description:
         "Automate payroll processing, manage salary structures, and streamline approvals seamlessly.",
       icon: DollarSign,
-      color: "from-module-payroll to-accent",
-      bgColor: "bg-module-payroll-bg",
-      textColor: "text-module-payroll",
       useCases: moduleUseCases("salary"),
     },
     {
@@ -161,9 +118,6 @@ function buildSolutionsItems(
       description:
         "Track accounts, manage budgets, and generate financial reports efficiently.",
       icon: FolderKanban,
-      color: "from-module-accounting to-module-hr",
-      bgColor: "bg-module-accounting-bg",
-      textColor: "text-module-accounting",
       useCases: moduleUseCases("finance"),
     },
   ];
@@ -191,37 +145,24 @@ function getNavResourceIcon(key: string): LucideIcon {
   return NAV_RESOURCE_ICON_MAP[key] ?? BookOpen;
 }
 
-const navResourceColors = [
-  { color: "from-module-hr to-module-crm", textColor: "text-module-hr" },
-  { color: "from-accent to-accent-dark", textColor: "text-accent" },
-  { color: "from-module-mfg to-module-payroll", textColor: "text-module-mfg" },
-  { color: "from-module-crm to-module-inventory", textColor: "text-module-crm" },
-];
-
 const resourcesItems = [
   {
     label: "Blog",
     href: "/blog",
     description: "Latest updates",
     icon: BookOpen,
-    color: "from-module-hr to-module-crm",
-    textColor: "text-module-hr",
   },
   {
     label: "About Us",
     href: "/about",
     description: "Learn more",
     icon: Info,
-    color: "from-accent to-accent-dark",
-    textColor: "text-accent",
   },
   {
     label: "Contact Us",
     href: "/contact",
     description: "Get in touch",
     icon: Mail,
-    color: "from-accent to-accent-dark",
-    textColor: "text-accent",
   },
   {
     label: "QTO Dev",
@@ -229,8 +170,6 @@ const resourcesItems = [
     external: true,
     description: "Web development partner",
     icon: ExternalLink,
-    color: "from-module-mfg to-module-payroll",
-    textColor: "text-module-mfg",
   },
 ];
 
@@ -263,11 +202,10 @@ export default function NavbarV3({
   const resourceItems = useMemo(
     () =>
       navResources && navResources.length > 0
-        ? navResources.map((r, idx) => ({
+        ? navResources.map((r) => ({
             ...r,
             description: r.subtitle,
             icon: getNavResourceIcon(r.iconKey),
-            ...navResourceColors[idx % navResourceColors.length],
           }))
         : resourcesItems,
     [navResources],
@@ -282,8 +220,38 @@ export default function NavbarV3({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const reduced = useReducedMotion();
-  const navItemHover = reduced ? undefined : { x: 3 };
-  const navItemTap = getButtonTap(reduced);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuLayout, setMenuLayoutState] = useState<"tabs" | "list">("tabs");
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    // One-time read of a client-only store (localStorage isn't available during SSR,
+    // so this can't be a lazy useState initializer without a hydration mismatch).
+    try {
+      const saved = window.localStorage.getItem("qto-nav-menu-layout");
+      if (saved === "tabs" || saved === "list") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMenuLayoutState(saved);
+      }
+    } catch {
+      // localStorage unavailable (private mode, disabled storage) — keep default
+    }
+  }, []);
+
+  const setMenuLayout = (value: "tabs" | "list") => {
+    setMenuLayoutState(value);
+    try {
+      window.localStorage.setItem("qto-nav-menu-layout", value);
+    } catch {
+      // ignore write failures
+    }
+  };
   const resourceItemVariants = reduced
     ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
     : { initial: { opacity: 0, x: -10 }, animate: { opacity: 1, x: 0 } };
@@ -350,15 +318,27 @@ export default function NavbarV3({
   const currentSol =
     solutionsItems.find((s) => s.slug === hoveredSolution) || solutionsItems[0];
 
-  /** Refined floating glass — warm brand rim, not chunky chrome */
+  /** Lets a plain mouse wheel scroll the horizontal tab row (trackpad/drag already work natively). */
+  const handleTabRowWheel = (e: WheelEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (el.scrollWidth <= el.clientWidth) return;
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    el.scrollLeft += e.deltaY;
+    e.preventDefault();
+  };
+
+  /** Refined floating glass — warm brand rim, not chunky chrome. Deepens on scroll. */
   const barShell = cn(
-    "relative mx-auto flex h-14 max-w-7xl items-center justify-between gap-3",
-    "rounded-2xl border border-border/50 bg-background/70 px-3 sm:h-[3.75rem] sm:px-4 lg:px-5",
-    "shadow-[0_12px_40px_-18px_color-mix(in_oklab,var(--foreground)_28%,transparent)]",
-    "ring-1 ring-inset ring-white/40 backdrop-blur-xl",
-    "dark:border-white/10 dark:bg-card/55 dark:ring-white/8",
+    "relative mx-auto flex max-w-7xl items-center justify-between gap-3 transition-[height,box-shadow] duration-300",
+    scrolled ? "h-[3.25rem] sm:h-14" : "h-14 sm:h-[3.75rem]",
+    "rounded-2xl border border-border/50 bg-background/70 px-3 sm:px-4 lg:px-5",
+    "ring-1 ring-inset ring-[var(--nav-ring)] backdrop-blur-2xl",
+    scrolled
+      ? "shadow-[var(--nav-shadow-scrolled)] bg-background/85 dark:bg-card/70"
+      : "shadow-[var(--nav-shadow)] dark:bg-card/55",
+    "dark:border-white/10",
     "before:pointer-events-none before:absolute before:inset-x-8 before:-top-px before:h-px",
-    "before:bg-linear-to-r before:from-transparent before:via-accent/50 before:to-transparent",
+    "before:bg-linear-to-r before:from-transparent before:via-[var(--nav-rim)] before:to-transparent",
   );
 
   const desktopTriggerBase = cn(
@@ -372,27 +352,63 @@ export default function NavbarV3({
 
   const desktopMenuShell = cn(
     "overflow-hidden rounded-2xl border border-border/50 bg-background/92",
-    "shadow-[0_28px_80px_-28px_color-mix(in_oklab,var(--foreground)_45%,transparent),0_0_0_1px_color-mix(in_oklab,var(--accent)_12%,transparent)]",
+    "shadow-[var(--nav-menu-shadow)]",
     "backdrop-blur-2xl dark:bg-card/92 dark:border-white/10",
   );
 
-  const desktopSectionCard = cn(
-    "group relative block overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-4",
-    "transition-all duration-200 hover:border-accent/35 hover:bg-background hover:shadow-[0_10px_30px_-16px_color-mix(in_oklab,var(--accent)_35%,transparent)]",
-  );
-
   const mobileSurface = cn(
-    "border border-border/50 bg-background/95 shadow-[0_32px_90px_-30px_color-mix(in_oklab,var(--foreground)_55%,transparent)]",
+    "border border-border/50 bg-background/95 shadow-[var(--nav-mobile-shadow)]",
     "backdrop-blur-2xl dark:bg-card/95 dark:border-white/10",
   );
 
-  const sidebarItem = (isActive: boolean, bgColor: string) =>
+  /** Tabbed dropdown — unified accent tint (no per-module rainbow), scrollable on narrow screens */
+  const menuTabBtn = (isActive: boolean) =>
     cn(
-      "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-200",
+      "group inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-semibold whitespace-nowrap transition-all duration-200",
       isActive
-        ? `${bgColor} shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--border)_80%,transparent)]`
-        : "hover:bg-background/80",
+        ? "bg-accent/12 text-accent shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_30%,transparent)]"
+        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
     );
+  const menuTabIcon = (isActive: boolean) =>
+    cn(
+      "flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
+      isActive ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground group-hover:text-foreground",
+    );
+  const menuListRow = cn(
+    "group flex items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 text-sm transition-all duration-200",
+    "hover:bg-muted/50",
+  );
+  const menuIconChip =
+    "flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent/12 text-accent transition-transform duration-200 group-hover:scale-105";
+
+  /** Lets a visitor pick tabbed vs. flat-list presentation for the Platform/Solutions dropdowns; remembered via localStorage. */
+  function MenuLayoutSwitch({ label }: { label: string }) {
+    return (
+      <div className="flex items-center justify-between gap-2 border-b border-border/50 bg-muted/15 px-3 py-2">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          {label}
+        </p>
+        <div className="inline-flex rounded-lg border border-border/60 bg-background/60 p-0.5">
+          {(["tabs", "list"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setMenuLayout(mode)}
+              aria-pressed={menuLayout === mode}
+              className={cn(
+                "rounded-[0.4rem] px-2.5 py-1 text-[11px] font-semibold capitalize transition-colors duration-150",
+                menuLayout === mode
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 px-3 pt-3 sm:px-4 lg:px-6">
@@ -495,7 +511,7 @@ export default function NavbarV3({
                 </Link>
               )}
 
-              {/* Platform Mega Menu */}
+              {/* Platform Dropdown — tabbed */}
               <AnimatePresence>
                 {item.label === "Platform" && activeDropdown === "Platform" && (
                   <motion.div
@@ -507,163 +523,145 @@ export default function NavbarV3({
                       duration: 0.22,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="fixed left-1/2 top-[4.35rem] z-50 w-[min(52rem,calc(100vw-1.5rem))] -translate-x-1/2 pt-3 xl:w-[54rem]"
+                    className="fixed left-1/2 top-[4.35rem] z-50 w-[min(30rem,calc(100vw-1.5rem))] -translate-x-1/2 pt-3"
                     onMouseEnter={() => openDropdown("Platform")}
                     onMouseLeave={closeDropdown}
                   >
                     <div className={desktopMenuShell}>
                       <div className="h-px bg-linear-to-r from-transparent via-accent/60 to-transparent" />
 
-                      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr]">
-                        {/* Apps Sidebar */}
-                        <div className="border-b border-border/50 bg-muted/25 p-4 md:border-b-0 md:border-r md:p-5">
-                          <p className="mb-3 flex items-center gap-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                            <span className="size-1.5 rounded-full bg-accent" />
-                            Platforms
-                          </p>
-                          <div className="space-y-0.5">
+                      <MenuLayoutSwitch label="Platform" />
+
+                      {menuLayout === "tabs" ? (
+                        <>
+                          {/* Tab row */}
+                          <div
+                            role="tablist"
+                            aria-label="Platform modules"
+                            onWheel={handleTabRowWheel}
+                            className="scrollbar-hide flex gap-1 overflow-x-auto border-b border-border/50 bg-muted/15 p-2"
+                          >
                             {apps.map((app) => {
                               const Icon = app.icon;
                               const isActive = hoveredApp === app.slug;
                               return (
-                                <motion.button
+                                <button
                                   key={app.slug}
                                   type="button"
+                                  role="tab"
+                                  aria-selected={isActive}
                                   onMouseEnter={() => setHoveredApp(app.slug)}
-                                  whileHover={navItemHover}
-                                  whileTap={navItemTap}
-                                  className={sidebarItem(isActive, app.bgColor)}
+                                  onFocus={() => setHoveredApp(app.slug)}
+                                  className={menuTabBtn(isActive)}
                                 >
-                                  <div
-                                    className={cn(
-                                      "flex size-8 items-center justify-center rounded-lg transition-all duration-200",
-                                      isActive
-                                        ? `bg-linear-to-br ${app.color} text-white shadow-md`
-                                        : "bg-muted text-muted-foreground",
-                                    )}
-                                  >
+                                  <span className={menuTabIcon(isActive)}>
                                     <Icon className="size-3.5" />
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <p
-                                      className={cn(
-                                        "truncate text-sm font-semibold transition-colors",
-                                        isActive
-                                          ? app.textColor
-                                          : "text-foreground/85",
-                                      )}
-                                    >
-                                      {app.name}
-                                    </p>
-                                  </div>
-                                  <ArrowRight
-                                    className={cn(
-                                      "size-3.5 transition-all duration-200",
-                                      isActive
-                                        ? `translate-x-0 opacity-100 ${app.textColor}`
-                                        : "-translate-x-1 opacity-0",
-                                    )}
-                                  />
-                                </motion.button>
+                                  </span>
+                                  {app.name}
+                                </button>
                               );
                             })}
                           </div>
-                        </div>
 
-                        {/* Sections Grid */}
-                        <div className="relative overflow-hidden p-5 sm:p-6">
-                          <div
-                            className={`pointer-events-none absolute -right-8 -top-10 size-56 rounded-full bg-linear-to-br ${currentApp?.color} opacity-[0.12] blur-3xl`}
-                          />
+                          {/* Active tab body */}
+                          <div className="relative overflow-hidden p-5 sm:p-6">
+                            <div className="pointer-events-none absolute -right-10 -top-12 size-48 rounded-full bg-accent/10 blur-3xl" />
 
-                          <div className="relative z-10 mb-4 flex flex-wrap items-center justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={`flex size-10 items-center justify-center rounded-xl bg-linear-to-br ${currentApp?.color} text-white shadow-lg`}
-                              >
-                                {currentApp?.icon && (
-                                  <currentApp.icon className="size-5" />
-                                )}
-                              </div>
-                              <div>
-                                <p className="font-display text-sm font-bold text-foreground">
-                                  {currentApp?.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {currentApp?.features.length} features
-                                </p>
+                            <div className="relative z-10 mb-4 flex items-start justify-between gap-3">
+                              <div className="flex items-start gap-3">
+                                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/12 text-accent shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_25%,transparent)]">
+                                  {currentApp?.icon && (
+                                    <currentApp.icon className="size-5" />
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="font-display text-sm font-bold text-foreground">
+                                    {currentApp?.name}
+                                  </p>
+                                  <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                                    {currentApp?.description}
+                                  </p>
+                                </div>
                               </div>
                             </div>
+
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={hoveredApp}
+                                variants={listItemVariants}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                transition={{ duration: 0.15 }}
+                                className="relative z-10 space-y-0.5"
+                              >
+                                {(currentApp?.features ?? []).slice(0, 4).map((f) => (
+                                  <Link
+                                    key={f.label}
+                                    href={`/erp/${currentApp?.slug}#features`}
+                                    onClick={() => setActiveDropdown(null)}
+                                    className={menuListRow}
+                                  >
+                                    <span className="font-medium text-foreground">
+                                      {f.label}
+                                    </span>
+                                    <ArrowRight className="size-3.5 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:text-accent group-hover:opacity-100" />
+                                  </Link>
+                                ))}
+                              </motion.div>
+                            </AnimatePresence>
+
                             <Link
                               href={`/erp/${currentApp?.slug}`}
                               onClick={() => setActiveDropdown(null)}
-                              className={cn(
-                                "inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-muted",
-                                currentApp?.textColor,
-                              )}
+                              className="relative z-10 mt-3 inline-flex items-center gap-1 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/15"
                             >
                               View module <ArrowRight className="size-3" />
                             </Link>
                           </div>
-
-                          <div className="relative z-10 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                            {/* sync (not wait): multiple grid cards must animate together */}
-                            <AnimatePresence initial={false}>
-                              {sectionLinks.map((links, idx) => (
-                                <motion.div
-                                  key={`${hoveredApp}-${links.label}`}
-                                  variants={listItemVariants}
-                                  initial="initial"
-                                  animate="animate"
-                                  exit="exit"
-                                  transition={{
-                                    delay: idx * 0.03,
-                                    duration: 0.15,
-                                  }}
-                                >
-                                  <Link
-                                    href={`/erp/${currentApp?.slug}${links.anchor}`}
-                                    onClick={() => setActiveDropdown(null)}
-                                    className={desktopSectionCard}
-                                  >
-                                    <p className="text-sm font-semibold text-foreground">
-                                      {links.label}
-                                    </p>
-                                    <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors group-hover:text-accent">
-                                      Open{" "}
-                                      <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                        </>
+                      ) : (
+                        <div className="nav-scroll-y max-h-96 space-y-0.5 overflow-y-auto p-2">
+                          {apps.map((app) => {
+                            const Icon = app.icon;
+                            return (
+                              <Link
+                                key={app.slug}
+                                href={`/erp/${app.slug}`}
+                                onClick={() => setActiveDropdown(null)}
+                                className={menuListRow}
+                              >
+                                <span className="flex min-w-0 items-center gap-3">
+                                  <span className={menuIconChip}>
+                                    <Icon className="size-4" />
+                                  </span>
+                                  <span className="min-w-0">
+                                    <span className="block truncate font-medium text-foreground">
+                                      {app.name}
                                     </span>
-                                  </Link>
-                                </motion.div>
-                              ))}
-                            </AnimatePresence>
-                          </div>
+                                    <span className="block truncate text-xs text-muted-foreground">
+                                      {app.description}
+                                    </span>
+                                  </span>
+                                </span>
+                                <ArrowRight className="size-3.5 shrink-0 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:text-accent group-hover:opacity-100" />
+                              </Link>
+                            );
+                          })}
                         </div>
-                      </div>
+                      )}
 
                       {/* Footer */}
-                      <div className="flex flex-col gap-3 border-t border-border/50 bg-muted/20 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                        <div className="flex items-center gap-3">
-                          <div className="flex -space-x-2">
-                            {apps.slice(0, 4).map((app) => (
-                              <div
-                                key={app.slug}
-                                className={`flex size-7 items-center justify-center rounded-full border-2 border-background bg-linear-to-br ${app.color} text-white`}
-                              >
-                                <app.icon className="size-3" />
-                              </div>
-                            ))}
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            <span className="font-semibold text-foreground">
-                              {apps.length}+ modules
-                            </span>{" "}
-                            to power your business
-                          </p>
-                        </div>
+                      <div className="flex items-center justify-between gap-3 border-t border-border/50 bg-muted/20 px-5 py-3 sm:px-6">
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-semibold text-foreground">
+                            {apps.length}+ modules
+                          </span>{" "}
+                          to power your business
+                        </p>
                         <Link
                           href="/allApps"
-                          className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/70 bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:border-accent/40 hover:text-accent"
+                          className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/70 bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent/40 hover:text-accent"
                         >
                           Explore all <ArrowRight className="size-3.5" />
                         </Link>
@@ -672,7 +670,7 @@ export default function NavbarV3({
                   </motion.div>
                 )}
 
-                {/* Solutions Dropdown - Mega Menu */}
+                {/* Solutions Dropdown — tabbed */}
                 {item.label === "Solutions" &&
                   activeDropdown === "Solutions" && (
                     <motion.div
@@ -684,167 +682,144 @@ export default function NavbarV3({
                         duration: 0.22,
                         ease: [0.22, 1, 0.36, 1],
                       }}
-                      className="fixed left-1/2 top-[4.35rem] z-50 w-[min(46rem,calc(100vw-1.5rem))] -translate-x-1/2 pt-3 xl:w-[48rem]"
+                      className="fixed left-1/2 top-[4.35rem] z-50 w-[min(30rem,calc(100vw-1.5rem))] -translate-x-1/2 pt-3"
                       onMouseEnter={() => openDropdown("Solutions")}
                       onMouseLeave={closeDropdown}
                     >
                       <div className={desktopMenuShell}>
                         <div className="h-px bg-linear-to-r from-transparent via-accent/60 to-transparent" />
 
-                        <div className="grid grid-cols-1 md:grid-cols-[220px_1fr]">
-                          <div className="border-b border-border/50 bg-muted/25 p-4 md:border-b-0 md:border-r md:p-5">
-                            <p className="mb-3 flex items-center gap-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                              <span className="size-1.5 rounded-full bg-accent" />
-                              Solutions
-                            </p>
-                            <div className="space-y-0.5">
+                        <MenuLayoutSwitch label="Solutions" />
+
+                        {menuLayout === "tabs" ? (
+                          <>
+                            {/* Tab row */}
+                            <div
+                              role="tablist"
+                              aria-label="Solutions"
+                              onWheel={handleTabRowWheel}
+                              className="scrollbar-hide flex gap-1 overflow-x-auto border-b border-border/50 bg-muted/15 p-2"
+                            >
                               {solutionsItems.map((sol) => {
                                 const Icon = sol.icon;
                                 const isActive = hoveredSolution === sol.slug;
                                 return (
-                                  <motion.button
+                                  <button
                                     key={sol.slug}
                                     type="button"
-                                    onMouseEnter={() =>
-                                      setHoveredSolution(sol.slug)
-                                    }
-                                    whileHover={navItemHover}
-                                    whileTap={navItemTap}
-                                    className={sidebarItem(isActive, sol.bgColor)}
+                                    role="tab"
+                                    aria-selected={isActive}
+                                    onMouseEnter={() => setHoveredSolution(sol.slug)}
+                                    onFocus={() => setHoveredSolution(sol.slug)}
+                                    className={menuTabBtn(isActive)}
                                   >
-                                    <div
-                                      className={cn(
-                                        "flex size-8 items-center justify-center rounded-lg transition-all duration-200",
-                                        isActive
-                                          ? `bg-linear-to-br ${sol.color} text-white shadow-md`
-                                          : "bg-muted text-muted-foreground",
-                                      )}
-                                    >
+                                    <span className={menuTabIcon(isActive)}>
                                       <Icon className="size-3.5" />
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                      <p
-                                        className={cn(
-                                          "truncate text-sm font-semibold transition-colors",
-                                          isActive
-                                            ? sol.textColor
-                                            : "text-foreground/85",
-                                        )}
-                                      >
-                                        {sol.label}
-                                      </p>
-                                    </div>
-                                    <ArrowRight
-                                      className={cn(
-                                        "size-3.5 transition-all duration-200",
-                                        isActive
-                                          ? `translate-x-0 opacity-100 ${sol.textColor}`
-                                          : "-translate-x-1 opacity-0",
-                                      )}
-                                    />
-                                  </motion.button>
+                                    </span>
+                                    {sol.label}
+                                  </button>
                                 );
                               })}
                             </div>
-                          </div>
 
-                          <div className="relative overflow-hidden p-5 sm:p-6">
-                            <div
-                              className={`pointer-events-none absolute -right-8 -top-10 size-56 rounded-full bg-linear-to-br ${currentSol.color} opacity-[0.12] blur-3xl transition-all duration-300`}
-                            />
+                            {/* Active tab body */}
+                            <div className="relative overflow-hidden p-5 sm:p-6">
+                              <div className="pointer-events-none absolute -right-10 -top-12 size-48 rounded-full bg-accent/10 blur-3xl" />
 
-                            <div className="relative z-10 mb-4 flex flex-wrap items-center justify-between gap-3">
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className={`flex size-10 items-center justify-center rounded-xl bg-linear-to-br ${currentSol.color} text-white shadow-lg`}
-                                >
+                              <div className="relative z-10 mb-4 flex items-start gap-3">
+                                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/12 text-accent shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_25%,transparent)]">
                                   <currentSol.icon className="size-5" />
                                 </div>
                                 <div>
                                   <p className="font-display text-sm font-bold text-foreground">
                                     {currentSol.label}
                                   </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {currentSol.useCases?.length ?? 0} use cases
+                                  <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                                    {currentSol.description}
                                   </p>
                                 </div>
                               </div>
-                              <Link
-                                href={currentSol.href}
-                                onClick={() => setActiveDropdown(null)}
-                                className={cn(
-                                  "inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-muted",
-                                  currentSol.textColor,
-                                )}
-                              >
-                                Explore <ArrowRight className="size-3" />
-                              </Link>
-                            </div>
 
-                            <div className="relative z-10 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                              {/* sync (not wait): multiple use-case cards must animate together */}
-                              <AnimatePresence initial={false}>
-                                {(currentSol.useCases &&
-                                currentSol.useCases.length > 0
-                                  ? currentSol.useCases
-                                  : []
-                                ).map((useCase, idx) => (
-                                  <motion.div
-                                    key={`${hoveredSolution}-${idx}`}
-                                    variants={listItemVariants}
-                                    initial="initial"
-                                    animate="animate"
-                                    exit="exit"
-                                    transition={{
-                                      delay: idx * 0.04,
-                                      duration: 0.15,
-                                    }}
-                                  >
+                              <AnimatePresence mode="wait">
+                                <motion.div
+                                  key={hoveredSolution}
+                                  variants={listItemVariants}
+                                  initial="initial"
+                                  animate="animate"
+                                  exit="exit"
+                                  transition={{ duration: 0.15 }}
+                                  className="relative z-10 space-y-0.5"
+                                >
+                                  {(currentSol.useCases ?? []).slice(0, 4).map((useCase, idx) => (
                                     <Link
+                                      key={`${hoveredSolution}-${idx}`}
                                       href={currentSol.href}
                                       onClick={() => setActiveDropdown(null)}
-                                      className={cn(desktopSectionCard, "h-full")}
+                                      className={menuListRow}
                                     >
-                                      <p className="text-sm font-semibold text-foreground">
+                                      <span className="font-medium text-foreground">
                                         {"industry" in useCase
                                           ? useCase.industry
                                           : "title" in useCase
                                             ? useCase.title
                                             : "Use Case"}
-                                      </p>
+                                      </span>
+                                      <ArrowRight className="size-3.5 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:text-accent group-hover:opacity-100" />
                                     </Link>
-                                  </motion.div>
-                                ))}
+                                  ))}
+                                </motion.div>
                               </AnimatePresence>
-                            </div>
-                          </div>
-                        </div>
 
-                        <div className="flex flex-col gap-3 border-t border-border/50 bg-muted/20 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                          <div className="flex items-center gap-3">
-                            <div className="flex -space-x-2">
-                              {solutionsItems.slice(0, 5).map((sol) => {
-                                const Icon = sol.icon;
-                                return (
-                                  <div
-                                    key={sol.slug}
-                                    className={`flex size-7 items-center justify-center rounded-full border-2 border-background bg-linear-to-br ${sol.color} text-white`}
-                                  >
-                                    <Icon className="size-3" />
-                                  </div>
-                                );
-                              })}
+                              <Link
+                                href={currentSol.href}
+                                onClick={() => setActiveDropdown(null)}
+                                className="relative z-10 mt-3 inline-flex items-center gap-1 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/15"
+                              >
+                                Explore <ArrowRight className="size-3" />
+                              </Link>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                              <span className="font-semibold text-foreground">
-                                {solutionsItems.length} solutions
-                              </span>{" "}
-                              for every team
-                            </p>
+                          </>
+                        ) : (
+                          <div className="nav-scroll-y max-h-96 space-y-0.5 overflow-y-auto p-2">
+                            {solutionsItems.map((sol) => {
+                              const Icon = sol.icon;
+                              return (
+                                <Link
+                                  key={sol.slug}
+                                  href={sol.href}
+                                  onClick={() => setActiveDropdown(null)}
+                                  className={menuListRow}
+                                >
+                                  <span className="flex min-w-0 items-center gap-3">
+                                    <span className={menuIconChip}>
+                                      <Icon className="size-4" />
+                                    </span>
+                                    <span className="min-w-0">
+                                      <span className="block truncate font-medium text-foreground">
+                                        {sol.label}
+                                      </span>
+                                      <span className="block truncate text-xs text-muted-foreground">
+                                        {sol.shortDescription}
+                                      </span>
+                                    </span>
+                                  </span>
+                                  <ArrowRight className="size-3.5 shrink-0 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:text-accent group-hover:opacity-100" />
+                                </Link>
+                              );
+                            })}
                           </div>
+                        )}
+
+                        <div className="flex items-center justify-between gap-3 border-t border-border/50 bg-muted/20 px-5 py-3 sm:px-6">
+                          <p className="text-xs text-muted-foreground">
+                            <span className="font-semibold text-foreground">
+                              {solutionsItems.length} solutions
+                            </span>{" "}
+                            for every team
+                          </p>
                           <Link
                             href="/allApps"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/70 bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:border-accent/40 hover:text-accent"
+                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/70 bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent/40 hover:text-accent"
                           >
                             Explore all <ArrowRight className="size-3.5" />
                           </Link>
@@ -866,62 +841,69 @@ export default function NavbarV3({
                       onMouseEnter={() => openDropdown("Resources")}
                       onMouseLeave={closeDropdown}
                     >
-                      <div className={cn(desktopMenuShell, "w-[min(20rem,calc(100vw-2rem))] p-2")}>
-                        <div className="mb-1.5 h-px rounded-full bg-linear-to-r from-transparent via-accent/50 to-transparent" />
-                        {resourceItems.map((r, idx) => {
-                          const Icon = r.icon;
-                          const rowClass =
-                            "group flex items-center gap-3.5 rounded-xl px-3 py-3 transition-all hover:bg-muted/50";
-                          const body = (
-                            <>
-                              <div
-                                className={`flex size-9 items-center justify-center rounded-lg bg-linear-to-br ${r.color} text-white shadow-md transition-transform group-hover:scale-105`}
-                              >
-                                <Icon className="size-3.5" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-semibold text-foreground">
-                                  {r.label}
-                                </p>
-                                {r.description && (
-                                  <p className="truncate text-xs text-muted-foreground">
-                                    {r.description}
-                                  </p>
+                      <div className={cn(desktopMenuShell, "w-[min(22rem,calc(100vw-2rem))]")}>
+                        <div className="h-px bg-linear-to-r from-transparent via-accent/60 to-transparent" />
+                        <p className="border-b border-border/50 bg-muted/15 px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                          Resources
+                        </p>
+                        <div className="p-2">
+                          {resourceItems.map((r, idx) => {
+                            const Icon = r.icon;
+                            const body = (
+                              <>
+                                <span className="flex min-w-0 items-center gap-3">
+                                  <span className={menuIconChip}>
+                                    <Icon className="size-4" />
+                                  </span>
+                                  <span className="min-w-0">
+                                    <span className="block truncate font-medium text-foreground">
+                                      {r.label}
+                                    </span>
+                                    {r.description && (
+                                      <span className="block truncate text-xs text-muted-foreground">
+                                        {r.description}
+                                      </span>
+                                    )}
+                                  </span>
+                                </span>
+                                {r.external ? (
+                                  <ExternalLink className="size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
+                                ) : (
+                                  <ArrowRight className="size-3.5 shrink-0 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:text-accent group-hover:opacity-100" />
                                 )}
-                              </div>
-                              <ArrowRight className="size-3.5 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:text-accent group-hover:opacity-100" />
-                            </>
-                          );
-                          return r.external ? (
-                            <motion.a
-                              key={r.href}
-                              href={r.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              initial={resourceItemVariants.initial}
-                              animate={resourceItemVariants.animate}
-                              transition={{
-                                delay: reduced ? 0 : idx * 0.04,
-                              }}
-                              className={rowClass}
-                            >
-                              {body}
-                            </motion.a>
-                          ) : (
-                            <motion.div
-                              key={r.href}
-                              initial={resourceItemVariants.initial}
-                              animate={resourceItemVariants.animate}
-                              transition={{
-                                delay: reduced ? 0 : idx * 0.04,
-                              }}
-                            >
-                              <Link href={r.href} className={rowClass}>
+                              </>
+                            );
+                            return r.external ? (
+                              <motion.a
+                                key={r.href}
+                                href={r.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                initial={resourceItemVariants.initial}
+                                animate={resourceItemVariants.animate}
+                                transition={{
+                                  delay: reduced ? 0 : idx * 0.04,
+                                }}
+                                className={menuListRow}
+                              >
                                 {body}
-                              </Link>
-                            </motion.div>
-                          );
-                        })}
+                              </motion.a>
+                            ) : (
+                              <motion.div
+                                key={r.href}
+                                initial={resourceItemVariants.initial}
+                                animate={resourceItemVariants.animate}
+                                transition={{
+                                  delay: reduced ? 0 : idx * 0.04,
+                                }}
+                              >
+                                <Link href={r.href} className={menuListRow}>
+                                  {body}
+                                </Link>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -1013,9 +995,7 @@ export default function NavbarV3({
                           href={`/erp/${app.slug}`}
                           className="group flex items-center gap-3.5 rounded-xl p-3 transition-colors hover:bg-muted/60"
                         >
-                          <div
-                            className={`flex size-11 items-center justify-center rounded-xl bg-linear-to-br ${app.color} text-white shadow-md transition-transform group-hover:scale-105`}
-                          >
+                          <div className="flex size-11 items-center justify-center rounded-xl bg-accent/12 text-accent shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_22%,transparent)] transition-transform group-hover:scale-105">
                             <Icon className="size-5" />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -1050,9 +1030,7 @@ export default function NavbarV3({
                           href={s.href}
                           className="group flex items-center gap-3.5 rounded-xl p-3 transition-colors hover:bg-muted/60"
                         >
-                          <div
-                            className={`flex size-11 items-center justify-center rounded-xl bg-linear-to-br ${s.color} text-white shadow-md transition-transform group-hover:scale-105`}
-                          >
+                          <div className="flex size-11 items-center justify-center rounded-xl bg-accent/12 text-accent shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_22%,transparent)] transition-transform group-hover:scale-105">
                             <Icon className="size-5" />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -1076,9 +1054,7 @@ export default function NavbarV3({
                     const Icon = r.icon;
                     const row = (
                       <>
-                        <div
-                          className={`flex size-11 items-center justify-center rounded-xl bg-linear-to-br ${r.color} text-white shadow-md transition-transform group-hover:scale-105`}
-                        >
+                        <div className="flex size-11 items-center justify-center rounded-xl bg-accent/12 text-accent shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_22%,transparent)] transition-transform group-hover:scale-105">
                           <Icon className="size-5" />
                         </div>
                         <div className="min-w-0 flex-1">

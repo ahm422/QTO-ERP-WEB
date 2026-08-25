@@ -34,8 +34,7 @@ import {
   Youtube as YoutubeIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { adminUpload } from "@/lib/admin-fetch";
-import { BLOG_PROSE_CLASS } from "@/lib/blog-prose";
+import { CONTENT_PROSE_CLASS } from "@/lib/content-prose";
 import { Button, type IconComponent } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -48,10 +47,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type BlogEditorProps = {
-  postId: string;
+export type RichTextEditorProps = {
   content: string;
   onChange: (html: string) => void;
+  /** Placeholder text shown in an empty editor. */
+  placeholder?: string;
+  /**
+   * Uploads a file and resolves to its public URL. Pass this to enable the
+   * image toolbar button; omit it for fields that don't need image support
+   * (the button is hidden rather than shown disabled).
+   */
+  onUploadImage?: (file: File) => Promise<string>;
+  className?: string;
 };
 
 function transformPastedHTML(html: string): string {
@@ -99,7 +106,19 @@ function ToolbarButton({
   );
 }
 
-export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
+/**
+ * Standalone, controlled rich-text editor (TipTap core + toolbar), reusable
+ * for any long-form "description" field site-wide — not just blog posts.
+ * Image upload is opt-in via `onUploadImage`; content is HTML in/out and is
+ * expected to be sanitized server-side on save (see `@/lib/sanitize-html`).
+ */
+export function RichTextEditor({
+  content,
+  onChange,
+  placeholder = "Write something…",
+  onUploadImage,
+  className,
+}: RichTextEditorProps) {
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkNewTab, setLinkNewTab] = useState(false);
@@ -124,9 +143,7 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
         height: 360,
       }),
       CharacterCount,
-      Placeholder.configure({
-        placeholder: "Write your post…",
-      }),
+      Placeholder.configure({ placeholder }),
     ],
     content,
     immediatelyRender: false,
@@ -135,14 +152,14 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
     },
     editorProps: {
       attributes: {
-        class: `${BLOG_PROSE_CLASS} min-h-[320px] px-3 py-2 focus:outline-none`,
+        class: `${CONTENT_PROSE_CLASS} min-h-[320px] px-3 py-2 focus:outline-none`,
       },
       transformPastedHTML,
     },
   });
 
   const uploadImage = useCallback(async () => {
-    if (!editor) return;
+    if (!editor || !onUploadImage) return;
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/jpeg,image/png,image/webp";
@@ -151,17 +168,8 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
       if (!file) return;
 
       try {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("postId", postId);
-        formData.append("kind", "inline");
-
-        const result = await adminUpload<{
-          ok: true;
-          imageUrl: string;
-        }>("/api/admin/blog/upload-image", formData);
-
-        editor.chain().focus().setImage({ src: result.imageUrl }).run();
+        const imageUrl = await onUploadImage(file);
+        editor.chain().focus().setImage({ src: imageUrl }).run();
         toast.success("Image inserted");
       } catch (err) {
         toast.error(
@@ -170,7 +178,7 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
       }
     };
     input.click();
-  }, [editor, postId]);
+  }, [editor, onUploadImage]);
 
   const openLinkDialog = () => {
     if (!editor) return;
@@ -220,7 +228,7 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
   const minutes = Math.max(1, Math.ceil(words / 200));
 
   return (
-    <div className="blog-editor space-y-2">
+    <div className={`rich-text-editor space-y-2 ${className ?? ""}`}>
       <div className="sticky top-0 z-10 flex flex-wrap gap-0.5 rounded-md border border-border bg-background p-1">
         <ToolbarButton
           editor={editor}
@@ -341,12 +349,14 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
           active={editor.isActive("link")}
           onClick={openLinkDialog}
         />
-        <ToolbarButton
-          editor={editor}
-          icon={ImageIcon}
-          label="Image"
-          onClick={uploadImage}
-        />
+        {onUploadImage ? (
+          <ToolbarButton
+            editor={editor}
+            icon={ImageIcon}
+            label="Image"
+            onClick={uploadImage}
+          />
+        ) : null}
         <ToolbarButton
           editor={editor}
           icon={YoutubeIcon}
@@ -400,9 +410,9 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="blog-link-url">URL</Label>
+              <Label htmlFor="rte-link-url">URL</Label>
               <Input
-                id="blog-link-url"
+                id="rte-link-url"
                 className="mt-1"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
@@ -441,9 +451,9 @@ export function BlogEditor({ postId, content, onChange }: BlogEditorProps) {
             <DialogTitle>Embed YouTube video</DialogTitle>
           </DialogHeader>
           <div>
-            <Label htmlFor="blog-youtube-url">YouTube URL</Label>
+            <Label htmlFor="rte-youtube-url">YouTube URL</Label>
             <Input
-              id="blog-youtube-url"
+              id="rte-youtube-url"
               className="mt-1"
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
