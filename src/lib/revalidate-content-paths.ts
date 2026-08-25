@@ -14,3 +14,10 @@ export function revalidateSolutionPaths(slug?: string) {
   }
   revalidatePath("/");
 }
+
+export function revalidateBlogPaths(slug?: string) {
+  revalidatePath("/blog");
+  if (slug) {
+    revalidatePath(`/blog/${slug}`);
+  }
+}

@@ -1,5 +1,5 @@
-import { and, asc, desc, eq, inArray, isNotNull, max } from "drizzle-orm";
-import type { InferSelectModel } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, max, ne, sql } from "drizzle-orm";
+import type { InferSelectModel, SQL } from "drizzle-orm";
 import type { BlogPostStatus } from "@/db/enums";
 import {
   aboutStory,
@@ -25,6 +25,7 @@ import {
   siteSettings,
   solutions,
   trustedLogos,
+  users,
 } from "@/db/schema";
 import { getDb } from "@/lib/db";
 import {
@@ -277,47 +278,230 @@ export async function listPublishedSolutionSlugs() {
   return rows.map((r) => r.slug);
 }
 
-export async function listPublishedBlogPosts() {
+const DEFAULT_BLOG_PAGE_SIZE = 9;
+const MAX_BLOG_PAGE_SIZE = 24;
+
+export type ListPublishedBlogPostsOptions = {
+  page?: number;
+  limit?: number;
+  category?: string;
+  tag?: string;
+};
+
+function publishedBlogCondition(...extras: Array<SQL | undefined>) {
+  return and(
+    eq(blogPosts.status, "PUBLISHED"),
+    isNotNull(blogPosts.publishedAt),
+    ...extras.filter((clause): clause is SQL => Boolean(clause)),
+  );
+}
+
+function blogTagExists(tag: string) {
+  return sql`exists (select 1 from json_each(${blogPosts.tags}) where json_each.value = ${tag})`;
+}
+
+export async function listPublishedBlogPosts(
+  options: ListPublishedBlogPostsOptions = {},
+) {
+  const page = Math.max(1, options.page ?? 1);
+  const limit = Math.min(
+    MAX_BLOG_PAGE_SIZE,
+    Math.max(1, options.limit ?? DEFAULT_BLOG_PAGE_SIZE),
+  );
+  const category = options.category?.trim();
+  const tag = options.tag?.trim();
+
   const rows = await (await getDb())
-    .select()
+    .select({
+      post: blogPosts,
+      authorName: users.name,
+    })
     .from(blogPosts)
+    .leftJoin(users, eq(blogPosts.authorId, users.id))
     .where(
-      and(
-        eq(blogPosts.status, "PUBLISHED"),
-        isNotNull(blogPosts.publishedAt),
+      publishedBlogCondition(
+        category ? eq(blogPosts.category, category) : undefined,
+        tag ? blogTagExists(tag) : undefined,
       ),
     )
-    .orderBy(desc(blogPosts.publishedAt));
-  return rows.map(serializeBlogSummary);
+    .orderBy(desc(blogPosts.publishedAt))
+    .limit(limit + 1)
+    .offset((page - 1) * limit);
+
+  const hasMore = rows.length > limit;
+  const pageRows = hasMore ? rows.slice(0, limit) : rows;
+
+  return {
+    posts: pageRows.map((row) =>
+      serializeBlogSummary(row.post, row.authorName),
+    ),
+    page,
+    limit,
+    hasMore,
+  };
 }
 
 export async function getPublishedBlogPostBySlug(slug: string) {
   const [row] = await (await getDb())
-    .select()
+    .select({
+      post: blogPosts,
+      authorName: users.name,
+    })
     .from(blogPosts)
-    .where(
-      and(
-        eq(blogPosts.slug, slug),
-        eq(blogPosts.status, "PUBLISHED"),
-        isNotNull(blogPosts.publishedAt),
-      ),
-    )
+    .leftJoin(users, eq(blogPosts.authorId, users.id))
+    .where(publishedBlogCondition(eq(blogPosts.slug, slug)))
     .limit(1);
-  return row ? serializeBlogDetail(row) : null;
+  return row ? serializeBlogDetail(row.post, row.authorName) : null;
 }
 
 export async function listPublishedBlogSlugs() {
   const rows = await (await getDb())
     .select({ slug: blogPosts.slug })
     .from(blogPosts)
-    .where(
-      and(
-        eq(blogPosts.status, "PUBLISHED"),
-        isNotNull(blogPosts.publishedAt),
-      ),
-    )
+    .where(publishedBlogCondition())
     .orderBy(desc(blogPosts.publishedAt));
   return rows.map((r) => r.slug);
+}
+
+export async function listPublishedBlogSitemapEntries() {
+  const rows = await (await getDb())
+    .select({
+      slug: blogPosts.slug,
+      updatedAt: blogPosts.updatedAt,
+    })
+    .from(blogPosts)
+    .where(publishedBlogCondition())
+    .orderBy(desc(blogPosts.publishedAt));
+  return rows;
+}
+
+export async function listPublishedModuleSitemapEntries() {
+  const rows = await (await getDb())
+    .select({
+      slug: erpModules.slug,
+      updatedAt: erpModules.updatedAt,
+    })
+    .from(erpModules)
+    .where(eq(erpModules.published, true))
+    .orderBy(asc(erpModules.sortOrder));
+  return rows;
+}
+
+export async function listPublishedSolutionSitemapEntries() {
+  const rows = await (await getDb())
+    .select({
+      slug: solutions.slug,
+      updatedAt: solutions.updatedAt,
+    })
+    .from(solutions)
+    .where(eq(solutions.published, true))
+    .orderBy(asc(solutions.sortOrder));
+  return rows;
+}
+
+export async function listFeaturedBlogPosts(limit = 2) {
+  const rows = await (await getDb())
+    .select({
+      post: blogPosts,
+      authorName: users.name,
+    })
+    .from(blogPosts)
+    .leftJoin(users, eq(blogPosts.authorId, users.id))
+    .where(publishedBlogCondition(eq(blogPosts.isFeatured, true)))
+    .orderBy(desc(blogPosts.publishedAt))
+    .limit(Math.max(1, limit));
+  return rows.map((row) => serializeBlogSummary(row.post, row.authorName));
+}
+
+export async function listPopularBlogPosts(limit = 5) {
+  const rows = await (await getDb())
+    .select({
+      post: blogPosts,
+      authorName: users.name,
+    })
+    .from(blogPosts)
+    .leftJoin(users, eq(blogPosts.authorId, users.id))
+    .where(publishedBlogCondition())
+    .orderBy(desc(blogPosts.viewCount), desc(blogPosts.publishedAt))
+    .limit(Math.max(1, Math.min(24, limit)));
+  return rows.map((row) => serializeBlogSummary(row.post, row.authorName));
+}
+
+export async function listRelatedBlogPosts(options: {
+  slug: string;
+  category?: string;
+  limit?: number;
+}) {
+  const limit = Math.max(1, Math.min(12, options.limit ?? 3));
+  const slug = options.slug.trim();
+  const category = options.category?.trim();
+  const db = await getDb();
+
+  const sameCategory = category
+    ? await db
+        .select({
+          post: blogPosts,
+          authorName: users.name,
+        })
+        .from(blogPosts)
+        .leftJoin(users, eq(blogPosts.authorId, users.id))
+        .where(
+          publishedBlogCondition(
+            eq(blogPosts.category, category),
+            ne(blogPosts.slug, slug),
+          ),
+        )
+        .orderBy(desc(blogPosts.publishedAt))
+        .limit(limit)
+    : [];
+
+  const posts = sameCategory.map((row) =>
+    serializeBlogSummary(row.post, row.authorName),
+  );
+  if (posts.length >= limit) return posts;
+
+  const exclude = new Set([slug, ...posts.map((p) => p.slug)]);
+  const backfill = await db
+    .select({
+      post: blogPosts,
+      authorName: users.name,
+    })
+    .from(blogPosts)
+    .leftJoin(users, eq(blogPosts.authorId, users.id))
+    .where(publishedBlogCondition(ne(blogPosts.slug, slug)))
+    .orderBy(desc(blogPosts.publishedAt))
+    .limit(limit + exclude.size);
+
+  for (const row of backfill) {
+    if (exclude.has(row.post.slug)) continue;
+    posts.push(serializeBlogSummary(row.post, row.authorName));
+    if (posts.length >= limit) break;
+  }
+
+  return posts;
+}
+
+export async function listPublishedBlogCategories() {
+  const rows = await (await getDb())
+    .select({
+      name: blogPosts.category,
+      count: sql<number>`count(*)`.mapWith(Number),
+    })
+    .from(blogPosts)
+    .where(publishedBlogCondition())
+    .groupBy(blogPosts.category)
+    .orderBy(desc(sql`count(*)`), asc(blogPosts.category));
+  return rows.map((row) => ({ name: row.name, count: row.count }));
+}
+
+export async function incrementBlogPostViewCount(slug: string) {
+  await (await getDb()).run(sql`
+    UPDATE blog_posts
+    SET view_count = view_count + 1
+    WHERE slug = ${slug}
+      AND status = 'PUBLISHED'
+      AND published_at IS NOT NULL
+  `);
 }
 
 export async function listPublishedComparison() {
@@ -380,6 +564,12 @@ export async function createBlogPostAdmin(data: {
   status: BlogPostStatus;
   authorId: string;
   publishedAt?: Date | null;
+  coverImageUrl?: string | null;
+  tags?: string[];
+  isFeatured?: boolean;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  readTimeMinutes?: number | null;
 }) {
   const [row] = await (await getDb())
     .insert(blogPosts)
@@ -400,6 +590,12 @@ export async function updateBlogPostAdmin(
       | "content"
       | "status"
       | "publishedAt"
+      | "coverImageUrl"
+      | "tags"
+      | "isFeatured"
+      | "metaTitle"
+      | "metaDescription"
+      | "readTimeMinutes"
     >
   >,
 ) {

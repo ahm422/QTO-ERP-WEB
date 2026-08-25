@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
@@ -9,6 +9,14 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -17,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type BlogPost = {
   id: string;
@@ -26,7 +35,11 @@ type BlogPost = {
   status: "DRAFT" | "PUBLISHED";
   publishedAt: string | null;
   updatedAt: string;
+  coverImageUrl?: string | null;
 };
+
+type StatusFilter = "ALL" | "DRAFT" | "PUBLISHED";
+type SortKey = "updated" | "published";
 
 export default function BlogAdminPage() {
   const { can } = useAuth();
@@ -35,6 +48,10 @@ export default function BlogAdminPage() {
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("all");
+  const [status, setStatus] = useState<StatusFilter>("ALL");
+  const [sort, setSort] = useState<SortKey>("updated");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -55,6 +72,33 @@ export default function BlogAdminPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const categories = useMemo(() => {
+    return Array.from(new Set(posts.map((p) => p.category))).sort();
+  }, [posts]);
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = posts.filter((post) => {
+      if (status !== "ALL" && post.status !== status) return false;
+      if (category !== "all" && post.category !== category) return false;
+      if (!q) return true;
+      return (
+        post.title.toLowerCase().includes(q) ||
+        post.slug.toLowerCase().includes(q)
+      );
+    });
+    filtered.sort((a, b) => {
+      if (sort === "published") {
+        return (
+          new Date(b.publishedAt ?? 0).getTime() -
+          new Date(a.publishedAt ?? 0).getTime()
+        );
+      }
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+    return filtered;
+  }, [posts, query, category, status, sort]);
 
   const confirmDelete = async () => {
     if (!deleteId) return;
@@ -87,6 +131,47 @@ export default function BlogAdminPage() {
         </Button>
       </div>
 
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <Input
+          placeholder="Search title or slug"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="sm:max-w-xs"
+        />
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="sm:w-48">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All categories</SelectItem>
+            {categories.map((name) => (
+              <SelectItem key={name} value={name}>
+                {name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+          <SelectTrigger className="sm:w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="updated">Updated</SelectItem>
+            <SelectItem value="published">Published date</SelectItem>
+          </SelectContent>
+        </Select>
+        <Tabs
+          value={status}
+          onValueChange={(v) => setStatus(v as StatusFilter)}
+        >
+          <TabsList>
+            <TabsTrigger value="ALL">All</TabsTrigger>
+            <TabsTrigger value="DRAFT">Draft</TabsTrigger>
+            <TabsTrigger value="PUBLISHED">Published</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : (
@@ -94,6 +179,7 @@ export default function BlogAdminPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-16">Cover</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Category</TableHead>
@@ -103,15 +189,27 @@ export default function BlogAdminPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {posts.length === 0 ? (
+              {visible.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="p-0">
+                  <TableCell colSpan={7} className="p-0">
                     <EmptyState title="No posts yet." />
                   </TableCell>
                 </TableRow>
               ) : (
-                posts.map((post) => (
+                visible.map((post) => (
                   <TableRow key={post.id}>
+                    <TableCell>
+                      {post.coverImageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={post.coverImageUrl}
+                          alt=""
+                          className="h-10 w-14 rounded object-cover"
+                        />
+                      ) : (
+                        <div className="h-10 w-14 rounded bg-muted" />
+                      )}
+                    </TableCell>
                     <TableCell className="font-medium">{post.title}</TableCell>
                     <TableCell className="font-mono text-sm">{post.slug}</TableCell>
                     <TableCell>{post.category}</TableCell>

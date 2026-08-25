@@ -204,20 +204,68 @@ export function serializeSolutionDetail(s: Solution): SolutionDetail {
   };
 }
 
-export function serializeBlogSummary(p: BlogPost): BlogPostSummary {
+const DEFAULT_BLOG_AUTHOR = "QTO ERP Team";
+
+function blogAuthorName(name?: string | null): string {
+  const trimmed = name?.trim();
+  return trimmed ? trimmed : DEFAULT_BLOG_AUTHOR;
+}
+
+export function serializeBlogSummary(
+  p: BlogPost,
+  authorName?: string | null,
+): BlogPostSummary {
   return {
     slug: p.slug,
     title: p.title,
     category: p.category,
     excerpt: p.excerpt ?? undefined,
     publishedAt: p.publishedAt!.toISOString(),
+    updatedAt: p.updatedAt?.toISOString(),
+    coverImageUrl: p.coverImageUrl ?? null,
+    tags: p.tags ?? [],
+    isFeatured: Boolean(p.isFeatured),
+    readTimeMinutes: p.readTimeMinutes ?? null,
+    authorName: blogAuthorName(authorName),
   };
 }
 
-export function serializeBlogDetail(p: BlogPost): BlogPostDetail {
+export function serializeBlogDetail(
+  p: BlogPost,
+  authorName?: string | null,
+): BlogPostDetail {
   return {
-    ...serializeBlogSummary(p),
+    ...serializeBlogSummary(p, authorName),
     content: p.content,
+    metaTitle: p.metaTitle ?? null,
+    metaDescription: p.metaDescription ?? null,
+  };
+}
+
+export function serializeAdminBlogPost(
+  post: BlogPost & {
+    author?: { email: string; name: string | null } | null;
+  },
+) {
+  return {
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    category: post.category,
+    excerpt: post.excerpt,
+    content: post.content,
+    status: post.status,
+    publishedAt: post.publishedAt?.toISOString() ?? null,
+    author: post.author ?? null,
+    createdAt: post.createdAt.toISOString(),
+    updatedAt: post.updatedAt.toISOString(),
+    coverImageUrl: post.coverImageUrl ?? null,
+    tags: post.tags ?? [],
+    isFeatured: Boolean(post.isFeatured),
+    metaTitle: post.metaTitle ?? null,
+    metaDescription: post.metaDescription ?? null,
+    viewCount: post.viewCount ?? 0,
+    readTimeMinutes: post.readTimeMinutes ?? null,
   };
 }
 

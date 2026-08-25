@@ -31,6 +31,7 @@ export async function getObject(key: string): Promise<R2ObjectBody | null> {
 const ALLOWED_KEY_PREFIXES = [
   "demo-videos/",
   "blog-images/",
+  "blog-covers/",
   "trusted-logos/",
   "about-story/",
   "module-images/",

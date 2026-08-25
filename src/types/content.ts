@@ -107,10 +107,18 @@ export type BlogPostSummary = {
   category: string;
   excerpt?: string;
   publishedAt: string;
+  updatedAt?: string;
+  coverImageUrl?: string | null;
+  tags: string[];
+  isFeatured: boolean;
+  readTimeMinutes?: number | null;
+  authorName: string;
 };
 
 export type BlogPostDetail = BlogPostSummary & {
   content: string;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
 };
 
 export type ComparisonRow = {

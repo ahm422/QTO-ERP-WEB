@@ -6,30 +6,17 @@ import {
   getBlogPostByIdAdmin,
   updateBlogPostAdmin,
 } from "@/lib/content-db";
+import { serializeAdminBlogPost } from "@/lib/content-serializers";
 import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
 import { requireRole } from "@/lib/permissions";
-import { updateBlogPostSchema } from "@/lib/validations/admin-blog";
-
+import { revalidateBlogPaths } from "@/lib/revalidate-content-paths";
+import { sanitizeBlogHtml } from "@/lib/sanitize-blog-html";
+import {
+  computeReadTime,
+  updateBlogPostSchema,
+} from "@/lib/validations/admin-blog";
 
 type RouteContext = { params: Promise<{ id: string }> };
-
-function serializePost(
-  post: NonNullable<Awaited<ReturnType<typeof getBlogPostByIdAdmin>>>,
-) {
-  return {
-    id: post.id,
-    slug: post.slug,
-    title: post.title,
-    category: post.category,
-    excerpt: post.excerpt,
-    content: post.content,
-    status: post.status,
-    publishedAt: post.publishedAt?.toISOString() ?? null,
-    author: post.author,
-    createdAt: post.createdAt.toISOString(),
-    updatedAt: post.updatedAt.toISOString(),
-  };
-}
 
 export async function GET(request: Request, context: RouteContext) {
   const admin = await requireRole(request, "content:view");
@@ -42,7 +29,7 @@ export async function GET(request: Request, context: RouteContext) {
     if (!post) {
       return jsonError("Blog post not found", 404);
     }
-    return NextResponse.json({ ok: true, post: serializePost(post) });
+    return NextResponse.json({ ok: true, post: serializeAdminBlogPost(post) });
   } catch (err) {
     console.error("[api/admin/blog/[id]] GET Error:", err);
     return jsonError("Something went wrong.", 500);
@@ -77,12 +64,18 @@ export async function PATCH(request: Request, context: RouteContext) {
       return jsonError("Blog post not found", 404);
     }
 
-    const { publishedAt: publishedAtRaw, ...rest } = parsed.data;
+    const { publishedAt: publishedAtRaw, content, ...rest } = parsed.data;
     const data: Parameters<typeof updateBlogPostAdmin>[1] = { ...rest };
 
     if (publishedAtRaw !== undefined) {
       data.publishedAt =
         publishedAtRaw === null ? null : new Date(publishedAtRaw);
+    }
+
+    if (content !== undefined) {
+      const sanitized = sanitizeBlogHtml(content);
+      data.content = sanitized;
+      data.readTimeMinutes = computeReadTime(sanitized);
     }
 
     if (parsed.data.status === "PUBLISHED") {
@@ -100,9 +93,15 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const post = await updateBlogPostAdmin(id, data);
     const withAuthor = await getBlogPostByIdAdmin(post.id);
+
+    revalidateBlogPaths(existing.slug);
+    if (post.slug !== existing.slug) {
+      revalidateBlogPaths(post.slug);
+    }
+
     return NextResponse.json({
       ok: true,
-      post: serializePost(withAuthor!),
+      post: serializeAdminBlogPost(withAuthor!),
     });
   } catch (err) {
     console.error("[api/admin/blog/[id]] PATCH Error:", err);
@@ -126,6 +125,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     }
 
     await deleteBlogPostAdmin(id);
+    revalidateBlogPaths(existing.slug);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[api/admin/blog/[id]] DELETE Error:", err);
