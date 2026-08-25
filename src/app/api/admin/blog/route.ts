@@ -84,6 +84,7 @@ export async function POST(request: Request) {
       coverImageUrl: parsed.data.coverImageUrl ?? null,
       tags: parsed.data.tags ?? [],
       isFeatured: parsed.data.isFeatured ?? false,
+      isCompanyNews: parsed.data.isCompanyNews ?? false,
       metaTitle: parsed.data.metaTitle ?? null,
       metaDescription: parsed.data.metaDescription ?? null,
       readTimeMinutes,

@@ -111,6 +111,7 @@ export type BlogPostSummary = {
   coverImageUrl?: string | null;
   tags: string[];
   isFeatured: boolean;
+  isCompanyNews: boolean;
   readTimeMinutes?: number | null;
   authorName: string;
 };

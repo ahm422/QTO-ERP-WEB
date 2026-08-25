@@ -19,6 +19,7 @@ type BlogPostsProps = {
   initialHasMore: boolean;
   category?: string;
   tag?: string;
+  search?: string;
 };
 
 function formatDate(iso: string) {
@@ -34,6 +35,7 @@ export default function BlogPosts({
   initialHasMore,
   category,
   tag,
+  search,
 }: BlogPostsProps) {
   const reduced = useReducedMotion();
   const container = getStaggerContainer(reduced);
@@ -48,7 +50,7 @@ export default function BlogPosts({
     setPosts(initialPosts);
     setPage(1);
     setHasMore(initialHasMore);
-  }, [initialPosts, initialHasMore, category, tag]);
+  }, [initialPosts, initialHasMore, category, tag, search]);
 
   const loadMore = async () => {
     setLoading(true);
@@ -59,6 +61,7 @@ export default function BlogPosts({
       });
       if (category) params.set("category", category);
       if (tag) params.set("tag", tag);
+      if (search) params.set("q", search);
       const res = await fetch(`/api/blog?${params}`);
       const data = (await res.json()) as {
         posts?: BlogPostSummary[];
@@ -97,10 +100,10 @@ export default function BlogPosts({
                   <img
                     src={post.coverImageUrl}
                     alt=""
-                    className="h-40 w-full rounded-t-lg object-cover"
+                    className="h-40 w-full rounded-t-2xl object-cover"
                   />
                 ) : (
-                  <div className="h-40 w-full rounded-t-lg bg-muted" />
+                  <div className="h-40 w-full rounded-t-2xl bg-muted" />
                 )}
                 <div className="p-4">
                   <EyebrowBadge

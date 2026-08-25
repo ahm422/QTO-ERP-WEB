@@ -45,6 +45,7 @@ import type {
 } from "@/types/content";
 import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
 import { mediaUrl } from "@/lib/media";
+import { ensureHtmlContent } from "@/lib/sanitize-html";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
 import { HOME_FINAL_CTA_DEFAULTS } from "@/lib/home-cta-defaults";
 import {
@@ -225,6 +226,7 @@ export function serializeBlogSummary(
     coverImageUrl: p.coverImageUrl ?? null,
     tags: p.tags ?? [],
     isFeatured: Boolean(p.isFeatured),
+    isCompanyNews: Boolean(p.isCompanyNews),
     readTimeMinutes: p.readTimeMinutes ?? null,
     authorName: blogAuthorName(authorName),
   };
@@ -262,6 +264,7 @@ export function serializeAdminBlogPost(
     coverImageUrl: post.coverImageUrl ?? null,
     tags: post.tags ?? [],
     isFeatured: Boolean(post.isFeatured),
+    isCompanyNews: Boolean(post.isCompanyNews),
     metaTitle: post.metaTitle ?? null,
     metaDescription: post.metaDescription ?? null,
     viewCount: post.viewCount ?? 0,
@@ -488,8 +491,8 @@ export function aboutStoryFromDefaults(): AboutStory {
     imageAlt: ABOUT_STORY_DEFAULTS.imageAlt,
     badge: ABOUT_STORY_DEFAULTS.badge,
     title: ABOUT_STORY_DEFAULTS.title,
-    paragraph1: ABOUT_STORY_DEFAULTS.paragraph1,
-    paragraph2: ABOUT_STORY_DEFAULTS.paragraph2,
+    paragraph1: ensureHtmlContent(ABOUT_STORY_DEFAULTS.paragraph1),
+    paragraph2: ensureHtmlContent(ABOUT_STORY_DEFAULTS.paragraph2),
     callout: {
       iconKey: ABOUT_STORY_DEFAULTS.calloutIconKey,
       title: ABOUT_STORY_DEFAULTS.calloutTitle,
@@ -506,8 +509,8 @@ export function serializeAboutStory(row: AboutStoryRow): AboutStory {
     imageAlt: row.imageAlt,
     badge: row.badge,
     title: row.title,
-    paragraph1: row.paragraph1,
-    paragraph2: row.paragraph2,
+    paragraph1: ensureHtmlContent(row.paragraph1),
+    paragraph2: ensureHtmlContent(row.paragraph2),
     callout: {
       iconKey: row.calloutIconKey,
       title: row.calloutTitle,

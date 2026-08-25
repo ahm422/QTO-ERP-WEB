@@ -8,7 +8,7 @@ import { AdminFetchError, adminFetch, adminUpload } from "@/lib/admin-fetch";
 import { BLOG_PROSE_CLASS } from "@/lib/blog-prose";
 import { slugifyTitle } from "@/lib/validations/admin-blog";
 import { AdminFormWidth } from "@/components/admin/AdminFormWidth";
-import { BlogEditor } from "@/components/admin/BlogEditor";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,7 @@ export type AdminBlogPost = {
   coverImageUrl?: string | null;
   tags?: string[];
   isFeatured?: boolean;
+  isCompanyNews?: boolean;
   metaTitle?: string | null;
   metaDescription?: string | null;
 };
@@ -87,6 +88,9 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
   const [tags, setTags] = useState<string[]>(initial?.tags ?? []);
   const [tagDraft, setTagDraft] = useState("");
   const [isFeatured, setIsFeatured] = useState(initial?.isFeatured ?? false);
+  const [isCompanyNews, setIsCompanyNews] = useState(
+    initial?.isCompanyNews ?? false,
+  );
   const [metaTitle, setMetaTitle] = useState(initial?.metaTitle ?? "");
   const [metaDescription, setMetaDescription] = useState(
     initial?.metaDescription ?? "",
@@ -108,6 +112,7 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
     coverImageUrl,
     tags,
     isFeatured,
+    isCompanyNews,
     metaTitle,
     metaDescription,
     postId,
@@ -124,6 +129,7 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
     coverImageUrl,
     tags,
     isFeatured,
+    isCompanyNews,
     metaTitle,
     metaDescription,
     postId,
@@ -160,6 +166,7 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
       coverImageUrl: snapshot.coverImageUrl || null,
       tags: snapshot.tags,
       isFeatured: snapshot.isFeatured,
+      isCompanyNews: snapshot.isCompanyNews,
       metaTitle: snapshot.metaTitle.trim() || null,
       metaDescription: snapshot.metaDescription.trim() || null,
     };
@@ -190,6 +197,7 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
           coverImageUrl: coverImageUrl || null,
           tags,
           isFeatured,
+          isCompanyNews,
           metaTitle: metaTitle.trim() || null,
           metaDescription: metaDescription.trim() || null,
         },
@@ -201,6 +209,20 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
     setLastSavedAt(new Date());
     router.replace(`/admin/blog/${data.post.id}/edit`);
     return data.post.id;
+  };
+
+  /** Lets the editor be fully usable (including image upload) before a draft exists yet. */
+  const uploadInlineImage = async (file: File): Promise<string> => {
+    const id = await ensureDraftForImages();
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("postId", id);
+    formData.append("kind", "inline");
+    const result = await adminUpload<{ ok: true; imageUrl: string }>(
+      "/api/admin/blog/upload-image",
+      formData,
+    );
+    return result.imageUrl;
   };
 
   const save = async (publish: boolean) => {
@@ -280,8 +302,6 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
       setUploadingCover(false);
     }
   };
-
-  const editorPostId = postId || initial?.id;
 
   return (
     <AdminFormWidth size="lg" className="space-y-6">
@@ -443,6 +463,14 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
           />
           <Label htmlFor="featured">Featured post</Label>
         </div>
+        <div className="flex items-center gap-3 sm:col-span-2">
+          <Switch
+            id="company-news"
+            checked={isCompanyNews}
+            onCheckedChange={setIsCompanyNews}
+          />
+          <Label htmlFor="company-news">Company news</Label>
+        </div>
       </div>
 
       <details className="rounded-md border p-4">
@@ -489,27 +517,14 @@ export function BlogPostForm({ mode, initial }: BlogPostFormProps) {
         </TabsList>
         <TabsContent value="edit">
           <Label>Content</Label>
-          {editorPostId ? (
-            <div className="mt-2">
-              <BlogEditor
-                postId={editorPostId}
-                content={content}
-                onChange={setContent}
-              />
-            </div>
-          ) : (
-            <div className="mt-2 space-y-2">
-              <p className="text-sm text-muted-foreground">
-                Save a draft first to enable image uploads in the editor.
-              </p>
-              <Textarea
-                rows={12}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="font-mono text-sm"
-              />
-            </div>
-          )}
+          <div className="mt-2">
+            <RichTextEditor
+              content={content}
+              onChange={setContent}
+              placeholder="Write your post…"
+              onUploadImage={uploadInlineImage}
+            />
+          </div>
         </TabsContent>
         <TabsContent value="preview">
           <div

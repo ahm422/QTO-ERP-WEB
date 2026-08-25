@@ -6,6 +6,7 @@ import {
   upsertAboutStoryAdmin,
 } from "@/lib/content-db";
 import { requireRole } from "@/lib/permissions";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import { upsertAboutStorySchema } from "@/lib/validations/admin-about";
 
 export async function GET(request: Request) {
@@ -38,7 +39,11 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const story = await upsertAboutStoryAdmin(parsed.data);
+    const story = await upsertAboutStoryAdmin({
+      ...parsed.data,
+      paragraph1: sanitizeHtml(parsed.data.paragraph1),
+      paragraph2: sanitizeHtml(parsed.data.paragraph2),
+    });
     revalidatePath("/about");
     return NextResponse.json({ ok: true, story });
   } catch (err) {

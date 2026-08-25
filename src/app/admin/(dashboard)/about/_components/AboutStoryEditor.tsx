@@ -8,6 +8,7 @@ import { ALLOWED_ABOUT_ICON_KEYS } from "@/lib/icon-map";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { Textarea } from "@/components/ui/textarea";
 
 type StoryForm = {
@@ -216,28 +217,28 @@ export function AboutStoryEditor() {
           />
         </div>
         <div>
-          <Label htmlFor="story-p1">Paragraph 1</Label>
-          <Textarea
-            id="story-p1"
-            className="mt-1"
-            rows={4}
-            value={story.paragraph1}
-            onChange={(e) =>
-              setStory({ ...story, paragraph1: e.target.value })
-            }
-          />
+          <Label>Paragraph 1</Label>
+          <div className="mt-1">
+            <RichTextEditor
+              content={story.paragraph1}
+              onChange={(html) =>
+                setStory((s) => ({ ...s, paragraph1: html }))
+              }
+              placeholder="Write the first paragraph…"
+            />
+          </div>
         </div>
         <div>
-          <Label htmlFor="story-p2">Paragraph 2</Label>
-          <Textarea
-            id="story-p2"
-            className="mt-1"
-            rows={4}
-            value={story.paragraph2}
-            onChange={(e) =>
-              setStory({ ...story, paragraph2: e.target.value })
-            }
-          />
+          <Label>Paragraph 2</Label>
+          <div className="mt-1">
+            <RichTextEditor
+              content={story.paragraph2}
+              onChange={(html) =>
+                setStory((s) => ({ ...s, paragraph2: html }))
+              }
+              placeholder="Write the second paragraph…"
+            />
+          </div>
         </div>
       </section>
 

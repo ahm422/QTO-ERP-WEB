@@ -2,15 +2,22 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Mail } from "lucide-react";
 import type { BlogPostSummary } from "@/types/content";
 import { MarketingButton } from "@/components/ui/marketing-button";
+import BlogSearch from "./BlogSearch";
+
+type Category = { name: string; count: number };
 
 type BlogSidebarProps = {
   popular: BlogPostSummary[];
+  categories: Category[];
 };
 
-export default function BlogSidebar({ popular }: BlogSidebarProps) {
+export default function BlogSidebar({ popular, categories }: BlogSidebarProps) {
+  const searchParams = useSearchParams();
+  const activeCategory = searchParams.get("category");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "duplicate" | "error">(
@@ -61,6 +68,33 @@ export default function BlogSidebar({ popular }: BlogSidebarProps) {
 
   return (
     <aside className="mt-10 space-y-8 lg:mt-0">
+      <BlogSearch />
+
+      {categories.length > 0 ? (
+        <div>
+          <h2 className="mb-3 font-display text-lg font-bold text-foreground">
+            Categories
+          </h2>
+          <ul className="divide-y divide-border">
+            {categories.map((cat) => (
+              <li key={cat.name}>
+                <Link
+                  href={`/blog?category=${encodeURIComponent(cat.name)}`}
+                  className={`flex items-center justify-between py-2.5 text-sm transition-colors hover:text-accent ${
+                    activeCategory === cat.name
+                      ? "font-semibold text-accent"
+                      : "text-foreground"
+                  }`}
+                >
+                  <span>{cat.name}</span>
+                  <span className="text-xs text-muted-foreground">{cat.count}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       <div>
         <h2 className="mb-4 font-display text-lg font-bold text-foreground">
           Popular

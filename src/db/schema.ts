@@ -120,6 +120,9 @@ export const blogPosts = sqliteTable(
     isFeatured: integer("is_featured", { mode: "boolean" })
       .notNull()
       .default(false),
+    isCompanyNews: integer("is_company_news", { mode: "boolean" })
+      .notNull()
+      .default(false),
     metaTitle: text("meta_title"),
     metaDescription: text("meta_description"),
     readTimeMinutes: integer("read_time_minutes"),
@@ -138,6 +141,7 @@ export const blogPosts = sqliteTable(
     index("blog_posts_published_at_idx").on(t.publishedAt),
     index("blog_posts_author_id_idx").on(t.authorId),
     index("blog_posts_is_featured_idx").on(t.isFeatured),
+    index("blog_posts_is_company_news_idx").on(t.isCompanyNews),
     index("blog_posts_category_idx").on(t.category),
   ],
 );

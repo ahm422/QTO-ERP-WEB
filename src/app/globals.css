@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -205,6 +206,14 @@
   --card-shadow: var(--shadow-md);
   --card-shadow-hover: var(--shadow-lg);
   --mega-shadow: var(--shadow-lg);
+
+  /* Navbar — refined glassmorphism (#190 phase 3) */
+  --nav-shadow: 0 12px 40px -18px rgb(10 10 10 / 0.24);
+  --nav-shadow-scrolled: 0 16px 48px -16px rgb(10 10 10 / 0.32);
+  --nav-menu-shadow: 0 28px 80px -28px rgb(10 10 10 / 0.4), 0 0 0 1px rgb(174 86 43 / 0.12);
+  --nav-mobile-shadow: 0 32px 90px -30px rgb(10 10 10 / 0.5);
+  --nav-ring: rgb(255 255 255 / 0.45);
+  --nav-rim: rgb(174 86 43 / 0.55);
 }
 
 .dark {
@@ -302,6 +311,14 @@
   --card-shadow: var(--shadow-md);
   --card-shadow-hover: var(--shadow-lg);
   --mega-shadow: var(--shadow-lg);
+
+  /* Navbar — refined glassmorphism (#190 phase 3) */
+  --nav-shadow: 0 12px 40px -18px rgb(0 0 0 / 0.5);
+  --nav-shadow-scrolled: 0 16px 48px -16px rgb(0 0 0 / 0.6);
+  --nav-menu-shadow: 0 28px 80px -28px rgb(0 0 0 / 0.65), 0 0 0 1px rgb(232 115 58 / 0.16);
+  --nav-mobile-shadow: 0 32px 90px -30px rgb(0 0 0 / 0.7);
+  --nav-ring: rgb(255 255 255 / 0.08);
+  --nav-rim: rgb(232 115 58 / 0.6);
 }
 
 @layer base {
@@ -314,6 +331,42 @@
 }
 
 @layer components {
+  /* Hide scrollbar but keep scroll — nav tab rows, etc. */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Themed vertical scroll for dropdown lists — thin accent thumb + top/bottom fade
+     so overflow reads as "more content below", not a raw OS scrollbar. */
+  .nav-scroll-y {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black 14px,
+      black calc(100% - 14px),
+      transparent 100%
+    );
+  }
+  .nav-scroll-y::-webkit-scrollbar {
+    width: 6px;
+  }
+  .nav-scroll-y::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .nav-scroll-y::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklab, var(--accent) 55%, transparent);
+    border-radius: 999px;
+  }
+  .nav-scroll-y::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent);
+  }
+
   .hero-gradient {
     background: var(--hero-gradient);
   }
