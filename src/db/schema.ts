@@ -115,6 +115,15 @@ export const blogPosts = sqliteTable(
     authorId: text("author_id")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
+    coverImageUrl: text("cover_image_url"),
+    tags: text("tags", { mode: "json" }).$type<string[]>().notNull().default([]),
+    isFeatured: integer("is_featured", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    metaTitle: text("meta_title"),
+    metaDescription: text("meta_description"),
+    readTimeMinutes: integer("read_time_minutes"),
+    viewCount: integer("view_count").notNull().default(0),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -128,6 +137,8 @@ export const blogPosts = sqliteTable(
     index("blog_posts_status_idx").on(t.status),
     index("blog_posts_published_at_idx").on(t.publishedAt),
     index("blog_posts_author_id_idx").on(t.authorId),
+    index("blog_posts_is_featured_idx").on(t.isFeatured),
+    index("blog_posts_category_idx").on(t.category),
   ],
 );
 

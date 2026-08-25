@@ -5,29 +5,21 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
-import { BlogPostForm } from "@/components/admin/BlogPostForm";
+import {
+  BlogPostForm,
+  type AdminBlogPost,
+} from "@/components/admin/BlogPostForm";
 import { Button } from "@/components/ui/button";
-
-type BlogPost = {
-  id: string;
-  slug: string;
-  title: string;
-  category: string;
-  excerpt: string | null;
-  content: string;
-  status: "DRAFT" | "PUBLISHED";
-  publishedAt: string | null;
-};
 
 export default function EditBlogPostPage() {
   const params = useParams<{ id: string }>();
-  const [post, setPost] = useState<BlogPost | null>(null);
+  const [post, setPost] = useState<AdminBlogPost | null>(null);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await adminFetch<{ ok: true; post: BlogPost }>(
+      const data = await adminFetch<{ ok: true; post: AdminBlogPost }>(
         `/api/admin/blog/${params.id}`,
       );
       setPost(data.post);

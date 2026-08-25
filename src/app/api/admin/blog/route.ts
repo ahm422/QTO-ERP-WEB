@@ -8,29 +8,16 @@ import {
   getBlogPostByIdAdmin,
   listAllBlogPostsAdmin,
 } from "@/lib/content-db";
+import { serializeAdminBlogPost } from "@/lib/content-serializers";
 import { getDb } from "@/lib/db";
 import { isSqliteUniqueConstraintError } from "@/lib/db-errors";
 import { requireRole } from "@/lib/permissions";
-import { createBlogPostSchema } from "@/lib/validations/admin-blog";
-
-
-function serializePost(
-  post: Awaited<ReturnType<typeof listAllBlogPostsAdmin>>[number],
-) {
-  return {
-    id: post.id,
-    slug: post.slug,
-    title: post.title,
-    category: post.category,
-    excerpt: post.excerpt,
-    content: post.content,
-    status: post.status,
-    publishedAt: post.publishedAt?.toISOString() ?? null,
-    author: post.author,
-    createdAt: post.createdAt.toISOString(),
-    updatedAt: post.updatedAt.toISOString(),
-  };
-}
+import { revalidateBlogPaths } from "@/lib/revalidate-content-paths";
+import { sanitizeBlogHtml } from "@/lib/sanitize-blog-html";
+import {
+  computeReadTime,
+  createBlogPostSchema,
+} from "@/lib/validations/admin-blog";
 
 export async function GET(request: Request) {
   const admin = await requireRole(request, "content:view");
@@ -40,7 +27,7 @@ export async function GET(request: Request) {
     const posts = await listAllBlogPostsAdmin();
     return NextResponse.json({
       ok: true,
-      posts: posts.map(serializePost),
+      posts: posts.map(serializeAdminBlogPost),
     });
   } catch (err) {
     console.error("[api/admin/blog] GET Error:", err);
@@ -81,22 +68,32 @@ export async function POST(request: Request) {
     publishedAt = new Date();
   }
 
+  const content = sanitizeBlogHtml(parsed.data.content);
+  const readTimeMinutes = computeReadTime(content);
+
   try {
     const post = await createBlogPostAdmin({
       slug: parsed.data.slug,
       title: parsed.data.title,
       category: parsed.data.category,
       excerpt: parsed.data.excerpt ?? null,
-      content: parsed.data.content,
+      content,
       status,
       authorId: user.id,
       publishedAt,
+      coverImageUrl: parsed.data.coverImageUrl ?? null,
+      tags: parsed.data.tags ?? [],
+      isFeatured: parsed.data.isFeatured ?? false,
+      metaTitle: parsed.data.metaTitle ?? null,
+      metaDescription: parsed.data.metaDescription ?? null,
+      readTimeMinutes,
     });
 
     const withAuthor = await getBlogPostByIdAdmin(post.id);
+    revalidateBlogPaths(post.slug);
 
     return NextResponse.json(
-      { ok: true, post: serializePost(withAuthor!) },
+      { ok: true, post: serializeAdminBlogPost(withAuthor!) },
       { status: 201 },
     );
   } catch (err) {

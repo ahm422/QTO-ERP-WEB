@@ -6,6 +6,7 @@ import { requireRole } from "@/lib/permissions";
 import { requireMediaBucket } from "@/lib/require-media-bucket";
 import {
   blogImageUploadSchema,
+  buildBlogCoverKey,
   buildBlogImageKey,
 } from "@/lib/validations/admin-blog";
 
@@ -29,6 +30,8 @@ export async function POST(request: Request) {
 
   const file = formData.get("file");
   const postId = formData.get("postId");
+  const kindRaw = formData.get("kind");
+  const kind = kindRaw === "cover" ? "cover" : "inline";
 
   if (!file || !(file instanceof File)) {
     return jsonError("Missing file field", 400);
@@ -42,6 +45,7 @@ export async function POST(request: Request) {
     postId: postId.trim(),
     contentType: file.type,
     fileName: file.name,
+    kind,
   });
   if (!parsed.success) {
     return validationErrorResponse(parsed.error);
@@ -62,7 +66,10 @@ export async function POST(request: Request) {
     return jsonError("Blog post not found", 404);
   }
 
-  const objectKey = buildBlogImageKey(validPostId, fileName, contentType);
+  const objectKey =
+    parsed.data.kind === "cover"
+      ? buildBlogCoverKey(validPostId, fileName, contentType)
+      : buildBlogImageKey(validPostId, fileName, contentType);
 
   try {
     // arrayBuffer (not stream): workerd R2 requires a body with known length

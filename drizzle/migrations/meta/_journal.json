@@ -99,6 +99,13 @@
       "when": 1787212461319,
       "tag": "0013_whole_namorita",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1787226320101,
+      "tag": "0014_aspiring_daredevil",
+      "breakpoints": true
     }
   ]
 }

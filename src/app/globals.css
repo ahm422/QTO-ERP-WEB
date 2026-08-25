@@ -340,4 +340,16 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  .blog-editor .tiptap p.is-empty::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    color: var(--muted-foreground);
+  }
+  .blog-editor .tiptap iframe {
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+  }
 }

@@ -52,6 +52,37 @@ export async function fetchBlogPost(slug: string): Promise<BlogPostDetail | null
   return fetchJson<BlogPostDetail>(`/api/blog/${slug}`);
 }
 
+export async function fetchBlogCategories(): Promise<
+  { name: string; count: number }[]
+> {
+  const data = await fetchJson<{ categories: { name: string; count: number }[] }>(
+    "/api/blog/categories",
+  );
+  return data?.categories ?? [];
+}
+
+export async function fetchPopularBlogPosts(
+  limit = 5,
+): Promise<BlogPostSummary[]> {
+  const data = await fetchJson<{ posts: BlogPostSummary[] }>(
+    `/api/blog/popular?limit=${limit}`,
+  );
+  return data?.posts ?? [];
+}
+
+export async function fetchRelatedBlogPosts(
+  slug: string,
+  category?: string,
+  limit = 3,
+): Promise<BlogPostSummary[]> {
+  const params = new URLSearchParams({ slug, limit: String(limit) });
+  if (category) params.set("category", category);
+  const data = await fetchJson<{ posts: BlogPostSummary[] }>(
+    `/api/blog/related?${params}`,
+  );
+  return data?.posts ?? [];
+}
+
 export async function fetchComparison(): Promise<ComparisonRow[]> {
   const data = await fetchJson<{ features: ComparisonRow[] }>("/api/comparison");
   return data?.features ?? [];
