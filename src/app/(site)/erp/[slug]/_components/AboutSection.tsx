@@ -5,7 +5,17 @@ import Image from "next/image";
 import { HeaderSections } from "@/components/ui/HeaderSections";
 import type { ModuleDetail } from "@/types/content";
 import { AboutContentType } from "@/types";
+import { CONTENT_PROSE_CLASS } from "@/lib/content-prose";
 import { getFadeInUp, viewportOnce } from "@/lib/motion";
+
+/** Escape + wrap the plain-text fallback paragraphs so both paths render as HTML. */
+function toParagraphHtml(text: string): string {
+  const safe = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return `<p>${safe}</p>`;
+}
 
 interface AboutSectionProps {
   app: ModuleDetail;
@@ -26,7 +36,7 @@ export default function AboutSection({ app }: AboutSectionProps) {
           id: index + 1,
           tag: headingAt(index),
           title: headingAt(index),
-          description,
+          description: toParagraphHtml(description),
           image: app.image,
           imageAlt: `${app.name} ${headingAt(index)} image`,
         }));
@@ -56,9 +66,10 @@ export default function AboutSection({ app }: AboutSectionProps) {
                     <h3 className="mb-6 font-display text-3xl font-bold leading-tight text-foreground lg:text-4xl">
                       {content.title}
                     </h3>
-                    <p className="text-lg leading-relaxed text-muted-foreground">
-                      {content.description}
-                    </p>
+                    <div
+                      className={`${CONTENT_PROSE_CLASS} text-lg text-muted-foreground`}
+                      dangerouslySetInnerHTML={{ __html: content.description }}
+                    />
                   </div>
                 </motion.div>
 

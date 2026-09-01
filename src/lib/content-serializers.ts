@@ -93,6 +93,9 @@ function serializeAboutContents(
   if (!contents) return undefined;
   return contents.map((c) => ({
     ...c,
+    // description is authored in the rich-text editor — sanitize + pass through
+    // (or wrap plain text in <p>) so the public block can render it as HTML.
+    description: ensureHtmlContent(c.description ?? ""),
     image: resolveMediaPath(c.image) ?? c.image,
   }));
 }

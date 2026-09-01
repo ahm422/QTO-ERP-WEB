@@ -318,7 +318,7 @@ const breadcrumbRoutes: Array<{
     ],
   },
   {
-    pattern: /^\/admin\/modules\/[^/]+\/edit$/,
+    pattern: /^\/admin\/modules\/[^/]+\/edit(?:\/[^/]+)?$/,
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
       { label: "Modules", href: "/admin/modules" },
@@ -338,7 +338,7 @@ const breadcrumbRoutes: Array<{
     ],
   },
   {
-    pattern: /^\/admin\/solutions\/[^/]+\/edit$/,
+    pattern: /^\/admin\/solutions\/[^/]+\/edit(?:\/[^/]+)?$/,
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
       { label: "Solutions", href: "/admin/solutions" },
