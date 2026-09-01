@@ -6,6 +6,11 @@ import {
   listPublishedSolutionSitemapEntries,
 } from "@/lib/content-db";
 
+// Render on the Worker at request time, never during `next build` — the entry
+// helpers below query D1, which is unavailable at prerender time.
+export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getBaseUrl();
 
@@ -21,11 +26,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${base}${path || "/"}`,
   }));
 
-  const [posts, modules, solutions] = await Promise.all([
-    listPublishedBlogSitemapEntries(),
-    listPublishedModuleSitemapEntries(),
-    listPublishedSolutionSitemapEntries(),
-  ]);
+  let posts: Awaited<ReturnType<typeof listPublishedBlogSitemapEntries>> = [];
+  let modules: Awaited<ReturnType<typeof listPublishedModuleSitemapEntries>> = [];
+  let solutions: Awaited<ReturnType<typeof listPublishedSolutionSitemapEntries>> = [];
+
+  try {
+    [posts, modules, solutions] = await Promise.all([
+      listPublishedBlogSitemapEntries(),
+      listPublishedModuleSitemapEntries(),
+      listPublishedSolutionSitemapEntries(),
+    ]);
+  } catch (err) {
+    console.error("[sitemap] DB unavailable, emitting static routes only", err);
+  }
 
   const dynamicRoutes: MetadataRoute.Sitemap = [
     ...posts.map((post) => ({

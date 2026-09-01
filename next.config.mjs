@@ -22,18 +22,25 @@ const cloudflareDevOptions = {
 
 const CLOUDFLARE_CONTEXT_SYMBOL = Symbol.for("__cloudflare-context__");
 
-await initOpenNextCloudflareForDev(cloudflareDevOptions);
+// `npm run dev` only. During `next build` / `opennextjs-cloudflare build`
+// NODE_ENV is "production" — skip this so the build never opens a (remote)
+// connection to the D1 configured in wrangler.dev.jsonc.
+const isDev = process.env.NODE_ENV === "development";
 
-if (!globalThis[CLOUDFLARE_CONTEXT_SYMBOL]) {
-  const proxy = await getPlatformProxy({
-    ...cloudflareDevOptions,
-    envFiles: [],
-  });
-  globalThis[CLOUDFLARE_CONTEXT_SYMBOL] = {
-    env: proxy.env,
-    cf: proxy.cf,
-    ctx: proxy.ctx,
-  };
+if (isDev) {
+  await initOpenNextCloudflareForDev(cloudflareDevOptions);
+
+  if (!globalThis[CLOUDFLARE_CONTEXT_SYMBOL]) {
+    const proxy = await getPlatformProxy({
+      ...cloudflareDevOptions,
+      envFiles: [],
+    });
+    globalThis[CLOUDFLARE_CONTEXT_SYMBOL] = {
+      env: proxy.env,
+      cf: proxy.cf,
+      ctx: proxy.ctx,
+    };
+  }
 }
 
 /** @type {import('next').NextConfig} */
