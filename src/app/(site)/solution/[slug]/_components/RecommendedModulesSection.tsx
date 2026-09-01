@@ -11,10 +11,16 @@ import type { ModuleSummary } from '@/types/content';
 
 interface RecommendedModulesSectionProps {
   modules: ModuleSummary[];
+  tag: string;
+  title: string;
+  description: string;
 }
 
 export default function RecommendedModulesSection({
   modules,
+  tag,
+  title,
+  description,
 }: RecommendedModulesSectionProps) {
   if (modules.length === 0) return null;
 
@@ -30,11 +36,7 @@ export default function RecommendedModulesSection({
   return (
     <section className='section-padding bg-muted/30'>
       <div className='container-main'>
-        <HeaderSections
-          tag='Recommended'
-          title='Platform For You'
-          description="These modules are tailored for your team's needs."
-        />
+        <HeaderSections tag={tag} title={title} description={description} />
         <IntegratedModulesGrid modules={items} columns={3} />
       </div>
     </section>

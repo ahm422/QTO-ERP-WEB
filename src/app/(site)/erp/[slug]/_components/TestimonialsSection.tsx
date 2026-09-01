@@ -13,6 +13,7 @@ interface TestimonialsSectionProps {
 }
 
 export default function TestimonialsSection({ app }: TestimonialsSectionProps) {
+  if (!app.testimonials || app.testimonials.length === 0) return null;
   return (
     <section id='testimonials' className='section-padding'>
       <div className='container-main'>

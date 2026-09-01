@@ -41,6 +41,8 @@ export function ContactFormEditor() {
     faqTag: "",
     faqTitle: "",
     faqDescription: "",
+    metaTitle: "",
+    metaDescription: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -393,6 +395,35 @@ export function ContactFormEditor() {
               value={page.faqDescription}
               onChange={(e) =>
                 setPage((p) => ({ ...p, faqDescription: e.target.value }))
+              }
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3 border-t pt-4">
+        <h3 className="text-sm font-medium">SEO</h3>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="meta-title">Meta title</Label>
+            <Input
+              id="meta-title"
+              className="mt-1"
+              value={page.metaTitle}
+              onChange={(e) =>
+                setPage((p) => ({ ...p, metaTitle: e.target.value }))
+              }
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <Label htmlFor="meta-description">Meta description</Label>
+            <Textarea
+              id="meta-description"
+              className="mt-1"
+              rows={2}
+              value={page.metaDescription}
+              onChange={(e) =>
+                setPage((p) => ({ ...p, metaDescription: e.target.value }))
               }
             />
           </div>

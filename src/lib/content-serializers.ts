@@ -53,6 +53,14 @@ import {
   FALLBACK_STORY_IMAGE_URL,
 } from "@/lib/about-story-defaults";
 import { ABOUT_FINAL_CTA_DEFAULTS } from "@/lib/about-cta-defaults";
+import {
+  MODULE_PAGE_DEFAULTS,
+  applyModuleNameTemplate,
+} from "@/lib/module-page-defaults";
+import {
+  SOLUTION_PAGE_DEFAULTS,
+  applySolutionTitleTemplate,
+} from "@/lib/solution-page-defaults";
 
 type ErpModule = InferSelectModel<typeof erpModules>;
 
@@ -85,6 +93,9 @@ function serializeAboutContents(
   if (!contents) return undefined;
   return contents.map((c) => ({
     ...c,
+    // description is authored in the rich-text editor — sanitize + pass through
+    // (or wrap plain text in <p>) so the public block can render it as HTML.
+    description: ensureHtmlContent(c.description ?? ""),
     image: resolveMediaPath(c.image) ?? c.image,
   }));
 }
@@ -123,8 +134,14 @@ export function serializeModuleDetail(m: ErpModule): ModuleDetail {
   return {
     ...serializeModuleSummary(m),
     videoUrl: m.videoUrl,
-    videoCtaTitle: m.videoCtaTitle ?? undefined,
-    videoCtaDescription: m.videoCtaDescription ?? undefined,
+    videoCtaTitle:
+      m.videoCtaTitle ??
+      applyModuleNameTemplate(
+        MODULE_PAGE_DEFAULTS.videoCtaTitleTemplate,
+        m.name,
+      ),
+    videoCtaDescription:
+      m.videoCtaDescription ?? MODULE_PAGE_DEFAULTS.videoCtaDescription,
     heroHeadline: m.heroHeadline,
     heroSubheadline: m.heroSubheadline,
     heroCtaLabel: m.heroCtaLabel ?? undefined,
@@ -147,6 +164,37 @@ export function serializeModuleDetail(m: ErpModule): ModuleDetail {
     useCases: m.useCases,
     testimonials: m.testimonials,
     faqs: m.faqs,
+    // ── CMS page-copy, merged over MODULE_PAGE_DEFAULTS (Phase 2). ──
+    heroEyebrow: m.heroEyebrow ?? MODULE_PAGE_DEFAULTS.heroEyebrow,
+    capabilitiesTag: m.capabilitiesTag ?? MODULE_PAGE_DEFAULTS.capabilitiesTag,
+    capabilitiesDescription:
+      m.capabilitiesDescription ?? MODULE_PAGE_DEFAULTS.capabilitiesDescription,
+    featuresTag: m.featuresTag ?? MODULE_PAGE_DEFAULTS.featuresTag,
+    featuresSectionDescription:
+      m.featuresSectionDescription ??
+      MODULE_PAGE_DEFAULTS.featuresSectionDescription,
+    videoCtaButtonLabel:
+      m.videoCtaButtonLabel ?? MODULE_PAGE_DEFAULTS.videoCtaButtonLabel,
+    faqSectionTag: m.faqSectionTag ?? MODULE_PAGE_DEFAULTS.faqSectionTag,
+    faqSectionTitle: applyModuleNameTemplate(
+      m.faqSectionTitleTemplate ?? MODULE_PAGE_DEFAULTS.faqSectionTitleTemplate,
+      m.name,
+    ),
+    aboutSectionHeadings:
+      m.aboutSectionHeadings ?? MODULE_PAGE_DEFAULTS.aboutSectionHeadings,
+    allAppsTag: m.allAppsTag ?? MODULE_PAGE_DEFAULTS.allAppsTag,
+    allAppsTitle: m.allAppsTitle ?? MODULE_PAGE_DEFAULTS.allAppsTitle,
+    ctaHeadline: m.ctaHeadline ?? MODULE_PAGE_DEFAULTS.ctaHeadline,
+    ctaPrimaryLabel: m.ctaPrimaryLabel ?? MODULE_PAGE_DEFAULTS.ctaPrimaryLabel,
+    ctaPrimaryHref: m.ctaPrimaryHref ?? MODULE_PAGE_DEFAULTS.ctaPrimaryHref,
+    ctaSecondaryLabel:
+      m.ctaSecondaryLabel ?? MODULE_PAGE_DEFAULTS.ctaSecondaryLabel,
+    ctaSecondaryHref:
+      m.ctaSecondaryHref ?? MODULE_PAGE_DEFAULTS.ctaSecondaryHref,
+    defaultImage:
+      resolveMediaPath(m.defaultImage) ?? MODULE_PAGE_DEFAULTS.defaultImage,
+    metaTitle: m.metaTitle ?? `${m.name} | QTO ERP`,
+    metaDescription: m.metaDescription ?? m.shortDescription,
   };
 }
 
@@ -195,6 +243,7 @@ export function serializeSolutionSummary(s: Solution): SolutionSummary {
 }
 
 export function serializeSolutionDetail(s: Solution): SolutionDetail {
+  const d = SOLUTION_PAGE_DEFAULTS;
   return {
     ...serializeSolutionSummary(s),
     problems: s.problems,
@@ -202,6 +251,37 @@ export function serializeSolutionDetail(s: Solution): SolutionDetail {
     testimonial: s.testimonial,
     solutionFaqs: s.solutionFaqs,
     useCases: s.useCases ?? undefined,
+    // ── CMS page-copy, merged over SOLUTION_PAGE_DEFAULTS (Phase 2). ──
+    heroEyebrow: s.heroEyebrow ?? d.heroEyebrow,
+    heroImage: resolveMediaPath(s.heroImage) ?? null,
+    heroImageAlt: s.heroImageAlt ?? null,
+    heroCaption: applySolutionTitleTemplate(
+      s.heroCaption ?? d.heroCaptionTemplate,
+      s.title.toLowerCase(),
+    ),
+    heroPrimaryCtaLabel: s.heroPrimaryCtaLabel ?? d.heroPrimaryCtaLabel,
+    heroPrimaryCtaHref: s.heroPrimaryCtaHref ?? d.heroPrimaryCtaHref,
+    heroSecondaryCtaLabel: s.heroSecondaryCtaLabel ?? d.heroSecondaryCtaLabel,
+    heroSecondaryCtaHref: s.heroSecondaryCtaHref ?? d.heroSecondaryCtaHref,
+    tabsIntroTag: s.tabsIntroTag ?? d.tabsIntroTag,
+    tabsIntroTitle: s.tabsIntroTitle ?? d.tabsIntroTitle,
+    tabsIntroDescription: s.tabsIntroDescription ?? d.tabsIntroDescription,
+    tabImageFallback: s.tabImageFallback ?? d.tabImageFallback,
+    recommendedTag: s.recommendedTag ?? d.recommendedTag,
+    recommendedTitle: s.recommendedTitle ?? d.recommendedTitle,
+    recommendedDescription:
+      s.recommendedDescription ?? d.recommendedDescription,
+    faqTag: s.faqTag ?? d.faqTag,
+    faqTitle: s.faqTitle ?? d.faqTitle,
+    ctaEyebrow: s.ctaEyebrow ?? d.ctaEyebrow,
+    ctaHeadline: s.ctaHeadline ?? d.ctaHeadline,
+    ctaDescription: s.ctaDescription ?? d.ctaDescription,
+    ctaPrimaryLabel: s.ctaPrimaryLabel ?? d.ctaPrimaryLabel,
+    ctaPrimaryHref: s.ctaPrimaryHref ?? d.ctaPrimaryHref,
+    ctaSecondaryLabel: s.ctaSecondaryLabel ?? d.ctaSecondaryLabel,
+    ctaSecondaryHref: s.ctaSecondaryHref ?? d.ctaSecondaryHref,
+    metaTitle: s.metaTitle ?? `${s.title} | QTO ERP`,
+    metaDescription: s.metaDescription ?? s.heroSubheadline,
   };
 }
 
@@ -404,6 +484,9 @@ export function serializeDemoPageContent(
     testimonialQuote: row.testimonialQuote,
     testimonialAuthor: row.testimonialAuthor,
     testimonialRole: row.testimonialRole,
+    metaTitle: row.metaTitle ?? DEMO_PAGE_CONTENT_DEFAULTS.metaTitle,
+    metaDescription:
+      row.metaDescription ?? DEMO_PAGE_CONTENT_DEFAULTS.metaDescription,
     formFieldOptions: {
       ...DEMO_PAGE_CONTENT_DEFAULTS.formFieldOptions,
       ...row.formFieldOptions,
@@ -500,6 +583,8 @@ export function aboutStoryFromDefaults(): AboutStory {
       linkLabel: ABOUT_STORY_DEFAULTS.calloutLinkLabel,
       linkUrl: ABOUT_STORY_DEFAULTS.calloutLinkUrl,
     },
+    metaTitle: ABOUT_STORY_DEFAULTS.metaTitle,
+    metaDescription: ABOUT_STORY_DEFAULTS.metaDescription,
   };
 }
 
@@ -518,6 +603,8 @@ export function serializeAboutStory(row: AboutStoryRow): AboutStory {
       linkLabel: row.calloutLinkLabel,
       linkUrl: row.calloutLinkUrl,
     },
+    metaTitle: row.metaTitle ?? ABOUT_STORY_DEFAULTS.metaTitle,
+    metaDescription: row.metaDescription ?? ABOUT_STORY_DEFAULTS.metaDescription,
   };
 }
 

@@ -24,6 +24,8 @@ export const upsertAboutStorySchema = z
     calloutBody: z.string().trim().min(1).max(2000),
     calloutLinkLabel: z.string().trim().min(1).max(80),
     calloutLinkUrl: z.string().trim().min(1).max(500),
+    metaTitle: z.string().trim().max(200).nullable().optional(),
+    metaDescription: z.string().trim().max(500).nullable().optional(),
   })
   .strict();
 

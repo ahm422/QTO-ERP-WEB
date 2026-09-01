@@ -12,22 +12,21 @@ interface FeaturesSectionProps {
   onVideoOpen: () => void;
 }
 
-const DEFAULT_FEATURE_IMAGE = "/assets/images/attendance.png";
-
 export default function FeaturesSection({
   app,
   onVideoOpen,
 }: FeaturesSectionProps) {
   const reduced = useReducedMotion();
   const fadeUp = getFadeInUp(reduced);
+  const hasFeatures = app.features.length > 0;
 
   return (
     <section id="features" className="section-padding bg-muted/30">
       <div className="container-main max-w-[1300px]">
         <HeaderSections
-          tag="Features"
+          tag={app.featuresTag}
           title={app.featuresSectionTitle ?? `${app.name} Features`}
-          description="A powerful set of tools built to give your team full control and visibility."
+          description={app.featuresSectionDescription}
         />
 
         <div className="space-y-20">
@@ -35,7 +34,7 @@ export default function FeaturesSection({
             const isEven = index % 2 === 0;
             const num = String(index + 1).padStart(2, "0");
             const imageUrl =
-              feature.imageUrl ?? app.image ?? DEFAULT_FEATURE_IMAGE;
+              feature.imageUrl ?? app.image ?? app.defaultImage;
 
             return (
               <div key={feature.title} className="grid gap-12 lg:grid-cols-2">
@@ -95,30 +94,37 @@ export default function FeaturesSection({
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mt-20 flex flex-col items-center justify-between gap-6 rounded-2xl border border-border bg-card p-8 shadow-[var(--card-shadow)] sm:flex-row"
+          className={`${
+            hasFeatures ? "mt-20" : "mt-10"
+          } relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-muted/40 p-8 shadow-[var(--card-shadow)] sm:p-10`}
         >
-          <div>
-            <h4 className="mb-1 font-display text-xl font-bold text-foreground">
-              {app.videoCtaTitle ?? `See ${app.name} in action`}
-            </h4>
-            <p className="text-sm text-muted-foreground">
-              {app.videoCtaDescription ??
-                "Watch a quick overview of all key features and how they work together seamlessly."}
-            </p>
+          <div
+            className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-hero-glow/40 blur-3xl"
+            aria-hidden
+          />
+          <div className="relative flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="max-w-xl">
+              <h4 className="font-display text-2xl font-bold text-foreground">
+                {app.videoCtaTitle}
+              </h4>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {app.videoCtaDescription}
+              </p>
+            </div>
+            <MarketingButton
+              type="button"
+              variant="primary"
+              size="lg"
+              onClick={onVideoOpen}
+              className="shrink-0"
+              iconSlide={false}
+            >
+              <span className="inline-flex size-8 items-center justify-center rounded-full bg-accent-foreground/20">
+                <Play className="size-4 fill-current" />
+              </span>
+              {app.videoCtaButtonLabel}
+            </MarketingButton>
           </div>
-          <MarketingButton
-            type="button"
-            variant="primary"
-            size="lg"
-            onClick={onVideoOpen}
-            className="shrink-0"
-            iconSlide={false}
-          >
-            <span className="inline-flex size-8 items-center justify-center rounded-full bg-accent-foreground/20">
-              <Play className="size-4 fill-current" />
-            </span>
-            Watch Demo
-          </MarketingButton>
         </motion.div>
       </div>
     </section>

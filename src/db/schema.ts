@@ -270,6 +270,29 @@ export const erpModules = sqliteTable(
       .notNull()
       .$type<TestimonialsType>(),
     faqs: text("faqs", { mode: "json" }).notNull().$type<FAQsType>(),
+    // ── CMS page-copy overrides (Phase 2 — all nullable, merged over
+    //    MODULE_PAGE_DEFAULTS in serializeModuleDetail so an empty column is a no-op). ──
+    heroEyebrow: text("hero_eyebrow"),
+    capabilitiesTag: text("capabilities_tag"),
+    capabilitiesDescription: text("capabilities_description"),
+    featuresTag: text("features_tag"),
+    featuresSectionDescription: text("features_section_description"),
+    videoCtaButtonLabel: text("video_cta_button_label"),
+    faqSectionTag: text("faq_section_tag"),
+    faqSectionTitleTemplate: text("faq_section_title_template"),
+    aboutSectionHeadings: text("about_section_headings", {
+      mode: "json",
+    }).$type<string[]>(),
+    allAppsTag: text("all_apps_tag"),
+    allAppsTitle: text("all_apps_title"),
+    ctaHeadline: text("cta_headline"),
+    ctaPrimaryLabel: text("cta_primary_label"),
+    ctaPrimaryHref: text("cta_primary_href"),
+    ctaSecondaryLabel: text("cta_secondary_label"),
+    ctaSecondaryHref: text("cta_secondary_href"),
+    defaultImage: text("default_image"),
+    metaTitle: text("meta_title"),
+    metaDescription: text("meta_description"),
     orbitRadius: real("orbit_radius"),
     orbitTilt: real("orbit_tilt"),
     orbitPhase: real("orbit_phase"),
@@ -320,6 +343,34 @@ export const solutions = sqliteTable(
     useCases: text("use_cases", { mode: "json" }).$type<
       SolutionUseCase[] | null
     >(),
+    // ── CMS page-copy overrides (Phase 2 — all nullable, merged over
+    //    SOLUTION_PAGE_DEFAULTS in serializeSolutionDetail). ──
+    heroEyebrow: text("hero_eyebrow"),
+    heroImage: text("hero_image"),
+    heroImageAlt: text("hero_image_alt"),
+    heroCaption: text("hero_caption"),
+    heroPrimaryCtaLabel: text("hero_primary_cta_label"),
+    heroPrimaryCtaHref: text("hero_primary_cta_href"),
+    heroSecondaryCtaLabel: text("hero_secondary_cta_label"),
+    heroSecondaryCtaHref: text("hero_secondary_cta_href"),
+    tabsIntroTag: text("tabs_intro_tag"),
+    tabsIntroTitle: text("tabs_intro_title"),
+    tabsIntroDescription: text("tabs_intro_description"),
+    tabImageFallback: text("tab_image_fallback"),
+    recommendedTag: text("recommended_tag"),
+    recommendedTitle: text("recommended_title"),
+    recommendedDescription: text("recommended_description"),
+    faqTag: text("faq_tag"),
+    faqTitle: text("faq_title"),
+    ctaEyebrow: text("cta_eyebrow"),
+    ctaHeadline: text("cta_headline"),
+    ctaDescription: text("cta_description"),
+    ctaPrimaryLabel: text("cta_primary_label"),
+    ctaPrimaryHref: text("cta_primary_href"),
+    ctaSecondaryLabel: text("cta_secondary_label"),
+    ctaSecondaryHref: text("cta_secondary_href"),
+    metaTitle: text("meta_title"),
+    metaDescription: text("meta_description"),
     sortOrder: integer("sort_order").notNull().default(0),
     published: integer("published", { mode: "boolean" }).notNull().default(true),
     createdAt: integer("created_at", { mode: "timestamp" })
@@ -748,6 +799,8 @@ export const demoPageContent = sqliteTable("demo_page_content", {
   heroTitle: text("hero_title").notNull(),
   heroAccent: text("hero_accent").notNull(),
   heroDescription: text("hero_description").notNull(),
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
   heroBadges: text("hero_badges", { mode: "json" })
     .notNull()
     .$type<string[]>(),
@@ -820,6 +873,8 @@ export const aboutStory = sqliteTable("about_story", {
   calloutBody: text("callout_body").notNull(),
   calloutLinkLabel: text("callout_link_label").notNull(),
   calloutLinkUrl: text("callout_link_url").notNull(),
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date())
@@ -857,6 +912,8 @@ export const contactSupportContent = sqliteTable("contact_support_content", {
   tag: text("tag").notNull(),
   title: text("title").notNull(),
   description: text("description").notNull(),
+  knowledgeBaseLabel: text("knowledge_base_label"),
+  knowledgeBaseHref: text("knowledge_base_href"),
   cards: text("cards", { mode: "json" })
     .notNull()
     .$type<ContactSupportCard[]>(),
@@ -908,6 +965,8 @@ export const contactPageContent = sqliteTable("contact_page_content", {
   faqTag: text("faq_tag").notNull(),
   faqTitle: text("faq_title").notNull(),
   faqDescription: text("faq_description").notNull(),
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date())

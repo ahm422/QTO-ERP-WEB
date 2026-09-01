@@ -1,6 +1,21 @@
 import { z } from "zod";
 import { ALLOWED_ROLLOUT_ICON_KEYS } from "@/lib/icon-map";
 
+/** Optional CMS copy override: trimmed, capped, nullable (null/empty = use code default). */
+const overrideText = (max: number) =>
+  z.string().trim().max(max).nullable().optional();
+
+/** Link override: relative ("/demo", "/blog?x=1") or absolute http(s) URL. */
+const overrideHref = z
+  .string()
+  .trim()
+  .max(300)
+  .refine((v) => v === "" || v.startsWith("/") || /^https?:\/\//i.test(v), {
+    message: "Must be a relative path (/…) or an absolute http(s) URL",
+  })
+  .nullable()
+  .optional();
+
 const rolloutIconKeySchema = z
   .string()
   .trim()
@@ -82,6 +97,30 @@ const moduleBaseSchema = z.object({
   orbitTilt: z.number().nullable().optional(),
   orbitPhase: z.number().nullable().optional(),
   orbitSpeed: z.number().nullable().optional(),
+  // ── CMS page-copy overrides (Phase 2) — all optional, null/"" = code default. ──
+  heroEyebrow: overrideText(80),
+  capabilitiesTag: overrideText(80),
+  capabilitiesDescription: overrideText(500),
+  featuresTag: overrideText(80),
+  featuresSectionDescription: overrideText(500),
+  videoCtaButtonLabel: overrideText(80),
+  faqSectionTag: overrideText(80),
+  faqSectionTitleTemplate: overrideText(200),
+  aboutSectionHeadings: z
+    .array(z.string().trim().min(1).max(120))
+    .max(12)
+    .nullable()
+    .optional(),
+  allAppsTag: overrideText(80),
+  allAppsTitle: overrideText(200),
+  ctaHeadline: overrideText(200),
+  ctaPrimaryLabel: overrideText(80),
+  ctaPrimaryHref: overrideHref,
+  ctaSecondaryLabel: overrideText(80),
+  ctaSecondaryHref: overrideHref,
+  defaultImage: overrideText(300),
+  metaTitle: overrideText(200),
+  metaDescription: overrideText(500),
 });
 
 export const createModuleSchema = moduleBaseSchema.strict();

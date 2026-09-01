@@ -55,6 +55,8 @@ export const upsertDemoPageContentSchema = z
     heroTitle: z.string().trim().min(1).max(120),
     heroAccent: z.string().trim().min(1).max(120),
     heroDescription: z.string().trim().min(1).max(800),
+    metaTitle: z.string().trim().max(200).nullable().optional(),
+    metaDescription: z.string().trim().max(500).nullable().optional(),
     heroBadges: z.array(z.string().trim().min(1).max(120)).max(10),
     processTag: z.string().trim().min(1).max(80),
     processTitle: z.string().trim().min(1).max(120),

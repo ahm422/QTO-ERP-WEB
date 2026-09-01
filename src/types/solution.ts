@@ -15,6 +15,8 @@ export type SolutionUseCaseFeature = {
   title: string;
   desc: string;
   reverse?: boolean;
+  /** Optional per-feature image (media key or path). Falls back to the solution's tabImageFallback. */
+  imageUrl?: string;
 };
 
 export type SolutionUseCase = {

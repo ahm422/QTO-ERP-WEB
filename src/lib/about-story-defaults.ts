@@ -19,6 +19,8 @@ export type AboutStoryDefaults = {
   calloutBody: string;
   calloutLinkLabel: string;
   calloutLinkUrl: string;
+  metaTitle: string;
+  metaDescription: string;
 };
 
 export const ABOUT_STORY_DEFAULTS: AboutStoryDefaults = {
@@ -37,4 +39,6 @@ export const ABOUT_STORY_DEFAULTS: AboutStoryDefaults = {
     "QTO-ERP is proudly built by {link}, a dedicated team passionate about creating tools that fundamentally make the future of work better.",
   calloutLinkLabel: "QTO Dev",
   calloutLinkUrl: QTO_DEV_URL,
+  metaTitle: "about",
+  metaDescription: "View our about page and see how our platform works.",
 };

@@ -2,87 +2,105 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
+import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
 import { HeaderSections } from "@/components/ui/HeaderSections";
 import type { ModuleDetail } from "@/types/content";
 import { AboutContentType } from "@/types";
+import { CONTENT_PROSE_CLASS } from "@/lib/content-prose";
 import { getFadeInUp, viewportOnce } from "@/lib/motion";
 
 interface AboutSectionProps {
   app: ModuleDetail;
 }
 
+/** Escape + wrap the plain-text fallback paragraphs so both paths render as HTML. */
+function toParagraphHtml(text: string): string {
+  const safe = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return `<p>${safe}</p>`;
+}
+
 export default function AboutSection({ app }: AboutSectionProps) {
   const reduced = useReducedMotion();
   const fadeUp = getFadeInUp(reduced);
-  const sectionHeadings = ["Overview", "Problem", "Solution", "Results"];
+  const sectionHeadings = app.aboutSectionHeadings;
+  const headingAt = (i: number) =>
+    sectionHeadings[i] ?? sectionHeadings[0] ?? "";
 
-  const aboutContents: AboutContentType[] =
+  const rows: AboutContentType[] =
     app.aboutContents && app.aboutContents.length > 0
       ? app.aboutContents
       : app.aboutDescription.map((description, index) => ({
           id: index + 1,
-          tag: sectionHeadings[index] ?? "Overview",
-          title: sectionHeadings[index] ?? "Overview",
-          description,
-          image: app.image,
-          imageAlt: `${app.name} ${sectionHeadings[index] ?? "Overview"} image`,
+          tag: headingAt(index),
+          title: headingAt(index),
+          description: toParagraphHtml(description),
+          image: undefined,
+          imageAlt: `${app.name} ${headingAt(index)}`,
         }));
+
+  if (rows.length === 0) return null;
 
   return (
     <section id="about" className="section-padding bg-background">
-      <div className="container-main max-w-[1300px]">
-        <HeaderSections tag="About" title={app.aboutTitle} />
+      <div className="container-main max-w-6xl">
+        <HeaderSections tag={app.aboutTag ?? "About"} title={app.aboutTitle} />
 
-        <div className="space-y-20">
-          {aboutContents.map((content, index) => {
-            const isEven = index % 2 === 0;
-
+        <div className="mt-6 space-y-16 lg:space-y-24">
+          {rows.map((row, index) => {
+            const flip = index % 2 === 1;
+            const hasImage = Boolean(row.image);
             return (
-              <div
-                key={content.id}
-                className="grid items-start gap-12 lg:grid-cols-2"
+              <motion.div
+                key={row.id}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={viewportOnce}
+                className={
+                  hasImage
+                    ? "grid items-center gap-10 lg:grid-cols-2 lg:gap-16"
+                    : "mx-auto max-w-3xl text-center"
+                }
               >
-                <motion.div
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={viewportOnce}
-                  className={isEven ? "" : "lg:order-2"}
-                >
-                  <div className="flex h-full flex-col rounded-2xl bg-card">
-                    <h3 className="mb-6 font-display text-3xl font-bold leading-tight text-foreground lg:text-4xl">
-                      {content.title}
+                <div className={flip && hasImage ? "lg:order-2" : undefined}>
+                  {row.tag ? (
+                    <div
+                      className={
+                        hasImage ? "" : "flex justify-center"
+                      }
+                    >
+                      <EyebrowBadge label={row.tag} variant="accent" />
+                    </div>
+                  ) : null}
+                  {row.title && row.title !== row.tag ? (
+                    <h3 className="mt-4 font-display text-2xl font-bold leading-tight text-foreground md:text-3xl">
+                      {row.title}
                     </h3>
-                    <p className="text-lg leading-relaxed text-muted-foreground">
-                      {content.description}
-                    </p>
-                  </div>
-                </motion.div>
+                  ) : null}
+                  <div
+                    className={`${CONTENT_PROSE_CLASS} mt-4 max-w-none text-muted-foreground`}
+                    dangerouslySetInnerHTML={{ __html: row.description }}
+                  />
+                </div>
 
-                <motion.div
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={viewportOnce}
-                  className={isEven ? "lg:order-2" : "lg:order-1"}
-                >
-                  <div className="flex h-[340px] items-center justify-center rounded-2xl border border-border bg-background p-6 shadow-[var(--card-shadow)] transition-all duration-300">
-                    <div className="relative h-full w-full">
+                {hasImage ? (
+                  <div className={flip ? "lg:order-1" : undefined}>
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted shadow-[var(--card-shadow)]">
                       <Image
-                        src={
-                          content.image ||
-                          app.image ||
-                          "/assets/images/attendance.png"
-                        }
-                        alt={content.imageAlt || `${app.name} image`}
+                        src={row.image as string}
+                        alt={row.imageAlt || `${app.name} ${row.title}`}
                         fill
-                        className="object-contain object-center"
-                        sizes="(max-width: 768px) 100vw, 50vw"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        className="object-cover"
                       />
+                      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5" />
                     </div>
                   </div>
-                </motion.div>
-              </div>
+                ) : null}
+              </motion.div>
             );
           })}
         </div>
