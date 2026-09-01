@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { adminFetch } from "@/lib/admin-fetch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import {
   nullifyEmpty,
   str,
@@ -82,7 +81,7 @@ export default function SolutionRecommendedPage() {
     >
       {form ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Section tag"
               placeholder="Recommended"
@@ -102,12 +101,16 @@ export default function SolutionRecommendedPage() {
             value={form.recommendedDescription}
             onChange={(v) => patch({ recommendedDescription: v })}
           />
-          <Field label="Modules">
-            <div className="grid gap-2 rounded-md border p-3 sm:grid-cols-2">
+          <Field
+            label="Modules"
+            hint="Order on the page follows each module's own sort order."
+            full
+          >
+            <div className="grid gap-2 rounded-lg border border-border bg-card p-3 sm:grid-cols-2 lg:grid-cols-3">
               {modules.map((m) => (
                 <label
                   key={m.slug}
-                  className="flex items-center gap-2 text-sm"
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
                 >
                   <Checkbox
                     checked={form.recommendedModules.includes(m.slug)}
@@ -123,9 +126,6 @@ export default function SolutionRecommendedPage() {
               ) : null}
             </div>
           </Field>
-          <Label className="text-xs text-muted-foreground">
-            Order follows each module&apos;s own sort order.
-          </Label>
         </>
       ) : null}
     </SectionShell>

@@ -72,7 +72,7 @@ export default function SolutionTestimonialPage() {
             value={form.content}
             onChange={(v) => patch({ content: v })}
           />
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Name"
               value={form.name}

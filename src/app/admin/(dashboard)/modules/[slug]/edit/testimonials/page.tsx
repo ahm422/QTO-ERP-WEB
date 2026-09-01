@@ -71,7 +71,7 @@ export default function ModuleTestimonialsPage() {
     >
       {form ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Section tag"
               value={form.testimonialsSectionTag}
@@ -102,14 +102,14 @@ export default function ModuleTestimonialsPage() {
               company: "",
             })}
             renderRow={(t, update) => (
-              <div className="space-y-3">
+              <>
                 <TextAreaField
                   label="Quote"
                   rows={3}
                   value={t.content}
                   onChange={(v) => update({ content: v })}
                 />
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="contents">
                   <TextField
                     label="Name"
                     value={t.name}
@@ -131,7 +131,7 @@ export default function ModuleTestimonialsPage() {
                     onChange={(v) => update({ selectedSolution: v })}
                   />
                 </div>
-              </div>
+              </>
             )}
           />
         </>

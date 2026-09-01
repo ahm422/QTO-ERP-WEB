@@ -59,7 +59,7 @@ export default function SolutionProblemsPage() {
           addLabel="Add problem"
           makeEmpty={() => ({ title: "", description: "" })}
           renderRow={(p, update) => (
-            <div className="space-y-3">
+            <>
               <TextField
                 label="Title"
                 value={p.title}
@@ -71,7 +71,7 @@ export default function SolutionProblemsPage() {
                 value={p.description}
                 onChange={(v) => update({ description: v })}
               />
-            </div>
+            </>
           )}
         />
       ) : null}

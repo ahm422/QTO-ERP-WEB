@@ -7,7 +7,10 @@ import {
   useAdminResource,
   useSectionForm,
 } from "@/components/admin/section-editor/useAdminResource";
-import { SectionShell } from "@/components/admin/section-editor/SectionShell";
+import {
+  FieldGroup,
+  SectionShell,
+} from "@/components/admin/section-editor/SectionShell";
 import {
   ImageField,
   SelectField,
@@ -105,7 +108,7 @@ export default function ModuleBasicsPage() {
     >
       {form ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Slug"
               hint="URL segment — changing it moves the page (/erp/<slug>)."
@@ -126,7 +129,7 @@ export default function ModuleBasicsPage() {
             rows={2}
             onChange={(v) => patch({ shortDescription: v })}
           />
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Card tagline (optional)"
               value={form.cardTagline}
@@ -138,7 +141,7 @@ export default function ModuleBasicsPage() {
               onChange={(v) => patch({ bestFor: v })}
             />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <SelectField
               label="Icon"
               value={form.iconKey}
@@ -170,31 +173,31 @@ export default function ModuleBasicsPage() {
             checked={form.published}
             onChange={(v) => patch({ published: v })}
           />
-          <div className="rounded-md border p-4">
-            <p className="mb-3 text-sm font-medium">Hero-orbit placement</p>
-            <div className="grid gap-4 sm:grid-cols-4">
-              <TextField
-                label="Radius"
-                value={form.orbitRadius}
-                onChange={(v) => patch({ orbitRadius: v })}
-              />
-              <TextField
-                label="Tilt"
-                value={form.orbitTilt}
-                onChange={(v) => patch({ orbitTilt: v })}
-              />
-              <TextField
-                label="Phase"
-                value={form.orbitPhase}
-                onChange={(v) => patch({ orbitPhase: v })}
-              />
-              <TextField
-                label="Speed"
-                value={form.orbitSpeed}
-                onChange={(v) => patch({ orbitSpeed: v })}
-              />
-            </div>
-          </div>
+          <FieldGroup
+            title="Hero-orbit placement"
+            hint="Position of this module in the animated home-page hero orbit."
+          >
+            <TextField
+              label="Radius"
+              value={form.orbitRadius}
+              onChange={(v) => patch({ orbitRadius: v })}
+            />
+            <TextField
+              label="Tilt"
+              value={form.orbitTilt}
+              onChange={(v) => patch({ orbitTilt: v })}
+            />
+            <TextField
+              label="Phase"
+              value={form.orbitPhase}
+              onChange={(v) => patch({ orbitPhase: v })}
+            />
+            <TextField
+              label="Speed"
+              value={form.orbitSpeed}
+              onChange={(v) => patch({ orbitSpeed: v })}
+            />
+          </FieldGroup>
         </>
       ) : null}
     </SectionShell>

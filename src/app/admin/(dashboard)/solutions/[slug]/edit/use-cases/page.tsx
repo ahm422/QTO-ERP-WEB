@@ -93,8 +93,8 @@ export default function SolutionUseCasesPage() {
             features: [],
           })}
           renderRow={(uc, update) => (
-            <div className="space-y-4">
-              <div className="grid gap-3 sm:grid-cols-2">
+            <>
+              <div className="contents">
                 <TextField
                   label="Slug (used in ?industry=)"
                   mono
@@ -131,8 +131,8 @@ export default function SolutionUseCasesPage() {
                 addLabel="Add feature"
                 makeEmpty={() => ({ tag: "", title: "", desc: "" })}
                 renderRow={(f, updateF) => (
-                  <div className="space-y-3">
-                    <div className="grid gap-3 sm:grid-cols-2">
+                  <>
+                    <div className="contents">
                       <TextField
                         label="Tag"
                         value={f.tag}
@@ -155,10 +155,10 @@ export default function SolutionUseCasesPage() {
                       value={f.imageUrl ?? ""}
                       onChange={(v) => updateF({ imageUrl: v })}
                     />
-                  </div>
+                  </>
                 )}
               />
-            </div>
+            </>
           )}
         />
       ) : null}

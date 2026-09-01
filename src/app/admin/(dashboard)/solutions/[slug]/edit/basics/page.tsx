@@ -60,7 +60,7 @@ export default function SolutionBasicsPage() {
     >
       {form ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Slug"
               hint="URL segment — /solution/<slug>."

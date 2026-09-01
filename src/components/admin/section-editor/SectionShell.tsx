@@ -29,11 +29,11 @@ export function SectionShell({
 }: SectionShellProps) {
   return (
     <div className="space-y-6">
-      <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-start justify-between gap-3 border-b border-border bg-background/95 px-1 pb-4 pt-1 backdrop-blur">
+      <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-card/95 px-5 py-4 shadow-sm backdrop-blur">
         <div className="min-w-0">
           <h2 className="text-lg font-semibold text-foreground">{title}</h2>
           {description ? (
-            <p className="mt-0.5 max-w-xl text-sm text-muted-foreground">
+            <p className="mt-0.5 max-w-2xl text-sm text-muted-foreground">
               {description}
             </p>
           ) : null}
@@ -72,19 +72,22 @@ export function SectionShell({
       </div>
 
       {loading ? (
-        <div className="space-y-3">
+        <div className="grid gap-4 lg:grid-cols-2">
           <div className="h-10 animate-pulse rounded-lg bg-muted" />
-          <div className="h-24 animate-pulse rounded-lg bg-muted" />
           <div className="h-10 animate-pulse rounded-lg bg-muted" />
+          <div className="h-24 animate-pulse rounded-lg bg-muted lg:col-span-2" />
+          <div className="h-40 animate-pulse rounded-lg bg-muted lg:col-span-2" />
         </div>
       ) : (
-        <div className="space-y-6 pb-16">{children}</div>
+        <div className="grid gap-x-6 gap-y-5 pb-16 lg:grid-cols-2">
+          {children}
+        </div>
       )}
     </div>
   );
 }
 
-/** A labelled card that groups related fields. */
+/** A labelled card that groups related fields; spans the full editor width. */
 export function FieldGroup({
   title,
   hint,
@@ -95,14 +98,14 @@ export function FieldGroup({
   children: ReactNode;
 }) {
   return (
-    <section className="space-y-4 rounded-xl border border-border bg-card p-5 shadow-sm">
+    <section className="space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm lg:col-span-2">
       <div>
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
         {hint ? (
           <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
         ) : null}
       </div>
-      {children}
+      <div className="grid gap-x-6 gap-y-5 lg:grid-cols-2">{children}</div>
     </section>
   );
 }

@@ -69,7 +69,7 @@ export default function ModuleCtaSeoPage() {
       {form ? (
         <>
           <FieldGroup title="&ldquo;All applications&rdquo; header">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="contents">
               <TextField
                 label="Tag"
                 placeholder="Explore More"
@@ -91,7 +91,7 @@ export default function ModuleCtaSeoPage() {
               value={form.ctaHeadline}
               onChange={(v) => patch({ ctaHeadline: v })}
             />
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="contents">
               <TextField
                 label="Primary button label"
                 value={form.ctaPrimaryLabel}

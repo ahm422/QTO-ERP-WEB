@@ -107,7 +107,7 @@ export default function ModuleAboutPage() {
     >
       {form ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Section tag"
               placeholder="About"
@@ -148,8 +148,8 @@ export default function ModuleAboutPage() {
               description: "",
             })}
             renderRow={(section, update) => (
-              <div className="space-y-3">
-                <div className="grid gap-3 sm:grid-cols-2">
+              <>
+                <div className="contents">
                   <TextField
                     label="Tag"
                     value={section.tag}
@@ -161,7 +161,7 @@ export default function ModuleAboutPage() {
                     onChange={(v) => update({ title: v })}
                   />
                 </div>
-                <Field label="Body">
+                <Field label="Body" full>
                   <RichTextEditor
                     content={section.description}
                     onChange={(html) => update({ description: html })}
@@ -183,7 +183,7 @@ export default function ModuleAboutPage() {
                   value={section.imageAlt ?? ""}
                   onChange={(v) => update({ imageAlt: v })}
                 />
-              </div>
+              </>
             )}
           />
         </>

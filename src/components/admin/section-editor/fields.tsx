@@ -1,26 +1,56 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ArrowDown, ArrowUp, GripVertical, Plus, Trash2, UploadCloud } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  GripVertical,
+  Plus,
+  Trash2,
+  UploadCloud,
+} from "lucide-react";
 import { toast } from "sonner";
 import { adminUpload } from "@/lib/admin-fetch";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
+/** Two-column responsive grid; field wrappers opt into full width with `full`. */
+export function FormGrid({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("grid gap-x-6 gap-y-5 lg:grid-cols-2", className)}>
+      {children}
+    </div>
+  );
+}
+
+/** Use to make a pair of one-column fields sit side by side inside a FormGrid. */
+export function Row({ children }: { children: ReactNode }) {
+  return <div className="contents">{children}</div>;
+}
+
 export function Field({
   label,
   hint,
   children,
+  full,
 }: {
   label: string;
   hint?: string;
   children: ReactNode;
+  full?: boolean;
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className={cn("min-w-0 space-y-1.5", full && "lg:col-span-2")}>
       <Label className="text-sm font-semibold text-foreground">{label}</Label>
       {children}
       {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
@@ -35,6 +65,7 @@ export function TextField({
   onChange,
   placeholder,
   mono,
+  full,
 }: {
   label: string;
   hint?: string;
@@ -42,9 +73,10 @@ export function TextField({
   onChange: (v: string) => void;
   placeholder?: string;
   mono?: boolean;
+  full?: boolean;
 }) {
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} full={full}>
       <Input
         className={mono ? "h-10 font-mono text-sm" : "h-10"}
         value={value}
@@ -71,7 +103,7 @@ export function TextAreaField({
   rows?: number;
 }) {
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} full>
       <Textarea
         rows={rows}
         value={value}
@@ -94,7 +126,7 @@ export function SwitchField({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-card p-4">
+    <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-card p-4 lg:col-span-2">
       <div>
         <p className="text-sm font-semibold text-foreground">{label}</p>
         {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
@@ -110,15 +142,17 @@ export function SelectField({
   value,
   options,
   onChange,
+  full,
 }: {
   label: string;
   hint?: string;
   value: string;
   options: readonly string[];
   onChange: (v: string) => void;
+  full?: boolean;
 }) {
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} full={full}>
       <select
         className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
         value={value}
@@ -149,8 +183,8 @@ export function StringListField({
   placeholder?: string;
 }) {
   return (
-    <Field label={label} hint={hint}>
-      <div className="space-y-2">
+    <Field label={label} hint={hint} full>
+      <div className="grid gap-2 sm:grid-cols-2">
         {values.map((v, i) => (
           <div key={i} className="flex gap-2">
             <Input
@@ -174,19 +208,15 @@ export function StringListField({
             </Button>
           </div>
         ))}
-        <AddButton label="Add" onClick={() => onChange([...values, ""])} />
+        <div className="sm:col-span-2">
+          <AddButton label="Add" onClick={() => onChange([...values, ""])} />
+        </div>
       </div>
     </Field>
   );
 }
 
-function AddButton({
-  label,
-  onClick,
-}: {
-  label: string;
-  onClick: () => void;
-}) {
+function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button
       type="button"
@@ -231,16 +261,12 @@ export function ImageField({
   onChange: (key: string, url: string) => void;
 }) {
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} full>
       <div className="flex items-center gap-4 rounded-lg border border-border bg-card p-3">
-        <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-muted">
+        <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-muted">
           {previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewUrl}
-              alt=""
-              className="size-full object-cover"
-            />
+            <img src={previewUrl} alt="" className="size-full object-cover" />
           ) : (
             <UploadCloud className="size-6 text-muted-foreground" />
           )}
@@ -316,7 +342,7 @@ export function RepeatableList<T>({
     onChange(next);
   };
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} full>
       <div className="space-y-3">
         {items.length === 0 ? (
           <p className="rounded-lg border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
@@ -331,8 +357,8 @@ export function RepeatableList<T>({
               className="space-y-4 rounded-xl border border-border bg-muted/30 p-5"
             >
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <GripVertical className="size-4" />
+                <div className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                  <GripVertical className="size-4 shrink-0" />
                   <span className="rounded bg-background px-1.5 py-0.5 font-mono text-xs">
                     {i + 1}
                   </span>
@@ -372,19 +398,24 @@ export function RepeatableList<T>({
                   </Button>
                 </div>
               </div>
-              {renderRow(
-                item,
-                (patch) => {
-                  const next = [...items];
-                  next[i] = { ...item, ...patch };
-                  onChange(next);
-                },
-                i,
-              )}
+              <div className="grid gap-x-5 gap-y-4 lg:grid-cols-2">
+                {renderRow(
+                  item,
+                  (patch) => {
+                    const next = [...items];
+                    next[i] = { ...item, ...patch };
+                    onChange(next);
+                  },
+                  i,
+                )}
+              </div>
             </div>
           );
         })}
-        <AddButton label={addLabel} onClick={() => onChange([...items, makeEmpty()])} />
+        <AddButton
+          label={addLabel}
+          onClick={() => onChange([...items, makeEmpty()])}
+        />
       </div>
     </Field>
   );

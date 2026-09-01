@@ -69,7 +69,7 @@ export default function ModuleRolloutPage() {
     >
       {form ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Section tag"
               value={form.rolloutTag}
@@ -100,7 +100,7 @@ export default function ModuleRolloutPage() {
               iconKey: "clipboard-check",
             })}
             renderRow={(step, update) => (
-              <div className="space-y-3">
+              <>
                 <SelectField
                   label="Icon"
                   value={step.iconKey}
@@ -118,7 +118,7 @@ export default function ModuleRolloutPage() {
                   value={step.description}
                   onChange={(v) => update({ description: v })}
                 />
-              </div>
+              </>
             )}
           />
         </>

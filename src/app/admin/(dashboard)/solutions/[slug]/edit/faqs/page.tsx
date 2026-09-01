@@ -62,7 +62,7 @@ export default function SolutionFaqsPage() {
     >
       {form ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Section tag"
               placeholder="Got Questions?"
@@ -84,7 +84,7 @@ export default function SolutionFaqsPage() {
             addLabel="Add question"
             makeEmpty={() => ({ question: "", answer: "" })}
             renderRow={(f, update) => (
-              <div className="space-y-3">
+              <>
                 <TextField
                   label="Question"
                   value={f.question}
@@ -96,7 +96,7 @@ export default function SolutionFaqsPage() {
                   value={f.answer}
                   onChange={(v) => update({ answer: v })}
                 />
-              </div>
+              </>
             )}
           />
         </>

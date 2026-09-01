@@ -111,7 +111,7 @@ export default function SolutionHeroPage() {
               patch({ heroImageKey: key, heroImageUrl: url })
             }
           />
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Image alt text"
               value={form.heroImageAlt}
@@ -123,7 +123,7 @@ export default function SolutionHeroPage() {
               onChange={(v) => patch({ heroCaption: v })}
             />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="contents">
             <TextField
               label="Primary CTA label"
               placeholder="Request a Demo"

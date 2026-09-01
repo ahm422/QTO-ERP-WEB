@@ -92,7 +92,7 @@ export default function ModuleCapabilitiesPage() {
             addLabel="Add capability"
             makeEmpty={() => ({ title: "", description: "" })}
             renderRow={(cap, update) => (
-              <div className="space-y-3">
+              <>
                 <TextField
                   label="Icon key (optional)"
                   value={cap.iconKey ?? ""}
@@ -114,7 +114,7 @@ export default function ModuleCapabilitiesPage() {
                   value={cap.href ?? ""}
                   onChange={(v) => update({ href: v })}
                 />
-              </div>
+              </>
             )}
           />
         </>

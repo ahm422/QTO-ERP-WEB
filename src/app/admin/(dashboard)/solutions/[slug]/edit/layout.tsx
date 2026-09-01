@@ -3,21 +3,33 @@
 import { type ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Boxes,
+  Briefcase,
+  ExternalLink,
+  HelpCircle,
+  LayoutGrid,
+  Quote,
+  Sparkles,
+  Target,
+  type LucideIcon,
+} from "lucide-react";
 import { adminFetch } from "@/lib/admin-fetch";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const SECTIONS = [
-  ["basics", "Basics"],
-  ["hero", "Hero"],
-  ["problems", "Problems"],
-  ["use-cases", "Use cases"],
-  ["recommended", "Recommended modules"],
-  ["testimonial", "Testimonial"],
-  ["faqs", "FAQs"],
-  ["cta-seo", "Tabs, CTA & SEO"],
-] as const;
+const SECTIONS: [string, string, LucideIcon][] = [
+  ["basics", "Basics", LayoutGrid],
+  ["hero", "Hero", Sparkles],
+  ["problems", "Problems", AlertTriangle],
+  ["use-cases", "Use cases", Briefcase],
+  ["recommended", "Recommended modules", Boxes],
+  ["testimonial", "Testimonial", Quote],
+  ["faqs", "FAQs", HelpCircle],
+  ["cta-seo", "Tabs, CTA & SEO", Target],
+];
 
 export default function SolutionEditLayout({
   children,
@@ -28,7 +40,7 @@ export default function SolutionEditLayout({
   const slug = params.slug;
   const pathname = usePathname();
   const base = `/admin/solutions/${slug}/edit`;
-  const [title, setTitle] = useState<string>("");
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
     void adminFetch<{ item: { title?: string } }>(
@@ -52,36 +64,46 @@ export default function SolutionEditLayout({
             /solution/{slug}
           </p>
         </div>
-        <Button type="button" variant="outline" size="sm" asChild>
-          <Link href="/admin/solutions">
-            <ArrowLeft className="mr-1.5 size-4" /> All solutions
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" size="sm" asChild>
+            <Link href={`/solution/${slug}`} target="_blank" rel="noreferrer">
+              <ExternalLink className="mr-1.5 size-4" /> Preview
+            </Link>
+          </Button>
+          <Button type="button" variant="outline" size="sm" asChild>
+            <Link href="/admin/solutions">
+              <ArrowLeft className="mr-1.5 size-4" /> All solutions
+            </Link>
+          </Button>
+        </div>
       </div>
 
-      <nav className="flex gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1.5 shadow-sm">
-        {SECTIONS.map(([key, label]) => {
-          const href = `${base}/${key}`;
-          const active =
-            pathname === href || (key === "basics" && pathname === base);
-          return (
-            <Link
-              key={key}
-              href={href}
-              className={cn(
-                "shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-                active
-                  ? "bg-accent text-accent-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
-              )}
-            >
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
+      <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
+        <nav className="flex gap-1 overflow-x-auto rounded-xl border border-border bg-card p-2 shadow-sm lg:sticky lg:top-4 lg:h-fit lg:flex-col lg:overflow-visible">
+          {SECTIONS.map(([key, label, Icon]) => {
+            const href = `${base}/${key}`;
+            const active =
+              pathname === href || (key === "basics" && pathname === base);
+            return (
+              <Link
+                key={key}
+                href={href}
+                className={cn(
+                  "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  active
+                    ? "bg-accent text-accent-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+              >
+                <Icon className="size-4 shrink-0" />
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
 
-      <div className="max-w-3xl">{children}</div>
+        <div className="min-w-0">{children}</div>
+      </div>
     </div>
   );
 }

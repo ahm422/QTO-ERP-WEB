@@ -56,7 +56,7 @@ export default function ModuleProblemsPage() {
           addLabel="Add pair"
           makeEmpty={() => ({ problem: "", solution: "" })}
           renderRow={(row, update) => (
-            <div className="space-y-3">
+            <>
               <TextAreaField
                 label="Problem"
                 rows={2}
@@ -69,7 +69,7 @@ export default function ModuleProblemsPage() {
                 value={row.solution}
                 onChange={(v) => update({ solution: v })}
               />
-            </div>
+            </>
           )}
         />
       ) : null}

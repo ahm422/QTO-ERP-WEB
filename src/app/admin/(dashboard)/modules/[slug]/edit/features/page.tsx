@@ -95,7 +95,7 @@ export default function ModuleFeaturesPage() {
       {form ? (
         <>
           <FieldGroup title="Section header">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="contents">
               <TextField
                 label="Section tag"
                 placeholder="Features"
@@ -149,7 +149,7 @@ export default function ModuleFeaturesPage() {
             addLabel="Add feature"
             makeEmpty={() => ({ title: "", description: "", icon: "sparkles" })}
             renderRow={(feat, update) => (
-              <div className="space-y-3">
+              <>
                 <TextField
                   label="Title"
                   value={feat.title}
@@ -175,7 +175,7 @@ export default function ModuleFeaturesPage() {
                     update({ imageKey: key || undefined, imageUrl: url })
                   }
                 />
-              </div>
+              </>
             )}
           />
         </>

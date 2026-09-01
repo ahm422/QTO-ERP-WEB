@@ -75,7 +75,7 @@ export default function SolutionCtaSeoPage() {
       {form ? (
         <>
           <FieldGroup title="Capability tabs intro">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="contents">
               <TextField
                 label="Tag"
                 placeholder="Capabilities"
@@ -119,7 +119,7 @@ export default function SolutionCtaSeoPage() {
               value={form.ctaDescription}
               onChange={(v) => patch({ ctaDescription: v })}
             />
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="contents">
               <TextField
                 label="Primary button label"
                 value={form.ctaPrimaryLabel}
