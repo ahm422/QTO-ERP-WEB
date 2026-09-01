@@ -193,89 +193,148 @@ export type PricingPlanRow = InferSelectModel<typeof pricingPlans>;
 export type HomeHeroRow = InferSelectModel<typeof homeHero>;
 export type ErpModuleRow = InferSelectModel<typeof erpModules>;
 
+/**
+ * Module/solution list getters feed the shared SiteLayout (navbar + footer), so a
+ * throw here 500s every marketing page. Degrade to an empty list if the tables /
+ * columns are missing (e.g. a migration hasn't been applied yet) — mirrors the
+ * blog getters and the `isMissingRelationError` pattern used elsewhere.
+ */
+function logContentDbError(tag: string, err: unknown) {
+  if (isMissingRelationError(err)) {
+    console.warn(`[content-db:${tag}] table/column missing — returning empty (run db:migrate)`);
+  } else {
+    console.error(`[content-db:${tag}] DB unavailable — returning empty`, err);
+  }
+}
+
 export async function listPublishedModules() {
-  const rows = await (await getDb())
-    .select()
-    .from(erpModules)
-    .where(eq(erpModules.published, true))
-    .orderBy(asc(erpModules.sortOrder), asc(erpModules.name));
-  return rows.map(serializeModuleSummary);
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(erpModules)
+      .where(eq(erpModules.published, true))
+      .orderBy(asc(erpModules.sortOrder), asc(erpModules.name));
+    return rows.map(serializeModuleSummary);
+  } catch (err) {
+    logContentDbError("listPublishedModules", err);
+    return [];
+  }
 }
 
 export async function listPublishedModulesBySlugs(slugs: string[]) {
   if (slugs.length === 0) return [];
-  const rows = await (await getDb())
-    .select()
-    .from(erpModules)
-    .where(and(eq(erpModules.published, true), inArray(erpModules.slug, slugs)))
-    .orderBy(asc(erpModules.sortOrder));
-  const bySlug = new Map(rows.map((r) => [r.slug, serializeModuleSummary(r)]));
-  return slugs
-    .map((slug) => bySlug.get(slug))
-    .filter((m): m is NonNullable<typeof m> => m != null);
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(erpModules)
+      .where(and(eq(erpModules.published, true), inArray(erpModules.slug, slugs)))
+      .orderBy(asc(erpModules.sortOrder));
+    const bySlug = new Map(rows.map((r) => [r.slug, serializeModuleSummary(r)]));
+    return slugs
+      .map((slug) => bySlug.get(slug))
+      .filter((m): m is NonNullable<typeof m> => m != null);
+  } catch (err) {
+    logContentDbError("listPublishedModulesBySlugs", err);
+    return [];
+  }
 }
 
 export async function listPublishedModulesFull() {
-  const rows = await (await getDb())
-    .select()
-    .from(erpModules)
-    .where(eq(erpModules.published, true))
-    .orderBy(asc(erpModules.sortOrder), asc(erpModules.name));
-  return rows.map(serializeModuleDetail);
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(erpModules)
+      .where(eq(erpModules.published, true))
+      .orderBy(asc(erpModules.sortOrder), asc(erpModules.name));
+    return rows.map(serializeModuleDetail);
+  } catch (err) {
+    logContentDbError("listPublishedModulesFull", err);
+    return [];
+  }
 }
 
 export async function getPublishedModuleBySlug(slug: string) {
-  const [row] = await (await getDb())
-    .select()
-    .from(erpModules)
-    .where(and(eq(erpModules.slug, slug), eq(erpModules.published, true)))
-    .limit(1);
-  return row ? serializeModuleDetail(row) : null;
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(erpModules)
+      .where(and(eq(erpModules.slug, slug), eq(erpModules.published, true)))
+      .limit(1);
+    return row ? serializeModuleDetail(row) : null;
+  } catch (err) {
+    logContentDbError("getPublishedModuleBySlug", err);
+    return null;
+  }
 }
 
 export async function listPublishedModuleSlugs() {
-  const rows = await (await getDb())
-    .select({ slug: erpModules.slug })
-    .from(erpModules)
-    .where(eq(erpModules.published, true))
-    .orderBy(asc(erpModules.sortOrder));
-  return rows.map((r) => r.slug);
+  try {
+    const rows = await (await getDb())
+      .select({ slug: erpModules.slug })
+      .from(erpModules)
+      .where(eq(erpModules.published, true))
+      .orderBy(asc(erpModules.sortOrder));
+    return rows.map((r) => r.slug);
+  } catch (err) {
+    logContentDbError("listPublishedModuleSlugs", err);
+    return [];
+  }
 }
 
 export async function listPublishedSolutions() {
-  const rows = await (await getDb())
-    .select()
-    .from(solutions)
-    .where(eq(solutions.published, true))
-    .orderBy(asc(solutions.sortOrder), asc(solutions.title));
-  return rows.map(serializeSolutionSummary);
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(solutions)
+      .where(eq(solutions.published, true))
+      .orderBy(asc(solutions.sortOrder), asc(solutions.title));
+    return rows.map(serializeSolutionSummary);
+  } catch (err) {
+    logContentDbError("listPublishedSolutions", err);
+    return [];
+  }
 }
 
 export async function listPublishedSolutionsFull() {
-  const rows = await (await getDb())
-    .select()
-    .from(solutions)
-    .where(eq(solutions.published, true))
-    .orderBy(asc(solutions.sortOrder), asc(solutions.title));
-  return rows.map(serializeSolutionDetail);
+  try {
+    const rows = await (await getDb())
+      .select()
+      .from(solutions)
+      .where(eq(solutions.published, true))
+      .orderBy(asc(solutions.sortOrder), asc(solutions.title));
+    return rows.map(serializeSolutionDetail);
+  } catch (err) {
+    logContentDbError("listPublishedSolutionsFull", err);
+    return [];
+  }
 }
 
 export async function getPublishedSolutionBySlug(slug: string) {
-  const [row] = await (await getDb())
-    .select()
-    .from(solutions)
-    .where(and(eq(solutions.slug, slug), eq(solutions.published, true)))
-    .limit(1);
-  return row ? serializeSolutionDetail(row) : null;
+  try {
+    const [row] = await (await getDb())
+      .select()
+      .from(solutions)
+      .where(and(eq(solutions.slug, slug), eq(solutions.published, true)))
+      .limit(1);
+    return row ? serializeSolutionDetail(row) : null;
+  } catch (err) {
+    logContentDbError("getPublishedSolutionBySlug", err);
+    return null;
+  }
 }
 
 export async function listPublishedSolutionSlugs() {
-  const rows = await (await getDb())
-    .select({ slug: solutions.slug })
-    .from(solutions)
-    .where(eq(solutions.published, true))
-    .orderBy(asc(solutions.sortOrder));
-  return rows.map((r) => r.slug);
+  try {
+    const rows = await (await getDb())
+      .select({ slug: solutions.slug })
+      .from(solutions)
+      .where(eq(solutions.published, true))
+      .orderBy(asc(solutions.sortOrder));
+    return rows.map((r) => r.slug);
+  } catch (err) {
+    logContentDbError("listPublishedSolutionSlugs", err);
+    return [];
+  }
 }
 
 const DEFAULT_BLOG_PAGE_SIZE = 9;
