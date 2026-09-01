@@ -1,5 +1,6 @@
 import { FAQAccordion } from "@/components/ui/faq";
 import { HeaderSections } from "@/components/ui/HeaderSections";
+import { Reveal } from "@/components/motion/Reveal";
 import type { SolutionFAQType } from "@/types/solution";
 
 type SolutionFaqSectionProps = {
@@ -18,7 +19,9 @@ export default function SolutionFaqSection({
     <section className="section-padding bg-muted/30">
       <div className="container-main">
         <HeaderSections tag={tag} title={title} />
-        <FAQAccordion faqs={faqs} />
+        <Reveal>
+          <FAQAccordion faqs={faqs} />
+        </Reveal>
       </div>
     </section>
   );
