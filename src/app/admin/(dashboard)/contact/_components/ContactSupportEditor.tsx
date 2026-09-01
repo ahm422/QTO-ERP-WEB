@@ -22,6 +22,8 @@ export function ContactSupportEditor() {
     tag: "",
     title: "",
     description: "",
+    knowledgeBaseLabel: "",
+    knowledgeBaseHref: "",
     cards: [],
     responseTimes: { typical: "", priority: "" },
   });
@@ -106,6 +108,35 @@ export function ContactSupportEditor() {
             value={support.description}
             onChange={(e) =>
               setSupport((s) => ({ ...s, description: e.target.value }))
+            }
+          />
+        </div>
+        <div>
+          <Label htmlFor="kb-label">Knowledge base link label</Label>
+          <Input
+            id="kb-label"
+            className="mt-1"
+            value={support.knowledgeBaseLabel}
+            onChange={(e) =>
+              setSupport((s) => ({
+                ...s,
+                knowledgeBaseLabel: e.target.value,
+              }))
+            }
+          />
+        </div>
+        <div>
+          <Label htmlFor="kb-href">Knowledge base link URL</Label>
+          <Input
+            id="kb-href"
+            className="mt-1"
+            placeholder="/blog or https://…"
+            value={support.knowledgeBaseHref}
+            onChange={(e) =>
+              setSupport((s) => ({
+                ...s,
+                knowledgeBaseHref: e.target.value,
+              }))
             }
           />
         </div>

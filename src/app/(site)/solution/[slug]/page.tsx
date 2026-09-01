@@ -1,19 +1,15 @@
-import Link from 'next/link';
-import { ArrowLeft, Check, Sparkles } from 'lucide-react';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import {
   getPublishedSolutionBySlug,
   listPublishedModulesBySlugs,
-} from '@/lib/content-db';
-import { notFound } from 'next/navigation';
-import SolutionTabsContent from './_components/SolutionTabsContent';
-import RecommendedModulesSection from './_components/RecommendedModulesSection';
-import { FAQAccordion } from '@/components/ui/faq';
-import { CTASection } from '@/components/ui/CTASection';
-import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
-import { GridBackground } from '@/components/ui/grid-background';
-import { MarketingButton } from '@/components/ui/marketing-button';
-import { HeaderSections } from '@/components/ui/HeaderSections';
-import type { SolutionUseCase } from '@/types/solution';
+} from "@/lib/content-db";
+import { CTASection } from "@/components/ui/CTASection";
+import SolutionHero from "./_components/SolutionHero";
+import SolutionTabsContent from "./_components/SolutionTabsContent";
+import RecommendedModulesSection from "./_components/RecommendedModulesSection";
+import SolutionFaqSection from "./_components/SolutionFaqSection";
+import type { SolutionUseCase } from "@/types/solution";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -23,7 +19,25 @@ type PageProps = {
 export const dynamicParams = true;
 export const revalidate = 3600;
 
-export default async function HRSoftwareLandingFullWidth({
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const solution = await getPublishedSolutionBySlug(slug);
+    if (solution) {
+      return {
+        title: solution.metaTitle,
+        description: solution.metaDescription,
+      };
+    }
+  } catch (err) {
+    console.error("[solution/[slug]] generateMetadata failed", err);
+  }
+  return { title: "Solution | QTO ERP" };
+}
+
+export default async function SolutionDetailPage({
   params,
   searchParams,
 }: PageProps) {
@@ -59,115 +73,59 @@ export default async function HRSoftwareLandingFullWidth({
   const activeFeatures = tabSource?.features ?? [];
 
   const recommendedModules = await listPublishedModulesBySlugs(
-    solution.recommendedModules
+    solution.recommendedModules,
   );
 
   return (
-    <main className='min-h-screen bg-background text-foreground'>
-      <section className='relative overflow-hidden hero-gradient section-padding'>
-        <GridBackground opacity={0.12} className='absolute inset-0' />
-        <div className='pointer-events-none absolute inset-0 overflow-hidden'>
-          <div className='absolute top-20 right-0 size-72 rounded-full bg-hero-glow blur-3xl' />
-          <div className='absolute -bottom-20 -left-20 size-96 rounded-full bg-hero-glow-alt blur-3xl' />
-        </div>
-
-        <div className='container-main relative z-10'>
-          <div className='grid max-w-6xl items-center gap-10 md:grid-cols-2'>
-            <div>
-              {selectedUseCase ? (
-                <div className='mb-4'>
-                  <Link
-                    href={`/solution/${slug}`}
-                    className='inline-flex items-center gap-2 text-sm text-hero-accent hover:underline'
-                  >
-                    <ArrowLeft className='size-4' />
-                    Back to {solution.title}
-                  </Link>
-                </div>
-              ) : null}
-
-              <EyebrowBadge
-                icon={Sparkles}
-                label='Solution'
-                variant='hero'
-                className='mb-4'
-              />
-
-              <h1 className='font-display text-4xl font-bold tracking-tight text-hero-foreground md:text-5xl lg:text-6xl'>
-                {heroTitle}
-              </h1>
-
-              <p className='mt-5 max-w-xl text-base leading-relaxed text-hero-muted-foreground md:text-lg'>
-                {heroSubtitle}
-              </p>
-
-              {selectedUseCase?.specificNeeds ? (
-                <ul className='mt-6 grid gap-2 sm:grid-cols-2'>
-                  {selectedUseCase.specificNeeds.map((need) => (
-                    <li
-                      key={need}
-                      className='flex items-center gap-2 text-sm text-hero-muted-foreground'
-                    >
-                      <Check
-                        className='size-4 shrink-0 text-hero-accent'
-                        aria-hidden
-                      />
-                      {need}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-
-              <div className='mt-8 flex flex-wrap gap-3'>
-                <MarketingButton variant='hero' size='lg' asChild>
-                  <Link href='/demo'>Request a Demo</Link>
-                </MarketingButton>
-                <MarketingButton
-                  variant='hero-secondary'
-                  size='lg'
-                  asChild
-                  iconSlide={false}
-                >
-                  <Link href='/pricing'>See Pricing</Link>
-                </MarketingButton>
-              </div>
-            </div>
-
-            <div className='relative overflow-hidden rounded-3xl border border-hero-chip-border bg-hero-chip p-8 shadow-[var(--card-shadow)]'>
-              <GridBackground
-                opacity={0.2}
-                className='absolute inset-0 rounded-3xl'
-              />
-              <div className='relative z-10 aspect-4/3 rounded-2xl border border-hero-chip-border bg-linear-to-br from-hero-accent/25 via-hero-glow to-transparent' />
-              <p className='relative z-10 mt-4 text-center text-sm text-hero-muted-foreground'>
-                Unified workflows for {solution.title.toLowerCase()}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+    <main className="min-h-screen bg-background text-foreground">
+      <SolutionHero
+        eyebrow={solution.heroEyebrow}
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        specificNeeds={selectedUseCase?.specificNeeds}
+        primaryCtaLabel={solution.heroPrimaryCtaLabel}
+        primaryCtaHref={solution.heroPrimaryCtaHref}
+        secondaryCtaLabel={solution.heroSecondaryCtaLabel}
+        secondaryCtaHref={solution.heroSecondaryCtaHref}
+        image={solution.heroImage}
+        imageAlt={solution.heroImageAlt}
+        caption={solution.heroCaption}
+        backHref={selectedUseCase ? `/solution/${slug}` : undefined}
+        backLabel={`Back to ${solution.title}`}
+      />
 
       {activeFeatures.length > 0 ? (
-        <SolutionTabsContent subNav={activeSubNav} features={activeFeatures} />
+        <SolutionTabsContent
+          subNav={activeSubNav}
+          features={activeFeatures}
+          tag={solution.tabsIntroTag}
+          title={solution.tabsIntroTitle}
+          description={solution.tabsIntroDescription}
+          imageFallback={solution.tabImageFallback}
+        />
       ) : null}
 
-      <RecommendedModulesSection modules={recommendedModules} />
+      <RecommendedModulesSection
+        modules={recommendedModules}
+        tag={solution.recommendedTag}
+        title={solution.recommendedTitle}
+        description={solution.recommendedDescription}
+      />
 
-      {solution.solutionFaqs && solution.solutionFaqs.length > 0 ? (
-        <section className='section-padding bg-muted/30'>
-          <div className='container-main'>
-            <HeaderSections
-              tag='Got Questions?'
-              title='Frequently Asked Questions'
-            />
-            <FAQAccordion faqs={solution.solutionFaqs} />
-          </div>
-        </section>
-      ) : null}
+      <SolutionFaqSection
+        tag={solution.faqTag}
+        title={solution.faqTitle}
+        faqs={solution.solutionFaqs}
+      />
 
       <CTASection
-        eyebrow="Build with us"
-        description="Request a walkthrough tailored to this solution — or compare plans."
+        eyebrow={solution.ctaEyebrow}
+        headline={solution.ctaHeadline}
+        description={solution.ctaDescription}
+        primaryLabel={solution.ctaPrimaryLabel}
+        primaryHref={solution.ctaPrimaryHref}
+        secondaryLabel={solution.ctaSecondaryLabel}
+        secondaryHref={solution.ctaSecondaryHref}
       />
     </main>
   );

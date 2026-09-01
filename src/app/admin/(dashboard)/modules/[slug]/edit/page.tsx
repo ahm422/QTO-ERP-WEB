@@ -60,6 +60,26 @@ type ModuleForm = {
   testimonialsSectionTag: string;
   testimonialsSectionTitle: string;
   testimonialsSectionDescription: string;
+  // CMS page-copy overrides (blank = use code default)
+  heroEyebrow: string;
+  capabilitiesTag: string;
+  capabilitiesDescription: string;
+  featuresTag: string;
+  featuresSectionDescription: string;
+  videoCtaButtonLabel: string;
+  faqSectionTag: string;
+  faqSectionTitleTemplate: string;
+  aboutSectionHeadingsCsv: string;
+  allAppsTag: string;
+  allAppsTitle: string;
+  ctaHeadline: string;
+  ctaPrimaryLabel: string;
+  ctaPrimaryHref: string;
+  ctaSecondaryLabel: string;
+  ctaSecondaryHref: string;
+  defaultImage: string;
+  metaTitle: string;
+  metaDescription: string;
   sortOrder: number;
   published: boolean;
   showInHeroOrbit: boolean;
@@ -126,6 +146,27 @@ function moduleToForm(item: Record<string, unknown>): ModuleForm {
     testimonialsSectionDescription: String(
       item.testimonialsSectionDescription ?? "",
     ),
+    heroEyebrow: String(item.heroEyebrow ?? ""),
+    capabilitiesTag: String(item.capabilitiesTag ?? ""),
+    capabilitiesDescription: String(item.capabilitiesDescription ?? ""),
+    featuresTag: String(item.featuresTag ?? ""),
+    featuresSectionDescription: String(item.featuresSectionDescription ?? ""),
+    videoCtaButtonLabel: String(item.videoCtaButtonLabel ?? ""),
+    faqSectionTag: String(item.faqSectionTag ?? ""),
+    faqSectionTitleTemplate: String(item.faqSectionTitleTemplate ?? ""),
+    aboutSectionHeadingsCsv: Array.isArray(item.aboutSectionHeadings)
+      ? (item.aboutSectionHeadings as string[]).join(", ")
+      : "",
+    allAppsTag: String(item.allAppsTag ?? ""),
+    allAppsTitle: String(item.allAppsTitle ?? ""),
+    ctaHeadline: String(item.ctaHeadline ?? ""),
+    ctaPrimaryLabel: String(item.ctaPrimaryLabel ?? ""),
+    ctaPrimaryHref: String(item.ctaPrimaryHref ?? ""),
+    ctaSecondaryLabel: String(item.ctaSecondaryLabel ?? ""),
+    ctaSecondaryHref: String(item.ctaSecondaryHref ?? ""),
+    defaultImage: String(item.defaultImage ?? ""),
+    metaTitle: String(item.metaTitle ?? ""),
+    metaDescription: String(item.metaDescription ?? ""),
     sortOrder,
     published: Boolean(item.published),
     showInHeroOrbit: Boolean(item.showInHeroOrbit),
@@ -237,6 +278,31 @@ export default function EditModulePage() {
         testimonialsSectionTitle: form.testimonialsSectionTitle.trim() || null,
         testimonialsSectionDescription:
           form.testimonialsSectionDescription.trim() || null,
+        heroEyebrow: form.heroEyebrow.trim() || null,
+        capabilitiesTag: form.capabilitiesTag.trim() || null,
+        capabilitiesDescription: form.capabilitiesDescription.trim() || null,
+        featuresTag: form.featuresTag.trim() || null,
+        featuresSectionDescription:
+          form.featuresSectionDescription.trim() || null,
+        videoCtaButtonLabel: form.videoCtaButtonLabel.trim() || null,
+        faqSectionTag: form.faqSectionTag.trim() || null,
+        faqSectionTitleTemplate: form.faqSectionTitleTemplate.trim() || null,
+        aboutSectionHeadings: form.aboutSectionHeadingsCsv.trim()
+          ? form.aboutSectionHeadingsCsv
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : null,
+        allAppsTag: form.allAppsTag.trim() || null,
+        allAppsTitle: form.allAppsTitle.trim() || null,
+        ctaHeadline: form.ctaHeadline.trim() || null,
+        ctaPrimaryLabel: form.ctaPrimaryLabel.trim() || null,
+        ctaPrimaryHref: form.ctaPrimaryHref.trim() || null,
+        ctaSecondaryLabel: form.ctaSecondaryLabel.trim() || null,
+        ctaSecondaryHref: form.ctaSecondaryHref.trim() || null,
+        defaultImage: form.defaultImage.trim() || null,
+        metaTitle: form.metaTitle.trim() || null,
+        metaDescription: form.metaDescription.trim() || null,
         sortOrder: form.sortOrder,
         published: form.published,
         showInHeroOrbit: form.showInHeroOrbit,
@@ -337,6 +403,7 @@ export default function EditModulePage() {
           <TabsTrigger value="capabilities">Capabilities</TabsTrigger>
           <TabsTrigger value="rollout">Rollout</TabsTrigger>
           <TabsTrigger value="features">Features</TabsTrigger>
+          <TabsTrigger value="copy">Copy &amp; SEO</TabsTrigger>
           <TabsTrigger value="json">JSON</TabsTrigger>
         </TabsList>
 
@@ -914,6 +981,74 @@ export default function EditModulePage() {
           >
             Add feature
           </Button>
+        </TabsContent>
+
+        <TabsContent value="copy" className="space-y-4 pt-4">
+          <p className="text-sm text-muted-foreground">
+            Section labels &amp; marketing copy for this module&apos;s page.
+            Leave a field blank to use the built-in default. Templates accept a{" "}
+            <code className="font-mono">{"{name}"}</code> token.
+          </p>
+          {(
+            [
+              ["heroEyebrow", "Hero eyebrow badge", "ERP Module"],
+              ["capabilitiesTag", "Capabilities — tag", "Capabilities"],
+              [
+                "capabilitiesDescription",
+                "Capabilities — description",
+                "Three highlights from the module…",
+              ],
+              ["featuresTag", "Features — tag", "Features"],
+              [
+                "featuresSectionDescription",
+                "Features — description",
+                "A powerful set of tools…",
+              ],
+              ["videoCtaButtonLabel", "Features — video button label", "Watch Demo"],
+              ["faqSectionTag", "FAQ — tag", "FAQ"],
+              [
+                "faqSectionTitleTemplate",
+                "FAQ — title template",
+                "{name} FAQ",
+              ],
+              [
+                "aboutSectionHeadingsCsv",
+                "About — section headings (comma-separated)",
+                "Overview, Problem, Solution, Results",
+              ],
+              ["allAppsTag", "All apps — tag", "Explore More"],
+              ["allAppsTitle", "All apps — title", "See All Applications"],
+              [
+                "ctaHeadline",
+                "Bottom CTA — headline",
+                "Ready to Simplify Your Operations with QTO ERP?",
+              ],
+              ["ctaPrimaryLabel", "Bottom CTA — primary label", "Schedule a Demo"],
+              ["ctaPrimaryHref", "Bottom CTA — primary link", "/demo"],
+              ["ctaSecondaryLabel", "Bottom CTA — secondary label", "View Pricing"],
+              ["ctaSecondaryHref", "Bottom CTA — secondary link", "/pricing"],
+              [
+                "defaultImage",
+                "Fallback image (path or media key)",
+                "/assets/images/attendance.png",
+              ],
+              ["metaTitle", "SEO — meta title", ""],
+              ["metaDescription", "SEO — meta description", ""],
+            ] as const
+          ).map(([key, label, placeholder]) => (
+            <div key={key}>
+              <Label htmlFor={`copy-${key}`}>{label}</Label>
+              <Input
+                id={`copy-${key}`}
+                className="mt-1"
+                placeholder={placeholder}
+                value={form[key]}
+                onChange={(e) =>
+                  setForm({ ...form, [key]: e.target.value })
+                }
+              />
+            </div>
+          ))}
         </TabsContent>
 
         <TabsContent value="json" className="space-y-4 pt-4">

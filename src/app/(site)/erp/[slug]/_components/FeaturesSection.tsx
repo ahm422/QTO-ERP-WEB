@@ -12,8 +12,6 @@ interface FeaturesSectionProps {
   onVideoOpen: () => void;
 }
 
-const DEFAULT_FEATURE_IMAGE = "/assets/images/attendance.png";
-
 export default function FeaturesSection({
   app,
   onVideoOpen,
@@ -25,9 +23,9 @@ export default function FeaturesSection({
     <section id="features" className="section-padding bg-muted/30">
       <div className="container-main max-w-[1300px]">
         <HeaderSections
-          tag="Features"
+          tag={app.featuresTag}
           title={app.featuresSectionTitle ?? `${app.name} Features`}
-          description="A powerful set of tools built to give your team full control and visibility."
+          description={app.featuresSectionDescription}
         />
 
         <div className="space-y-20">
@@ -35,7 +33,7 @@ export default function FeaturesSection({
             const isEven = index % 2 === 0;
             const num = String(index + 1).padStart(2, "0");
             const imageUrl =
-              feature.imageUrl ?? app.image ?? DEFAULT_FEATURE_IMAGE;
+              feature.imageUrl ?? app.image ?? app.defaultImage;
 
             return (
               <div key={feature.title} className="grid gap-12 lg:grid-cols-2">
@@ -99,11 +97,10 @@ export default function FeaturesSection({
         >
           <div>
             <h4 className="mb-1 font-display text-xl font-bold text-foreground">
-              {app.videoCtaTitle ?? `See ${app.name} in action`}
+              {app.videoCtaTitle}
             </h4>
             <p className="text-sm text-muted-foreground">
-              {app.videoCtaDescription ??
-                "Watch a quick overview of all key features and how they work together seamlessly."}
+              {app.videoCtaDescription}
             </p>
           </div>
           <MarketingButton
@@ -117,7 +114,7 @@ export default function FeaturesSection({
             <span className="inline-flex size-8 items-center justify-center rounded-full bg-accent-foreground/20">
               <Play className="size-4 fill-current" />
             </span>
-            Watch Demo
+            {app.videoCtaButtonLabel}
           </MarketingButton>
         </motion.div>
       </div>

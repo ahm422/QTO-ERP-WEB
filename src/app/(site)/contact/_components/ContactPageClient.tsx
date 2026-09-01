@@ -307,7 +307,9 @@ export default function ContactPageClient({
             className='mt-8 flex justify-center'
           >
             <MarketingButton variant='primary' asChild>
-              <Link href='/blog'>Explore Knowledge Base</Link>
+              <Link href={support.knowledgeBaseHref}>
+                {support.knowledgeBaseLabel}
+              </Link>
             </MarketingButton>
           </motion.div>
         </div>

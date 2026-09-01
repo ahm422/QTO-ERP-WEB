@@ -50,6 +50,7 @@ export default function ErpPageClient({ app, allModules }: ErpPageClientProps) {
 
     let cancelled = false;
 
+    // Transient video-modal status strings (not marketing copy — left as literals).
     async function loadVideo() {
       setVideoLoading(true);
       setVideoError(null);
@@ -117,14 +118,18 @@ export default function ErpPageClient({ app, allModules }: ErpPageClientProps) {
       <AboutSection app={app} />
       <FeaturesSection app={app} onVideoOpen={handleVideoOpen} />
       <TestimonialsSection app={app} />
-      <AllAppsSection apps={allModules} />
+      <AllAppsSection
+        apps={allModules}
+        tag={app.allAppsTag}
+        title={app.allAppsTitle}
+      />
       <FAQSection app={app} />
       <CTASection
-        headline="Ready to Simplify Your Operations with QTO ERP?"
-        primaryLabel="Schedule a Demo"
-        primaryHref="/demo"
-        secondaryLabel="View Pricing"
-        secondaryHref="/pricing"
+        headline={app.ctaHeadline}
+        primaryLabel={app.ctaPrimaryLabel}
+        primaryHref={app.ctaPrimaryHref}
+        secondaryLabel={app.ctaSecondaryLabel}
+        secondaryHref={app.ctaSecondaryHref}
       />
       <VideoModal
         isOpen={videoOpen}

@@ -17,6 +17,8 @@ export type ContactSupportContentDefault = {
   tag: string;
   title: string;
   description: string;
+  knowledgeBaseLabel: string;
+  knowledgeBaseHref: string;
   cards: ContactSupportCard[];
   responseTimes: ContactResponseTimes;
 };
@@ -54,6 +56,8 @@ export type ContactPageContentDefault = {
   faqTag: string;
   faqTitle: string;
   faqDescription: string;
+  metaTitle: string;
+  metaDescription: string;
 };
 
 export type ContactChannelDefault = {
@@ -71,6 +75,8 @@ export const CONTACT_SUPPORT_CONTENT_DEFAULTS: ContactSupportContentDefault = {
   title: "How We Support You",
   description:
     "We're committed to providing world-class support across every channel, whenever you need us most",
+  knowledgeBaseLabel: "Visit Knowledge Base",
+  knowledgeBaseHref: "/blog",
   cards: [
     {
       iconKey: "clock",
@@ -148,6 +154,9 @@ export const CONTACT_PAGE_CONTENT_DEFAULTS: ContactPageContentDefault = {
   faqTitle: "Quick Support Guide",
   faqDescription:
     "Find quick answers to common questions. For more help, our support team is just one message away.",
+  metaTitle: "Contact Us",
+  metaDescription:
+    "Get in touch with our ERPSuite team. We're here to answer your questions and help with your business needs.",
 };
 
 /** Side-panel + bottom cards share this source of truth. */

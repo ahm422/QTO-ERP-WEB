@@ -14,24 +14,27 @@ interface AboutSectionProps {
 export default function AboutSection({ app }: AboutSectionProps) {
   const reduced = useReducedMotion();
   const fadeUp = getFadeInUp(reduced);
-  const sectionHeadings = ["Overview", "Problem", "Solution", "Results"];
+  const sectionHeadings = app.aboutSectionHeadings;
+
+  // Bounds fallback when there are more description paragraphs than headings.
+  const headingAt = (i: number) => sectionHeadings[i] ?? sectionHeadings[0] ?? "";
 
   const aboutContents: AboutContentType[] =
     app.aboutContents && app.aboutContents.length > 0
       ? app.aboutContents
       : app.aboutDescription.map((description, index) => ({
           id: index + 1,
-          tag: sectionHeadings[index] ?? "Overview",
-          title: sectionHeadings[index] ?? "Overview",
+          tag: headingAt(index),
+          title: headingAt(index),
           description,
           image: app.image,
-          imageAlt: `${app.name} ${sectionHeadings[index] ?? "Overview"} image`,
+          imageAlt: `${app.name} ${headingAt(index)} image`,
         }));
 
   return (
     <section id="about" className="section-padding bg-background">
       <div className="container-main max-w-[1300px]">
-        <HeaderSections tag="About" title={app.aboutTitle} />
+        <HeaderSections tag={app.aboutTag ?? "About"} title={app.aboutTitle} />
 
         <div className="space-y-20">
           {aboutContents.map((content, index) => {
@@ -69,11 +72,7 @@ export default function AboutSection({ app }: AboutSectionProps) {
                   <div className="flex h-[340px] items-center justify-center rounded-2xl border border-border bg-background p-6 shadow-[var(--card-shadow)] transition-all duration-300">
                     <div className="relative h-full w-full">
                       <Image
-                        src={
-                          content.image ||
-                          app.image ||
-                          "/assets/images/attendance.png"
-                        }
+                        src={content.image || app.image || app.defaultImage}
                         alt={content.imageAlt || `${app.name} image`}
                         fill
                         className="object-contain object-center"

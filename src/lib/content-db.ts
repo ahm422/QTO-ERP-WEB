@@ -1692,6 +1692,8 @@ function demoPageFromDefaults(): DemoPageContent {
     testimonialQuote: DEMO_PAGE_CONTENT_DEFAULTS.testimonialQuote,
     testimonialAuthor: DEMO_PAGE_CONTENT_DEFAULTS.testimonialAuthor,
     testimonialRole: DEMO_PAGE_CONTENT_DEFAULTS.testimonialRole,
+    metaTitle: DEMO_PAGE_CONTENT_DEFAULTS.metaTitle,
+    metaDescription: DEMO_PAGE_CONTENT_DEFAULTS.metaDescription,
     formFieldOptions: DEMO_PAGE_CONTENT_DEFAULTS.formFieldOptions,
   };
 }
@@ -1885,35 +1887,28 @@ export async function upsertAboutStoryAdmin(
     calloutBody: data.calloutBody,
     calloutLinkLabel: data.calloutLinkLabel,
     calloutLinkUrl: data.calloutLinkUrl,
+    metaTitle: data.metaTitle ?? null,
+    metaDescription: data.metaDescription ?? null,
   };
 
+  const commonSet = {
+    imageAlt: data.imageAlt,
+    badge: data.badge,
+    title: data.title,
+    paragraph1: data.paragraph1,
+    paragraph2: data.paragraph2,
+    calloutIconKey: data.calloutIconKey,
+    calloutTitle: data.calloutTitle,
+    calloutBody: data.calloutBody,
+    calloutLinkLabel: data.calloutLinkLabel,
+    calloutLinkUrl: data.calloutLinkUrl,
+    metaTitle: data.metaTitle ?? null,
+    metaDescription: data.metaDescription ?? null,
+  };
   const setValues =
     data.imageKey === undefined
-      ? {
-          imageAlt: data.imageAlt,
-          badge: data.badge,
-          title: data.title,
-          paragraph1: data.paragraph1,
-          paragraph2: data.paragraph2,
-          calloutIconKey: data.calloutIconKey,
-          calloutTitle: data.calloutTitle,
-          calloutBody: data.calloutBody,
-          calloutLinkLabel: data.calloutLinkLabel,
-          calloutLinkUrl: data.calloutLinkUrl,
-        }
-      : {
-          imageKey: data.imageKey,
-          imageAlt: data.imageAlt,
-          badge: data.badge,
-          title: data.title,
-          paragraph1: data.paragraph1,
-          paragraph2: data.paragraph2,
-          calloutIconKey: data.calloutIconKey,
-          calloutTitle: data.calloutTitle,
-          calloutBody: data.calloutBody,
-          calloutLinkLabel: data.calloutLinkLabel,
-          calloutLinkUrl: data.calloutLinkUrl,
-        };
+      ? commonSet
+      : { imageKey: data.imageKey, ...commonSet };
 
   const [row] = await (await getDb())
     .insert(aboutStory)
@@ -2104,6 +2099,8 @@ function contactSupportFromDefaults(): ContactSupportContent {
     tag: CONTACT_SUPPORT_CONTENT_DEFAULTS.tag,
     title: CONTACT_SUPPORT_CONTENT_DEFAULTS.title,
     description: CONTACT_SUPPORT_CONTENT_DEFAULTS.description,
+    knowledgeBaseLabel: CONTACT_SUPPORT_CONTENT_DEFAULTS.knowledgeBaseLabel,
+    knowledgeBaseHref: CONTACT_SUPPORT_CONTENT_DEFAULTS.knowledgeBaseHref,
     cards: CONTACT_SUPPORT_CONTENT_DEFAULTS.cards,
     responseTimes: CONTACT_SUPPORT_CONTENT_DEFAULTS.responseTimes,
   };
@@ -2116,6 +2113,12 @@ function serializeContactSupport(
     tag: row.tag,
     title: row.title,
     description: row.description,
+    knowledgeBaseLabel:
+      row.knowledgeBaseLabel ??
+      CONTACT_SUPPORT_CONTENT_DEFAULTS.knowledgeBaseLabel,
+    knowledgeBaseHref:
+      row.knowledgeBaseHref ??
+      CONTACT_SUPPORT_CONTENT_DEFAULTS.knowledgeBaseHref,
     cards: row.cards,
     responseTimes: row.responseTimes,
   };
@@ -2166,6 +2169,8 @@ function contactPageFromDefaults(): ContactPageContent {
     faqTag: CONTACT_PAGE_CONTENT_DEFAULTS.faqTag,
     faqTitle: CONTACT_PAGE_CONTENT_DEFAULTS.faqTitle,
     faqDescription: CONTACT_PAGE_CONTENT_DEFAULTS.faqDescription,
+    metaTitle: CONTACT_PAGE_CONTENT_DEFAULTS.metaTitle,
+    metaDescription: CONTACT_PAGE_CONTENT_DEFAULTS.metaDescription,
   };
 }
 
@@ -2179,6 +2184,9 @@ function serializeContactPage(
     faqTag: row.faqTag,
     faqTitle: row.faqTitle,
     faqDescription: row.faqDescription,
+    metaTitle: row.metaTitle ?? CONTACT_PAGE_CONTENT_DEFAULTS.metaTitle,
+    metaDescription:
+      row.metaDescription ?? CONTACT_PAGE_CONTENT_DEFAULTS.metaDescription,
   };
 }
 
@@ -2369,6 +2377,28 @@ export async function getModuleAdminBySlug(slug: string) {
     rolloutTitleTemplate: row.rolloutTitleTemplate,
     rolloutDescription: row.rolloutDescription,
     rolloutSteps: row.rolloutSteps ?? [],
+    // Raw nullable CMS page-copy overrides — editors show blank = "using default".
+    videoCtaTitle: row.videoCtaTitle,
+    videoCtaDescription: row.videoCtaDescription,
+    heroEyebrow: row.heroEyebrow,
+    capabilitiesTag: row.capabilitiesTag,
+    capabilitiesDescription: row.capabilitiesDescription,
+    featuresTag: row.featuresTag,
+    featuresSectionDescription: row.featuresSectionDescription,
+    videoCtaButtonLabel: row.videoCtaButtonLabel,
+    faqSectionTag: row.faqSectionTag,
+    faqSectionTitleTemplate: row.faqSectionTitleTemplate,
+    aboutSectionHeadings: row.aboutSectionHeadings,
+    allAppsTag: row.allAppsTag,
+    allAppsTitle: row.allAppsTitle,
+    ctaHeadline: row.ctaHeadline,
+    ctaPrimaryLabel: row.ctaPrimaryLabel,
+    ctaPrimaryHref: row.ctaPrimaryHref,
+    ctaSecondaryLabel: row.ctaSecondaryLabel,
+    ctaSecondaryHref: row.ctaSecondaryHref,
+    defaultImage: row.defaultImage,
+    metaTitle: row.metaTitle,
+    metaDescription: row.metaDescription,
   };
 }
 
@@ -2508,6 +2538,34 @@ export async function getSolutionAdminBySlug(slug: string) {
     id: row.id,
     published: row.published,
     sortOrder: row.sortOrder,
+    // Raw nullable CMS page-copy overrides — editors show blank = "using default".
+    heroEyebrow: row.heroEyebrow,
+    heroImage: row.heroImage,
+    heroImageUrl: resolveMediaPath(row.heroImage) ?? "",
+    heroImageAlt: row.heroImageAlt,
+    heroCaption: row.heroCaption,
+    heroPrimaryCtaLabel: row.heroPrimaryCtaLabel,
+    heroPrimaryCtaHref: row.heroPrimaryCtaHref,
+    heroSecondaryCtaLabel: row.heroSecondaryCtaLabel,
+    heroSecondaryCtaHref: row.heroSecondaryCtaHref,
+    tabsIntroTag: row.tabsIntroTag,
+    tabsIntroTitle: row.tabsIntroTitle,
+    tabsIntroDescription: row.tabsIntroDescription,
+    tabImageFallback: row.tabImageFallback,
+    recommendedTag: row.recommendedTag,
+    recommendedTitle: row.recommendedTitle,
+    recommendedDescription: row.recommendedDescription,
+    faqTag: row.faqTag,
+    faqTitle: row.faqTitle,
+    ctaEyebrow: row.ctaEyebrow,
+    ctaHeadline: row.ctaHeadline,
+    ctaDescription: row.ctaDescription,
+    ctaPrimaryLabel: row.ctaPrimaryLabel,
+    ctaPrimaryHref: row.ctaPrimaryHref,
+    ctaSecondaryLabel: row.ctaSecondaryLabel,
+    ctaSecondaryHref: row.ctaSecondaryHref,
+    metaTitle: row.metaTitle,
+    metaDescription: row.metaDescription,
   };
 }
 

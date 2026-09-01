@@ -34,6 +34,8 @@ function pageFromDefaults(): DemoPageContent {
     heroTitle: d.heroTitle,
     heroAccent: d.heroAccent,
     heroDescription: d.heroDescription,
+    metaTitle: d.metaTitle,
+    metaDescription: d.metaDescription,
     heroBadges: [...d.heroBadges],
     processTag: d.processTag,
     processTitle: d.processTitle,
@@ -214,6 +216,30 @@ export default function DemoPageAdminPage() {
               setPage({ ...page, heroDescription: e.target.value })
             }
           />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="meta-title">Meta title (SEO)</Label>
+            <Input
+              id="meta-title"
+              className="mt-1"
+              value={page.metaTitle}
+              onChange={(e) =>
+                setPage({ ...page, metaTitle: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor="meta-description">Meta description (SEO)</Label>
+            <Input
+              id="meta-description"
+              className="mt-1"
+              value={page.metaDescription}
+              onChange={(e) =>
+                setPage({ ...page, metaDescription: e.target.value })
+              }
+            />
+          </div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">

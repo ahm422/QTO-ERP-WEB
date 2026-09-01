@@ -36,6 +36,7 @@ const ALLOWED_KEY_PREFIXES = [
   "about-story/",
   "module-images/",
   "module-videos/",
+  "solution-images/",
 ] as const;
 
 export function isAllowedMediaKey(key: string): boolean {
