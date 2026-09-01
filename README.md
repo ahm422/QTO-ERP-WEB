@@ -54,3 +54,21 @@ npm run deploy           # production Worker
 ```
 
 See [docs/deployment-cloudflare.md](docs/deployment-cloudflare.md) for secrets, migrations, and DNS cutover.
+
+### Runtime environment (deployed Workers)
+
+The deployed Worker reads these at request time. Non-secrets live in `wrangler.jsonc` `vars`
+(per env); secrets are set with `wrangler secret put <NAME> [--env staging]` and must **not** be
+kept as plaintext build variables.
+
+| Variable | Where | Notes |
+|----------|-------|-------|
+| `AUTH_URL` | `wrangler.jsonc` vars | Absolute site base (also used for sitemap URLs) |
+| `EMAIL_FROM` | `wrangler.jsonc` vars | `QTO ERP <noreply@qtoerp.com>` |
+| `ADMIN_NOTIFICATION_EMAIL` | `wrangler.jsonc` vars | |
+| `STRIPE_PRICE_{STARTER,GROWTH}_{MONTHLY,YEARLY}` | `wrangler.jsonc` vars | Price IDs (`price_…`) |
+| `JWT_ACCESS_SECRET` | Worker secret | `openssl rand -base64 32` |
+| `JWT_REFRESH_PEPPER` | Worker secret | `openssl rand -base64 32` |
+| `STRIPE_SECRET_KEY` | Worker secret | Required for checkout routes |
+| `STRIPE_WEBHOOK_SECRET` | Worker secret | Required for `/api/webhooks/stripe` |
+| `RESEND_API_KEY` | Worker secret | Only if `EMAIL_PROVIDER=resend` (legacy fallback) |
