@@ -18,6 +18,7 @@ export default function FeaturesSection({
 }: FeaturesSectionProps) {
   const reduced = useReducedMotion();
   const fadeUp = getFadeInUp(reduced);
+  const hasFeatures = app.features.length > 0;
 
   return (
     <section id="features" className="section-padding bg-muted/30">
@@ -93,29 +94,37 @@ export default function FeaturesSection({
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mt-20 flex flex-col items-center justify-between gap-6 rounded-2xl border border-border bg-card p-8 shadow-[var(--card-shadow)] sm:flex-row"
+          className={`${
+            hasFeatures ? "mt-20" : "mt-10"
+          } relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-muted/40 p-8 shadow-[var(--card-shadow)] sm:p-10`}
         >
-          <div>
-            <h4 className="mb-1 font-display text-xl font-bold text-foreground">
-              {app.videoCtaTitle}
-            </h4>
-            <p className="text-sm text-muted-foreground">
-              {app.videoCtaDescription}
-            </p>
+          <div
+            className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-hero-glow/40 blur-3xl"
+            aria-hidden
+          />
+          <div className="relative flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="max-w-xl">
+              <h4 className="font-display text-2xl font-bold text-foreground">
+                {app.videoCtaTitle}
+              </h4>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {app.videoCtaDescription}
+              </p>
+            </div>
+            <MarketingButton
+              type="button"
+              variant="primary"
+              size="lg"
+              onClick={onVideoOpen}
+              className="shrink-0"
+              iconSlide={false}
+            >
+              <span className="inline-flex size-8 items-center justify-center rounded-full bg-accent-foreground/20">
+                <Play className="size-4 fill-current" />
+              </span>
+              {app.videoCtaButtonLabel}
+            </MarketingButton>
           </div>
-          <MarketingButton
-            type="button"
-            variant="primary"
-            size="lg"
-            onClick={onVideoOpen}
-            className="shrink-0"
-            iconSlide={false}
-          >
-            <span className="inline-flex size-8 items-center justify-center rounded-full bg-accent-foreground/20">
-              <Play className="size-4 fill-current" />
-            </span>
-            {app.videoCtaButtonLabel}
-          </MarketingButton>
         </motion.div>
       </div>
     </section>
