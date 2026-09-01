@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { AdminFetchError, adminFetch } from "@/lib/admin-fetch";
+import { AdminFetchError, adminFetch, adminUpload } from "@/lib/admin-fetch";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -41,9 +41,66 @@ type SolutionForm = {
   useCases: SolutionUseCase[];
   testimonialJson: string;
   solutionFaqsJson: string;
+  // CMS page-copy overrides (blank = use code default)
+  heroEyebrow: string;
+  heroImageKey: string;
+  heroImageUrl: string;
+  heroImageAlt: string;
+  heroCaption: string;
+  heroPrimaryCtaLabel: string;
+  heroPrimaryCtaHref: string;
+  heroSecondaryCtaLabel: string;
+  heroSecondaryCtaHref: string;
+  tabsIntroTag: string;
+  tabsIntroTitle: string;
+  tabsIntroDescription: string;
+  tabImageFallback: string;
+  recommendedTag: string;
+  recommendedTitle: string;
+  recommendedDescription: string;
+  faqTag: string;
+  faqTitle: string;
+  ctaEyebrow: string;
+  ctaHeadline: string;
+  ctaDescription: string;
+  ctaPrimaryLabel: string;
+  ctaPrimaryHref: string;
+  ctaSecondaryLabel: string;
+  ctaSecondaryHref: string;
+  metaTitle: string;
+  metaDescription: string;
   sortOrder: number;
   published: boolean;
 };
+
+/** Keys on SolutionForm that are plain optional copy-override strings. */
+const SOLUTION_COPY_KEYS = [
+  "heroEyebrow",
+  "heroImageAlt",
+  "heroCaption",
+  "heroPrimaryCtaLabel",
+  "heroPrimaryCtaHref",
+  "heroSecondaryCtaLabel",
+  "heroSecondaryCtaHref",
+  "tabsIntroTag",
+  "tabsIntroTitle",
+  "tabsIntroDescription",
+  "tabImageFallback",
+  "recommendedTag",
+  "recommendedTitle",
+  "recommendedDescription",
+  "faqTag",
+  "faqTitle",
+  "ctaEyebrow",
+  "ctaHeadline",
+  "ctaDescription",
+  "ctaPrimaryLabel",
+  "ctaPrimaryHref",
+  "ctaSecondaryLabel",
+  "ctaSecondaryHref",
+  "metaTitle",
+  "metaDescription",
+] as const;
 
 function stringifyJson(value: unknown): string {
   return JSON.stringify(value ?? null, null, 2);
@@ -133,9 +190,50 @@ function solutionToForm(item: Record<string, unknown>): SolutionForm {
     useCases: asUseCases(item.useCases),
     testimonialJson: stringifyJson(item.testimonial),
     solutionFaqsJson: stringifyJson(item.solutionFaqs),
+    heroEyebrow: String(item.heroEyebrow ?? ""),
+    heroImageKey: String(item.heroImage ?? ""),
+    heroImageUrl: String(item.heroImageUrl ?? ""),
+    heroImageAlt: String(item.heroImageAlt ?? ""),
+    heroCaption: String(item.heroCaption ?? ""),
+    heroPrimaryCtaLabel: String(item.heroPrimaryCtaLabel ?? ""),
+    heroPrimaryCtaHref: String(item.heroPrimaryCtaHref ?? ""),
+    heroSecondaryCtaLabel: String(item.heroSecondaryCtaLabel ?? ""),
+    heroSecondaryCtaHref: String(item.heroSecondaryCtaHref ?? ""),
+    tabsIntroTag: String(item.tabsIntroTag ?? ""),
+    tabsIntroTitle: String(item.tabsIntroTitle ?? ""),
+    tabsIntroDescription: String(item.tabsIntroDescription ?? ""),
+    tabImageFallback: String(item.tabImageFallback ?? ""),
+    recommendedTag: String(item.recommendedTag ?? ""),
+    recommendedTitle: String(item.recommendedTitle ?? ""),
+    recommendedDescription: String(item.recommendedDescription ?? ""),
+    faqTag: String(item.faqTag ?? ""),
+    faqTitle: String(item.faqTitle ?? ""),
+    ctaEyebrow: String(item.ctaEyebrow ?? ""),
+    ctaHeadline: String(item.ctaHeadline ?? ""),
+    ctaDescription: String(item.ctaDescription ?? ""),
+    ctaPrimaryLabel: String(item.ctaPrimaryLabel ?? ""),
+    ctaPrimaryHref: String(item.ctaPrimaryHref ?? ""),
+    ctaSecondaryLabel: String(item.ctaSecondaryLabel ?? ""),
+    ctaSecondaryHref: String(item.ctaSecondaryHref ?? ""),
+    metaTitle: String(item.metaTitle ?? ""),
+    metaDescription: String(item.metaDescription ?? ""),
     sortOrder: Number(item.sortOrder ?? 0),
     published: Boolean(item.published),
   };
+}
+
+async function uploadSolutionImage(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const data = await adminUpload<{
+    ok?: boolean;
+    objectKey?: string;
+    imageUrl?: string;
+  }>("/api/admin/solutions/upload", formData);
+  if (!data.objectKey || !data.imageUrl) {
+    throw new Error("Upload failed");
+  }
+  return { objectKey: data.objectKey, imageUrl: data.imageUrl };
 }
 
 export default function EditSolutionPage() {
@@ -236,6 +334,13 @@ export default function EditSolutionPage() {
             useCases,
             testimonial,
             solutionFaqs,
+            heroImage: form.heroImageKey.trim() || null,
+            ...Object.fromEntries(
+              SOLUTION_COPY_KEYS.map((key) => [
+                key,
+                form[key].trim() || null,
+              ]),
+            ),
             sortOrder: form.sortOrder,
             published: form.published,
           },
@@ -349,6 +454,82 @@ export default function EditSolutionPage() {
           />
         </div>
       </div>
+
+      <details className="rounded-md border p-4" open>
+        <summary className="cursor-pointer text-sm font-medium">
+          Page copy &amp; SEO
+        </summary>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Section labels and marketing copy for this solution&apos;s page. Leave
+          a field blank to use the built-in default.
+        </p>
+
+        <div className="mt-4 space-y-3 rounded-md border p-3">
+          <Label>Hero image</Label>
+          {form.heroImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={form.heroImageUrl}
+              alt=""
+              className="h-32 w-full rounded-md object-cover"
+            />
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              No image — the gradient placeholder is shown.
+            </p>
+          )}
+          <input
+            type="file"
+            accept="image/avif,image/png,image/webp,image/jpeg"
+            className="block text-sm"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              try {
+                const { objectKey, imageUrl } = await uploadSolutionImage(file);
+                setForm((f) =>
+                  f
+                    ? { ...f, heroImageKey: objectKey, heroImageUrl: imageUrl }
+                    : f,
+                );
+                toast.success("Hero image uploaded — save to apply");
+              } catch (err) {
+                toast.error(err instanceof Error ? err.message : "Upload failed");
+              }
+            }}
+          />
+          {form.heroImageKey ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setForm((f) =>
+                  f ? { ...f, heroImageKey: "", heroImageUrl: "" } : f,
+                )
+              }
+            >
+              Remove image
+            </Button>
+          ) : null}
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {SOLUTION_COPY_KEYS.map((key) => (
+            <div key={key}>
+              <Label htmlFor={`copy-${key}`} className="text-xs">
+                {key}
+              </Label>
+              <Input
+                id={`copy-${key}`}
+                className="mt-1"
+                value={form[key]}
+                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+              />
+            </div>
+          ))}
+        </div>
+      </details>
 
       <div className="space-y-3 rounded-md border p-4">
         <Label>Recommended modules</Label>

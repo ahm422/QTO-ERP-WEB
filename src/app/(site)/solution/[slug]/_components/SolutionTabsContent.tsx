@@ -18,17 +18,18 @@ type Feature = {
   title: string;
   desc: string;
   reverse?: boolean;
+  imageUrl?: string;
 };
 
 type Props = {
   subNav: string[];
   features: Feature[];
+  tag: string;
+  title: string;
+  description: string;
+  /** Local motif image used when a feature has no imageUrl of its own. */
+  imageFallback: string;
 };
-
-const solutionImages = [
-  'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1000&auto=format&fit=crop',
-];
 
 const FEATURE_ICONS: LucideIcon[] = [
   Sparkles,
@@ -46,7 +47,14 @@ function toId(label: string) {
     .replace(/[^a-z0-9-]/g, '');
 }
 
-export default function SolutionTabsContent({ subNav, features }: Props) {
+export default function SolutionTabsContent({
+  subNav,
+  features,
+  tag,
+  title,
+  description,
+  imageFallback,
+}: Props) {
   const sectionTabs = features.map(
     (feature, idx) => subNav[idx] ?? feature.tag
   );
@@ -68,13 +76,13 @@ export default function SolutionTabsContent({ subNav, features }: Props) {
       <div className='container-main'>
         <div className='mb-10 text-center'>
           <div className='mb-4 flex justify-center'>
-            <EyebrowBadge label='Capabilities' variant='accent' />
+            <EyebrowBadge label={tag} variant='accent' />
           </div>
           <h2 className='font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl'>
-            Explore the solution
+            {title}
           </h2>
           <p className='mx-auto mt-3 max-w-2xl text-muted-foreground'>
-            Select a capability to see how it fits your team&apos;s workflow.
+            {description}
           </p>
         </div>
 
@@ -85,7 +93,7 @@ export default function SolutionTabsContent({ subNav, features }: Props) {
             const idx = items.findIndex((i) => i.id === item.id);
             const feature = features[idx];
             if (!feature) return null;
-            const imageUrl = solutionImages[idx % solutionImages.length];
+            const imageUrl = feature.imageUrl ?? imageFallback;
 
             return (
               <div className='grid gap-6 lg:grid-cols-2 lg:items-center'>

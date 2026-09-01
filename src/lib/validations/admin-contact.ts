@@ -22,6 +22,17 @@ export const upsertContactSupportContentSchema = z
     tag: z.string().trim().min(1).max(80),
     title: z.string().trim().min(1).max(120),
     description: z.string().trim().min(1).max(500),
+    knowledgeBaseLabel: z.string().trim().max(80).nullable().optional(),
+    knowledgeBaseHref: z
+      .string()
+      .trim()
+      .max(300)
+      .refine(
+        (v) => v === "" || v.startsWith("/") || /^https?:\/\//i.test(v),
+        { message: "Must be a relative path (/…) or an absolute http(s) URL" },
+      )
+      .nullable()
+      .optional(),
     cards: z.array(supportCardSchema).min(1).max(12),
     responseTimes: z.object({
       typical: z.string().trim().min(1).max(120),
@@ -79,6 +90,8 @@ export const upsertContactPageContentSchema = z
     faqTag: z.string().trim().min(1).max(80),
     faqTitle: z.string().trim().min(1).max(120),
     faqDescription: z.string().trim().min(1).max(500),
+    metaTitle: z.string().trim().max(200).nullable().optional(),
+    metaDescription: z.string().trim().max(500).nullable().optional(),
   })
   .strict();
 

@@ -14,7 +14,15 @@ import {
 import type { ModuleDetail } from '@/types/content';
 
 interface HeroSectionProps {
-  app: Pick<ModuleDetail, 'heroHeadline' | 'heroSubheadline' | 'heroCtaLabel'>;
+  app: Pick<
+    ModuleDetail,
+    | 'heroHeadline'
+    | 'heroSubheadline'
+    | 'heroCtaLabel'
+    | 'heroEyebrow'
+    | 'ctaPrimaryLabel'
+    | 'ctaPrimaryHref'
+  >;
   onVideoOpen: () => void;
 }
 
@@ -53,7 +61,7 @@ export default function HeroSection({ app }: HeroSectionProps) {
           <motion.div variants={item} className='mb-6 flex justify-center'>
             <EyebrowBadge
               icon={Sparkles}
-              label='ERP Module'
+              label={app.heroEyebrow}
               variant='hero'
             />
           </motion.div>
@@ -74,8 +82,8 @@ export default function HeroSection({ app }: HeroSectionProps) {
 
           <motion.div variants={item} className='flex justify-center'>
             <MarketingButton variant='hero' size='lg' asChild>
-              <Link href='/demo'>
-                {app.heroCtaLabel ?? 'Schedule a Demo'}
+              <Link href={app.ctaPrimaryHref}>
+                {app.heroCtaLabel ?? app.ctaPrimaryLabel}
               </Link>
             </MarketingButton>
           </motion.div>

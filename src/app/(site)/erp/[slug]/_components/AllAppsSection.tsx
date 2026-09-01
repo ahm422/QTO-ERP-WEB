@@ -6,13 +6,15 @@ import type { ModuleSummary } from '@/types/content';
 
 interface AllAppsSectionProps {
   apps: ModuleSummary[];
+  tag: string;
+  title: string;
 }
 
-export default function AllAppsSection({ apps }: AllAppsSectionProps) {
+export default function AllAppsSection({ apps, tag, title }: AllAppsSectionProps) {
   return (
     <section id="all-apps" className="section-padding">
       <div className="container-main">
-        <HeaderSections tag="Explore More" title="See All Applications" />
+        <HeaderSections tag={tag} title={title} />
         <div className="grid md:grid-cols-3 gap-6">
           {apps.map((a) => {
             const Icon = getModuleIcon(a.iconKey);

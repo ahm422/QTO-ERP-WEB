@@ -24,6 +24,8 @@ type StoryForm = {
   calloutBody: string;
   calloutLinkLabel: string;
   calloutLinkUrl: string;
+  metaTitle: string;
+  metaDescription: string;
 };
 
 const defaultsForm = (): StoryForm => ({
@@ -39,6 +41,8 @@ const defaultsForm = (): StoryForm => ({
   calloutBody: ABOUT_STORY_DEFAULTS.calloutBody,
   calloutLinkLabel: ABOUT_STORY_DEFAULTS.calloutLinkLabel,
   calloutLinkUrl: ABOUT_STORY_DEFAULTS.calloutLinkUrl,
+  metaTitle: ABOUT_STORY_DEFAULTS.metaTitle,
+  metaDescription: ABOUT_STORY_DEFAULTS.metaDescription,
 });
 
 export function AboutStoryEditor() {
@@ -120,6 +124,8 @@ export function AboutStoryEditor() {
             calloutBody: story.calloutBody,
             calloutLinkLabel: story.calloutLinkLabel,
             calloutLinkUrl: story.calloutLinkUrl,
+            metaTitle: story.metaTitle.trim() || null,
+            metaDescription: story.metaDescription.trim() || null,
           },
         },
       );
@@ -306,6 +312,35 @@ export function AboutStoryEditor() {
               value={story.calloutLinkUrl}
               onChange={(e) =>
                 setStory({ ...story, calloutLinkUrl: e.target.value })
+              }
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-3 rounded-md border p-4">
+        <h2 className="text-lg font-medium">SEO</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="about-meta-title">Meta title</Label>
+            <Input
+              id="about-meta-title"
+              className="mt-1"
+              value={story.metaTitle}
+              onChange={(e) =>
+                setStory({ ...story, metaTitle: e.target.value })
+              }
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <Label htmlFor="about-meta-description">Meta description</Label>
+            <Textarea
+              id="about-meta-description"
+              className="mt-1"
+              rows={2}
+              value={story.metaDescription}
+              onChange={(e) =>
+                setStory({ ...story, metaDescription: e.target.value })
               }
             />
           </div>

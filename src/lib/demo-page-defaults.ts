@@ -8,6 +8,8 @@ export type DemoPageContentDefault = {
   heroTitle: string;
   heroAccent: string;
   heroDescription: string;
+  metaTitle: string;
+  metaDescription: string;
   heroBadges: string[];
   processTag: string;
   processTitle: string;
@@ -29,6 +31,8 @@ export const DEMO_PAGE_CONTENT_DEFAULTS: DemoPageContentDefault = {
   heroAccent: "Your Way",
   heroDescription:
     "Get a personalized walkthrough of how QTO-ERP can streamline your operations, boost productivity, and transform your business.",
+  metaTitle: "demo",
+  metaDescription: "View our demo and see how our platform works.",
   heroBadges: ["No credit card required", "15 minutes to book"],
   processTag: "Process",
   processTitle: "What to Expect",

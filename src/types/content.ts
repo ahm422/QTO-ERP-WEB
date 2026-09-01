@@ -33,8 +33,10 @@ export type ModuleSummary = {
 
 export type ModuleDetail = ModuleSummary & {
   videoUrl: string;
-  videoCtaTitle?: string;
-  videoCtaDescription?: string;
+  /** Resolved from the `{name}` template; always populated. */
+  videoCtaTitle: string;
+  /** Always populated (falls back to MODULE_PAGE_DEFAULTS). */
+  videoCtaDescription: string;
   heroHeadline: string;
   heroSubheadline: string;
   heroCtaLabel?: string;
@@ -56,12 +58,36 @@ export type ModuleDetail = ModuleSummary & {
   useCases: UseCasesType;
   testimonials: TestimonialsType;
   faqs: FAQsType;
+  // ── CMS page-copy (Phase 2). Always populated by serializeModuleDetail,
+  //    merged over MODULE_PAGE_DEFAULTS, so components render from props only. ──
+  heroEyebrow: string;
+  capabilitiesTag: string;
+  capabilitiesDescription: string;
+  featuresTag: string;
+  featuresSectionDescription: string;
+  videoCtaButtonLabel: string;
+  faqSectionTag: string;
+  /** Resolved from the `{name}` template. */
+  faqSectionTitle: string;
+  aboutSectionHeadings: string[];
+  allAppsTag: string;
+  allAppsTitle: string;
+  ctaHeadline: string;
+  ctaPrimaryLabel: string;
+  ctaPrimaryHref: string;
+  ctaSecondaryLabel: string;
+  ctaSecondaryHref: string;
+  defaultImage: string;
+  metaTitle: string;
+  metaDescription: string;
 };
 
 export type ContactSupportContent = {
   tag: string;
   title: string;
   description: string;
+  knowledgeBaseLabel: string;
+  knowledgeBaseHref: string;
   cards: ContactSupportCard[];
   responseTimes: ContactResponseTimes;
 };
@@ -83,6 +109,8 @@ export type ContactPageContent = {
   faqTag: string;
   faqTitle: string;
   faqDescription: string;
+  metaTitle: string;
+  metaDescription: string;
 };
 
 export type SolutionSummary = {
@@ -99,6 +127,36 @@ export type SolutionDetail = SolutionSummary & {
   testimonial: TestimonialType;
   solutionFaqs: SolutionFAQType[];
   useCases?: SolutionUseCase[];
+  // ── CMS page-copy (Phase 2). Always populated by serializeSolutionDetail,
+  //    merged over SOLUTION_PAGE_DEFAULTS. ──
+  heroEyebrow: string;
+  /** Resolved media path, or null → render the gradient placeholder. */
+  heroImage: string | null;
+  heroImageAlt: string | null;
+  /** Resolved from the `{title}` template. */
+  heroCaption: string;
+  heroPrimaryCtaLabel: string;
+  heroPrimaryCtaHref: string;
+  heroSecondaryCtaLabel: string;
+  heroSecondaryCtaHref: string;
+  tabsIntroTag: string;
+  tabsIntroTitle: string;
+  tabsIntroDescription: string;
+  tabImageFallback: string;
+  recommendedTag: string;
+  recommendedTitle: string;
+  recommendedDescription: string;
+  faqTag: string;
+  faqTitle: string;
+  ctaEyebrow: string;
+  ctaHeadline: string;
+  ctaDescription: string;
+  ctaPrimaryLabel: string;
+  ctaPrimaryHref: string;
+  ctaSecondaryLabel: string;
+  ctaSecondaryHref: string;
+  metaTitle: string;
+  metaDescription: string;
 };
 
 export type BlogPostSummary = {
@@ -316,6 +374,8 @@ export type DemoPageContent = {
   testimonialAuthor: string;
   testimonialRole: string;
   formFieldOptions: DemoFormFieldOptionsDto;
+  metaTitle: string;
+  metaDescription: string;
 };
 
 /** Public DTO for /pricing page singleton (hero + FAQ section chrome). */
@@ -349,6 +409,8 @@ export type AboutStory = {
     linkLabel: string;
     linkUrl: string;
   };
+  metaTitle: string;
+  metaDescription: string;
 };
 
 /** Public DTO for a published /about values card. */
