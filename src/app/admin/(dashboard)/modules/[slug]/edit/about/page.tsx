@@ -9,7 +9,11 @@ import {
   useAdminResource,
   useSectionForm,
 } from "@/components/admin/section-editor/useAdminResource";
-import { SectionShell } from "@/components/admin/section-editor/SectionShell";
+import { ImageIcon } from "lucide-react";
+import {
+  FieldGroup,
+  SectionShell,
+} from "@/components/admin/section-editor/SectionShell";
 import {
   Field,
   ImageField,
@@ -17,6 +21,7 @@ import {
   StringListField,
   TextField,
 } from "@/components/admin/section-editor/fields";
+import { Button } from "@/components/ui/button";
 import type { AboutContentType } from "@/types/about";
 
 type Section = AboutContentType & { imageUrl?: string };
@@ -71,6 +76,25 @@ export default function ModuleAboutPage() {
   );
   const [form, , patch] = useSectionForm(item, toForm);
 
+  /** Seed rich content sections from the plain fallback paragraphs. */
+  const convertParagraphs = () => {
+    if (!form) return;
+    const headings = form.aboutSectionHeadings;
+    const sections: Section[] = form.aboutDescription
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .map((para, idx) => ({
+        id: idx + 1,
+        tag: headings[idx] ?? headings[0] ?? "",
+        title: headings[idx] ?? headings[0] ?? "",
+        description: `<p>${para
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")}</p>`,
+      }));
+    patch({ aboutContents: [...form.aboutContents, ...sections] });
+  };
+
   const onSave = () => {
     if (!form) return;
     void save(
@@ -121,22 +145,22 @@ export default function ModuleAboutPage() {
             />
           </div>
 
-          <StringListField
-            label="Fallback tab headings"
-            hint="Used only when there are no rich content sections below (paired with the plain paragraphs)."
-            values={form.aboutSectionHeadings}
-            onChange={(v) => patch({ aboutSectionHeadings: v })}
-          />
-          <StringListField
-            label="Fallback paragraphs"
-            hint="Plain-text paragraphs shown when no rich content sections exist."
-            values={form.aboutDescription}
-            onChange={(v) => patch({ aboutDescription: v })}
-          />
+          <div className="flex items-start gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4 text-sm text-muted-foreground lg:col-span-2">
+            <ImageIcon className="mt-0.5 size-4 shrink-0 text-accent" />
+            <p>
+              <span className="font-medium text-foreground">
+                Images live in the content sections below.
+              </span>{" "}
+              Add a section, then use the image button in the <em>Body</em>{" "}
+              toolbar for inline images, and the <em>Section image</em> field for
+              the block&apos;s main visual. The plain fallback paragraphs are
+              text-only.
+            </p>
+          </div>
 
           <RepeatableList<Section>
-            label="Content sections (rich)"
-            hint="Each renders as a titled block with body copy and an image."
+            label="Content sections"
+            hint="Each renders as a titled block with a rich-text body and an image. This is what shows on the page when set."
             items={form.aboutContents}
             onChange={(v) => patch({ aboutContents: v })}
             rowTitle={(s) => s.title || s.tag}
@@ -186,6 +210,40 @@ export default function ModuleAboutPage() {
               </>
             )}
           />
+
+          <FieldGroup
+            title="Fallback (text-only)"
+            hint="Shown on the page only while there are no content sections above. No images here."
+          >
+            {form.aboutDescription.length > 0 &&
+            form.aboutContents.length === 0 ? (
+              <div className="lg:col-span-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={convertParagraphs}
+                >
+                  <ImageIcon className="mr-1.5 size-3.5" />
+                  Convert paragraphs to content sections
+                </Button>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Copies each paragraph into a content section so you can add
+                  images. Review, then Save.
+                </p>
+              </div>
+            ) : null}
+            <StringListField
+              label="Fallback tab headings"
+              values={form.aboutSectionHeadings}
+              onChange={(v) => patch({ aboutSectionHeadings: v })}
+            />
+            <StringListField
+              label="Fallback paragraphs"
+              values={form.aboutDescription}
+              onChange={(v) => patch({ aboutDescription: v })}
+            />
+          </FieldGroup>
         </>
       ) : null}
     </SectionShell>
