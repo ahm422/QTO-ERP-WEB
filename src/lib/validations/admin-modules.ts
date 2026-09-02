@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ALLOWED_ROLLOUT_ICON_KEYS } from "@/lib/icon-map";
+import { isCmsIconKey } from "@/lib/cms-icons";
 
 /** Optional CMS copy override: trimmed, capped, nullable (null/empty = use code default). */
 const overrideText = (max: number) =>
@@ -21,16 +21,18 @@ const rolloutIconKeySchema = z
   .trim()
   .min(1)
   .max(40)
-  .refine(
-    (key) => (ALLOWED_ROLLOUT_ICON_KEYS as readonly string[]).includes(key),
-    { message: "Invalid rollout icon key" },
-  );
+  .refine(isCmsIconKey, { message: "Invalid rollout icon key" });
 
 const capabilitySchema = z.object({
   iconKey: z.string().trim().min(1).max(40).optional(),
   title: z.string().trim().min(1).max(120),
   description: z.string().trim().min(1).max(500),
-  href: z.string().trim().max(300).optional(),
+});
+
+const problemSchema = z.object({
+  problem: z.string().trim().min(1).max(500),
+  solution: z.string().trim().min(1).max(500),
+  iconKey: z.string().trim().min(1).max(40).optional(),
 });
 
 const rolloutStepSchema = z.object({
@@ -61,6 +63,7 @@ const moduleBaseSchema = z.object({
   bestFor: z.string().trim().min(1).max(300),
   cardTagline: z.string().trim().max(200).nullable().optional(),
   iconKey: z.string().trim().min(1).max(40),
+  // A media object key ("module-videos/…"), an absolute http(s) URL, or "#".
   videoUrl: z.string().trim().min(1).max(500),
   videoCtaTitle: z.string().trim().max(200).nullable().optional(),
   videoCtaDescription: z.string().trim().max(500).nullable().optional(),
@@ -78,7 +81,7 @@ const moduleBaseSchema = z.object({
   rolloutTitleTemplate: z.string().trim().max(200).nullable().optional(),
   rolloutDescription: z.string().trim().max(500).nullable().optional(),
   rolloutSteps: z.array(rolloutStepSchema).max(12),
-  problems: z.unknown(),
+  problems: z.array(problemSchema).max(20).optional(),
   testimonialsSectionTag: z.string().trim().max(80).nullable().optional(),
   testimonialsSectionTitle: z.string().trim().max(200).nullable().optional(),
   testimonialsSectionDescription: z

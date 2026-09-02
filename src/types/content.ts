@@ -52,6 +52,11 @@ export type ModuleDetail = ModuleSummary & {
   rolloutDescription?: string;
   rolloutSteps: ModuleRolloutStepsType;
   problems: ProblemsType;
+  /** Always populated (falls back to MODULE_PAGE_DEFAULTS). */
+  problemsTag: string;
+  /** Resolved from the `{name}` template. */
+  problemsTitle: string;
+  problemsDescription: string;
   testimonialsSectionTag?: string;
   testimonialsSectionTitle?: string;
   testimonialsSectionDescription?: string;

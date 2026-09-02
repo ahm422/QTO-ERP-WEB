@@ -16,11 +16,13 @@ import {
   RepeatableList,
   TextAreaField,
   TextField,
+  VideoField,
 } from "@/components/admin/section-editor/fields";
 import type { Feature } from "@/types/feature";
 
 function previewOf(image?: string): string | undefined {
   if (!image) return undefined;
+  if (image === "#") return undefined;
   if (image.startsWith("http") || image.startsWith("/")) return image;
   return `/api/media/${image}`;
 }
@@ -30,6 +32,7 @@ type Form = {
   featuresSectionTitle: string;
   featuresSectionDescription: string;
   videoUrl: string;
+  videoPreview?: string;
   videoCtaTitle: string;
   videoCtaDescription: string;
   videoCtaButtonLabel: string;
@@ -40,7 +43,8 @@ const toForm = (i: Record<string, unknown>): Form => ({
   featuresTag: str(i.featuresTag),
   featuresSectionTitle: str(i.featuresSectionTitle),
   featuresSectionDescription: str(i.featuresSectionDescription),
-  videoUrl: str(i.videoUrl),
+  videoUrl: str(i.videoUrl) === "#" ? "" : str(i.videoUrl),
+  videoPreview: previewOf(str(i.videoUrl)),
   videoCtaTitle: str(i.videoCtaTitle),
   videoCtaDescription: str(i.videoCtaDescription),
   videoCtaButtonLabel: str(i.videoCtaButtonLabel),
@@ -117,10 +121,15 @@ export default function ModuleFeaturesPage() {
           </FieldGroup>
 
           <FieldGroup title="Demo video card">
-            <TextField
-              label="Video URL"
-              value={form.videoUrl}
-              onChange={(v) => patch({ videoUrl: v })}
+            <VideoField
+              label="Demo video"
+              hint="MP4 or WebM, up to 500MB. Plays in the module page's 'Watch Demo' modal."
+              objectKey={form.videoUrl}
+              previewUrl={form.videoPreview}
+              uploadEndpoint="/api/admin/modules/upload-video"
+              onChange={(key, url) =>
+                patch({ videoUrl: key, videoPreview: url || undefined })
+              }
             />
             <TextField
               label="Card title (optional)"

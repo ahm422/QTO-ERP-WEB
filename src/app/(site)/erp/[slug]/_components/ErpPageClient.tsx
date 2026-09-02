@@ -6,6 +6,7 @@ import { VideoModal } from "@/components/ui/VedioModal";
 import HeroSection from "./HeroSection";
 import FeatureCardsSection from "./FeatureCardsSection";
 import PipelineSection from "./PipelineSection";
+import ProblemsSection from "./ProblemsSection";
 import AboutSection from "./AboutSection";
 import FeaturesSection from "./FeaturesSection";
 import TestimonialsSection from "./TestimonialsSection";
@@ -78,6 +79,15 @@ export default function ErpPageClient({ app, allModules }: ErpPageClientProps) {
         if (cancelled) return;
 
         if (!video?.playbackUrl) {
+          // Fall back to the module's own uploaded demo video, if any.
+          if (app.videoUrl && app.videoUrl !== "#") {
+            setPlaybackUrl(app.videoUrl);
+            setVideoTitle(app.videoCtaTitle);
+            setContentType(
+              app.videoUrl.endsWith(".webm") ? "video/webm" : "video/mp4",
+            );
+            return;
+          }
           setVideoError("No demo video has been published yet.");
           return;
         }
@@ -101,7 +111,7 @@ export default function ErpPageClient({ app, allModules }: ErpPageClientProps) {
     return () => {
       cancelled = true;
     };
-  }, [videoOpen, app.slug, pickVideo]);
+  }, [videoOpen, app.slug, app.videoUrl, app.videoCtaTitle, pickVideo]);
 
   const handleVideoOpen = () => setVideoOpen(true);
   const handleVideoClose = () => {
@@ -115,6 +125,7 @@ export default function ErpPageClient({ app, allModules }: ErpPageClientProps) {
       <HeroSection app={app} onVideoOpen={handleVideoOpen} />
       <FeatureCardsSection app={app} />
       <PipelineSection app={app} />
+      <ProblemsSection app={app} />
       <AboutSection app={app} />
       <FeaturesSection app={app} onVideoOpen={handleVideoOpen} />
       <TestimonialsSection app={app} />

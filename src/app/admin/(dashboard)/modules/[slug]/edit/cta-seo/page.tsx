@@ -11,7 +11,17 @@ import {
   FieldGroup,
   SectionShell,
 } from "@/components/admin/section-editor/SectionShell";
-import { TextAreaField, TextField } from "@/components/admin/section-editor/fields";
+import {
+  ImageField,
+  TextAreaField,
+  TextField,
+} from "@/components/admin/section-editor/fields";
+
+function previewOf(image?: string): string | undefined {
+  if (!image) return undefined;
+  if (image.startsWith("http") || image.startsWith("/")) return image;
+  return `/api/media/${image}`;
+}
 
 type Form = {
   allAppsTag: string;
@@ -117,12 +127,16 @@ export default function ModuleCtaSeoPage() {
             </div>
           </FieldGroup>
 
-          <TextField
-            label="Fallback image (path or media key)"
-            hint="Used for feature/about blocks that don't set their own image."
-            value={form.defaultImage}
-            onChange={(v) => patch({ defaultImage: v })}
-          />
+          <FieldGroup title="Fallback image">
+            <ImageField
+              label="Fallback image"
+              hint="Used for feature/about blocks that don't set their own image. Remove to fall back to the built-in default."
+              objectKey={form.defaultImage}
+              previewUrl={previewOf(form.defaultImage)}
+              uploadEndpoint="/api/admin/modules/upload"
+              onChange={(key) => patch({ defaultImage: key })}
+            />
+          </FieldGroup>
 
           <FieldGroup title="SEO">
             <TextField
