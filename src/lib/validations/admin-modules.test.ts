@@ -57,4 +57,77 @@ describe("updateModuleSchema — CMS page-copy overrides", () => {
     const parsed = updateModuleSchema.safeParse({ notAField: "x" });
     assert.equal(parsed.success, false);
   });
+
+  it("accepts a media object key or an http(s) URL for videoUrl", () => {
+    assert.equal(
+      updateModuleSchema.safeParse({ videoUrl: "module-videos/abc123.mp4" })
+        .success,
+      true,
+    );
+    assert.equal(
+      updateModuleSchema.safeParse({
+        videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+      }).success,
+      true,
+    );
+    assert.equal(updateModuleSchema.safeParse({ videoUrl: "" }).success, false);
+  });
+
+  it("accepts a capability without href (field removed) but keeps iconKey optional", () => {
+    assert.equal(
+      updateModuleSchema.safeParse({
+        capabilities: [{ title: "Track time", description: "Log hours" }],
+      }).success,
+      true,
+    );
+    assert.equal(
+      updateModuleSchema.safeParse({
+        capabilities: [
+          { iconKey: "wallet", title: "Billing", description: "Invoices" },
+        ],
+      }).success,
+      true,
+    );
+  });
+
+  it("accepts legacy and expanded rollout icon keys, rejects bogus ones", () => {
+    const step = (iconKey: string) => ({
+      rolloutSteps: [{ step: 1, title: "Plan", description: "Kickoff", iconKey }],
+    });
+    assert.equal(updateModuleSchema.safeParse(step("rocket")).success, true);
+    assert.equal(updateModuleSchema.safeParse(step("workflow")).success, true);
+    assert.equal(
+      updateModuleSchema.safeParse(step("not-an-icon")).success,
+      false,
+    );
+  });
+
+  it("validates problems as problem/solution pairs", () => {
+    assert.equal(
+      updateModuleSchema.safeParse({
+        problems: [{ problem: "Manual entry", solution: "Automate it" }],
+      }).success,
+      true,
+    );
+    assert.equal(
+      updateModuleSchema.safeParse({
+        problems: [
+          {
+            problem: "Manual entry",
+            solution: "Automate it",
+            iconKey: "circle-alert",
+          },
+        ],
+      }).success,
+      true,
+    );
+    assert.equal(
+      updateModuleSchema.safeParse({ problems: [{ problem: "x" }] }).success,
+      false,
+    );
+    assert.equal(
+      updateModuleSchema.safeParse({ problems: "nope" }).success,
+      false,
+    );
+  });
 });

@@ -15,6 +15,9 @@ export type ModulePageDefaults = {
   videoCtaTitleTemplate: string;
   videoCtaDescription: string;
   videoCtaButtonLabel: string;
+  problemsTag: string;
+  problemsTitleTemplate: string;
+  problemsDescription: string;
   faqSectionTag: string;
   faqSectionTitleTemplate: string;
   aboutTag: string;
@@ -42,6 +45,10 @@ export const MODULE_PAGE_DEFAULTS: ModulePageDefaults = {
   videoCtaDescription:
     "Watch a quick overview of all key features and how they work together seamlessly.",
   videoCtaButtonLabel: "Watch Demo",
+  problemsTag: "Challenges",
+  problemsTitleTemplate: "Problems {name} solves",
+  problemsDescription:
+    "The day-to-day pain points this module removes — and what it puts in their place.",
   faqSectionTag: "FAQ",
   faqSectionTitleTemplate: "{name} FAQ",
   aboutTag: "About",

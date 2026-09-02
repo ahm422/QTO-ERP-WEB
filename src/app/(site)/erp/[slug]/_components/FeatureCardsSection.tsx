@@ -27,7 +27,6 @@ export default function FeatureCardsSection({ app }: FeatureCardsSectionProps) {
           iconKey: app.iconKey,
           title: f.title,
           description: f.description,
-          href: '#features' as string | undefined,
         }));
   if (capabilities.length === 0) return null;
 
@@ -66,11 +65,11 @@ export default function FeatureCardsSection({ app }: FeatureCardsSectionProps) {
                 </CardHeader>
                 <CardFooter className='pt-0'>
                   <Link
-                    href={capability.href ?? '#features'}
+                    href='#features'
                     className='inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline'
                   >
-                    {/* Generic per-card affordance + in-page anchor; not marketing copy. */}
-                    Explore Module
+                    {/* In-page anchor to the full feature list; not marketing copy. */}
+                    See features
                     <ArrowRight className='size-3.5' aria-hidden />
                   </Link>
                 </CardFooter>

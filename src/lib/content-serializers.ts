@@ -133,7 +133,10 @@ export function serializeModuleSummary(m: ErpModule): ModuleSummary {
 export function serializeModuleDetail(m: ErpModule): ModuleDetail {
   return {
     ...serializeModuleSummary(m),
-    videoUrl: m.videoUrl,
+    videoUrl:
+      m.videoUrl === "#"
+        ? "#"
+        : (resolveMediaPath(m.videoUrl) ?? m.videoUrl),
     videoCtaTitle:
       m.videoCtaTitle ??
       applyModuleNameTemplate(
@@ -156,7 +159,13 @@ export function serializeModuleDetail(m: ErpModule): ModuleDetail {
     rolloutTitleTemplate: m.rolloutTitleTemplate ?? undefined,
     rolloutDescription: m.rolloutDescription ?? undefined,
     rolloutSteps: m.rolloutSteps ?? [],
-    problems: m.problems,
+    problems: m.problems ?? [],
+    problemsTag: MODULE_PAGE_DEFAULTS.problemsTag,
+    problemsTitle: applyModuleNameTemplate(
+      MODULE_PAGE_DEFAULTS.problemsTitleTemplate,
+      m.name,
+    ),
+    problemsDescription: MODULE_PAGE_DEFAULTS.problemsDescription,
     testimonialsSectionTag: m.testimonialsSectionTag ?? undefined,
     testimonialsSectionTitle: m.testimonialsSectionTitle ?? undefined,
     testimonialsSectionDescription:

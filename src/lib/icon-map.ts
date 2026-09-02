@@ -29,6 +29,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { CMS_ICONS } from "@/lib/cms-icons";
 
 const MODULE_ICONS: Record<string, LucideIcon> = {
   clock: Clock,
@@ -157,7 +158,9 @@ const DEFAULT_CONTACT_ICON = Mail;
 const DEFAULT_ROLLOUT_ICON = ClipboardCheck;
 
 export function getModuleIcon(iconKey: string): LucideIcon {
-  return MODULE_ICONS[iconKey] ?? DEFAULT_ICON;
+  return (
+    CMS_ICONS[iconKey]?.Icon ?? MODULE_ICONS[iconKey] ?? DEFAULT_ICON
+  );
 }
 
 export function getDomainIcon(iconKey: string): LucideIcon {
@@ -191,5 +194,7 @@ export function getContactIcon(iconKey: string): LucideIcon {
 
 /** Resolve Lucide icon for module rollout pipeline steps. */
 export function getRolloutIcon(iconKey: string): LucideIcon {
-  return ROLLOUT_ICONS[iconKey] ?? DEFAULT_ROLLOUT_ICON;
+  return (
+    CMS_ICONS[iconKey]?.Icon ?? ROLLOUT_ICONS[iconKey] ?? DEFAULT_ROLLOUT_ICON
+  );
 }

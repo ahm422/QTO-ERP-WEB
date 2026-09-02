@@ -4,7 +4,6 @@ export type ModuleCapability = {
   iconKey?: string;
   title: string;
   description: string;
-  href?: string;
 };
 
 export type ModuleCapabilitiesType = ModuleCapability[];

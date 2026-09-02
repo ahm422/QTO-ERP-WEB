@@ -12,6 +12,7 @@ import {
   SectionShell,
 } from "@/components/admin/section-editor/SectionShell";
 import {
+  IconPickerField,
   RepeatableList,
   TextAreaField,
   TextField,
@@ -49,7 +50,6 @@ export default function ModuleCapabilitiesPage() {
           iconKey: c.iconKey || undefined,
           title: c.title.trim(),
           description: c.description.trim(),
-          href: c.href || undefined,
         })),
       },
       "Capabilities saved",
@@ -93,8 +93,8 @@ export default function ModuleCapabilitiesPage() {
             makeEmpty={() => ({ title: "", description: "" })}
             renderRow={(cap, update) => (
               <>
-                <TextField
-                  label="Icon key (optional)"
+                <IconPickerField
+                  label="Icon (optional)"
                   value={cap.iconKey ?? ""}
                   onChange={(v) => update({ iconKey: v })}
                 />
@@ -108,11 +108,6 @@ export default function ModuleCapabilitiesPage() {
                   rows={2}
                   value={cap.description}
                   onChange={(v) => update({ description: v })}
-                />
-                <TextField
-                  label="Link (optional, default #features)"
-                  value={cap.href ?? ""}
-                  onChange={(v) => update({ href: v })}
                 />
               </>
             )}

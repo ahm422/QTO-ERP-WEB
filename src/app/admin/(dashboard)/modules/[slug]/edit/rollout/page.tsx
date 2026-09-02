@@ -1,7 +1,6 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ALLOWED_ROLLOUT_ICON_KEYS } from "@/lib/icon-map";
 import {
   nullifyEmpty,
   str,
@@ -10,8 +9,8 @@ import {
 } from "@/components/admin/section-editor/useAdminResource";
 import { SectionShell } from "@/components/admin/section-editor/SectionShell";
 import {
+  IconPickerField,
   RepeatableList,
-  SelectField,
   TextAreaField,
   TextField,
 } from "@/components/admin/section-editor/fields";
@@ -101,10 +100,9 @@ export default function ModuleRolloutPage() {
             })}
             renderRow={(step, update) => (
               <>
-                <SelectField
+                <IconPickerField
                   label="Icon"
                   value={step.iconKey}
-                  options={ALLOWED_ROLLOUT_ICON_KEYS}
                   onChange={(v) => update({ iconKey: v })}
                 />
                 <TextField

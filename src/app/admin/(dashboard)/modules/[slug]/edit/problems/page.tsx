@@ -7,6 +7,7 @@ import {
 } from "@/components/admin/section-editor/useAdminResource";
 import { SectionShell } from "@/components/admin/section-editor/SectionShell";
 import {
+  IconPickerField,
   RepeatableList,
   TextAreaField,
 } from "@/components/admin/section-editor/fields";
@@ -32,6 +33,7 @@ export default function ModuleProblemsPage() {
         problems: form.problems.map((p) => ({
           problem: p.problem.trim(),
           solution: p.solution.trim(),
+          iconKey: p.iconKey || undefined,
         })),
       },
       "Problems saved",
@@ -41,8 +43,8 @@ export default function ModuleProblemsPage() {
   return (
     <SectionShell
       title="Problems"
-      description="Problem → solution pairs powering the pain-point block."
-      viewHref={`/erp/${slug}`}
+      description="Problem → solution pairs powering the pain-point block (shown after the rollout pipeline)."
+      viewHref={`/erp/${slug}#problems`}
       loading={loading || !form}
       saving={saving}
       onSave={onSave}
@@ -57,6 +59,11 @@ export default function ModuleProblemsPage() {
           makeEmpty={() => ({ problem: "", solution: "" })}
           renderRow={(row, update) => (
             <>
+              <IconPickerField
+                label="Icon (optional)"
+                value={row.iconKey ?? ""}
+                onChange={(v) => update({ iconKey: v })}
+              />
               <TextAreaField
                 label="Problem"
                 rows={2}
