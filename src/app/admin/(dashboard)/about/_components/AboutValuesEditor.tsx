@@ -214,7 +214,7 @@ export function AboutValuesEditor() {
             <TableBody>
               {sortRows(rows).map((row, index) => (
                 <TableRow key={row.id}>
-                  <TableCell>
+                  <TableCell data-label="Order">
                     <div className="flex gap-1">
                       <Button
                         type="button"
@@ -238,24 +238,27 @@ export function AboutValuesEditor() {
                       </Button>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Title">
                     <Input
                       value={row.title}
                       onChange={(e) => update(row.id, "title", e.target.value)}
                       className="min-w-36"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell
+                    data-label="Description"
+                    className="max-md:flex-col max-md:items-stretch"
+                  >
                     <Textarea
                       value={row.description}
                       onChange={(e) =>
                         update(row.id, "description", e.target.value)
                       }
                       rows={2}
-                      className="min-w-56"
+                      className="min-w-56 max-md:min-w-0"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Published">
                     <Switch
                       checked={row.published}
                       onCheckedChange={(checked) =>
@@ -263,7 +266,7 @@ export function AboutValuesEditor() {
                       }
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="max-md:justify-end">
                     <div className="flex gap-2">
                       <Button
                         type="button"
@@ -289,8 +292,8 @@ export function AboutValuesEditor() {
               ))}
 
               <TableRow>
-                <TableCell />
-                <TableCell>
+                <TableCell className="max-md:hidden" />
+                <TableCell data-label="Title">
                   <Input
                     placeholder="New title"
                     value={newRow.title}
@@ -299,7 +302,10 @@ export function AboutValuesEditor() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell
+                  data-label="Description"
+                  className="max-md:flex-col max-md:items-stretch"
+                >
                   <Textarea
                     placeholder="New description"
                     rows={2}
@@ -312,7 +318,7 @@ export function AboutValuesEditor() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Published">
                   <Switch
                     checked={newRow.published}
                     onCheckedChange={(checked) =>
@@ -320,7 +326,7 @@ export function AboutValuesEditor() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell className="max-md:justify-end">
                   <Button type="button" size="sm" onClick={createRow}>
                     Add
                   </Button>

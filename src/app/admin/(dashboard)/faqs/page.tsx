@@ -384,7 +384,7 @@ function FaqsAdminInner() {
                 <TableBody>
                   {sortRows(rows).map((row, index) => (
                     <TableRow key={row.id}>
-                      <TableCell>
+                      <TableCell data-label="Order">
                         <div className="flex gap-1">
                           <Button
                             type="button"
@@ -408,7 +408,7 @@ function FaqsAdminInner() {
                           </Button>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Question">
                         <Input
                           value={row.question}
                           onChange={(e) =>
@@ -416,9 +416,12 @@ function FaqsAdminInner() {
                           }
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                        data-label="Answer"
+                        className="max-md:flex-col max-md:items-stretch"
+                      >
                         <Textarea
-                          className="min-w-56"
+                          className="min-w-56 max-md:min-w-0"
                           rows={3}
                           value={row.answer}
                           onChange={(e) =>
@@ -426,7 +429,7 @@ function FaqsAdminInner() {
                           }
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Category">
                         <Input
                           value={row.category ?? ""}
                           onChange={(e) =>
@@ -434,7 +437,7 @@ function FaqsAdminInner() {
                           }
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Published">
                         <Switch
                           checked={row.published}
                           onCheckedChange={(v) =>
@@ -442,7 +445,7 @@ function FaqsAdminInner() {
                           }
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="max-md:justify-end">
                         <div className="flex gap-2">
                           <Button
                             type="button"
@@ -467,8 +470,8 @@ function FaqsAdminInner() {
                     </TableRow>
                   ))}
                   <TableRow>
-                    <TableCell />
-                    <TableCell>
+                    <TableCell className="max-md:hidden" />
+                    <TableCell data-label="Question">
                       <Input
                         placeholder="Question"
                         value={newFaq.question}
@@ -480,9 +483,12 @@ function FaqsAdminInner() {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      data-label="Answer"
+                      className="max-md:flex-col max-md:items-stretch"
+                    >
                       <Textarea
-                        className="min-w-56"
+                        className="min-w-56 max-md:min-w-0"
                         rows={3}
                         placeholder="Answer"
                         value={newFaq.answer}
@@ -491,7 +497,7 @@ function FaqsAdminInner() {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell data-label="Category">
                       <Input
                         placeholder="Category"
                         value={newFaq.category}
@@ -503,7 +509,7 @@ function FaqsAdminInner() {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell data-label="Published">
                       <Switch
                         checked={newFaq.published}
                         onCheckedChange={(v) =>
@@ -511,7 +517,7 @@ function FaqsAdminInner() {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="max-md:justify-end">
                       <Button type="button" size="sm" onClick={createRow}>
                         Add
                       </Button>

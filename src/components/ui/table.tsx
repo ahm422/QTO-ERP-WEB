@@ -4,36 +4,64 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+/**
+ * When `stack` is on (the default), the table collapses to a stack of cards
+ * below the `md` breakpoint: the header is hidden, each row becomes a bordered
+ * card, and each cell shows its column name (from `data-label` on the
+ * `TableCell`) beside the value. Pass `stack={false}` to keep a horizontally
+ * scrolling table on small screens instead.
+ */
+const TableStackContext = React.createContext(true)
+
+function Table({
+  className,
+  stack = true,
+  ...props
+}: React.ComponentProps<"table"> & { stack?: boolean }) {
   return (
-    <div
-      data-slot="table-container"
-      className="relative w-full overflow-x-auto"
-    >
-      <table
-        data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
-        {...props}
-      />
-    </div>
+    <TableStackContext.Provider value={stack}>
+      <div
+        data-slot="table-container"
+        className={cn(
+          "relative w-full",
+          stack ? "md:overflow-x-auto" : "overflow-x-auto",
+        )}
+      >
+        <table
+          data-slot="table"
+          className={cn(
+            "w-full caption-bottom text-sm",
+            stack && "max-md:block",
+            className,
+          )}
+          {...props}
+        />
+      </div>
+    </TableStackContext.Provider>
   )
 }
 
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
+  const stack = React.useContext(TableStackContext)
   return (
     <thead
       data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
+      className={cn("[&_tr]:border-b", stack && "max-md:hidden", className)}
       {...props}
     />
   )
 }
 
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
+  const stack = React.useContext(TableStackContext)
   return (
     <tbody
       data-slot="table-body"
-      className={cn("[&_tr:last-child]:border-0", className)}
+      className={cn(
+        "[&_tr:last-child]:border-0",
+        stack && "max-md:block",
+        className,
+      )}
       {...props}
     />
   )
@@ -53,11 +81,14 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
 }
 
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
+  const stack = React.useContext(TableStackContext)
   return (
     <tr
       data-slot="table-row"
       className={cn(
         "border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted",
+        stack &&
+          "max-md:mb-3 max-md:block max-md:rounded-lg max-md:border max-md:border-border max-md:p-3 max-md:shadow-sm max-md:last:mb-0",
         className
       )}
       {...props}
@@ -79,11 +110,14 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
 }
 
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
+  const stack = React.useContext(TableStackContext)
   return (
     <td
       data-slot="table-cell"
       className={cn(
         "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        stack &&
+          "max-md:flex max-md:items-center max-md:justify-between max-md:gap-4 max-md:whitespace-normal max-md:border-0 max-md:px-0 max-md:py-1.5 max-md:text-right max-md:before:mr-4 max-md:before:shrink-0 max-md:before:text-left max-md:before:text-xs max-md:before:font-medium max-md:before:tracking-wide max-md:before:text-muted-foreground max-md:before:uppercase max-md:before:content-[attr(data-label)] max-md:empty:hidden max-md:[&:not([data-label])]:before:hidden",
         className
       )}
       {...props}

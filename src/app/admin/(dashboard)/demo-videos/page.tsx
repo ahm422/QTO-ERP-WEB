@@ -290,7 +290,7 @@ export default function DemoVideosAdminPage() {
             <TableBody>
               {videos.map((video) => (
                 <TableRow key={video.id}>
-                  <TableCell>
+                  <TableCell data-label="Title">
                     <Input
                       defaultValue={video.title}
                       onBlur={(e) => {
@@ -300,9 +300,13 @@ export default function DemoVideosAdminPage() {
                       }}
                     />
                   </TableCell>
-                  <TableCell className="font-mono text-sm">{video.slug}</TableCell>
-                  <TableCell>{video.moduleSlug ?? "—"}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-mono text-sm" data-label="Slug">
+                    {video.slug}
+                  </TableCell>
+                  <TableCell data-label="Module">
+                    {video.moduleSlug ?? "—"}
+                  </TableCell>
+                  <TableCell data-label="Status">
                     <Badge
                       variant={
                         video.status === "PUBLISHED" ? "default" : "outline"
@@ -311,7 +315,7 @@ export default function DemoVideosAdminPage() {
                       {video.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Order">
                     <Input
                       type="number"
                       className="w-20"
@@ -324,7 +328,7 @@ export default function DemoVideosAdminPage() {
                       }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="max-md:justify-end">
                     <Button
                       type="button"
                       size="sm"

@@ -85,8 +85,10 @@ export default function PricingAdminPage() {
                   !plan.stripePriceIdMonthly || !plan.stripePriceIdYearly;
                 return (
                   <TableRow key={plan.id}>
-                    <TableCell className="font-mono text-sm">{plan.slug}</TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-mono text-sm" data-label="Slug">
+                      {plan.slug}
+                    </TableCell>
+                    <TableCell className="font-medium" data-label="Name">
                       {plan.name}
                       {plan.popular && (
                         <Badge className="ml-2" variant="secondary">
@@ -94,21 +96,25 @@ export default function PricingAdminPage() {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell>${plan.monthlyPriceDisplay}</TableCell>
-                    <TableCell>${plan.yearlyPriceDisplay}</TableCell>
-                    <TableCell>
+                    <TableCell data-label="Monthly">
+                      ${plan.monthlyPriceDisplay}
+                    </TableCell>
+                    <TableCell data-label="Yearly">
+                      ${plan.yearlyPriceDisplay}
+                    </TableCell>
+                    <TableCell data-label="Stripe IDs">
                       {missingStripe ? (
                         <Badge variant="destructive">Missing Stripe IDs</Badge>
                       ) : (
                         <Badge variant="outline">Configured</Badge>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell data-label="Status">
                       <Badge variant={plan.published ? "default" : "outline"}>
                         {plan.published ? "Published" : "Draft"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="max-md:justify-end">
                       <Button type="button" size="sm" variant="outline" asChild>
                         <Link href={`/admin/pricing/${plan.slug}/edit`}>
                           Edit

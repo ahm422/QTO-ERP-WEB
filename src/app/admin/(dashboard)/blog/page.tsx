@@ -191,14 +191,14 @@ export default function BlogAdminPage() {
             <TableBody>
               {visible.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="p-0">
+                  <TableCell colSpan={7} className="p-0 max-md:block">
                     <EmptyState title="No posts yet." />
                   </TableCell>
                 </TableRow>
               ) : (
                 visible.map((post) => (
                   <TableRow key={post.id}>
-                    <TableCell>
+                    <TableCell data-label="Cover">
                       {post.coverImageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -210,10 +210,14 @@ export default function BlogAdminPage() {
                         <div className="h-10 w-14 rounded bg-muted" />
                       )}
                     </TableCell>
-                    <TableCell className="font-medium">{post.title}</TableCell>
-                    <TableCell className="font-mono text-sm">{post.slug}</TableCell>
-                    <TableCell>{post.category}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-medium" data-label="Title">
+                      {post.title}
+                    </TableCell>
+                    <TableCell className="font-mono text-sm" data-label="Slug">
+                      {post.slug}
+                    </TableCell>
+                    <TableCell data-label="Category">{post.category}</TableCell>
+                    <TableCell data-label="Status">
                       <Badge
                         variant={
                           post.status === "PUBLISHED" ? "default" : "outline"
@@ -222,10 +226,13 @@ export default function BlogAdminPage() {
                         {post.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell
+                      className="text-sm text-muted-foreground"
+                      data-label="Updated"
+                    >
                       {new Date(post.updatedAt).toLocaleDateString()}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="max-md:justify-end">
                       <div className="flex gap-2">
                         <Button type="button" size="sm" variant="outline" asChild>
                           <Link href={`/admin/blog/${post.id}/edit`}>Edit</Link>

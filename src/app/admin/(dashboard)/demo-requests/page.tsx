@@ -172,29 +172,38 @@ export default function DemoRequestsPage() {
             <TableBody>
               {requests.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="p-0">
+                  <TableCell colSpan={9} className="p-0 max-md:block">
                     <EmptyState title="No demo requests found." />
                   </TableCell>
                 </TableRow>
               ) : (
                 requests.map((r) => (
                   <TableRow key={r.id}>
-                    <TableCell className="font-medium">{r.name}</TableCell>
-                    <TableCell>{r.email}</TableCell>
-                    <TableCell>{r.phone ?? "—"}</TableCell>
-                    <TableCell>{r.companyPhone ?? "—"}</TableCell>
-                    <TableCell>{r.country}</TableCell>
-                    <TableCell>{r.businessType}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-medium" data-label="Name">
+                      {r.name}
+                    </TableCell>
+                    <TableCell data-label="Email">{r.email}</TableCell>
+                    <TableCell data-label="Client phone">
+                      {r.phone ?? "—"}
+                    </TableCell>
+                    <TableCell data-label="Company phone">
+                      {r.companyPhone ?? "—"}
+                    </TableCell>
+                    <TableCell data-label="Country">{r.country}</TableCell>
+                    <TableCell data-label="Business">{r.businessType}</TableCell>
+                    <TableCell data-label="Status">
                       <Badge variant={demoRequestStatusVariant[r.status]}>
                         {r.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell
+                      className="text-sm text-muted-foreground"
+                      data-label="Date"
+                    >
                       {new Date(r.createdAt).toLocaleDateString()}
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                    <TableCell className="text-right max-md:justify-end">
+                      <div className="flex justify-end gap-2 max-md:flex-wrap">
                         <Select
                           value={r.status}
                           onValueChange={(v) =>

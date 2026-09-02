@@ -199,7 +199,7 @@ export function ContactChannelsEditor() {
           <TableBody>
             {sortRows(rows).map((row, index) => (
               <TableRow key={row.id}>
-                <TableCell>
+                <TableCell data-label="Order">
                   <div className="flex gap-1">
                     <Button
                       type="button"
@@ -223,25 +223,25 @@ export function ContactChannelsEditor() {
                     </Button>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Type">
                   <Input
                     value={row.type}
                     onChange={(e) => update(row.id, "type", e.target.value)}
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Label">
                   <Input
                     value={row.label}
                     onChange={(e) => update(row.id, "label", e.target.value)}
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Value">
                   <Input
                     value={row.value}
                     onChange={(e) => update(row.id, "value", e.target.value)}
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Icon">
                   <select
                     className="flex h-9 w-full min-w-28 rounded-md border border-input bg-background px-2 text-sm"
                     value={row.iconKey}
@@ -256,13 +256,13 @@ export function ContactChannelsEditor() {
                     ))}
                   </select>
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Published">
                   <Switch
                     checked={row.published}
                     onCheckedChange={(v) => update(row.id, "published", v)}
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell className="max-md:justify-end">
                   <div className="flex gap-2">
                     <Button
                       type="button"
@@ -287,8 +287,8 @@ export function ContactChannelsEditor() {
               </TableRow>
             ))}
             <TableRow>
-              <TableCell />
-              <TableCell>
+              <TableCell className="max-md:hidden" />
+              <TableCell data-label="Type">
                 <Input
                   placeholder="email | phone | chat | office"
                   value={newRow.type}
@@ -297,7 +297,7 @@ export function ContactChannelsEditor() {
                   }
                 />
               </TableCell>
-              <TableCell>
+              <TableCell data-label="Label">
                 <Input
                   placeholder="Label"
                   value={newRow.label}
@@ -306,7 +306,7 @@ export function ContactChannelsEditor() {
                   }
                 />
               </TableCell>
-              <TableCell>
+              <TableCell data-label="Value">
                 <Input
                   placeholder="Value"
                   value={newRow.value}
@@ -315,7 +315,7 @@ export function ContactChannelsEditor() {
                   }
                 />
               </TableCell>
-              <TableCell>
+              <TableCell data-label="Icon">
                 <select
                   className="flex h-9 w-full min-w-28 rounded-md border border-input bg-background px-2 text-sm"
                   value={newRow.iconKey}
@@ -330,7 +330,7 @@ export function ContactChannelsEditor() {
                   ))}
                 </select>
               </TableCell>
-              <TableCell>
+              <TableCell data-label="Published">
                 <Switch
                   checked={newRow.published}
                   onCheckedChange={(v) =>
@@ -338,7 +338,7 @@ export function ContactChannelsEditor() {
                   }
                 />
               </TableCell>
-              <TableCell>
+              <TableCell className="max-md:justify-end">
                 <Button type="button" size="sm" onClick={createRow}>
                   Add
                 </Button>

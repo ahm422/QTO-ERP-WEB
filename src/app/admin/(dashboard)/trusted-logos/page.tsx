@@ -251,7 +251,7 @@ export default function TrustedLogosAdminPage() {
             <TableBody>
               {sortRows(rows).map((row, index) => (
                 <TableRow key={row.id}>
-                  <TableCell>
+                  <TableCell data-label="Order">
                     <div className="flex gap-1">
                       <Button
                         type="button"
@@ -275,13 +275,13 @@ export default function TrustedLogosAdminPage() {
                       </Button>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Name">
                     <Input
                       value={row.name}
                       onChange={(e) => update(row.id, "name", e.target.value)}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Link">
                     <Input
                       value={row.linkUrl ?? ""}
                       onChange={(e) =>
@@ -291,7 +291,7 @@ export default function TrustedLogosAdminPage() {
                       placeholder="/ or https://…"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Logo">
                     <div className="flex min-w-48 flex-col gap-2">
                       {row.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -336,13 +336,13 @@ export default function TrustedLogosAdminPage() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Published">
                     <Switch
                       checked={row.published}
                       onCheckedChange={(v) => update(row.id, "published", v)}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="max-md:justify-end">
                     <div className="flex gap-2">
                       <Button
                         type="button"
@@ -367,8 +367,8 @@ export default function TrustedLogosAdminPage() {
                 </TableRow>
               ))}
               <TableRow>
-                <TableCell />
-                <TableCell>
+                <TableCell className="max-md:hidden" />
+                <TableCell data-label="Name">
                   <Input
                     placeholder="New name"
                     value={newRow.name}
@@ -377,7 +377,7 @@ export default function TrustedLogosAdminPage() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Link">
                   <Input
                     placeholder="Optional link"
                     value={newRow.linkUrl}
@@ -386,7 +386,7 @@ export default function TrustedLogosAdminPage() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Logo">
                   <div className="flex flex-col gap-2">
                     {newRow.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -415,7 +415,7 @@ export default function TrustedLogosAdminPage() {
                     />
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Published">
                   <Switch
                     checked={newRow.published}
                     onCheckedChange={(v) =>
@@ -423,7 +423,7 @@ export default function TrustedLogosAdminPage() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell className="max-md:justify-end">
                   <Button type="button" size="sm" onClick={createRow}>
                     Add
                   </Button>
