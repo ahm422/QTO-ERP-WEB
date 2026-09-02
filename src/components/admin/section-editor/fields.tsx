@@ -267,7 +267,8 @@ export function IconPickerField({
             <Popover.Content
               align="start"
               sideOffset={6}
-              className="z-50 w-[320px] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-md"
+              collisionPadding={12}
+              className="z-50 w-[min(20rem,calc(100vw-1.5rem))] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-md"
             >
               <div className="mb-2 flex items-center gap-2 rounded-md border border-input px-2">
                 <Search className="size-4 shrink-0 text-muted-foreground" />

@@ -330,7 +330,7 @@ export default function BuiltForAdminPage() {
                 <TableBody>
                   {sortRows(rows).map((row, index) => (
                     <TableRow key={row.id}>
-                      <TableCell>
+                      <TableCell data-label="Order">
                         <div className="flex gap-1">
                           <Button
                             type="button"
@@ -354,7 +354,7 @@ export default function BuiltForAdminPage() {
                           </Button>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Title">
                         <Input
                           value={row.title}
                           onChange={(e) =>
@@ -362,9 +362,12 @@ export default function BuiltForAdminPage() {
                           }
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                        data-label="Description"
+                        className="max-md:flex-col max-md:items-stretch"
+                      >
                         <Textarea
-                          className="min-w-56"
+                          className="min-w-56 max-md:min-w-0"
                           rows={2}
                           value={row.description}
                           onChange={(e) =>
@@ -372,7 +375,7 @@ export default function BuiltForAdminPage() {
                           }
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Icon">
                         <select
                           value={row.iconKey}
                           onChange={(e) =>
@@ -387,7 +390,7 @@ export default function BuiltForAdminPage() {
                           ))}
                         </select>
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Published">
                         <Switch
                           checked={row.published}
                           onCheckedChange={(v) =>
@@ -395,7 +398,7 @@ export default function BuiltForAdminPage() {
                           }
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="max-md:justify-end">
                         <div className="flex gap-2">
                           <Button
                             type="button"
@@ -420,8 +423,8 @@ export default function BuiltForAdminPage() {
                     </TableRow>
                   ))}
                   <TableRow>
-                    <TableCell />
-                    <TableCell>
+                    <TableCell className="max-md:hidden" />
+                    <TableCell data-label="Title">
                       <Input
                         placeholder="Title"
                         value={newCard.title}
@@ -430,9 +433,12 @@ export default function BuiltForAdminPage() {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      data-label="Description"
+                      className="max-md:flex-col max-md:items-stretch"
+                    >
                       <Textarea
-                        className="min-w-56"
+                        className="min-w-56 max-md:min-w-0"
                         rows={2}
                         placeholder="Description"
                         value={newCard.description}
@@ -444,7 +450,7 @@ export default function BuiltForAdminPage() {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell data-label="Icon">
                       <select
                         value={newCard.iconKey}
                         onChange={(e) =>
@@ -462,7 +468,7 @@ export default function BuiltForAdminPage() {
                         ))}
                       </select>
                     </TableCell>
-                    <TableCell>
+                    <TableCell data-label="Published">
                       <Switch
                         checked={newCard.published}
                         onCheckedChange={(v) =>
@@ -470,7 +476,7 @@ export default function BuiltForAdminPage() {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="max-md:justify-end">
                       <Button type="button" size="sm" onClick={createRow}>
                         Add
                       </Button>

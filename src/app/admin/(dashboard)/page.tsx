@@ -144,7 +144,7 @@ export default async function AdminDashboardPage() {
               />
             ) : (
               <div className="w-full overflow-x-auto">
-                <Table className="min-w-[36rem]">
+                <Table stack={false} className="min-w-[36rem]">
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>

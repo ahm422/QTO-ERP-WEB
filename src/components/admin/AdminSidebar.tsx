@@ -12,6 +12,11 @@ import {
   type AdminNavSection,
 } from "@/components/admin/admin-routes";
 import { useAuth } from "@/lib/auth-context";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const COLLAPSED_STORAGE_KEY = "qto-admin-nav-collapsed";
 
@@ -66,9 +71,11 @@ function writeCollapsedMap(map: CollapsedMap): void {
 function NavLinkItem({
   item,
   pathname,
+  onNavigate,
 }: {
   item: AdminNavItem;
   pathname: string;
+  onNavigate?: () => void;
 }) {
   const { href, label, icon: Icon } = item;
   const active = isItemActive(pathname, item);
@@ -76,6 +83,7 @@ function NavLinkItem({
   return (
     <Link
       href={href}
+      onClick={onNavigate}
       className={cn(
         "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
         active
@@ -89,7 +97,12 @@ function NavLinkItem({
   );
 }
 
-export function AdminSidebar() {
+/**
+ * Sidebar body (brand, section nav, footer). Rendered inside the static desktop
+ * `<aside>` and inside the mobile slide-in `Sheet`. `onNavigate` lets the mobile
+ * drawer close itself when a link is followed.
+ */
+function AdminSidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { can } = useAuth();
   const visibleSections = getVisibleSections(can);
@@ -128,10 +141,11 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="flex w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+    <div className="flex h-full min-h-0 flex-col text-sidebar-foreground">
       <div className="border-b border-sidebar-border px-4 py-5">
         <Link
           href="/admin"
+          onClick={onNavigate}
           className="font-display text-lg font-semibold tracking-tight text-sidebar-foreground"
         >
           QTO ERP
@@ -175,6 +189,7 @@ export function AdminSidebar() {
                               key={item.href}
                               item={item}
                               pathname={pathname}
+                              onNavigate={onNavigate}
                             />
                           ))}
                         </div>
@@ -187,6 +202,7 @@ export function AdminSidebar() {
                       key={item.href}
                       item={item}
                       pathname={pathname}
+                      onNavigate={onNavigate}
                     />
                   ))
                 )
@@ -207,6 +223,56 @@ export function AdminSidebar() {
           View site
         </a>
       </div>
+    </div>
+  );
+}
+
+/** Static sidebar column — visible from the `lg` breakpoint up. */
+export function AdminSidebar() {
+  return (
+    <aside className="hidden w-56 shrink-0 border-r border-sidebar-border bg-sidebar lg:flex lg:flex-col">
+      <AdminSidebarNav />
     </aside>
+  );
+}
+
+/** Slide-in sidebar drawer for narrow screens (below `lg`). */
+export function AdminMobileSidebar({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const pathname = usePathname();
+
+  // Close the drawer whenever the route changes (covers breadcrumb / in-page links).
+  useEffect(() => {
+    onOpenChange(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Close the drawer if the viewport grows to the desktop breakpoint, where the
+  // static sidebar takes over (avoids a stranded overlay after a resize).
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const handle = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (e.matches) onOpenChange(false);
+    };
+    handle(mql);
+    mql.addEventListener("change", handle);
+    return () => mql.removeEventListener("change", handle);
+  }, [onOpenChange]);
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="left"
+        className="w-72 border-sidebar-border bg-sidebar p-0 lg:hidden"
+      >
+        <SheetTitle className="sr-only">Admin navigation</SheetTitle>
+        <AdminSidebarNav onNavigate={() => onOpenChange(false)} />
+      </SheetContent>
+    </Sheet>
   );
 }

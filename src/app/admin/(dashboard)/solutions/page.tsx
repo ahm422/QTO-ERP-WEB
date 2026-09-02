@@ -84,7 +84,7 @@ export default function SolutionsAdminPage() {
                 <TableRow>
                   <TableCell
                     colSpan={6}
-                    className="py-8 text-center text-sm text-muted-foreground"
+                    className="py-8 text-center text-sm text-muted-foreground max-md:block"
                   >
                     No solutions yet.
                   </TableCell>
@@ -92,18 +92,25 @@ export default function SolutionsAdminPage() {
               ) : (
                 items.map((row) => (
                   <TableRow key={row.id}>
-                    <TableCell className="font-medium">{row.title}</TableCell>
-                    <TableCell className="font-mono text-sm">{row.slug}</TableCell>
-                    <TableCell className="max-w-[200px] truncate">
+                    <TableCell className="font-medium" data-label="Title">
+                      {row.title}
+                    </TableCell>
+                    <TableCell className="font-mono text-sm" data-label="Slug">
+                      {row.slug}
+                    </TableCell>
+                    <TableCell
+                      className="max-w-[200px] truncate max-md:max-w-none"
+                      data-label="Audience"
+                    >
                       {row.audience}
                     </TableCell>
-                    <TableCell>
+                    <TableCell data-label="Published">
                       <Badge variant={row.published ? "default" : "outline"}>
                         {row.published ? "Published" : "Draft"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{row.sortOrder}</TableCell>
-                    <TableCell>
+                    <TableCell data-label="Sort">{row.sortOrder}</TableCell>
+                    <TableCell className="max-md:justify-end">
                       <Button type="button" size="sm" variant="outline" asChild>
                         <Link href={`/admin/solutions/${row.slug}/edit`}>
                           Edit

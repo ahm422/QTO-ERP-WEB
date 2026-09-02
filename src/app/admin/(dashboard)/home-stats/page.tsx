@@ -229,7 +229,7 @@ export default function HomeStatsAdminPage() {
             <TableBody>
               {sortRows(rows).map((row, index) => (
                 <TableRow key={row.id}>
-                  <TableCell>
+                  <TableCell data-label="Order">
                     <div className="flex gap-1">
                       <Button
                         type="button"
@@ -253,13 +253,13 @@ export default function HomeStatsAdminPage() {
                       </Button>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Label">
                     <Input
                       value={row.label}
                       onChange={(e) => update(row.id, "label", e.target.value)}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Value">
                     <Input
                       type="number"
                       step="any"
@@ -270,14 +270,14 @@ export default function HomeStatsAdminPage() {
                       }
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Suffix">
                     <Input
                       className="w-20"
                       value={row.suffix}
                       onChange={(e) => update(row.id, "suffix", e.target.value)}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Icon">
                     <select
                       value={row.iconKey}
                       onChange={(e) => update(row.id, "iconKey", e.target.value)}
@@ -290,13 +290,13 @@ export default function HomeStatsAdminPage() {
                       ))}
                     </select>
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Published">
                     <Switch
                       checked={row.published}
                       onCheckedChange={(v) => update(row.id, "published", v)}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="max-md:justify-end">
                     <div className="flex gap-2">
                       <Button
                         type="button"
@@ -321,8 +321,8 @@ export default function HomeStatsAdminPage() {
                 </TableRow>
               ))}
               <TableRow>
-                <TableCell />
-                <TableCell>
+                <TableCell className="max-md:hidden" />
+                <TableCell data-label="Label">
                   <Input
                     placeholder="Label"
                     value={newRow.label}
@@ -331,7 +331,7 @@ export default function HomeStatsAdminPage() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Value">
                   <Input
                     type="number"
                     step="any"
@@ -342,7 +342,7 @@ export default function HomeStatsAdminPage() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Suffix">
                   <Input
                     className="w-20"
                     value={newRow.suffix}
@@ -351,7 +351,7 @@ export default function HomeStatsAdminPage() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Icon">
                   <select
                     value={newRow.iconKey}
                     onChange={(e) =>
@@ -366,7 +366,7 @@ export default function HomeStatsAdminPage() {
                     ))}
                   </select>
                 </TableCell>
-                <TableCell>
+                <TableCell data-label="Published">
                   <Switch
                     checked={newRow.published}
                     onCheckedChange={(v) =>
@@ -374,7 +374,7 @@ export default function HomeStatsAdminPage() {
                     }
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell className="max-md:justify-end">
                   <Button type="button" size="sm" onClick={createRow}>
                     Add
                   </Button>

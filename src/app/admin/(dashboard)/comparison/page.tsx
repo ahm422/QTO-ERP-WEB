@@ -180,7 +180,10 @@ export default function ComparisonAdminPage() {
                       "enterprise",
                     ] as const
                   ).map((field) => (
-                    <TableCell key={field}>
+                    <TableCell
+                      key={field}
+                      data-label={field[0].toUpperCase() + field.slice(1)}
+                    >
                       <Input
                         value={row[field]}
                         onChange={(e) =>
@@ -189,7 +192,7 @@ export default function ComparisonAdminPage() {
                       />
                     </TableCell>
                   ))}
-                  <TableCell>
+                  <TableCell data-label="Order">
                     <Input
                       type="number"
                       className="w-20"
@@ -199,7 +202,7 @@ export default function ComparisonAdminPage() {
                       }
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Published">
                     <Switch
                       checked={row.published}
                       onCheckedChange={(v) =>
@@ -207,7 +210,7 @@ export default function ComparisonAdminPage() {
                       }
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="max-md:justify-end">
                     <div className="flex gap-2">
                       <Button
                         type="button"

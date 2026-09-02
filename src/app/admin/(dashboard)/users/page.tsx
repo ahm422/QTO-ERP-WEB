@@ -202,7 +202,7 @@ export default function AdminUsersPage() {
             <TableBody>
               {users.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="p-0">
+                  <TableCell colSpan={6} className="p-0 max-md:block">
                     <EmptyState title="No users found." />
                   </TableCell>
                 </TableRow>
@@ -212,9 +212,11 @@ export default function AdminUsersPage() {
                   const isDisabled = u.disabledAt != null;
                   return (
                     <TableRow key={u.id}>
-                      <TableCell className="font-medium">{u.email}</TableCell>
-                      <TableCell>{u.name ?? "—"}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium" data-label="Email">
+                        {u.email}
+                      </TableCell>
+                      <TableCell data-label="Name">{u.name ?? "—"}</TableCell>
+                      <TableCell data-label="Role">
                         <Select
                           value={u.role}
                           onValueChange={(v) => updateRole(u.id, v as Role)}
@@ -232,15 +234,18 @@ export default function AdminUsersPage() {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Status">
                         <Badge variant={isDisabled ? "outline" : "default"}>
                           {isDisabled ? "Disabled" : "Active"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell
+                        className="text-sm text-muted-foreground"
+                        data-label="Created"
+                      >
                         {new Date(u.createdAt).toLocaleDateString()}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right max-md:justify-end">
                         <Button
                           type="button"
                           size="sm"

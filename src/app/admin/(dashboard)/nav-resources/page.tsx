@@ -156,13 +156,13 @@ export default function NavResourcesAdminPage() {
             <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell>
+                  <TableCell data-label="Label">
                     <Input value={row.label} onChange={(e) => update(row.id, "label", e.target.value)} />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Href">
                     <Input value={row.href} onChange={(e) => update(row.id, "href", e.target.value)} className="min-w-40" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Icon">
                     <select
                       value={row.iconKey}
                       onChange={(e) => update(row.id, "iconKey", e.target.value)}
@@ -173,20 +173,20 @@ export default function NavResourcesAdminPage() {
                       ))}
                     </select>
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Subtitle">
                     <Input
                       value={row.subtitle ?? ""}
                       onChange={(e) => update(row.id, "subtitle", e.target.value || null)}
                       className="min-w-36"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="External">
                     <Switch checked={row.external} onCheckedChange={(v) => update(row.id, "external", v)} />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Visible">
                     <Switch checked={row.visible} onCheckedChange={(v) => update(row.id, "visible", v)} />
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Order">
                     <Input
                       type="number"
                       className="w-20"
@@ -194,7 +194,7 @@ export default function NavResourcesAdminPage() {
                       onChange={(e) => update(row.id, "sortOrder", Number(e.target.value))}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="max-md:justify-end">
                     <div className="flex gap-2">
                       <Button type="button" size="sm" onClick={() => saveRow(row)} disabled={savingId === row.id}>
                         Save

@@ -182,27 +182,34 @@ export default function ContactInquiriesPage() {
             <TableBody>
               {inquiries.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="p-0">
+                  <TableCell colSpan={9} className="p-0 max-md:block">
                     <EmptyState title="No contact inquiries found." />
                   </TableCell>
                 </TableRow>
               ) : (
                 inquiries.map((r) => (
                   <TableRow key={r.id}>
-                    <TableCell className="font-medium">{r.name}</TableCell>
-                    <TableCell>{r.email}</TableCell>
-                    <TableCell>{r.phone ?? "—"}</TableCell>
-                    <TableCell>{r.company ?? "—"}</TableCell>
-                    <TableCell>{r.subject}</TableCell>
-                    <TableCell>{r.companySize ?? "—"}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-medium" data-label="Name">
+                      {r.name}
+                    </TableCell>
+                    <TableCell data-label="Email">{r.email}</TableCell>
+                    <TableCell data-label="Phone">{r.phone ?? "—"}</TableCell>
+                    <TableCell data-label="Company">{r.company ?? "—"}</TableCell>
+                    <TableCell data-label="Subject">{r.subject}</TableCell>
+                    <TableCell data-label="Size">
+                      {r.companySize ?? "—"}
+                    </TableCell>
+                    <TableCell data-label="Status">
                       <Badge variant={statusVariant[r.status]}>{r.status}</Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell
+                      className="text-sm text-muted-foreground"
+                      data-label="Date"
+                    >
                       {new Date(r.createdAt).toLocaleDateString()}
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                    <TableCell className="text-right max-md:justify-end">
+                      <div className="flex justify-end gap-2 max-md:flex-wrap">
                         <Select
                           value={r.status}
                           onValueChange={(v) =>
