@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/MediaImage";
 import { ArrowLeft, Check, Sparkles } from "lucide-react";
 import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
 import { GridBackground } from "@/components/ui/grid-background";
@@ -114,7 +114,7 @@ export default function SolutionHero({
             />
             {image ? (
               <div className="relative z-10 aspect-4/3 overflow-hidden rounded-2xl border border-hero-chip-border">
-                <Image
+                <MediaImage
                   src={image}
                   alt={imageAlt ?? caption}
                   fill

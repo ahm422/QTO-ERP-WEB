@@ -43,3 +43,15 @@ export function isAllowedMediaKey(key: string): boolean {
   if (!key || key.includes("..")) return false;
   return ALLOWED_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
 }
+
+/**
+ * True when `src` is served by the dynamic `/api/media/*` route (R2-backed
+ * CMS uploads) rather than a static asset or remote URL.
+ *
+ * On Cloudflare, OpenNext's `/_next/image` optimizer resolves root-relative
+ * URLs against the static ASSETS binding, which 404s for this dynamic route.
+ * Such images must bypass the optimizer (`unoptimized`) — see MediaImage.
+ */
+export function isDynamicMediaUrl(src: string): boolean {
+  return src.startsWith("/api/media/");
+}
