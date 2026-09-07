@@ -4,16 +4,28 @@ Next.js marketing site and admin panel deployed on **Cloudflare Workers** (OpenN
 
 ## Documentation
 
+Full documentation lives in [`docs/`](docs/README.md), split into
+[`docs/technical/`](docs/technical/README.md) (for developers) and
+[`docs/non-technical/`](docs/non-technical/README.md) (for the client and staff).
+
 | Topic | Doc |
 |-------|-----|
-| Database (Drizzle + D1) | [docs/database.md](docs/database.md) |
-| Media storage (R2) | [docs/storage.md](docs/storage.md) |
-| Deployment (Workers, CI/CD) | [docs/deployment-cloudflare.md](docs/deployment-cloudflare.md) |
-| E2E testing checklist | [docs/testing-cloudflare.md](docs/testing-cloudflare.md) |
-| Admin panel | [docs/admin.md](docs/admin.md) |
-| Email (Cloudflare Email Sending) | [docs/email.md](docs/email.md) |
-| Content APIs | [docs/content-api.md](docs/content-api.md) |
-| Stripe payments | [docs/payments.md](docs/payments.md) |
+| Architecture overview | [docs/technical/architecture.md](docs/technical/architecture.md) |
+| Project / folder structure | [docs/technical/project-structure.md](docs/technical/project-structure.md) |
+| Database schema & ERD | [docs/technical/database-schema.md](docs/technical/database-schema.md) |
+| API reference | [docs/technical/api-reference.md](docs/technical/api-reference.md) |
+| Environment variables | [docs/technical/environment-variables.md](docs/technical/environment-variables.md) |
+| Third-party services & ownership | [docs/technical/third-party-services.md](docs/technical/third-party-services.md) |
+| Known issues & tech debt | [docs/technical/known-issues-and-tech-debt.md](docs/technical/known-issues-and-tech-debt.md) |
+| Local development | [docs/technical/local-development.md](docs/technical/local-development.md) |
+| Database (Drizzle + D1) | [docs/technical/database.md](docs/technical/database.md) |
+| Media storage (R2) | [docs/technical/storage.md](docs/technical/storage.md) |
+| Deployment (Workers, CI/CD) | [docs/technical/deployment-cloudflare.md](docs/technical/deployment-cloudflare.md) |
+| E2E testing checklist | [docs/technical/testing-cloudflare.md](docs/technical/testing-cloudflare.md) |
+| Admin panel | [docs/technical/admin.md](docs/technical/admin.md) |
+| Email (Cloudflare Email Sending) | [docs/technical/email.md](docs/technical/email.md) |
+| Content APIs | [docs/technical/content-api.md](docs/technical/content-api.md) |
+| Stripe payments | [docs/technical/payments.md](docs/technical/payments.md) |
 
 ## Quick start
 
@@ -53,7 +65,7 @@ npm run deploy:staging   # staging Worker
 npm run deploy           # production Worker
 ```
 
-See [docs/deployment-cloudflare.md](docs/deployment-cloudflare.md) for secrets, migrations, and DNS cutover.
+See [docs/technical/deployment-cloudflare.md](docs/technical/deployment-cloudflare.md) for secrets, migrations, and DNS cutover.
 
 ### Runtime environment (deployed Workers)
 

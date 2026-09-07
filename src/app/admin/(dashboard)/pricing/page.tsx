@@ -58,7 +58,7 @@ export default function PricingAdminPage() {
         <h1 className="text-2xl font-semibold">Pricing plans</h1>
         <p className="text-sm text-muted-foreground">
           Edit plan copy, features, and Stripe price IDs. See{" "}
-          <code className="text-xs">docs/payments.md</code>{" "}
+          <code className="text-xs">docs/technical/payments.md</code>{" "}
           and run <code className="text-xs">npm run stripe:check</code>.
         </p>
       </div>
