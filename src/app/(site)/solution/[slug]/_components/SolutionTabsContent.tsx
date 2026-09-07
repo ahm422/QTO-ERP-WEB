@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { MediaImage } from '@/components/ui/MediaImage';
 import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
 import { SelectorPanel } from '@/components/ui/selector-panel';
 import type { LucideIcon } from 'lucide-react';
@@ -99,7 +99,7 @@ export default function SolutionTabsContent({
               <div className='grid gap-6 lg:grid-cols-2 lg:items-center'>
                 <div className='relative overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--card-shadow)]'>
                   <div className='relative aspect-video w-full'>
-                    <Image
+                    <MediaImage
                       src={imageUrl}
                       alt={feature.title}
                       fill

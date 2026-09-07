@@ -2,7 +2,7 @@
 
 import { createElement } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import Image from 'next/image';
+import { MediaImage } from '@/components/ui/MediaImage';
 import { ExternalLink, BookOpen } from 'lucide-react';
 import { EyebrowBadge } from '@/components/ui/eyebrow-badge';
 import { Card } from '@/components/ui/card';
@@ -72,7 +72,7 @@ export default function StorySection({ story }: StorySectionProps) {
             className='group relative order-2 aspect-square overflow-hidden rounded-2xl border border-border shadow-[var(--card-shadow)] lg:order-1 lg:aspect-auto lg:h-[600px]'
           >
             <div className='pointer-events-none absolute inset-0 z-10 bg-primary/10 transition-colors duration-500 group-hover:bg-primary/0' />
-            <Image
+            <MediaImage
               src={story.imageUrl}
               alt={story.imageAlt}
               fill

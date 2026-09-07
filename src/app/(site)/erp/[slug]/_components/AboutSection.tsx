@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/MediaImage";
 import { EyebrowBadge } from "@/components/ui/eyebrow-badge";
 import { HeaderSections } from "@/components/ui/HeaderSections";
 import type { ModuleDetail } from "@/types/content";
@@ -89,7 +89,7 @@ export default function AboutSection({ app }: AboutSectionProps) {
                 {hasImage ? (
                   <div className={flip ? "lg:order-1" : undefined}>
                     <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted shadow-[var(--card-shadow)]">
-                      <Image
+                      <MediaImage
                         src={row.image as string}
                         alt={row.imageAlt || `${app.name} ${row.title}`}
                         fill

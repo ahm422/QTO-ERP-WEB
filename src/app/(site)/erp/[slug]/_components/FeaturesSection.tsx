@@ -4,7 +4,7 @@ import { Play } from "lucide-react";
 import { HeaderSections } from "@/components/ui/HeaderSections";
 import { MarketingButton } from "@/components/ui/marketing-button";
 import type { ModuleDetail } from "@/types/content";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/MediaImage";
 import { getFadeInUp, viewportOnce } from "@/lib/motion";
 
 interface FeaturesSectionProps {
@@ -66,7 +66,7 @@ export default function FeaturesSection({
                   className={isEven ? "lg:order-2" : "lg:order-1"}
                 >
                   <div className="relative h-[400px] overflow-hidden rounded-2xl border border-border bg-background shadow-[var(--card-shadow)] group">
-                    <Image
+                    <MediaImage
                       src={imageUrl}
                       alt={feature.title}
                       fill
