@@ -1,0 +1,16 @@
+{
+  "name": "qto-erp-chatbot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:staging": "wrangler deploy --env staging",
+    "types": "wrangler types"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "wrangler": "^4"
+  }
+}
