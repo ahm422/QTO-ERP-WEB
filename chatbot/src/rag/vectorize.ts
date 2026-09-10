@@ -1,5 +1,5 @@
 import { isRagAllowedTable } from "../types/allowlist.ts";
-import { parseVectorId, type RagVectorMetadata } from "../types/core.ts";
+import { buildVectorId, parseVectorId, type RagVectorMetadata } from "../types/core.ts";
 import type { Env } from "../types/env.ts";
 
 export interface VectorUpsertInput {
@@ -88,6 +88,34 @@ export async function upsertVectorBatch(
   throw new Error(
     `Vectorize upsert returned an unexpected response shape: ${JSON.stringify(result)}`,
   );
+}
+
+export function listSourceVectorIds(table: string, sourceId: string, numChunks: number): string[] {
+  if (!isRagAllowedTable(table)) {
+    throw new Error(`listSourceVectorIds: table "${table}" not in RAG allowlist`);
+  }
+  if (typeof sourceId !== "string" || sourceId.length === 0) {
+    throw new Error("listSourceVectorIds: sourceId must be a non-empty string");
+  }
+  if (!Number.isInteger(numChunks) || numChunks < 0) {
+    throw new Error("listSourceVectorIds: numChunks must be a non-negative integer");
+  }
+  const ids: string[] = [];
+  for (let i = 0; i < numChunks; i += 1) {
+    ids.push(buildVectorId(table, sourceId, i));
+  }
+  return ids;
+}
+
+export async function deleteSourceVectors(
+  env: Env,
+  table: string,
+  sourceId: string,
+  numChunks: number,
+): Promise<{ deleted: string[] }> {
+  const ids = listSourceVectorIds(table, sourceId, numChunks);
+  const deleted = ids.length > 0 ? await deleteStaleVectors(env, ids) : [];
+  return { deleted };
 }
 
 export async function deleteStaleVectors(env: Env, ids: string[]): Promise<string[]> {

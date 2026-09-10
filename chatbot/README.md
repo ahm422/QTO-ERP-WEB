@@ -115,23 +115,43 @@ The chatbot does not write application data back into D1.
 
 ### Current vs Planned Status
 
+#### VERIFIED (Phase 1)
+
 | Component | Status |
 |---|---|
-| Production D1 read | Implemented |
-| 10-table allowlist | Implemented |
-| Extraction/normalization | Implemented |
-| Chunking | Implemented |
-| SHA-256 change detection | Implemented |
-| BGE-M3 embeddings | Implemented |
-| Vectorize indexing | Implemented / being verified |
-| Vectorize retrieval | Planned Phase 2 |
-| BGE reranker | Planned Phase 2 |
-| Qwen 3 30B | Planned Phase 3 |
-| /chat endpoint | Planned |
-| Output guard | Planned/final integration |
-| Full incremental synchronization | Planned |
+| Production D1 read (SELECT-only) | VERIFIED |
+| 10-table allowlist enforcement (rejected before any D1 query) | VERIFIED |
+| Extraction/normalization | VERIFIED |
+| Chunking (single + multi-chunk) | VERIFIED |
+| SHA-256 content change detection | VERIFIED |
+| BGE-M3 embeddings (1024-dim, `@cf/baai/bge-m3`) | VERIFIED |
+| D1 → BGE-M3 → Vectorize end-to-end | VERIFIED |
+| Real FAQ vector verification (`faqs:albjgn6vyxfczeonp5orv7ay:0`, found: true) | VERIFIED |
+| Vectorize upsert (mutation-response handling) | VERIFIED |
+| Deterministic vector IDs (`table:source_id:chunk_index`) | VERIFIED |
+| Unchanged-content skipping (no re-embed, no duplicate) | VERIFIED |
+| Changed-content reindexing (new hash, same deterministic ID) | VERIFIED |
+| Multi-chunk indexing (per-chunk embedding + full metadata) | VERIFIED |
+| Safe deletion helper design (`listSourceVectorIds`, `deleteSourceVectors`, `deleteStaleVectors`) | VERIFIED (mocks only) |
 
-> The current project has verified D1 → BGE-M3 processing and a fixed Vectorize upsert path. The full chatbot is not claimed to be production-ready.
+#### NOT YET COMPLETED
+
+| Component | Status |
+|---|---|
+| Full 10-table production indexing | NOT YET COMPLETED |
+| Production scheduled / incremental sync | NOT YET COMPLETED |
+| Vectorize retrieval | NOT YET COMPLETED |
+| BGE reranker | NOT YET COMPLETED |
+| Qwen 3 30B | NOT YET COMPLETED |
+| `/chat` endpoint | NOT YET COMPLETED |
+| Output guard final integration | NOT YET COMPLETED |
+| Public chatbot completion | NOT YET COMPLETED |
+
+> Phase 1 validation is complete: the D1 → BGE-M3 → Vectorize pipeline, a real FAQ
+> vector lookup, idempotent skip/reindex, deterministic IDs, multi-chunk indexing,
+> allowlist enforcement, and the deletion-helper design are all verified by the
+> automated test suite. The full 10-table production dataset has **not** been
+> indexed, and the chatbot is **not** production-ready.
 
 ---
 
@@ -164,7 +184,9 @@ chatbot/
 │   │   ├── input-guards.ts
 │   │   └── output-guard.ts
 │   ├── test/
-│   │   └── (unit tests for allowlist, vector IDs, hashing, chunking)
+│   │   ├── phase1-unit.test.ts
+│   │   ├── phase1-incremental.test.ts
+│   │   └── allowlist.test.ts
 │   └── types/
 │       ├── allowlist.ts
 │       ├── core.ts
@@ -181,7 +203,7 @@ chatbot/
 - `src/rag/embedding.ts` — Workers AI embedding pipeline
 - `src/types/allowlist.ts` — strict allowlist for D1 tables
 - `src/security/` — validation and output-safety logic
-- `src/test/` — automated checks for deterministic behavior
+- `src/test/` — automated checks for deterministic behavior, allowlist enforcement, and incremental/idempotent indexing (all with mocked bindings)
 
 ---
 

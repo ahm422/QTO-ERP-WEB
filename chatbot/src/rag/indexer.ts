@@ -137,48 +137,71 @@ export async function indexApprovedTables(
         }
 
         const vectorsToUpsert: Array<{ id: string; values: number[]; metadata: Record<string, unknown> }> = [];
+        const skipUnchanged = options.skipUnchanged !== false;
+
         for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex += batchSize) {
           const batch = chunks.slice(chunkIndex, chunkIndex + batchSize);
-          const embeddings = await embedTexts(env, batch.map((chunk) => chunk.text), { batchSize });
-          summary.embeddingsGenerated += embeddings.length;
 
-          if (embeddings.length !== batch.length) {
-            throw new Error(
-              `Expected ${batch.length} embeddings for ${table}/${sourceId}, got ${embeddings.length}.`,
-            );
-          }
-
-          for (let j = 0; j < batch.length; j += 1) {
-            const chunk = batch[j];
+          // Build deterministic ids + metadata for every chunk in the batch
+          // BEFORE embedding, so unchanged chunks can be skipped without
+          // spending Workers AI quota.
+          const prepared = batch.map((chunk) => {
+            const index = Number.parseInt(chunk.vectorId.split(":").at(-1) ?? "0", 10);
             const metadata = buildVectorMetadata({
               table,
               sourceId,
               chunkId: chunk.metadata.chunk_id,
-              chunkIndex: Number.parseInt(chunk.vectorId.split(":").at(-1) ?? "0", 10),
+              chunkIndex: index,
               contentHash: chunk.metadata.content_hash,
               updatedAt: chunk.metadata.updated_at,
               documentType: chunk.metadata.document_type,
               version: chunk.metadata.version,
               namespace: env.CHATBOT_VECTORIZE_KEY ?? "CHATBOT_VECTORS",
             });
+            return { chunk, metadata, vectorId: buildVectorId(table, sourceId, index) };
+          });
 
-            const vectorId = buildVectorId(table, sourceId, Number.parseInt(chunk.vectorId.split(":").at(-1) ?? "0", 10));
-            const current = await vectorize.getByIds([vectorId]).catch(() => [] as Array<Record<string, unknown>>);
-            const existing = Array.isArray(current) && current.length > 0 ? current[0] : undefined;
-            const unchanged = vectorMatchesCurrentHash(
-              (existing && typeof existing.metadata === "object" ? (existing.metadata as Record<string, unknown>) : undefined),
-              metadata.content_hash,
-            );
-
-            if (options.skipUnchanged !== false && unchanged) {
-              summary.rowsSkipped += 1;
-              continue;
+          let changed = prepared;
+          if (skipUnchanged) {
+            const existingRows = await vectorize
+              .getByIds(prepared.map((item) => item.vectorId))
+              .catch(() => [] as Array<Record<string, unknown>>);
+            const existingById = new Map<string, Record<string, unknown>>();
+            for (const row of Array.isArray(existingRows) ? existingRows : []) {
+              const id = row && typeof row.id === "string" ? row.id : undefined;
+              if (id) existingById.set(id, row as Record<string, unknown>);
             }
 
+            changed = prepared.filter((item) => {
+              const existing = existingById.get(item.vectorId);
+              const existingMetadata =
+                existing && typeof existing.metadata === "object"
+                  ? (existing.metadata as Record<string, unknown>)
+                  : undefined;
+              const unchanged = vectorMatchesCurrentHash(existingMetadata, item.metadata.content_hash);
+              if (unchanged) summary.rowsSkipped += 1;
+              return !unchanged;
+            });
+          }
+
+          if (changed.length === 0) {
+            continue;
+          }
+
+          const embeddings = await embedTexts(env, changed.map((item) => item.chunk.text), { batchSize });
+          summary.embeddingsGenerated += embeddings.length;
+
+          if (embeddings.length !== changed.length) {
+            throw new Error(
+              `Expected ${changed.length} embeddings for ${table}/${sourceId}, got ${embeddings.length}.`,
+            );
+          }
+
+          for (let j = 0; j < changed.length; j += 1) {
             vectorsToUpsert.push({
-              id: vectorId,
+              id: changed[j].vectorId,
               values: embeddings[j],
-              metadata,
+              metadata: changed[j].metadata,
             });
           }
         }
