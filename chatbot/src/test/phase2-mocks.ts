@@ -69,16 +69,18 @@ export function makeMockEnv(options: MockEnvOptions = {}): MockEnvHandle {
   const db = {
     prepare(sql: string) {
       const table = sql.match(/FROM\s+([a-zA-Z_]+)/i)?.[1] ?? "";
-      return {
-        all: async (params: any) => {
-          d1Queries.push({ sql, params });
+      // Mirror the D1 API: `.bind(...).all()` (bind is required for `?`).
+      const makeStmt = (boundId?: any): any => ({
+        bind: (...args: any[]) => makeStmt(args.length === 1 ? args[0] : args),
+        all: async (params?: any) => {
+          const id = boundId ?? (params && typeof params === "object" ? params.id : params);
+          d1Queries.push({ sql, params: id });
           d1Tables.push(table);
           const rows = options.rows?.[table] ?? [];
-          // Support both positional (`?` => scalar) and named-object bindings.
-          const id = params && typeof params === "object" ? params.id : params;
           return id != null ? rows.filter((r) => String(r.id) === String(id)) : rows;
         },
-      };
+      });
+      return makeStmt();
     },
   };
 
