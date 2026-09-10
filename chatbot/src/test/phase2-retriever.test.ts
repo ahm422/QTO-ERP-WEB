@@ -88,7 +88,7 @@ test("reranking: invalid reranker response throws", async () => {
 
 test("source resolution: fresh content matches hash and returns current text", async () => {
   const fixture = await faqFixture();
-  const { env, d1Tables } = makeMockEnv({ rows: { faqs: [fixture.row] } });
+  const { env, d1Tables, d1Queries } = makeMockEnv({ rows: { faqs: [fixture.row] } });
   const candidate = mapMatchToCandidate(fixture.match)!;
 
   const [resolved] = await resolveSources(env, [candidate]);
@@ -96,6 +96,10 @@ test("source resolution: fresh content matches hash and returns current text", a
   assert.equal(resolved.stale, false);
   assert.equal(resolved.text, fixture.text);
   assert.deepEqual(d1Tables, ["faqs"]);
+  // Regression: the id must be bound POSITIONALLY (D1 `?` placeholders do not
+  // accept an object binding against the real Workers D1 binding).
+  assert.equal(d1Queries[0].params, "faq-1");
+  assert.match(d1Queries[0].sql, /WHERE id = \?/);
 });
 
 test("source resolution: changed content is flagged stale but uses latest D1 text", async () => {

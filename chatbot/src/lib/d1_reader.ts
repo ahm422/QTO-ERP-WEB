@@ -239,7 +239,9 @@ export async function fetchSingleRecord(
   if (!isRagAllowedTable(table)) {
     throw new Error(`fetchSingleRecord: table "${table}" not in allowlist`);
   }
-  const res = await db.prepare(`SELECT * FROM ${table} WHERE id = ?`).all({ id });
+  // D1 uses positional bindings for `?` placeholders; passing an object here
+  // throws against the real Workers D1 binding. Bind the id positionally.
+  const res = await db.prepare(`SELECT * FROM ${table} WHERE id = ?`).all(id);
   const rows = normalizeRows(res);
   return rows.length > 0 ? (rows[0] as AnyRow) : null;
 }

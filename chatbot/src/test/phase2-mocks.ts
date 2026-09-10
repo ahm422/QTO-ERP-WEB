@@ -74,7 +74,8 @@ export function makeMockEnv(options: MockEnvOptions = {}): MockEnvHandle {
           d1Queries.push({ sql, params });
           d1Tables.push(table);
           const rows = options.rows?.[table] ?? [];
-          const id = params?.id;
+          // Support both positional (`?` => scalar) and named-object bindings.
+          const id = params && typeof params === "object" ? params.id : params;
           return id != null ? rows.filter((r) => String(r.id) === String(id)) : rows;
         },
       };
