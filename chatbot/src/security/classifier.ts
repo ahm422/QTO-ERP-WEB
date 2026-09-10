@@ -41,6 +41,15 @@ const OUT_OF_SCOPE_PATTERNS: RegExp[] = [
   /legal advice/i,
   /\b(stock|equity|share|crypto)\s+(recommendation|prediction|forecast|picker)\b/i,
   /\b(write|give me) (a|an|the)? (poem|poetry|joke|song|lyrics|haiku)\b/i,
+  // Political / current-news requests. Deliberately narrow so that legitimate
+  // company questions mentioning government, public sector, authority, or
+  // regulation are NOT rejected (those are valid QTO ERP audiences).
+  /\b(politics|political|politician|politicians|partisan)\b/i,
+  /\b(election|elections|electoral|ballot|ballots|referendum)\b/i,
+  /\b(parliament|congress|senate)\s+(shutdown|scandal|controversy|impeachment|hearing)\b/i,
+  /\b(parliament|congress|senate|senator|congressman|congresswoman)\b.{0,40}\b(scandal|controversy|resign|resigned|impeach)/i,
+  /\b(latest|today'?s|tonight'?s|breaking|current|world|national|international|global)\s+(news|politics|political|headlines)\b/i,
+  /\b(news|headlines)\s+(about|on|regarding)\s+(politics|political|the election|the war)\b/i,
 ];
 
 export type Classification = "company" | "out-of-scope" | "injection";
