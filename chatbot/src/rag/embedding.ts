@@ -1,11 +1,18 @@
+import { buildConfig } from "../config/index.ts";
 import type { Env } from "../types/env.ts";
 
-export const BGE_M3_MODEL = "@cf/baai/bge-m3" as const;
+/**
+ * Embedding dimension for the configured embedding model (`@cf/baai/bge-m3`).
+ * The model ID itself is centralized in src/config (buildConfig.embeddingModel)
+ * so no Workers AI model ID is hard-coded here.
+ */
 export const BGE_M3_DIMENSION = 1024;
 
 export interface EmbedBatchOptions {
   batchSize?: number;
   truncateInputs?: boolean;
+  /** Optional explicit model override; defaults to the configured embedding model. */
+  model?: string;
 }
 
 function normalizeTexts(texts: string[]): string[] {
@@ -68,11 +75,14 @@ export async function embedTexts(
     throw new Error("Missing Workers AI binding: env.AI.run is not available.");
   }
 
+  const config = buildConfig(env as unknown as Record<string, string | undefined>);
+  const model = options.model ?? config.embeddingModel;
+
   const results: number[][] = [];
 
   for (let start = 0; start < normalized.length; start += batchSize) {
     const batch = normalized.slice(start, start + batchSize);
-    const response = await ai.run(BGE_M3_MODEL, {
+    const response = await ai.run(model, {
       text: batch,
       truncate_inputs: options.truncateInputs ?? true,
     });
