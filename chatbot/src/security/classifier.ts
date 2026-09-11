@@ -28,6 +28,17 @@ const INJECTION_PATTERNS: RegExp[] = [
   /<\s*\/?\s*system\s*>/i,
   /bypass (the |your )?(restrictions|rules|filters|security|guidelines|safeguards)/i,
   /do not (tell|mention|reveal) (your|the) (restrictions|rules|limitations|guidelines)/i,
+  // V1 remediation (Phase 3 Step 8): internal-reasoning / hidden-context requests.
+  // Narrow phrases only — ordinary words like "context", "document", "reasoning",
+  // "source", or "information" must NOT trigger rejection on their own.
+  /\bchain[-\s]?of[-\s]?thought\b/i,
+  /\breasoning[_\s-]?(content|trace)\b/i,
+  /\b(internal|hidden)\s+reasoning\b/i,
+  /\b(internal|hidden)\s+context\b/i,
+  /\b(hidden|internal|secret)\s+prompt\b/i,
+  /\bretrieved\s+(documents?|chunks?|context|passages?)\b/i,
+  /\braw\s+retrieved\s+chunks?\b/i,
+  /\braw\s+chunks?\b/i,
 ];
 
 const OUT_OF_SCOPE_PATTERNS: RegExp[] = [

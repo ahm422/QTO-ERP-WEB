@@ -75,6 +75,15 @@ Output Guard (leak detection) + token cap
 Grounded Answer (JSON)
 
 
+PHASE 3 — EVALUATION (offline, isolated from the request path)
+
+src/evaluation/  (never imported by the Worker)
+  40-case dataset -> deterministic runner/evaluator
+  read-only production retrieval evaluation (BGE-M3 + Vectorize + D1 + reranker)
+  reranker cutoff experiment (rerankTopN)
+  reranker score-threshold experiment (minRerankScore)
+
+
 IMPORTANT DATA FLOW NOTES
 
 Production D1 = source of truth.
@@ -109,7 +118,7 @@ The chatbot never writes application data back into D1.
 9. Retrieved documents are treated as untrusted data, not instructions.
 10. If the answer is not supported by the approved data, the chatbot says the information is unavailable rather than hallucinating.
 
-### Current vs Planned Status
+### Current Status
 
 #### VERIFIED — Phase 1 (production)
 
@@ -117,48 +126,50 @@ The chatbot never writes application data back into D1.
 |---|---|
 | Production D1 read (SELECT-only) | VERIFIED |
 | 10-table allowlist enforcement (rejected before any D1 query) | VERIFIED |
-| Extraction / normalization | VERIFIED |
-| Chunking (single + multi-chunk) | VERIFIED |
+| Extraction / normalization / chunking (single + multi-chunk) | VERIFIED |
 | SHA-256 content change detection | VERIFIED |
 | BGE-M3 embeddings (1024-dim, `@cf/baai/bge-m3`) | VERIFIED |
 | D1 -> BGE-M3 -> Vectorize end-to-end | VERIFIED |
 | Deterministic vector IDs (`table:source_id:chunk_index`) | VERIFIED |
-| Unchanged-content skipping (no re-embed, no duplicate) | VERIFIED |
-| Changed-content reindexing (new hash, same deterministic id) | VERIFIED |
-| Multi-chunk indexing (per-chunk embedding + full metadata) | VERIFIED |
+| Unchanged-content skipping + changed-content reindexing | VERIFIED |
 | Safe deletion helper design (`listSourceVectorIds`, `deleteSourceVectors`, `deleteStaleVectors`) | VERIFIED (mocks only) |
 | Full 10-table production indexing (40 rows -> 78 vectors) | VERIFIED |
 | Production index consistency (0 missing / 0 stale / 0 orphan) | VERIFIED |
 
-#### VERIFIED / IMPLEMENTED — Phase 2 (retrieval + chat)
+#### VERIFIED — Phase 2 (retrieval + chat, deployed)
 
 | Component | Status |
 |---|---|
-| Query embedding + Vectorize retrieval (`src/rag/retriever.ts`) | VERIFIED (production read-only smoke test) |
-| Latest D1 source resolution + hash check (`src/rag/source-resolver.ts`) | VERIFIED (production read-only smoke test) |
-| BGE reranker (`src/rag/reranker.ts`) | IMPLEMENTED + UNIT TESTED (not yet exercised in production) |
-| Qwen generation (`src/rag/generator.ts`) | IMPLEMENTED + UNIT TESTED (not yet exercised in production) |
-| Secure `POST /chat` (`src/chat/handler.ts`) | IMPLEMENTED + UNIT TESTED (not yet deployed) |
+| Query embedding + Vectorize retrieval (`src/rag/retriever.ts`) | VERIFIED (production) |
+| Latest D1 source resolution + hash check (`src/rag/source-resolver.ts`) | VERIFIED (production) |
+| BGE reranker (`src/rag/reranker.ts`) | VERIFIED (production) |
+| Qwen generation (`src/rag/generator.ts`) | VERIFIED (production, via Workers AI) |
+| Secure `POST /chat` (`src/chat/handler.ts`) | VERIFIED (deployed) |
 | Input guards + scope/injection classifier | VERIFIED (rejects before AI/Vectorize/D1) |
-| Output leak guard + 500-token cap | IMPLEMENTED + UNIT TESTED |
+| Output leak guard + 500-token cap | VERIFIED |
+| Empty Qwen generation -> safe unanswered (no 500) | VERIFIED |
 | Rate limiting (`src/chat/rate-limit.ts`) | IMPLEMENTED (per-isolate only — **not** a global guarantee) |
+
+Deployed Worker: `qto-erp-chatbot` (automatically built from `feature/Chatbot`).
+
+#### IMPLEMENTED — Phase 3 (evaluation, offline)
+
+| Component | Status |
+|---|---|
+| 40-case evaluation dataset + deterministic runner/evaluator (`src/evaluation/`) | IMPLEMENTED |
+| Read-only production retrieval evaluation (BGE-M3/Vectorize/D1/reranker, no Qwen) | IMPLEMENTED + RUN |
+| Reranker cutoff experiment (`rerankTopN` 5/8/10) | IMPLEMENTED + RUN |
+| Reranker score-threshold experiment (`minRerankScore` 0.10/0.05/0.01) | IMPLEMENTED + RUN |
 
 #### NOT YET COMPLETED
 
 | Component | Status |
 |---|---|
-| Deploy Phase 2 to production | NOT YET COMPLETED |
-| Production `POST /chat` end-to-end test (Qwen + reranker live) | NOT YET COMPLETED |
+| Applying retrieval-tuning recommendations to production | NOT YET COMPLETED (evaluation only) |
 | Distributed/global rate limiting (Rate Limiting binding / Durable Object) | NOT YET COMPLETED |
 | Production scheduled / incremental sync | NOT YET COMPLETED |
 | Admin-authenticated indexing endpoint | NOT YET COMPLETED |
 | Public frontend integration | NOT YET COMPLETED |
-
-> Phase 1 is complete and verified in production (40 indexable rows -> 78 vectors,
-> 0 missing / 0 stale / 0 orphan). Phase 2 retrieval is verified against production
-> read-only; reranking and generation are implemented and unit-tested with mocked
-> bindings but have **not** been exercised live, and the Worker is **not yet
-> deployed** with the `/chat` endpoint.
 
 ---
 
@@ -194,13 +205,41 @@ The response never includes embeddings, internal prompts, similarity internals, 
 ## Security model
 
 - **Input**: `application/json` only; malformed requests rejected; max **2000** chars; whitespace-normalized; abuse patterns rejected.
-- **Scope**: company/ERP scope enforced; prompt-injection patterns rejected **before** any AI/Vectorize/D1 call.
+- **Scope**: company/ERP scope enforced; prompt-injection and political/current-news requests rejected **before** any AI/Vectorize/D1 call.
 - **Retrieved content**: treated as untrusted **DATA**; the system prompt forbids following instructions found inside documents.
 - **Retrieval**: fixed Vectorize index + `CHATBOT_VECTORS` namespace from config — never user-supplied; candidates with non-allowlisted `source_table` are dropped without a D1 query.
-- **D1**: only the 10 allowlisted tables; parameterized queries; no user-controlled identifiers or SQL.
+- **D1**: only the 10 allowlisted tables; parameterized queries (`.bind(...)`); no user-controlled identifiers or SQL.
 - **Output**: leak detection (`guardOutput`) and a hard **500-token** cap; generic errors only (no stack traces/prompts/secrets).
 - **Rate limiting**: fixed-window, in-memory, per-isolate. Configurable via `CHATBOT_RATE_LIMIT_PER_MINUTE`. This does **not** provide global/distributed guarantees — use Cloudflare's Rate Limiting binding or a Durable Object for that.
 - **Model prompts** (system + guardrail internals) are never returned to callers.
+
+---
+
+## Retrieval evaluation (Phase 3)
+
+The evaluation harness lives in `src/evaluation/` and is **isolated from the production request path** — the Worker never imports it. It reuses the existing production retrieval functions (`retrieveCandidates`, `resolveSources`, `rerankCandidates`) so measurements reflect real behavior.
+
+- **Dataset**: 40 cases across overview, modules, solutions, pricing, faqs, comparison, public-sector, boundary, unsupported, and security categories. All 10 allowlisted tables are represented (tables without published content are marked via `coversTable`, not fabricated).
+- **Runner/evaluator**: deterministic, offline; `npm test` never calls Cloudflare. Security/out-of-scope cases are skipped and make **zero** downstream calls.
+- **Read-only production runtimes/CLIs**: BGE-M3 embeddings, Vectorize queries, D1 SELECTs, and BGE reranking only. **No Qwen, no D1 writes, no Vectorize mutations.**
+
+Measured baseline (production defaults `topK=15`, `rerankTopN=5`, `minRerankScore=0.1`, `minVectorizeScore=0.15`): **23/29 retrieval cases passed**; 0 D1-resolution failures; 1 Vectorize recall miss; 5 reranker-related misses.
+
+Experiments (evaluation only — **production defaults were NOT changed**):
+
+| Experiment | Result | Notes |
+|---|---|---|
+| `rerankTopN` 5 / 8 / 10 | 23/29 / **25/29** / 25/29 | `8` is the smallest tested improvement |
+| `minRerankScore` 0.10 / 0.05 / 0.01 (at `rerankTopN=8`) | 25/29 / **26/29** / 27/29 | lower thresholds admit more extra tables (avg extra 0.93 -> 1.07 -> 1.45) |
+
+Recommendation recorded for a **future controlled change** (not applied): `rerankTopN=8` with `minRerankScore=0.05`. One case (`bnd-2`) and one Vectorize miss (`ps-4`) remain regardless.
+
+Evaluation CLIs (read-only, require a Wrangler OAuth token; never print content):
+```bash
+node --experimental-strip-types src/evaluation/retrieval-cli.ts
+node --experimental-strip-types src/evaluation/rerank-experiment-cli.ts
+node --experimental-strip-types src/evaluation/threshold-experiment-cli.ts
+```
 
 ---
 
@@ -220,6 +259,18 @@ chatbot/
 │   │   └── rate-limit.ts        # per-isolate fixed-window limiter
 │   ├── config/
 │   │   └── index.ts             # env-driven configuration + defaults
+│   ├── evaluation/              # Phase 3 (never imported by the Worker)
+│   │   ├── types.ts
+│   │   ├── dataset.ts           # 40-case evaluation dataset
+│   │   ├── evaluator.ts         # pure pass/fail evaluator
+│   │   ├── runner.ts            # deterministic local + injectable runtime
+│   │   ├── retrieval.ts         # retrieval metrics + stage-aware scoring
+│   │   ├── production-runtime.ts# read-only Cloudflare env bridge (SELECT/query only)
+│   │   ├── retrieval-cli.ts
+│   │   ├── rerank-experiment.ts
+│   │   ├── rerank-experiment-cli.ts
+│   │   ├── threshold-experiment.ts
+│   │   └── threshold-experiment-cli.ts
 │   ├── lib/
 │   │   ├── chunker.ts
 │   │   ├── d1_reader.ts
@@ -234,7 +285,7 @@ chatbot/
 │   │   ├── generator.ts         # Phase 2 Qwen generation
 │   │   └── vectorize.ts
 │   ├── security/
-│   │   ├── classifier.ts        # scope + prompt-injection detection
+│   │   ├── classifier.ts        # scope + prompt-injection + political detection
 │   │   ├── input-guards.ts
 │   │   └── output-guard.ts      # leak detection
 │   ├── test/
@@ -243,7 +294,14 @@ chatbot/
 │   │   ├── phase1-incremental.test.ts
 │   │   ├── phase2-retriever.test.ts
 │   │   ├── phase2-chat.test.ts
-│   │   └── phase2-mocks.ts      # shared test fakes (not a test)
+│   │   ├── phase2-generator.test.ts
+│   │   ├── phase2-classifier.test.ts
+│   │   ├── phase2-reranker.test.ts
+│   │   ├── phase2-mocks.ts                  # shared test fakes (not a test)
+│   │   ├── phase3-evaluation.test.ts
+│   │   ├── phase3-retrieval-evaluation.test.ts
+│   │   ├── phase3-rerank-experiment.test.ts
+│   │   └── phase3-threshold-experiment.test.ts
 │   └── types/
 │       ├── allowlist.ts
 │       ├── core.ts
@@ -259,8 +317,9 @@ chatbot/
 - `src/rag/vectorize.ts` — Vectorize upsert/lookup/deletion wrappers.
 - `src/rag/embedding.ts` — Workers AI BGE-M3 embedding pipeline.
 - `src/types/allowlist.ts` — strict allowlist for D1 tables.
-- `src/security/` — input validation, scope/injection classification, output leak guard.
-- `src/test/` — Phase 1 + Phase 2 automated checks (all with mocked bindings; no production calls).
+- `src/security/` — input validation, scope/injection/political classification, output leak guard.
+- `src/evaluation/` — offline Phase 3 evaluation harness (never imported by the Worker).
+- `src/test/` — Phase 1 + Phase 2 + Phase 3 automated checks (all mocked; no production calls).
 
 ---
 
@@ -275,9 +334,11 @@ chatbot/
 | Max output | 500 tokens |
 | Retrieval top-K | configurable (`CHATBOT_RAG_TOP_K`, default 15) |
 | Rerank top-N | configurable (`CHATBOT_RERANK_TOP_N`, default 5) |
+| Min rerank score | configurable (`CHATBOT_MIN_RERANK_SCORE`, default 0.1) |
+| Min Vectorize score | configurable (`CHATBOT_MIN_VECTORIZE_SCORE`, default 0.15) |
 | Rate limit | configurable (`CHATBOT_RATE_LIMIT_PER_MINUTE`, default 30) |
 
-All tunables live in `src/config/index.ts` and can be overridden via Wrangler `vars`.
+All tunables live in `src/config/index.ts` and can be overridden via Wrangler `vars`. Evaluation recommendations (e.g. `rerankTopN=8`, `minRerankScore=0.05`) are **not** applied to production defaults.
 
 ---
 
@@ -296,7 +357,7 @@ npm run dev       # wrangler dev (local)
 
 - `npm run typecheck` — PASS
 - `npm run build` — PASS
-- `npm test` — 58 tests passing (Phase 1 + Phase 2, all mocked; no production bindings touched)
+- `npm test` — 126 tests passing (Phase 1 + Phase 2 + Phase 3, all mocked; no production bindings touched)
 
 ---
 
@@ -305,7 +366,7 @@ npm run dev       # wrangler dev (local)
 | Binding | Resource |
 |---|---|
 | `DB` | D1 `qto-erp-db-production` (read-only from the chatbot) |
-| `VECTORIZE` | Vectorize index `qto-erp-chatbot-vectors` (1024-dim, cosine) |
+| `VECTORIZE` | Vectorize index `qto-erp-chatbot-vectors` (1024-dim, cosine, 78 vectors) |
 | `AI` | Workers AI (BGE-M3, BGE reranker, Qwen) |
 
 Namespace key: `CHATBOT_VECTORS`.

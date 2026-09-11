@@ -40,8 +40,11 @@ export const DEFAULT_MAX_HISTORY_TURNS = 8; // keep last N user+assistant pairs
 export const DEFAULT_MAX_HISTORY_CHARS = 20000;
 // Retrieval
 export const DEFAULT_RAG_TOP_K = 15;
-export const DEFAULT_RERANK_TOP_N = 5;
-export const DEFAULT_MIN_RERANK_SCORE = 0.1; // bge-reranker softmax in [0,1]
+// Phase 3 controlled tuning (Step 6): rerank recall improvement.
+// Evidence: rerankTopN 5->8 recovered cutoff misses (23/29 -> 25/29);
+// minRerankScore 0.10->0.05 recovered one threshold miss (25/29 -> 26/29).
+export const DEFAULT_RERANK_TOP_N = 8;
+export const DEFAULT_MIN_RERANK_SCORE = 0.05; // bge-reranker softmax in [0,1]
 export const DEFAULT_MIN_VECTORIZE_SCORE = 0.15; // cosine in [0,1]
 
 export const DEFAULT_EMBEDDING_BATCH_SIZE = 32;
