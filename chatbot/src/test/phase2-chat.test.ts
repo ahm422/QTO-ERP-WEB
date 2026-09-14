@@ -200,6 +200,62 @@ test("chat: non-allowlisted vector metadata is ignored and never queried in D1",
   assert.ok(!d1Tables.includes("users"));
 });
 
+test("chat: missing proxy secret is rejected with 401 and zero downstream calls when a secret is configured", async () => {
+  const { env, aiCalls, vectorizeQueries, d1Tables } = makeMockEnv();
+  (env as any).CHATBOT_PROXY_SECRET = "correct-secret";
+
+  const response = await handleChat(chatRequest("What is QTO ERP?"), env);
+  const body = await bodyOf(response);
+
+  assert.equal(response.status, 401);
+  assert.equal(body.error, "Unauthorized");
+  assert.equal(aiCalls.length, 0);
+  assert.equal(vectorizeQueries.length, 0);
+  assert.equal(d1Tables.length, 0);
+});
+
+test("chat: wrong proxy secret is rejected with 401 and zero downstream calls", async () => {
+  const { env, aiCalls, vectorizeQueries, d1Tables } = makeMockEnv();
+  (env as any).CHATBOT_PROXY_SECRET = "correct-secret";
+
+  const response = await handleChat(
+    chatRequest("What is QTO ERP?", { proxySecret: "wrong-secret" }),
+    env,
+  );
+  const body = await bodyOf(response);
+
+  assert.equal(response.status, 401);
+  assert.equal(body.error, "Unauthorized");
+  assert.equal(aiCalls.length, 0);
+  assert.equal(vectorizeQueries.length, 0);
+  assert.equal(d1Tables.length, 0);
+});
+
+test("chat: correct proxy secret allows the happy path through", async () => {
+  const fixture = await faqFixture();
+  const { env } = makeMockEnv({
+    matches: [fixture.match],
+    rows: { faqs: [fixture.row] },
+    llmResponse: { response: "QTO ERP is an all-in-one business platform." },
+  });
+  (env as any).CHATBOT_PROXY_SECRET = "correct-secret";
+
+  const response = await handleChat(
+    chatRequest("What is QTO ERP?", { proxySecret: "correct-secret" }),
+    env,
+  );
+  const body = await bodyOf(response);
+
+  assert.equal(response.status, 200);
+  assert.equal(body.answer, "QTO ERP is an all-in-one business platform.");
+});
+
+test("chat: no proxy secret configured leaves /chat open (local dev)", async () => {
+  const { env } = makeMockEnv({ matches: [] });
+  const response = await handleChat(chatRequest("What is QTO ERP?"), env);
+  assert.equal(response.status, 200);
+});
+
 test("chat: rate limiting returns 429 once the per-minute limit is exceeded", async () => {
   const { env } = makeMockEnv({ matches: [] });
   (env as any).CHATBOT_RATE_LIMIT_PER_MINUTE = "2";

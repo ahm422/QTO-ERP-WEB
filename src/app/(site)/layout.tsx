@@ -1,6 +1,7 @@
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import ChatWidget from "@/components/chat/ChatWidget";
 import {
   getFooterContent,
   listPublishedModulesFull,
@@ -40,6 +41,7 @@ export default async function SiteLayout({
       {children}
       <Footer content={footer} />
       <Toaster richColors position="top-right" />
+      <ChatWidget />
     </>
   );
 }

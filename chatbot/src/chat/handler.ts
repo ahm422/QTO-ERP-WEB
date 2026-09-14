@@ -20,6 +20,7 @@ import { resolveSources } from "../rag/source-resolver.ts";
 import { generateAnswer, enforceMaxTokens } from "../rag/generator.ts";
 import { checkRateLimit } from "./rate-limit.ts";
 import type { Env } from "../types/env.ts";
+import { timingSafeEqual } from "node:crypto";
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 
@@ -28,6 +29,18 @@ function jsonResponse(body: unknown, status = 200, extra: Record<string, string>
     status,
     headers: { ...JSON_HEADERS, ...extra },
   });
+}
+
+/** Constant-time string compare (avoids leaking secret length/prefix via timing). */
+function safeCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) {
+    // Still run a same-length compare so a length mismatch doesn't short-circuit faster.
+    timingSafeEqual(bufA, bufA);
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
 }
 
 function clientKey(request: Request): string {
@@ -40,6 +53,17 @@ function clientKey(request: Request): string {
 }
 
 export async function handleChat(request: Request, env: Env): Promise<Response> {
+  // 0. Proxy-secret gate. Only the Next.js BFF (`/api/chat`) should ever call
+  // this endpoint. When a secret is configured, reject before touching
+  // AI/Vectorize/D1 or the rate limiter.
+  const expectedSecret = env.CHATBOT_PROXY_SECRET;
+  if (expectedSecret) {
+    const provided = request.headers.get("X-Chatbot-Proxy-Secret") ?? "";
+    if (!safeCompare(provided, expectedSecret)) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+  }
+
   const config = buildConfig(env as unknown as Record<string, string | undefined>);
 
   // 1. Content-Type validation

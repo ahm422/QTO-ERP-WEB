@@ -157,11 +157,15 @@ export async function faqFixture(answer = "QTO ERP is an all-in-one business man
   return { row, match, text: chunk.text };
 }
 
-export function chatRequest(message: unknown, opts: { ip?: string; contentType?: string; rawBody?: string } = {}): Request {
+export function chatRequest(
+  message: unknown,
+  opts: { ip?: string; contentType?: string; rawBody?: string; proxySecret?: string } = {},
+): Request {
   const headers: Record<string, string> = {
     "CF-Connecting-IP": opts.ip ?? "1.2.3.4",
   };
   if (opts.contentType !== "omit") headers["content-type"] = opts.contentType ?? "application/json";
+  if (opts.proxySecret !== undefined) headers["X-Chatbot-Proxy-Secret"] = opts.proxySecret;
   const body = opts.rawBody ?? JSON.stringify({ message });
   return new Request("https://chat.local/chat", { method: "POST", headers, body });
 }
