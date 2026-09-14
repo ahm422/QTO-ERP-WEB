@@ -45,5 +45,11 @@ export interface Env {
   // Admin / indexing auth
   CHATBOT_ADMIN_TOKEN?: string;
 
+  // Shared secret required on `X-Chatbot-Proxy-Secret` for POST /chat. Set via
+  // `wrangler secret put CHATBOT_PROXY_SECRET` (never `vars`). Only the Next.js
+  // BFF (`/api/chat`) knows this value — the browser never sees it. When unset,
+  // /chat is unauthenticated (local dev only; never leave unset in a deployed env).
+  CHATBOT_PROXY_SECRET?: string;
+
   [key: string]: string | undefined;
 }

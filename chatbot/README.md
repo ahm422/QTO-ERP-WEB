@@ -54,6 +54,11 @@ User question
 Production D1 is always the source of truth. Vectorize only stores embeddings
 and small metadata used for search — never a copy of the database.
 
+Public frontend integration is done: the Next.js marketing site talks to this
+Worker only through a same-origin `POST /api/chat` route, never directly from
+the browser. See [`../docs/technical/architecture.md`](../docs/technical/architecture.md)
+and [`../docs/technical/api-reference.md`](../docs/technical/api-reference.md).
+
 ---
 
 ## Where the data comes from
@@ -127,6 +132,11 @@ Defaults live in `src/config/index.ts` and can be overridden with Wrangler
 
 ## Security and safety
 
+- **Caller auth** — `POST /chat` requires header `X-Chatbot-Proxy-Secret` to
+  match the `CHATBOT_PROXY_SECRET` Worker secret (constant-time compare);
+  missing/wrong → `401` before any AI/Vectorize/D1 call. No CORS headers are
+  set, so the browser cannot call this Worker directly — only the Next.js
+  site's same-origin `POST /api/chat` route holds the secret.
 - **Company-only scope** — answers are limited to QTO ERP topics.
 - **Allowlisted D1 tables** — only the 10 tables above can ever be read.
 - **Prompt-injection protection** — attempts to override instructions, request
@@ -196,8 +206,20 @@ Example with curl:
 ```bash
 curl -s -X POST https://qto-erp-chatbot.your-subdomain.workers.dev/chat \
   -H "content-type: application/json" \
+  -H "X-Chatbot-Proxy-Secret: <secret>" \
   -d '{"message":"What modules does QTO ERP provide?"}'
 ```
+
+**Caller auth**: when `CHATBOT_PROXY_SECRET` is set (required in every deployed
+environment), `POST /chat` requires header `X-Chatbot-Proxy-Secret: <secret>`;
+a missing/wrong value returns `401 { "error": "Unauthorized" }` before any
+AI/Vectorize/D1 call. This Worker is never called directly from a browser —
+the only intended caller is the Next.js site's same-origin `POST /api/chat`
+route (`src/app/api/chat/route.ts` in the web app), which holds the shared
+secret as a Worker secret and forwards the visitor's IP so this Worker's
+per-IP rate limiting still keys per client. See
+[`../docs/technical/architecture.md`](../docs/technical/architecture.md) for
+the full request path.
 
 Other routes:
 
@@ -214,6 +236,8 @@ Other routes:
 - The Worker is `qto-erp-chatbot`; the Vectorize index it uses is
   `qto-erp-chatbot-vectors` (do not recreate it).
 - Bindings (`wrangler.jsonc`): `DB` (production D1), `VECTORIZE`, `AI`.
+- `CHATBOT_PROXY_SECRET` is a Worker **secret** (`wrangler secret put`, never
+  `vars`), required in every deployed environment — see Deploy below.
 - Model IDs and RAG settings are centralized in `src/config/index.ts` and can be
   overridden with `vars`.
 - Do not change bindings, model IDs, or thresholds without understanding the
@@ -251,3 +275,27 @@ npm run deploy      # deploy the Worker
 ```
 
 Tests use mocked bindings and never touch production data.
+
+To exercise `/chat` locally the way the Next.js BFF will call it, run `npx wrangler dev --port 8788 --ip 127.0.0.1` (see the web app's `docs/technical/local-development.md`) and set a matching `CHATBOT_PROXY_SECRET` in `.dev.vars`.
+
+---
+
+## Deploy
+
+```bash
+# Production
+cd chatbot
+npm run deploy              # -> qto-erp-chatbot
+wrangler secret put CHATBOT_PROXY_SECRET
+
+# Staging
+npm run deploy:staging      # -> qto-erp-chatbot-staging
+wrangler secret put CHATBOT_PROXY_SECRET --env staging
+```
+
+`CHATBOT_PROXY_SECRET` must be set as a Worker **secret** (never `vars`) in every deployed environment, and must match the value configured as a secret on the Next.js web Worker (`qto-erp-web` / `qto-erp-web-staging`). Deploy the chatbot Worker **before** the web Worker, since the web Worker's `CHATBOT` service binding target must already exist.
+
+Smoke test after deploy:
+- `curl https://<worker-url>/` → health JSON
+- `curl -X POST https://<worker-url>/chat -H 'content-type: application/json' -d '{"message":"hi"}'` → `401` (no secret sent)
+- Authenticated request via the Next.js BFF → `{ answer, sources }`
