@@ -51,5 +51,12 @@ export interface Env {
   // /chat is unauthenticated (local dev only; never leave unset in a deployed env).
   CHATBOT_PROXY_SECRET?: string;
 
+  // KV namespace holding the index sync manifest. When bound, reindex runs can
+  // prune vectors whose D1 source row was deleted or shrank.
+  CHATBOT_SYNC_STATE?: any;
+
+  // Opt-in safe retrieval diagnostics ("1"/"true" to enable).
+  CHATBOT_DEBUG_RETRIEVAL?: string;
+
   [key: string]: string | undefined;
 }

@@ -18,6 +18,11 @@ import { retrieveCandidates } from "../rag/retriever.ts";
 import { rerankCandidates } from "../rag/reranker.ts";
 import { resolveSources } from "../rag/source-resolver.ts";
 import { generateAnswer, enforceMaxTokens } from "../rag/generator.ts";
+import {
+  createRetrievalDiagnostics,
+  summarizeDiagnostics,
+  type RetrievalOutcome,
+} from "../rag/diagnostics.ts";
 import { checkRateLimit } from "./rate-limit.ts";
 import type { Env } from "../types/env.ts";
 import { timingSafeEqual } from "node:crypto";
@@ -66,6 +71,9 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
 
   const config = buildConfig(env as unknown as Record<string, string | undefined>);
 
+  // Opt-in safe retrieval diagnostics (never contains message/context text).
+  const diagnostics = config.debugRetrieval ? createRetrievalDiagnostics() : undefined;
+
   // 1. Content-Type validation
   const contentType = (request.headers.get("content-type") ?? "").toLowerCase();
   if (!contentType.includes("application/json")) {
@@ -111,10 +119,31 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
   }
 
   // 5. Retrieval -> resolution -> rerank -> generation
+  const respond = (
+    payload: Record<string, unknown>,
+    status = 200,
+    outcome?: RetrievalOutcome,
+  ): Response => {
+    if (!diagnostics) return jsonResponse(payload, status);
+    if (outcome) diagnostics.outcome = outcome;
+    const summary = summarizeDiagnostics(diagnostics);
+    console.log("retrieval_diagnostics", JSON.stringify(summary));
+    return jsonResponse({ ...payload, diagnostics: summary }, status);
+  };
+
   try {
-    const candidates = await retrieveCandidates(env, message, config);
+    const candidates = await retrieveCandidates(
+      env,
+      message,
+      config,
+      diagnostics ? { diagnostics } : {},
+    );
     if (candidates.length === 0) {
-      return jsonResponse({ answer: UNANSWERED_MESSAGE, sources: [] }, 200);
+      const outcome: RetrievalOutcome =
+        diagnostics && diagnostics.vectorizeMatches > 0
+          ? "all_below_vector_threshold"
+          : "no_vectorize_matches";
+      return respond({ answer: UNANSWERED_MESSAGE, sources: [] }, 200, outcome);
     }
 
     const resolved = await resolveSources(env, candidates);
@@ -126,13 +155,35 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
         stale: entry.stale,
       }));
 
-    if (usable.length === 0) {
-      return jsonResponse({ answer: UNANSWERED_MESSAGE, sources: [] }, 200);
+    if (diagnostics) {
+      diagnostics.resolutionMissing = resolved.filter((entry) => entry.missing).length;
+      diagnostics.resolutionUsable = usable.length;
     }
 
-    const reranked = await rerankCandidates(env, message, usable, config);
+    if (usable.length === 0) {
+      return respond({ answer: UNANSWERED_MESSAGE, sources: [] }, 200, "resolution_empty");
+    }
+
+    const reranked = await rerankCandidates(
+      env,
+      message,
+      usable,
+      config,
+      diagnostics ? { diagnostics } : {},
+    );
     if (reranked.length === 0) {
-      return jsonResponse({ answer: UNANSWERED_MESSAGE, sources: [] }, 200);
+      return respond({ answer: UNANSWERED_MESSAGE, sources: [] }, 200, "rerank_empty");
+    }
+
+    if (diagnostics) {
+      diagnostics.selected = reranked.map((entry) => ({
+        sourceTable: entry.sourceTable,
+        sourceId: entry.sourceId,
+        chunkId: entry.chunkId,
+        vectorId: entry.vectorId,
+        vectorScore: entry.score,
+        rerankScore: entry.rerankScore,
+      }));
     }
 
     const rawAnswer = await generateAnswer(
@@ -154,10 +205,12 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
     // Empty/unusable generation is a safe "no answer", not an error. Keep the
     // response shape consistent with the no-retrieval case.
     if (limited.text === UNANSWERED_MESSAGE) {
-      return jsonResponse({ answer: UNANSWERED_MESSAGE, sources: [] }, 200);
+      return respond({ answer: UNANSWERED_MESSAGE, sources: [] }, 200, "unanswered");
     }
 
-    return jsonResponse(
+    if (diagnostics) diagnostics.generatorAnswered = true;
+
+    return respond(
       {
         answer: limited.text,
         sources: reranked.map((entry) => ({
@@ -168,6 +221,7 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
         })),
       },
       200,
+      "answered",
     );
   } catch (error) {
     // Never leak internal errors, prompts, or stack traces.

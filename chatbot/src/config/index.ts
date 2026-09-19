@@ -33,6 +33,12 @@ function numFromEnv(env: Record<string, string | undefined>, key: string, def: n
   const val = raw != null ? parseFloat(raw) : NaN;
   return Number.isNaN(val) ? def : val;
 }
+function boolFromEnv(env: Record<string, string | undefined>, key: string, def: boolean): boolean {
+  const raw = env[key];
+  if (raw == null) return def;
+  const normalized = String(raw).trim().toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes";
+}
 
 export const DEFAULT_MAX_INPUT_CHARS = 2000;
 export const DEFAULT_MAX_OUTPUT_TOKENS = 500;
@@ -55,6 +61,9 @@ export const DEFAULT_CHUNK_OVERLAP_TOKENS = 50;
 
 // Rate limiting (per-IP per-minute)
 export const DEFAULT_RATE_LIMIT_PER_MINUTE = 30;
+
+// Opt-in retrieval diagnostics (safe metadata only; no message text).
+export const DEFAULT_DEBUG_RETRIEVAL = false;
 
 // --- Prompt / behaviour ------------------------------------------------------
 export const UNANSWERED_MESSAGE =
@@ -87,6 +96,9 @@ export interface ChatbotConfig {
 
   unansweredMessage: string;
   outOfScopeMessage: string;
+
+  /** Emit safe retrieval diagnostics in the response/logs. */
+  debugRetrieval: boolean;
 
   /** Vectorize namespace key to use (from vars). */
   vectorizeKey: string;
@@ -129,6 +141,8 @@ export function buildConfig(env: Record<string, string | undefined> = {}): Chatb
 
     unansweredMessage: UNANSWERED_MESSAGE,
     outOfScopeMessage: OUT_OF_SCOPE_MESSAGE,
+
+    debugRetrieval: boolFromEnv(env, "CHATBOT_DEBUG_RETRIEVAL", DEFAULT_DEBUG_RETRIEVAL),
 
     vectorizeKey: env.CHATBOT_VECTORIZE_KEY ?? "CHATBOT_VECTORS",
   };

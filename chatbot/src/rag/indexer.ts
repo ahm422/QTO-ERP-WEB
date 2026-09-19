@@ -24,6 +24,12 @@ export interface PhaseOneIndexSummary {
   embeddingsGenerated: number;
   vectorsUpserted: number;
   failures: string[];
+  /**
+   * Per-source chunk counts for every source row seen in this run, keyed by
+   * `table:source_id`. Used by the reindex orchestrator to diff against the
+   * sync manifest and prune vectors whose source disappeared or shrank.
+   */
+  indexedSources: Record<string, number>;
 }
 
 function getDb(env: Env): any {
@@ -105,6 +111,7 @@ export async function indexApprovedTables(
     embeddingsGenerated: 0,
     vectorsUpserted: 0,
     failures: [],
+    indexedSources: {},
   };
 
   const bundle = await fetchAllAllowedRecords(db);
@@ -130,6 +137,7 @@ export async function indexApprovedTables(
           chunkOverlapTokens,
         });
         summary.chunksCreated += chunks.length;
+        summary.indexedSources[`${table}:${sourceId}`] = chunks.length;
 
         if (chunks.length === 0) {
           summary.rowsSkipped += 1;

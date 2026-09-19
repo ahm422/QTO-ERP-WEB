@@ -46,7 +46,7 @@ if (isDev) {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactCompiler: true,
-  allowedDevOrigins: ["localhost"],
+  allowedDevOrigins: ["localhost", "localhost"],
   images: {
     remotePatterns: [
       {

@@ -12,11 +12,33 @@
     "enabled": true
   },
   "vars": {},
+  "triggers": {
+    "crons": [
+      "0 2 * * *"
+    ]
+  },
   "env": {
     "staging": {
-      "name": "qto-erp-chatbot-staging"
+      "name": "qto-erp-chatbot-staging",
+      "triggers": {
+        "crons": [
+          "0 2 * * *"
+        ]
+      },
+      "kv_namespaces": [
+        {
+          "binding": "CHATBOT_SYNC_STATE",
+          "id": "YOUR_KV_NAMESPACE_ID"
+        }
+      ]
     }
   },
+  "kv_namespaces": [
+    {
+      "binding": "CHATBOT_SYNC_STATE",
+      "id": "YOUR_KV_NAMESPACE_ID"
+    }
+  ],
   "vectorize": [
     {
       "binding": "VECTORIZE",
@@ -33,6 +55,7 @@
     }
   ],
   "ai": {
-    "binding": "AI"
+    "binding": "AI",
+    "remote": true
   }
 }

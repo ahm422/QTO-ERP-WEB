@@ -10,7 +10,13 @@
  */
 import { buildConfig, type ChatbotConfig } from "../config/index.ts";
 import type { RetrievedCandidate } from "./retriever.ts";
+import type { RetrievalDiagnostics } from "./diagnostics.ts";
 import type { Env } from "../types/env.ts";
+
+export interface RerankOptions {
+  /** Optional safe diagnostics sink (opt-in). */
+  diagnostics?: RetrievalDiagnostics;
+}
 
 export interface RerankableCandidate extends RetrievedCandidate {
   text: string;
@@ -40,14 +46,49 @@ export function extractRerankerScores(response: unknown): Array<{ id: number; sc
 }
 
 /**
+ * Pick the candidate with the strongest Vectorize similarity (> 0), or
+ * undefined when no candidate has a positive similarity.
+ *
+ * `ranked` is supplied sorted by rerankScore descending, so the strict `>`
+ * comparison keeps the highest rerank score among equal-similarity ties.
+ */
+export function strongestByVectorScore(
+  ranked: RerankedCandidate[],
+): RerankedCandidate | undefined {
+  let best: RerankedCandidate | undefined;
+  for (const candidate of ranked) {
+    if (candidate.score > 0 && (!best || candidate.score > best.score)) {
+      best = candidate;
+    }
+  }
+  return best;
+}
+
+/**
  * Rerank candidates by relevance to `question`. Returns at most `rerankTopN`
- * candidates scoring >= `minRerankScore`, ordered best-first.
+ * candidates, ordered best-first.
+ *
+ * Selection policy:
+ *   1. Keep candidates scoring >= `minRerankScore`, capped at `rerankTopN`.
+ *   2. Protect the strongest Vectorize-similarity candidate: bge-reranker-base
+ *      scores are query-relative and can be near-zero noise, so a clearly
+ *      relevant, high-similarity passage (e.g. a published FAQ) must not vanish
+ *      solely because the cross-encoder ranked it just below the floor or past
+ *      the top-N cutoff. It is inserted within the existing top-N budget
+ *      (replacing the weakest reranked entry when full), never added beyond it.
+ *   3. If nothing clears the floor, fall back to that single strongest
+ *      Vectorize candidate (positive similarity only) or no context.
+ *
+ * All returned candidates have already passed retrieval, allowlist filtering,
+ * D1 resolution, and freshness validation, and carry real extracted text, so
+ * this stays grounded and never fabricates.
  */
 export async function rerankCandidates(
   env: Env,
   question: string,
   candidates: RerankableCandidate[],
   config: ChatbotConfig = buildConfig(env as unknown as Record<string, string | undefined>),
+  options: RerankOptions = {},
 ): Promise<RerankedCandidate[]> {
   if (candidates.length === 0) return [];
 
@@ -72,25 +113,29 @@ export async function rerankCandidates(
     .sort((a, b) => b.rerankScore - a.rerankScore);
 
   const topN = Math.max(1, config.rerankTopN);
-  const selected = ranked.filter((candidate) => candidate.rerankScore >= config.minRerankScore).slice(0, topN);
-  if (selected.length > 0) return selected;
+  const aboveFloor = ranked.filter((candidate) => candidate.rerankScore >= config.minRerankScore);
+  const selected = aboveFloor.slice(0, topN);
+  const strongest = strongestByVectorScore(ranked);
 
-  // Bounded fallback. bge-reranker-base relevance scores are query-relative and
-  // can be near-zero noise for every candidate even when a clearly relevant,
-  // high-similarity passage exists. Selecting `ranked[0]` here would be unsafe:
-  // a noise score (~0.001) can rank an unrelated chunk first (observed with a
-  // pricing query). Instead fall back to the ORIGINAL Vectorize similarity
-  // signal: retain at most ONE candidate — the highest Vectorize similarity
-  // among the already-validated candidates — and require that similarity to be
-  // strictly greater than 0. All-zero similarities yield no context. These
-  // candidates have already passed retrieval, allowlist filtering, D1
-  // resolution, freshness/hash validation, and contain real extracted text, so
-  // this stays grounded and never fabricates.
-  let bestBySimilarity: RerankedCandidate | undefined;
-  for (const candidate of ranked) {
-    if (candidate.score > 0 && (!bestBySimilarity || candidate.score > bestBySimilarity.score)) {
-      bestBySimilarity = candidate;
-    }
+  const diagnostics = options.diagnostics;
+  if (diagnostics) {
+    diagnostics.rerankScored = ranked.length;
+    diagnostics.rerankAboveFloor = aboveFloor.length;
+    diagnostics.rerankDroppedByTopN = Math.max(0, aboveFloor.length - topN);
   }
-  return bestBySimilarity ? [bestBySimilarity] : [];
+
+  if (selected.length > 0) {
+    if (strongest && !selected.some((candidate) => candidate.vectorId === strongest.vectorId)) {
+      if (selected.length >= topN) {
+        selected[selected.length - 1] = strongest;
+      } else {
+        selected.push(strongest);
+      }
+      if (diagnostics) diagnostics.protectedVectorIds.push(strongest.vectorId);
+    }
+    return selected;
+  }
+
+  if (diagnostics) diagnostics.rerankFallbackUsed = true;
+  return strongest ? [strongest] : [];
 }

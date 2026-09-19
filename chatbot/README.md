@@ -137,6 +137,8 @@ Defaults live in `src/config/index.ts` and can be overridden with Wrangler
   missing/wrong → `401` before any AI/Vectorize/D1 call. No CORS headers are
   set, so the browser cannot call this Worker directly — only the Next.js
   site's same-origin `POST /api/chat` route holds the secret.
+- **Admin auth** — `POST /index` requires `CHATBOT_ADMIN_TOKEN` (constant-time
+  compare); missing/wrong → `401`, unset secret → `503`.
 - **Company-only scope** — answers are limited to QTO ERP topics.
 - **Allowlisted D1 tables** — only the 10 tables above can ever be read.
 - **Prompt-injection protection** — attempts to override instructions, request
@@ -175,8 +177,35 @@ Defaults live in `src/config/index.ts` and can be overridden with Wrangler
   unchanged are skipped **before** embedding (saves cost, avoids duplicates).
 - Changed content is re-embedded and updated under the same deterministic
   vector id (`table:source_id:chunk_index`).
-- Stale/deleted source vectors can be removed with allowlist-guarded deletion
-  helpers. Vectors are never deleted by the chat endpoint.
+- Deleted sources are pruned: after each run the indexer diffs the current
+  per-source chunk counts against a KV-backed manifest (see below) and deletes
+  the vectors of sources that no longer exist (or shrank). Vectors are never
+  deleted by the chat endpoint.
+
+---
+
+## Keeping the index in sync (dynamic updates)
+
+D1 stays the live source of truth and the Vectorize index is refreshed
+automatically:
+
+| Trigger | How | Command |
+|---|---|---|
+| Cron | `scheduled` handler (`src/index.ts`), scheduled by `triggers.crons` in `wrangler.jsonc` (daily 02:00 UTC) | `runReindex(env, { prune: true })` |
+| Manual | `POST /index`, protected by `CHATBOT_ADMIN_TOKEN` | `runReindex(env, <body>)` |
+
+`runReindex` (`src/rag/reindex.ts`):
+
+1. **Upserts** new/changed rows via the incremental indexer.
+2. **Prunes** vectors whose source row was deleted (or shrank), by diffing the
+   current per-source chunk counts against the manifest stored in the
+   `CHATBOT_SYNC_STATE` KV namespace. If that binding is absent, pruning is
+   skipped (upserts still run) and the response reports `pruneSkippedReason`.
+
+So **add / edit / delete a row in D1 and it reaches the chatbot on the next
+cron run, or immediately via `POST /index`.** Deleted rows stop being served at
+answer time even before a prune, because `resolveSources` drops sources that no
+longer exist.
 
 ---
 
@@ -221,12 +250,48 @@ per-IP rate limiting still keys per client. See
 [`../docs/technical/architecture.md`](../docs/technical/architecture.md) for
 the full request path.
 
+### `POST /index`
+
+Operational endpoint that rebuilds the index on demand. Requires the admin
+token (`Authorization: Bearer <CHATBOT_ADMIN_TOKEN>` or
+`X-Chatbot-Admin-Token: <token>`); missing token → `401`, unset secret → `503`.
+
+Body (all fields optional; default is a full non-dry-run reindex with prune):
+
+```json
+{ "tables": ["faqs", "pricing_plans"], "dryRun": true, "prune": true }
+```
+
+Example with curl:
+
+```bash
+curl -s -X POST https://qto-erp-chatbot.your-subdomain.workers.dev/index \
+  -H "authorization: Bearer $CHATBOT_ADMIN_TOKEN" \
+  -H "content-type: application/json" \
+  -d '{"dryRun":true}'
+```
+
+Response (trimmed):
+
+```json
+{
+  "dryRun": true,
+  "prune": true,
+  "tables": ["blog_posts", "industry_domains", "..."],
+  "vectorsDeleted": 0,
+  "vectorsDeletePlanned": 3,
+  "manifestWritten": false,
+  "index": { "rowsProcessed": 42, "vectorsUpserted": 7, "...": "..." }
+}
+```
+
 Other routes:
 
 | Method | Path | Behavior |
 |---|---|---|
 | GET | `/` | Health check: `{"status":"ok","service":"qto-erp-chatbot"}` |
 | POST | `/chat` | Grounded Q&A (JSON) |
+| POST | `/index` | Protected reindex (cron/manual) |
 | any | other paths | `404 Not Found` |
 
 ---
@@ -235,9 +300,13 @@ Other routes:
 
 - The Worker is `qto-erp-chatbot`; the Vectorize index it uses is
   `qto-erp-chatbot-vectors` (do not recreate it).
-- Bindings (`wrangler.jsonc`): `DB` (production D1), `VECTORIZE`, `AI`.
+- Bindings (`wrangler.jsonc`): `DB` (production D1), `VECTORIZE`, `AI`, and
+  `CHATBOT_SYNC_STATE` (KV holding the sync manifest that enables pruning).
+- `triggers.crons` runs `scheduled` daily at 02:00 UTC to reindex + prune.
 - `CHATBOT_PROXY_SECRET` is a Worker **secret** (`wrangler secret put`, never
   `vars`), required in every deployed environment — see Deploy below.
+- `CHATBOT_ADMIN_TOKEN` is a Worker **secret** that protects `POST /index`.
+  When unset, `/index` returns `503` (chat still works).
 - Model IDs and RAG settings are centralized in `src/config/index.ts` and can be
   overridden with `vars`.
 - Do not change bindings, model IDs, or thresholds without understanding the
@@ -287,10 +356,12 @@ To exercise `/chat` locally the way the Next.js BFF will call it, run `npx wrang
 cd chatbot
 npm run deploy              # -> qto-erp-chatbot
 wrangler secret put CHATBOT_PROXY_SECRET
+wrangler secret put CHATBOT_ADMIN_TOKEN
 
 # Staging
 npm run deploy:staging      # -> qto-erp-chatbot-staging
 wrangler secret put CHATBOT_PROXY_SECRET --env staging
+wrangler secret put CHATBOT_ADMIN_TOKEN --env staging
 ```
 
 `CHATBOT_PROXY_SECRET` must be set as a Worker **secret** (never `vars`) in every deployed environment, and must match the value configured as a secret on the Next.js web Worker (`qto-erp-web` / `qto-erp-web-staging`). Deploy the chatbot Worker **before** the web Worker, since the web Worker's `CHATBOT` service binding target must already exist.

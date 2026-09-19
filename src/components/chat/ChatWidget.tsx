@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { getFadeInUp } from "@/lib/motion";
 import ChatPanel from "./ChatPanel";
+import { useChat } from "./useChat";
 
 // Belt-and-suspenders: ChatWidget is only ever mounted from (site)/layout.tsx,
 // so /admin/** (which covers /admin/login and /admin/reset-password) and
@@ -27,6 +28,9 @@ function isHiddenRoute(pathname: string | null): boolean {
  */
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
+  // Owned here (not in ChatPanel) so closing/reopening the panel keeps the
+  // thread; a browser refresh remounts ChatWidget and starts a new session.
+  const { messages, pending, send } = useChat();
   const pathname = usePathname();
   const reduced = useReducedMotion();
 
@@ -81,7 +85,7 @@ export default function ChatWidget() {
                 exit="hidden"
                 variants={variants}
               >
-                <ChatPanel />
+                <ChatPanel messages={messages} pending={pending} send={send} />
               </motion.div>
             </DialogPrimitive.Content>
           </DialogPrimitive.Portal>

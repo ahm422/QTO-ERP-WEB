@@ -12,6 +12,7 @@
 import { buildConfig, type ChatbotConfig } from "../config/index.ts";
 import { embedText } from "./embedding.ts";
 import { isRagAllowedTable } from "../types/allowlist.ts";
+import type { RetrievalDiagnostics } from "./diagnostics.ts";
 import type { Env } from "../types/env.ts";
 
 export interface RetrievedCandidate {
@@ -34,6 +35,8 @@ export interface RetrievedCandidate {
 export interface RetrieveOptions {
   topK?: number;
   namespace?: string;
+  /** Optional safe diagnostics sink (opt-in). */
+  diagnostics?: RetrievalDiagnostics;
 }
 
 function asString(value: unknown, fallback = ""): string {
@@ -111,11 +114,22 @@ export async function retrieveCandidates(
 
   const matches = response && Array.isArray(response.matches) ? response.matches : [];
   const candidates: RetrievedCandidate[] = [];
+  const diagnostics = options.diagnostics;
+  if (diagnostics) diagnostics.vectorizeMatches = matches.length;
+
   for (const match of matches) {
     const candidate = mapMatchToCandidate(match);
-    if (!candidate) continue;
-    if (candidate.score < config.minVectorizeScore) continue;
+    if (!candidate) {
+      if (diagnostics) diagnostics.vectorizeDropped += 1;
+      continue;
+    }
+    if (candidate.score < config.minVectorizeScore) {
+      if (diagnostics) diagnostics.vectorizeBelowThreshold += 1;
+      continue;
+    }
     candidates.push(candidate);
   }
+
+  if (diagnostics) diagnostics.retrievalCandidates = candidates.length;
   return candidates.slice(0, topK);
 }

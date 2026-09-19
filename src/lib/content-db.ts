@@ -28,6 +28,7 @@ import {
   users,
 } from "@/db/schema";
 import { getDb } from "@/lib/db";
+import { scheduleRagSync } from "@/lib/rag-sync";
 import {
   HOME_HERO_DEFAULTS,
   HOME_HERO_ID,
@@ -660,6 +661,7 @@ export async function createBlogPostAdmin(data: {
     .insert(blogPosts)
     .values(data)
     .returning();
+  await scheduleRagSync("blog_posts");
   return row;
 }
 
@@ -690,6 +692,7 @@ export async function updateBlogPostAdmin(
     .set(data)
     .where(eq(blogPosts.id, id))
     .returning();
+  if (row) await scheduleRagSync("blog_posts");
   return row;
 }
 
@@ -698,6 +701,7 @@ export async function deleteBlogPostAdmin(id: string) {
     .delete(blogPosts)
     .where(eq(blogPosts.id, id))
     .returning();
+  if (row) await scheduleRagSync("blog_posts");
   return row;
 }
 
@@ -715,6 +719,7 @@ export async function createComparisonAdmin(
     .insert(comparisonFeatures)
     .values(data)
     .returning();
+  await scheduleRagSync("comparison_features");
   return row;
 }
 
@@ -737,6 +742,7 @@ export async function updateComparisonAdmin(
     .set(data)
     .where(eq(comparisonFeatures.id, id))
     .returning();
+  if (row) await scheduleRagSync("comparison_features");
   return row;
 }
 
@@ -745,6 +751,7 @@ export async function deleteComparisonAdmin(id: string) {
     .delete(comparisonFeatures)
     .where(eq(comparisonFeatures.id, id))
     .returning();
+  if (row) await scheduleRagSync("comparison_features");
   return row;
 }
 
@@ -779,6 +786,7 @@ export async function updatePricingPlanAdmin(
     .set(data)
     .where(eq(pricingPlans.slug, slug))
     .returning();
+  if (row) await scheduleRagSync("pricing_plans");
   return row;
 }
 
@@ -886,6 +894,7 @@ export async function updateModuleOrbitAdmin(
     .set(data)
     .where(eq(erpModules.id, moduleId))
     .returning();
+  if (row) await scheduleRagSync("erp_modules");
   return row ? serializeHeroOrbitModule(row) : null;
 }
 
@@ -900,6 +909,7 @@ export async function updateModuleSortOrdersAdmin(
         .where(eq(erpModules.id, id)),
     ),
   );
+  await scheduleRagSync("erp_modules");
 }
 
 // ─── Trusted logos ───────────────────────────────────────────────────────────
@@ -1425,6 +1435,7 @@ export async function createIndustryDomainAdmin(
       sortOrder,
     })
     .returning();
+  await scheduleRagSync("industry_domains");
   return {
     ...serializeIndustryDomain(row),
     published: row.published,
@@ -1449,6 +1460,7 @@ export async function updateIndustryDomainAdmin(
     .set(patch)
     .where(eq(industryDomains.id, id))
     .returning();
+  if (row) await scheduleRagSync("industry_domains");
   if (!row) return null;
   return {
     ...serializeIndustryDomain(row),
@@ -1468,6 +1480,7 @@ export async function deleteIndustryDomainAdmin(id: string) {
   await (await getDb())
     .delete(industryDomains)
     .where(eq(industryDomains.id, id));
+  await scheduleRagSync("industry_domains");
   return true;
 }
 
@@ -1600,6 +1613,7 @@ export async function createFaqAdmin(data: CreateFaqInput) {
       sortOrder,
     })
     .returning();
+  await scheduleRagSync("faqs");
   return {
     ...serializeFaq(row),
     pageKey: row.pageKey,
@@ -1615,6 +1629,7 @@ export async function updateFaqAdmin(id: string, data: UpdateFaqInput) {
     .set(data)
     .where(eq(faqs.id, id))
     .returning();
+  if (row) await scheduleRagSync("faqs");
   if (!row) return null;
   return {
     ...serializeFaq(row),
@@ -1633,6 +1648,7 @@ export async function deleteFaqAdmin(id: string) {
     .limit(1);
   if (!existing) return false;
   await (await getDb()).delete(faqs).where(eq(faqs.id, id));
+  await scheduleRagSync("faqs");
   return true;
 }
 
@@ -1791,6 +1807,7 @@ export async function upsertDemoPageContentAdmin(
       set: data,
     })
     .returning();
+  await scheduleRagSync("demo_page_content");
   return serializeDemoPageContent(row);
 }
 
@@ -1977,6 +1994,7 @@ export async function upsertAboutStoryAdmin(
       set: setValues,
     })
     .returning();
+  await scheduleRagSync("about_story");
   return {
     ...serializeAboutStory(row),
     imageKey: row.imageKey,
@@ -2217,6 +2235,7 @@ export async function upsertContactSupportContentAdmin(
       set: data,
     })
     .returning();
+  await scheduleRagSync("contact_support_content");
   return serializeContactSupport(row);
 }
 
@@ -2518,6 +2537,7 @@ export async function createModuleAdmin(data: CreateModuleInput) {
       orbitSpeed: data.orbitSpeed ?? null,
     })
     .returning();
+  await scheduleRagSync("erp_modules");
   return getModuleAdminBySlug(row.slug);
 }
 
@@ -2543,6 +2563,7 @@ export async function updateModuleAdmin(slug: string, data: UpdateModuleInput) {
     .set(patch)
     .where(eq(erpModules.slug, slug))
     .returning();
+  if (row) await scheduleRagSync("erp_modules");
   return row ? getModuleAdminBySlug(row.slug) : null;
 }
 
@@ -2551,6 +2572,7 @@ export async function deleteModuleAdmin(slug: string): Promise<boolean> {
     .delete(erpModules)
     .where(eq(erpModules.slug, slug))
     .returning({ id: erpModules.id });
+  if (deleted.length > 0) await scheduleRagSync("erp_modules");
   return deleted.length > 0;
 }
 
@@ -2565,6 +2587,7 @@ export async function reorderModulesAdmin(orderedIds: string[]): Promise<void> {
       })(),
     ),
   );
+  await scheduleRagSync("erp_modules");
 }
 
 // ─── Solutions admin CRUD ────────────────────────────────────────────────────
@@ -2654,6 +2677,7 @@ export async function createSolutionAdmin(data: CreateSolutionInput) {
       published: data.published ?? false,
     })
     .returning();
+  await scheduleRagSync("solutions");
   return getSolutionAdminBySlug(row.slug);
 }
 
@@ -2679,6 +2703,7 @@ export async function updateSolutionAdmin(
     .set(patch)
     .where(eq(solutions.slug, slug))
     .returning();
+  if (row) await scheduleRagSync("solutions");
   return row ? getSolutionAdminBySlug(row.slug) : null;
 }
 
@@ -2687,6 +2712,7 @@ export async function deleteSolutionAdmin(slug: string): Promise<boolean> {
     .delete(solutions)
     .where(eq(solutions.slug, slug))
     .returning({ id: solutions.id });
+  if (deleted.length > 0) await scheduleRagSync("solutions");
   return deleted.length > 0;
 }
 
@@ -2703,5 +2729,6 @@ export async function reorderSolutionsAdmin(
       })(),
     ),
   );
+  await scheduleRagSync("solutions");
 }
 

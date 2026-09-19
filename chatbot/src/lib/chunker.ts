@@ -45,10 +45,12 @@ export async function chunkDocuments(
     const tokens = approxTokens(text);
 
     if (tokens <= targetTokens) {
-      // Short document — keep as single chunk.
+      // Short document — keep as single chunk. The vector index is a single,
+      // contiguous running counter (see the long-document branch) so indexing
+      // and pruning agree on `table:source_id:0..n-1`.
       const chunkId = `${document_type}_${i}`;
       chunks.push({
-        vectorId: buildVectorId(table, sourceId, i),
+        vectorId: buildVectorId(table, sourceId, chunks.length),
         text,
         metadata: {
           source_table: table,
@@ -70,7 +72,9 @@ export async function chunkDocuments(
     for (let j = 0; j < subChunks.length; j++) {
       const chunkId = `${document_type}_${i}_${j}`;
       chunks.push({
-        vectorId: buildVectorId(table, sourceId, i * 100 + j),
+        // Same contiguous counter as the short-document branch: deterministic
+        // and compatible with `listSourceVectorIds` / prune (`0..n-1`).
+        vectorId: buildVectorId(table, sourceId, chunks.length),
         text: subChunks[j],
         metadata: {
           source_table: table,

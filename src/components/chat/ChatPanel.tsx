@@ -6,12 +6,17 @@ import { SendHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import ChatMessageList from "./ChatMessageList";
-import { CHAT_MAX_MESSAGE_LENGTH, useChat } from "./useChat";
+import { CHAT_MAX_MESSAGE_LENGTH, type ChatMessage } from "./useChat";
 
 const CHARS_WARNING_THRESHOLD = 200;
 
-export default function ChatPanel() {
-  const { messages, pending, send } = useChat();
+interface ChatPanelProps {
+  messages: ChatMessage[];
+  pending: boolean;
+  send: (raw: string) => Promise<void>;
+}
+
+export default function ChatPanel({ messages, pending, send }: ChatPanelProps) {
   const [draft, setDraft] = useState("");
 
   const trimmedLength = draft.trim().length;

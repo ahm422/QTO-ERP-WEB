@@ -39,8 +39,10 @@ function errorCopyFor(status: number, retryAfter: string | null): string {
 /**
  * Client state for the chat widget. Talks only to same-origin POST /api/chat
  * (never the chatbot Worker). Local in-memory transcript only — no
- * localStorage, no server persistence; a refresh clears the thread. Each
- * turn is sent independently (no client-side history is transmitted).
+ * localStorage, no server persistence. The hook is owned by `ChatWidget`, so
+ * closing/reopening the panel keeps the current thread, while a browser refresh
+ * starts a new one. Each turn is sent independently (no client-side history is
+ * transmitted).
  */
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
