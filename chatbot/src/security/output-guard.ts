@@ -17,7 +17,7 @@ export interface OutputGuardResult {
 }
 
 export const SAFE_FALLBACK =
-  "I couldn't provide that detail from QTO ERP's available company information.";
+  "I'm not able to provide a reliable answer to that specific question.";
 
 // Patterns that, if present in output, indicate a leak we must remove entirely.
 const LEAK_PATTERNS: RegExp[] = [

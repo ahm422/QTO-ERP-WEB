@@ -67,7 +67,7 @@ export const DEFAULT_DEBUG_RETRIEVAL = false;
 
 // --- Prompt / behaviour ------------------------------------------------------
 export const UNANSWERED_MESSAGE =
-  "I couldn't find that information in QTO ERP's available company information.";
+  "I'm not able to provide a reliable answer to that specific question.";
 export const OUT_OF_SCOPE_MESSAGE =
   "I can help with QTO ERP products, modules, solutions, pricing, industries, and company information. I can't provide assistance outside of that scope.";
 

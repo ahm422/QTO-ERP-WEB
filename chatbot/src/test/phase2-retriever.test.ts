@@ -152,7 +152,7 @@ test("generation: answers from context with data-as-untrusted system prompt", as
 test("generation: no sources returns the unanswered message without calling AI", async () => {
   const { env, aiCalls } = makeMockEnv();
   const answer = await generateAnswer(env, "q", []);
-  assert.match(answer, /couldn't find that information/i);
+  assert.match(answer, /not able to provide a reliable answer/i);
   assert.equal(aiCalls.length, 0);
 });
 
