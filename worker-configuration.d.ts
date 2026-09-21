@@ -17,12 +17,6 @@ interface __BaseEnv_CloudflareEnv {
 	RESEND_API_KEY: string;
 	EMAIL_FROM: string;
 	ADMIN_NOTIFICATION_EMAIL: string;
-	STRIPE_SECRET_KEY: string;
-	STRIPE_WEBHOOK_SECRET: string;
-	STRIPE_PRICE_STARTER_MONTHLY: string;
-	STRIPE_PRICE_STARTER_YEARLY: string;
-	STRIPE_PRICE_GROWTH_MONTHLY: string;
-	STRIPE_PRICE_GROWTH_YEARLY: string;
 	CHATBOT_URL: string;
 	CHATBOT_PROXY_SECRET: string;
 	NEXT_CACHE_DO_QUEUE: DurableObjectNamespace<import("./cf-worker").DOQueueHandler>;
@@ -50,12 +44,6 @@ declare namespace Cloudflare {
 		RESEND_API_KEY: string;
 		EMAIL_FROM: string;
 		ADMIN_NOTIFICATION_EMAIL: string;
-		STRIPE_SECRET_KEY: string;
-		STRIPE_WEBHOOK_SECRET: string;
-		STRIPE_PRICE_STARTER_MONTHLY: string;
-		STRIPE_PRICE_STARTER_YEARLY: string;
-		STRIPE_PRICE_GROWTH_MONTHLY: string;
-		STRIPE_PRICE_GROWTH_YEARLY: string;
 		CHATBOT_URL: string;
 		CHATBOT_PROXY_SECRET: string;
 		NEXT_CACHE_DO_QUEUE: DurableObjectNamespace<import("./cf-worker").DOQueueHandler>;
@@ -69,7 +57,7 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "NEXTJS_ENV" | "JWT_ACCESS_SECRET" | "JWT_REFRESH_PEPPER" | "CLOUDFLARE_API_TOKEN" | "AUTH_URL" | "RESEND_API_KEY" | "EMAIL_FROM" | "ADMIN_NOTIFICATION_EMAIL" | "STRIPE_SECRET_KEY" | "STRIPE_WEBHOOK_SECRET" | "STRIPE_PRICE_STARTER_MONTHLY" | "STRIPE_PRICE_STARTER_YEARLY" | "STRIPE_PRICE_GROWTH_MONTHLY" | "STRIPE_PRICE_GROWTH_YEARLY" | "CHATBOT_URL" | "CHATBOT_PROXY_SECRET">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "NEXTJS_ENV" | "JWT_ACCESS_SECRET" | "JWT_REFRESH_PEPPER" | "CLOUDFLARE_API_TOKEN" | "AUTH_URL" | "RESEND_API_KEY" | "EMAIL_FROM" | "ADMIN_NOTIFICATION_EMAIL" | "CHATBOT_URL" | "CHATBOT_PROXY_SECRET">> {}
 }
 
 // Begin runtime types

@@ -53,7 +53,6 @@ export const FOOTER_CONTENT_DEFAULTS: FooterContentDefault = {
     {
       title: "Company",
       links: [
-        { label: "Pricing", url: "/pricing" },
         { label: "Contact", url: "/contact" },
         { label: "Book a Demo", url: "/demo" },
       ],

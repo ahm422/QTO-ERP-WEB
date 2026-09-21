@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
 import dynamic from "next/dynamic";
 import {
   ArrowRight,
@@ -42,14 +41,11 @@ import { TrustedByStrip } from "@/components/common/TrustedByStrip";
 import { BuiltForSection } from "@/components/common/BuiltForSection";
 import { IntegratedModulesGrid } from "@/components/common/IntegratedModulesGrid";
 import { EcosystemTabs } from "@/components/common/EcosystemTabs";
-import { PlanCard } from "@/components/ui/plan-card";
-import { ComparisonTable } from "@/components/ui/comparison-table";
 import { IndustryCard } from "@/components/ui/industry-card";
 import { StepCardGrid } from "@/components/ui/step-card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import PricingToggle from "@/app/(site)/pricing/_components/PricingToggle";
 import { getDomainIcon } from "@/lib/icon-map";
 import { getIndustryDomains } from "@/lib/industry-domains";
 import {
@@ -541,24 +537,6 @@ export function FormInputDemo() {
   );
 }
 
-/** Board billing toggle — Monthly / Annual pill via PricingToggle. */
-export function BillingToggleDemo() {
-  const [yearly, setYearly] = useState(false);
-  return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      {[false, true].map((dark) => (
-        <ThemeFrame key={String(dark)} dark={dark}>
-          <PricingToggle
-            yearly={yearly}
-            onToggle={setYearly}
-            className="mb-0"
-          />
-        </ThemeFrame>
-      ))}
-    </div>
-  );
-}
-
 export function TrustedByStripDemo() {
   return (
     <ThemeFrame>
@@ -671,79 +649,6 @@ export function EcosystemTabsDemo() {
           </ul>
         </div>
       )}
-    />
-  );
-}
-
-export function PlanCardDemo() {
-  return (
-    <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-3">
-      <PlanCard
-        yearly={false}
-        plan={{
-          slug: "core",
-          name: "Core",
-          monthlyPrice: 199,
-          yearlyPrice: 159,
-          description: "Essentials for growing project teams.",
-          popular: false,
-          features: ["CRM & Estimating", "3 seats", "Email support"],
-          cta: "Start Core",
-        }}
-      />
-      <PlanCard
-        yearly={false}
-        plan={{
-          slug: "enterprise",
-          name: "Enterprise",
-          monthlyPrice: 449,
-          yearlyPrice: 359,
-          description: "Full stack for multi-site operators.",
-          popular: true,
-          features: ["All Core modules", "HR & Workforce", "Priority support"],
-          cta: "Start Enterprise",
-        }}
-      />
-      <PlanCard
-        yearly={false}
-        plan={{
-          slug: "global",
-          name: "Global",
-          monthlyPrice: 0,
-          yearlyPrice: 0,
-          description: "Custom volume and compliance needs.",
-          popular: false,
-          features: ["Unlimited seats", "SSO", "Dedicated CSM"],
-          cta: "Contact sales",
-        }}
-      />
-    </div>
-  );
-}
-
-export function ComparisonTableDemo() {
-  return (
-    <ComparisonTable
-      embedded
-      columns={[
-        { key: "core", name: "Core" },
-        { key: "enterprise", name: "Enterprise" },
-        { key: "global", name: "Global" },
-      ]}
-      rows={[
-        {
-          feature: "CRM & Estimating",
-          values: { core: "✓", enterprise: "✓", global: "✓" },
-        },
-        {
-          feature: "HR & Workforce",
-          values: { core: "—", enterprise: "✓", global: "✓" },
-        },
-        {
-          feature: "SSO",
-          values: { core: "—", enterprise: "Add-on", global: "✓" },
-        },
-      ]}
     />
   );
 }

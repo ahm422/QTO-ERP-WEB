@@ -46,7 +46,6 @@ function buildNavApps(modules: ModuleDetail[]) {
 const navItems = [
   { label: "Platform", href: "/allApps", hasMega: true },
   { label: "Solutions", href: "#", hasDropdown: true },
-  { label: "Pricing", href: "/pricing" },
   { label: "Resources", href: "#", hasDropdown: true },
 ];
 
@@ -1103,25 +1102,6 @@ export default function NavbarV3({
                       </motion.div>
                     );
                   })}
-
-                  <p className="px-2 pb-2 pt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    More
-                  </p>
-                  <Link
-                    href="/pricing"
-                    className="group flex items-center gap-3.5 rounded-xl p-3 transition-colors hover:bg-muted/60"
-                  >
-                    <div className="flex size-11 items-center justify-center rounded-xl bg-linear-to-br from-accent to-accent-dark text-accent-foreground shadow-md">
-                      <DollarSign className="size-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-foreground">Pricing</p>
-                      <p className="text-sm text-muted-foreground">
-                        Plans & pricing
-                      </p>
-                    </div>
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-accent" />
-                  </Link>
                 </div>
 
                 {ctaVisible && (

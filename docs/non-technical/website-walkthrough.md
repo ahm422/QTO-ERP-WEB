@@ -1,7 +1,7 @@
 # Website walkthrough
 
 Every page a visitor can see, in plain language. Web addresses ("URLs") are shown relative
-to your domain — e.g. `/pricing` means `https://yourdomain.com/pricing`.
+to your domain — e.g. `/contact` means `https://yourdomain.com/contact`.
 
 ---
 
@@ -12,7 +12,7 @@ to your domain — e.g. `/pricing` means `https://yourdomain.com/pricing`.
 The main landing page. Top to bottom it contains:
 
 1. **Hero** — the big headline, a short supporting sentence, bullet points, and two buttons
-   (for example "Book a demo" and "See pricing"). A rotating 3-D graphic of the modules
+   (for example "Book a demo" and "Contact us"). A rotating 3-D graphic of the modules
    sits alongside.
 2. **Trusted by** — a row of customer / partner logos.
 3. **Statistics strip** — a few headline numbers (e.g. active users, hours saved).
@@ -69,21 +69,6 @@ The product presented for a specific audience — for example `/solution/hr-team
 tabs, a "recommended modules" section, an FAQ, and a call to action.
 
 ---
-
-## Pricing — `/pricing`
-
-*[Screenshot: pricing page]*
-
-- A hero heading and sub-heading.
-- Plan cards — **Starter** and **Growth** can be bought online; each shows a monthly and
-  yearly price with a toggle. **Enterprise** sends the visitor to the contact page.
-- A **"Start free trial"** option on Starter and Growth — a 14-day trial that still asks
-  for a card but charges nothing today.
-- A **comparison table** — feature-by-feature across Starter / Growth / Enterprise.
-- A pricing FAQ.
-
-When a visitor subscribes or starts a trial, they are taken to Stripe's secure checkout
-page and then returned to your site. Successful trials land on `/pricing/trial/success`.
 
 ---
 

@@ -1,7 +1,6 @@
 import type {
   BlogPostDetail,
   BlogPostSummary,
-  ComparisonRow,
   ModuleDetail,
   ModuleSummary,
   SolutionDetail,
@@ -83,7 +82,3 @@ export async function fetchRelatedBlogPosts(
   return data?.posts ?? [];
 }
 
-export async function fetchComparison(): Promise<ComparisonRow[]> {
-  const data = await fetchJson<{ features: ComparisonRow[] }>("/api/comparison");
-  return data?.features ?? [];
-}

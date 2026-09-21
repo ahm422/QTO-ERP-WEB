@@ -69,7 +69,7 @@ export const DEFAULT_DEBUG_RETRIEVAL = false;
 export const UNANSWERED_MESSAGE =
   "I'm not able to provide a reliable answer to that specific question.";
 export const OUT_OF_SCOPE_MESSAGE =
-  "I can help with QTO ERP products, modules, solutions, pricing, industries, and company information. I can't provide assistance outside of that scope.";
+  "I can help with QTO ERP products, modules, solutions, industries, and company information. I can't provide assistance outside of that scope.";
 
 // --- Effective config ---------------------------------------------------------
 export interface ChatbotConfig {

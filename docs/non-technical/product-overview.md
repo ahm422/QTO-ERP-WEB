@@ -4,8 +4,7 @@
 
 The QTO ERP website is the public "shop window" for the QTO ERP software product. Its job is
 to explain what QTO ERP does, show the individual tools ("modules") it offers, and turn
-interested visitors into leads by getting them to **book a demo**, **contact sales**, or
-**start a subscription**.
+interested visitors into leads by getting them to **book a demo** or **contact sales**.
 
 It is a marketing website, not the ERP software itself. Customers do not log in here to use
 the ERP — they come here to learn about it and get in touch.
@@ -18,8 +17,6 @@ the ERP — they come here to learn about it and get in touch.
 - Browse **solutions** — the same product described for a particular type of business or
   team (for example HR teams, IT companies, call centres, construction, education).
 - Read the **blog**.
-- See **pricing** and either subscribe online (Starter and Growth plans, monthly or yearly,
-  with an optional 14-day free trial) or contact sales for the Enterprise plan.
 - Fill in the **"Book a demo"** form.
 - Use the **contact** form.
 - Subscribe to the **newsletter**.
@@ -35,7 +32,6 @@ team without a developer:
   uploads).
 - Edit every **module** and **solution** page — headline, description, features, FAQs,
   testimonials, and more.
-- Manage **pricing plans** and the pricing comparison table.
 - Upload **demo videos**.
 - Edit the **About**, **Contact**, and **Demo** pages.
 - Edit navigation menus and the site footer.
@@ -48,8 +44,7 @@ team without a developer:
 The website runs on Cloudflare's global network, so it loads quickly from anywhere. All the
 editable content lives in a database that the admin panel writes to. When your team saves a
 change, the public page updates automatically within a short time — no developer or
-re-deployment needed. Payments are handled by Stripe (a trusted payment provider); your
-website never stores card details. Automatic emails (demo confirmations, contact
+re-deployment needed. Automatic emails (demo confirmations, contact
 notifications, staff invitations) are sent through Cloudflare's email service.
 
 ## Who does what

@@ -185,13 +185,6 @@ export type BlogPostDetail = BlogPostSummary & {
   metaDescription?: string | null;
 };
 
-export type ComparisonRow = {
-  feature: string;
-  starter: string;
-  growth: string;
-  enterprise: string;
-};
-
 /** Public / admin DTO for the marketing home hero singleton. */
 export type HomeHero = {
   eyebrowText: string;
@@ -381,15 +374,6 @@ export type DemoPageContent = {
   formFieldOptions: DemoFormFieldOptionsDto;
   metaTitle: string;
   metaDescription: string;
-};
-
-/** Public DTO for /pricing page singleton (hero + FAQ section chrome). */
-export type PricingPageContent = {
-  heroBadge: string;
-  heroTitle: string;
-  heroSubtitle: string;
-  faqTag: string;
-  faqTitle: string;
 };
 
 /** Shared marketing page hero (page_hero_content JSON). */

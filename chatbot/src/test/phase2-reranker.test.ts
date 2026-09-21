@@ -23,34 +23,34 @@ test("reranker: candidates above the floor are ranked and topN-limited", async (
 
 test("reranker: candidate text is passed to the model as contexts", async () => {
   const { env, aiCalls } = makeMockEnv({ rerankScores: [0.5] });
-  await rerankCandidates(env, "pricing?", [item("pricing_plans:p:0", "Growth plan monthly price")], CFG);
+  await rerankCandidates(env, "modules?", [item("erp_modules:p:0", "Attendance module overview")], CFG);
   const call = aiCalls.find((c) => c.model.includes("reranker"))!;
-  assert.equal(call.opts.query, "pricing?");
-  assert.deepEqual(call.opts.contexts, [{ text: "Growth plan monthly price" }]);
+  assert.equal(call.opts.query, "modules?");
+  assert.deepEqual(call.opts.contexts, [{ text: "Attendance module overview" }]);
 });
 
-// 2. Pricing-style fallback: noisy reranker (below floor) but clear Vectorize signal.
+// 2. High Vectorize / low rerank fallback: noisy reranker (below floor) but clear Vectorize signal.
 test("reranker: below-floor fallback selects the highest Vectorize similarity, not ranked[0]", async () => {
   const items = [
     item("erp_modules:erp1:0", "Ticketing System highlights", 0.5007), // higher rerank (noise)
-    item("pricing_plans:price1:0", "Starter / Growth / Enterprise pricing", 0.6052), // highest similarity
+    item("solutions:sol1:0", "HR teams solution overview", 0.6052), // highest similarity
     item("faqs:faq9:0", "Unrelated FAQ", 0.551),
   ];
   // Reranker ranks the unrelated ERP chunk slightly higher (near-zero noise).
   const { env } = makeMockEnv({ rerankScores: [0.0018, 0.0009, 0.001] });
-  const ranked = await rerankCandidates(env, "What pricing plans are available?", items, CFG);
+  const ranked = await rerankCandidates(env, "What solutions does QTO ERP offer?", items, CFG);
 
   assert.equal(ranked.length, 1, "exactly one bounded fallback candidate");
-  assert.equal(ranked[0].vectorId, "pricing_plans:price1:0", "must pick highest Vectorize similarity");
+  assert.equal(ranked[0].vectorId, "solutions:sol1:0", "must pick highest Vectorize similarity");
   assert.equal(ranked[0].score, 0.6052);
 });
 
 test("reranker: fallback retains the candidate's real, allowlisted source text unchanged", async () => {
   const { env } = makeMockEnv({ rerankScores: [0.0, 0.0] });
-  const items = [item("faqs:a:0", "text A", 0.2), item("pricing_plans:p:0", "pricing text", 0.7)];
+  const items = [item("faqs:a:0", "text A", 0.2), item("erp_modules:p:0", "module text", 0.7)];
   const ranked = await rerankCandidates(env, "q", items, CFG);
   assert.equal(ranked.length, 1);
-  assert.equal(ranked[0].text, "pricing text");
+  assert.equal(ranked[0].text, "module text");
   assert.ok(RAG_ALLOWED_TABLES.includes(ranked[0].sourceTable));
 });
 

@@ -6,9 +6,7 @@ import {
   Boxes,
   Layers,
   FileText,
-  DollarSign,
   Video,
-  Table2,
   Settings2,
   Link2,
   Sparkles,
@@ -21,7 +19,6 @@ import {
   Megaphone,
   PanelBottom,
   CalendarCheck,
-  Tags,
   LayoutTemplate,
   Building2,
   Users,
@@ -133,15 +130,6 @@ export const adminNavSections: AdminNavSection[] = [
         label: "Solutions",
         items: [
           { href: "/admin/solutions", label: "Solutions", icon: Layers },
-        ],
-      },
-      {
-        id: "pricing",
-        label: "Pricing",
-        items: [
-          { href: "/admin/pricing-page", label: "Pricing page", icon: Tags },
-          { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
-          { href: "/admin/comparison", label: "Comparison", icon: Table2 },
         ],
       },
       {
@@ -283,14 +271,6 @@ const breadcrumbRoutes: Array<{
     ],
   },
   {
-    pattern: /^\/admin\/pricing\/[^/]+\/edit$/,
-    crumbs: [
-      { label: "QTO ERP", href: "/admin" },
-      { label: "Pricing", href: "/admin/pricing" },
-      { label: "Edit plan" },
-    ],
-  },
-  {
     pattern: /^\/admin\/demo-requests$/,
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
@@ -367,17 +347,6 @@ const breadcrumbRoutes: Array<{
     crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "About page" }],
   },
   {
-    pattern: /^\/admin\/pricing$/,
-    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Pricing" }],
-  },
-  {
-    pattern: /^\/admin\/pricing-page$/,
-    crumbs: [
-      { label: "QTO ERP", href: "/admin" },
-      { label: "Pricing page" },
-    ],
-  },
-  {
     pattern: /^\/admin\/demo-videos$/,
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
@@ -390,10 +359,6 @@ const breadcrumbRoutes: Array<{
       { label: "QTO ERP", href: "/admin" },
       { label: "Demo page" },
     ],
-  },
-  {
-    pattern: /^\/admin\/comparison$/,
-    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Comparison" }],
   },
   {
     pattern: /^\/admin\/site-settings$/,

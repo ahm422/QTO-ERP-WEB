@@ -15,8 +15,6 @@ import { parseJsonLoose } from "../lib/d1_reader.ts";
 import type {
   ErpModuleRow,
   SolutionRow,
-  PricingPlanRow,
-  ComparisonFeatureRow,
   FaqRow,
   BlogPostRow,
   IndustryDomainRow,
@@ -179,35 +177,6 @@ export function extractSolutions(records: unknown[]): Document[] {
   return docs;
 }
 
-export function extractPricingPlans(records: unknown[]): Document[] {
-  const docs: Document[] = [];
-  for (const raw of records) {
-    const r = raw as PricingPlanRow;
-    const name = clean(r.name);
-    if (!name) continue;
-    const feats = listFromRaw(r.features);
-    docs.push({
-      document_type: "pricing_plan",
-      text: `${name} Plan — ${clean(r.description)}\nMonthly: ${r.monthly_price_display}\nYearly: ${r.yearly_price_display}\nPopular: ${r.popular ? "yes" : "no"}\nFeatures:\n${feats.map((f) => `- ${f}`).join("\n")}`,
-    });
-  }
-  return docs;
-}
-
-export function extractComparisonFeatures(records: unknown[]): Document[] {
-  const docs: Document[] = [];
-  for (const raw of records) {
-    const r = raw as ComparisonFeatureRow;
-    const feature = clean(r.feature);
-    if (!feature) continue;
-    docs.push({
-      document_type: "pricing_comparison",
-      text: `Feature comparison — ${feature}:\nStarter: ${clean(r.starter)}\nGrowth: ${clean(r.growth)}\nEnterprise: ${clean(r.enterprise)}`,
-    });
-  }
-  return docs;
-}
-
 export function extractFaqs(records: unknown[]): Document[] {
   const docs: Document[] = [];
   for (const raw of records) {
@@ -319,8 +288,6 @@ export function extractAll(bundle: RecordsBundle): Document[] {
   return [
     ...extractErpModules(bundle.erp_modules ?? []),
     ...extractSolutions(bundle.solutions ?? []),
-    ...extractPricingPlans(bundle.pricing_plans ?? []),
-    ...extractComparisonFeatures(bundle.comparison_features ?? []),
     ...extractFaqs(bundle.faqs ?? []),
     ...extractBlogPosts(bundle.blog_posts ?? []),
     ...extractIndustryDomains(bundle.industry_domains ?? []),
@@ -341,10 +308,6 @@ export function extractSingleRecord(table: string, raw: unknown): Document[] {
       return extractErpModules([raw]);
     case "solutions":
       return extractSolutions([raw]);
-    case "pricing_plans":
-      return extractPricingPlans([raw]);
-    case "comparison_features":
-      return extractComparisonFeatures([raw]);
     case "faqs":
       return extractFaqs([raw]);
     case "blog_posts":

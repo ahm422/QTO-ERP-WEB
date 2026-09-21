@@ -8,7 +8,6 @@ import {
   MarketingButtonDemo,
   FeatureCardBoardDemo,
   FormInputDemo,
-  BillingToggleDemo,
   BoardTypographyDemo,
   StatsDemo,
   SelectorPanelDemo,
@@ -19,8 +18,6 @@ import {
   BuiltForSectionDemo,
   IntegratedModulesGridDemo,
   EcosystemTabsDemo,
-  PlanCardDemo,
-  ComparisonTableDemo,
   IndustryCardDemo,
   BadgeBoardDemo,
   MarketingCardsDemo,
@@ -289,15 +286,7 @@ export default function StyleGuidePage() {
           <BadgeBoardDemo />
         </Section>
 
-        {/* —— 8 Billing toggle —— */}
-        <Section
-          title="Billing toggle"
-          description="Monthly / Annual pill — PricingToggle DNA shared with /pricing."
-        >
-          <BillingToggleDemo />
-        </Section>
-
-        {/* —— 9 Signature motif —— */}
+        {/* —— 8 Signature motif —— */}
         <Section
           title="Signature motif"
           description="OrbitMotif in a dark rounded frame — glow, rings, module nodes."
@@ -363,14 +352,6 @@ export default function StyleGuidePage() {
 
           <Section title="EcosystemTabs">
             <EcosystemTabsDemo />
-          </Section>
-
-          <Section title="PlanCard">
-            <PlanCardDemo />
-          </Section>
-
-          <Section title="ComparisonTable">
-            <ComparisonTableDemo />
           </Section>
 
           <Section title="StepCard">

@@ -179,11 +179,11 @@ export default function AllAppsGrid({ modules }: AllAppsGridProps) {
       <CTASection
         eyebrow='Ready when you are'
         headline='Ready to Simplify Your Operations with QTO ERP?'
-        description='Schedule a walkthrough or compare plans — single orange brand across every surface.'
+        description='Schedule a walkthrough or get in touch — single orange brand across every surface.'
         primaryLabel='Schedule a Demo'
         primaryHref='/demo'
-        secondaryLabel='View Pricing'
-        secondaryHref='/pricing'
+        secondaryLabel='Contact Us'
+        secondaryHref='/contact'
       />
     </>
   );

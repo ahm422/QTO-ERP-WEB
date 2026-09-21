@@ -33,7 +33,6 @@ const ROUTES = [
   { slug: "allApps", path: "/allApps" },
   { slug: "erp-attendance", path: "/erp/attendance" },
   { slug: "solution-hr-teams", path: "/solution/hr-teams" },
-  { slug: "pricing", path: "/pricing" },
   { slug: "about", path: "/about" },
   { slug: "blog", path: "/blog" },
   { slug: "blog-post", path: "/blog/why-growing-teams-need-erp" },

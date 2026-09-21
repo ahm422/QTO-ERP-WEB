@@ -29,7 +29,6 @@ const THEMES = ["light", "dark"];
 const ROUTES = [
   { slug: "home", path: "/" },
   { slug: "about", path: "/about" },
-  { slug: "pricing", path: "/pricing" },
   { slug: "blog", path: "/blog" },
   { slug: "blog-post", path: "/blog/why-growing-teams-need-erp" },
   { slug: "contact", path: "/contact" },

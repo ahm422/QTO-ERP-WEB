@@ -54,32 +54,6 @@ export interface SolutionRow {
   [key: string]: unknown;
 }
 
-export interface PricingPlanRow {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  monthly_price_display: number;
-  yearly_price_display: number;
-  popular: number;
-  features: string | string[];
-  cta: string;
-  published: number;
-  updated_at?: Date | string | null;
-  [key: string]: unknown;
-}
-
-export interface ComparisonFeatureRow {
-  id: string;
-  feature: string;
-  starter: string;
-  growth: string;
-  enterprise: string;
-  published: number;
-  updated_at?: Date | string | null;
-  [key: string]: unknown;
-}
-
 export interface FaqRow {
   id: string;
   page_key: string;
@@ -170,8 +144,6 @@ export interface ChatbotKnowledgeRow {
 export type AnyRow =
   | ErpModuleRow
   | SolutionRow
-  | PricingPlanRow
-  | ComparisonFeatureRow
   | FaqRow
   | BlogPostRow
   | IndustryDomainRow
@@ -221,8 +193,6 @@ export async function fetchAllAllowedRecords(
   const queries: Array<[string, string]> = [
     ["erp_modules", "SELECT * FROM erp_modules WHERE published = 1"],
     ["solutions", "SELECT * FROM solutions WHERE published = 1"],
-    ["pricing_plans", "SELECT * FROM pricing_plans WHERE published = 1"],
-    ["comparison_features", "SELECT * FROM comparison_features WHERE published = 1"],
     ["faqs", "SELECT * FROM faqs WHERE published = 1"],
     ["blog_posts", "SELECT * FROM blog_posts WHERE status = 'PUBLISHED' AND published_at IS NOT NULL"],
     ["industry_domains", "SELECT * FROM industry_domains WHERE published = 1"],

@@ -12,8 +12,8 @@ has its own `package.json`, `wrangler.jsonc`, and TypeScript config.
 
 ## What it does
 
-- Answers visitor questions about QTO ERP (modules, solutions, pricing,
-  comparison features, FAQs, company info, demos, support).
+- Answers visitor questions about QTO ERP (modules, solutions,
+  FAQs, company info, demos, support).
 - Uses only QTO ERP's own published content as its knowledge base.
 - Says the information is unavailable when it cannot support an answer, instead
   of making something up.
@@ -75,8 +75,6 @@ allowed tables**:
 | `contact_support_content` | Support/contact page copy |
 | `erp_modules` | ERP module descriptions, features, use cases |
 | `solutions` | Solution descriptions and recommended modules |
-| `pricing_plans` | Plan names, prices, and features |
-| `comparison_features` | Plan comparison details |
 | `faqs` | Frequently asked questions and answers |
 | `chatbot_knowledge` | Articles written in the dashboard for the bot (only rows with `enabled = 1`) |
 
@@ -217,7 +215,7 @@ longer exist.
 Request:
 
 ```json
-{ "message": "What pricing plans are available?" }
+{ "message": "Which modules does QTO ERP include?" }
 ```
 
 Response:
@@ -226,7 +224,7 @@ Response:
 {
   "answer": "...",
   "sources": [
-    { "source_table": "pricing_plans", "source_id": "...", "chunk_id": "...", "document_type": "pricing_plan" }
+    { "source_table": "erp_modules", "source_id": "...", "chunk_id": "...", "document_type": "erp_module" }
   ]
 }
 ```
@@ -260,7 +258,7 @@ token (`Authorization: Bearer <CHATBOT_ADMIN_TOKEN>` or
 Body (all fields optional; default is a full non-dry-run reindex with prune):
 
 ```json
-{ "tables": ["faqs", "pricing_plans"], "dryRun": true, "prune": true }
+{ "tables": ["faqs", "erp_modules"], "dryRun": true, "prune": true }
 ```
 
 Example with curl:

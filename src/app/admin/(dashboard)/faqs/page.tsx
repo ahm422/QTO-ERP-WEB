@@ -10,7 +10,6 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import {
   FAQ_PAGE_KEY_CONTACT,
   FAQ_PAGE_KEY_HOME,
-  FAQ_PAGE_KEY_PRICING,
   FAQ_SECTION_DEFAULT,
 } from "@/lib/faqs-defaults";
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,6 @@ import { cn } from "@/lib/utils";
 
 const FAQ_PAGE_KEYS = [
   { key: FAQ_PAGE_KEY_HOME, label: "Home" },
-  { key: FAQ_PAGE_KEY_PRICING, label: "Pricing" },
   { key: FAQ_PAGE_KEY_CONTACT, label: "Contact" },
 ] as const;
 

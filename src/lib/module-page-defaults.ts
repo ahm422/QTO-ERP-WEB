@@ -58,8 +58,8 @@ export const MODULE_PAGE_DEFAULTS: ModulePageDefaults = {
   ctaHeadline: "Ready to Simplify Your Operations with QTO ERP?",
   ctaPrimaryLabel: "Schedule a Demo",
   ctaPrimaryHref: "/demo",
-  ctaSecondaryLabel: "View Pricing",
-  ctaSecondaryHref: "/pricing",
+  ctaSecondaryLabel: "Contact Us",
+  ctaSecondaryHref: "/contact",
   defaultImage: "/assets/images/attendance.png",
 };
 

@@ -54,7 +54,7 @@ describe("allowlist", () => {
   });
 
   test("published-only tables match PUBLISHED_ONLY_TABLES", () => {
-    const expected = ["blog_posts", "erp_modules", "solutions", "pricing_plans", "faqs", "industry_domains", "comparison_features"];
+    const expected = ["blog_posts", "erp_modules", "solutions", "faqs", "industry_domains"];
     for (const table of expected) {
       assert.ok(PUBLISHED_ONLY_TABLES.has(table), `${table} should be published-only`);
     }

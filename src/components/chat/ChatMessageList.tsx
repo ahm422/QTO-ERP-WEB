@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import type { ChatMessage } from "./useChat";
 
 const STARTERS = [
-  "What pricing plans are available?",
+  "Which industries does QTO ERP serve?",
   "Which modules does QTO ERP include?",
   "How do I request a demo?",
 ] as const;
@@ -21,7 +21,7 @@ export default function ChatMessageList({ messages, pending, onStarterClick }: C
       <div className="flex flex-1 flex-col justify-end gap-4 overflow-y-auto px-4 py-4">
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Hi! Ask me about QTO ERP&apos;s products, modules, solutions, pricing, industries,
+            Hi! Ask me about QTO ERP&apos;s products, modules, solutions, industries,
             or company information.
           </p>
           <div className="flex flex-col gap-2">

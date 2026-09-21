@@ -7,7 +7,6 @@ import {
   blogPosts,
   builtForCards,
   chatbotKnowledge,
-  comparisonFeatures,
   contactChannels,
   contactPageContent,
   contactSupportContent,
@@ -21,8 +20,6 @@ import {
   industryDomains,
   navResources,
   pageHeroContent,
-  pricingPageContent,
-  pricingPlans,
   siteSettings,
   solutions,
   trustedLogos,
@@ -47,11 +44,9 @@ import {
 import {
   FAQ_PAGE_KEY_CONTACT,
   FAQ_PAGE_KEY_HOME,
-  FAQ_PAGE_KEY_PRICING,
   FAQ_SECTION_DEFAULT,
   CONTACT_FAQS_DEFAULTS,
   HOME_FAQS_DEFAULTS,
-  PRICING_FAQS_DEFAULTS,
 } from "@/lib/faqs-defaults";
 import {
   CONTACT_CHANNELS_DEFAULTS,
@@ -77,7 +72,6 @@ import {
 import { ABOUT_VALUES_DEFAULTS } from "@/lib/about-values-defaults";
 import { FOOTER_CONTENT_DEFAULTS } from "@/lib/footer-defaults";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
-import { PRICING_PAGE_CONTENT_DEFAULTS } from "@/lib/pricing-page-defaults";
 import {
   pageHeroFromDefaults,
   PAGE_HERO_KEY_ABOUT,
@@ -96,7 +90,6 @@ import {
   serializeBlogSummary,
   serializeBuiltForCard,
   serializeChatbotKnowledge,
-  serializeComparisonRow,
   serializeDemoPageContent,
   serializeFaq,
   serializeFooterContent,
@@ -106,9 +99,7 @@ import {
   serializeHomeSection,
   serializeHomeStat,
   serializeIndustryDomain,
-  serializePricingPageContent,
   serializePageHeroContent,
-  serializePricingPlan,
   resolveMediaPath,
   serializeFeatures,
   serializeModuleDetail,
@@ -131,7 +122,6 @@ import type {
   FooterContent,
   HomeFaqsSection,
   HomeFinalCta,
-  PricingPageContent,
   PageHeroContent,
   HomeHero,
   HomeSectionHeader,
@@ -183,7 +173,6 @@ import type {
 import type { UpsertHomeFinalCtaInput } from "@/lib/validations/admin-home-cta";
 import type { UpsertFooterContentInput } from "@/lib/validations/admin-footer";
 import type { UpsertDemoPageContentInput } from "@/lib/validations/admin-demo-page";
-import type { UpsertPricingPageContentInput } from "@/lib/validations/admin-pricing-page";
 import type { UpsertPageHeroContentInput } from "@/lib/validations/admin-page-hero";
 import type {
   CreateAboutValueInput,
@@ -195,8 +184,6 @@ import { mediaUrl } from "@/lib/media";
 import { createId } from "@paralleldrive/cuid2";
 
 export type BlogPostRow = InferSelectModel<typeof blogPosts>;
-export type ComparisonFeatureRow = InferSelectModel<typeof comparisonFeatures>;
-export type PricingPlanRow = InferSelectModel<typeof pricingPlans>;
 export type HomeHeroRow = InferSelectModel<typeof homeHero>;
 export type ErpModuleRow = InferSelectModel<typeof erpModules>;
 
@@ -595,33 +582,6 @@ export async function incrementBlogPostViewCount(slug: string) {
   `);
 }
 
-export async function listPublishedComparison() {
-  const rows = await (await getDb())
-    .select()
-    .from(comparisonFeatures)
-    .where(eq(comparisonFeatures.published, true))
-    .orderBy(asc(comparisonFeatures.sortOrder));
-  return rows.map(serializeComparisonRow);
-}
-
-export async function listPublishedPricingPlans() {
-  const rows = await (await getDb())
-    .select()
-    .from(pricingPlans)
-    .where(eq(pricingPlans.published, true))
-    .orderBy(asc(pricingPlans.sortOrder));
-  return rows.map(serializePricingPlan);
-}
-
-export async function getPublishedPricingPlanBySlug(slug: string) {
-  const [row] = await (await getDb())
-    .select()
-    .from(pricingPlans)
-    .where(and(eq(pricingPlans.slug, slug), eq(pricingPlans.published, true)))
-    .limit(1);
-  return row ?? null;
-}
-
 // --- Admin helpers ---
 
 export async function listAllBlogPostsAdmin() {
@@ -708,91 +668,6 @@ export async function deleteBlogPostAdmin(id: string) {
     .where(eq(blogPosts.id, id))
     .returning();
   if (row) await scheduleRagSync("blog_posts");
-  return row;
-}
-
-export async function listAllComparisonAdmin() {
-  return await (await getDb())
-    .select()
-    .from(comparisonFeatures)
-    .orderBy(asc(comparisonFeatures.sortOrder));
-}
-
-export async function createComparisonAdmin(
-  data: Omit<ComparisonFeatureRow, "id" | "createdAt" | "updatedAt">,
-) {
-  const [row] = await (await getDb())
-    .insert(comparisonFeatures)
-    .values(data)
-    .returning();
-  await scheduleRagSync("comparison_features");
-  return row;
-}
-
-export async function updateComparisonAdmin(
-  id: string,
-  data: Partial<
-    Pick<
-      ComparisonFeatureRow,
-      | "feature"
-      | "starter"
-      | "growth"
-      | "enterprise"
-      | "sortOrder"
-      | "published"
-    >
-  >,
-) {
-  const [row] = await (await getDb())
-    .update(comparisonFeatures)
-    .set(data)
-    .where(eq(comparisonFeatures.id, id))
-    .returning();
-  if (row) await scheduleRagSync("comparison_features");
-  return row;
-}
-
-export async function deleteComparisonAdmin(id: string) {
-  const [row] = await (await getDb())
-    .delete(comparisonFeatures)
-    .where(eq(comparisonFeatures.id, id))
-    .returning();
-  if (row) await scheduleRagSync("comparison_features");
-  return row;
-}
-
-export async function listAllPricingPlansAdmin() {
-  return await (await getDb())
-    .select()
-    .from(pricingPlans)
-    .orderBy(asc(pricingPlans.sortOrder));
-}
-
-export async function updatePricingPlanAdmin(
-  slug: string,
-  data: Partial<
-    Pick<
-      PricingPlanRow,
-      | "name"
-      | "description"
-      | "monthlyPriceDisplay"
-      | "yearlyPriceDisplay"
-      | "popular"
-      | "features"
-      | "cta"
-      | "stripePriceIdMonthly"
-      | "stripePriceIdYearly"
-      | "sortOrder"
-      | "published"
-    >
-  >,
-) {
-  const [row] = await (await getDb())
-    .update(pricingPlans)
-    .set(data)
-    .where(eq(pricingPlans.slug, slug))
-    .returning();
-  if (row) await scheduleRagSync("pricing_plans");
   return row;
 }
 
@@ -1547,9 +1422,6 @@ export async function listPublishedFaqs(
       if (pageKey === FAQ_PAGE_KEY_HOME) {
         return HOME_FAQS_DEFAULTS.map(faqFromDefault);
       }
-      if (pageKey === FAQ_PAGE_KEY_PRICING) {
-        return PRICING_FAQS_DEFAULTS.map(faqFromDefault);
-      }
       if (pageKey === FAQ_PAGE_KEY_CONTACT) {
         return CONTACT_FAQS_DEFAULTS.map(faqFromDefault);
       }
@@ -1562,9 +1434,6 @@ export async function listPublishedFaqs(
       );
       if (pageKey === FAQ_PAGE_KEY_HOME) {
         return HOME_FAQS_DEFAULTS.map(faqFromDefault);
-      }
-      if (pageKey === FAQ_PAGE_KEY_PRICING) {
-        return PRICING_FAQS_DEFAULTS.map(faqFromDefault);
       }
       if (pageKey === FAQ_PAGE_KEY_CONTACT) {
         return CONTACT_FAQS_DEFAULTS.map(faqFromDefault);
@@ -1887,55 +1756,6 @@ export async function upsertDemoPageContentAdmin(
     .returning();
   await scheduleRagSync("demo_page_content");
   return serializeDemoPageContent(row);
-}
-
-// ─── Pricing page content ────────────────────────────────────────────────────
-
-function pricingPageFromDefaults(): PricingPageContent {
-  return {
-    heroBadge: PRICING_PAGE_CONTENT_DEFAULTS.heroBadge,
-    heroTitle: PRICING_PAGE_CONTENT_DEFAULTS.heroTitle,
-    heroSubtitle: PRICING_PAGE_CONTENT_DEFAULTS.heroSubtitle,
-    faqTag: PRICING_PAGE_CONTENT_DEFAULTS.faqTag,
-    faqTitle: PRICING_PAGE_CONTENT_DEFAULTS.faqTitle,
-  };
-}
-
-export async function getPricingPageContent(): Promise<PricingPageContent> {
-  try {
-    const [row] = await (await getDb())
-      .select()
-      .from(pricingPageContent)
-      .where(eq(pricingPageContent.id, PRICING_PAGE_CONTENT_DEFAULTS.id))
-      .limit(1);
-    if (!row) return pricingPageFromDefaults();
-    return serializePricingPageContent(row);
-  } catch (err) {
-    if (isMissingRelationError(err)) {
-      console.warn(
-        "[content-db] pricing_page_content missing — using defaults (run db:migrate:local)",
-      );
-      return pricingPageFromDefaults();
-    }
-    throw err;
-  }
-}
-
-export async function upsertPricingPageContentAdmin(
-  data: UpsertPricingPageContentInput,
-): Promise<PricingPageContent> {
-  const [row] = await (await getDb())
-    .insert(pricingPageContent)
-    .values({
-      id: PRICING_PAGE_CONTENT_DEFAULTS.id,
-      ...data,
-    })
-    .onConflictDoUpdate({
-      target: pricingPageContent.id,
-      set: data,
-    })
-    .returning();
-  return serializePricingPageContent(row);
 }
 
 export async function getPageHeroContent(

@@ -7,7 +7,6 @@ import { FAQ_SECTION_KEY } from "@/lib/home-sections-defaults";
  */
 
 export const FAQ_PAGE_KEY_HOME = "home" as const;
-export const FAQ_PAGE_KEY_PRICING = "pricing" as const;
 export const FAQ_PAGE_KEY_CONTACT = "contact" as const;
 
 export type FaqDefault = {
@@ -118,55 +117,6 @@ export const HOME_FAQS_DEFAULTS: FaqDefault[] = [
       "Yes, cancel anytime with no penalties. You retain access until the end of your billing period.",
     category: "Billing",
     sortOrder: 9,
-    published: true,
-  },
-];
-
-/** Pricing page FAQs — source of truth for seed + runtime fallbacks. */
-export const PRICING_FAQS_DEFAULTS: FaqDefault[] = [
-  {
-    pageKey: FAQ_PAGE_KEY_PRICING,
-    question: "Is there a free trial?",
-    answer:
-      "Yes. Starter and Growth include a 14-day free trial. Stripe collects a card on file; you will not be charged until the trial ends. Enterprise is custom — contact sales.",
-    category: null,
-    sortOrder: 0,
-    published: true,
-  },
-  {
-    pageKey: FAQ_PAGE_KEY_PRICING,
-    question: "Can I switch plans later?",
-    answer:
-      "Absolutely. Upgrade or downgrade anytime. Changes take effect on your next billing cycle.",
-    category: null,
-    sortOrder: 1,
-    published: true,
-  },
-  {
-    pageKey: FAQ_PAGE_KEY_PRICING,
-    question: "What payment methods do you accept?",
-    answer:
-      "We accept all major credit cards, bank transfers, and can invoice for Enterprise plans.",
-    category: null,
-    sortOrder: 2,
-    published: true,
-  },
-  {
-    pageKey: FAQ_PAGE_KEY_PRICING,
-    question: "Is there a setup fee?",
-    answer:
-      "No setup fees for Starter and Growth plans. Enterprise includes complimentary onboarding.",
-    category: null,
-    sortOrder: 3,
-    published: true,
-  },
-  {
-    pageKey: FAQ_PAGE_KEY_PRICING,
-    question: "Can I cancel anytime?",
-    answer:
-      "Yes. Cancel anytime with no penalties. You'll retain access until the end of your billing period.",
-    category: null,
-    sortOrder: 4,
     published: true,
   },
 ];

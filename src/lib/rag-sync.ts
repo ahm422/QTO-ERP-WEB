@@ -27,8 +27,6 @@ export type RagSyncTable =
   | "contact_support_content"
   | "erp_modules"
   | "solutions"
-  | "pricing_plans"
-  | "comparison_features"
   | "faqs"
   | "chatbot_knowledge";
 

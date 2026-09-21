@@ -21,8 +21,6 @@ export const RAG_ALLOWED_TABLES: readonly string[] = [
   "contact_support_content",
   "erp_modules",
   "solutions",
-  "pricing_plans",
-  "comparison_features",
   "faqs",
   "chatbot_knowledge",
 ] as const;
@@ -58,8 +56,6 @@ export const EXCLUDED_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     "name",
   ],
   solutions: ["hero_image", "hero_image_alt", "hero_caption", "email", "phone", "full_name", "name"],
-  pricing_plans: ["stripe_price_id_monthly", "stripe_price_id_yearly", "email", "phone", "full_name", "name"],
-  comparison_features: ["email", "phone", "full_name", "name"],
   faqs: ["email", "phone", "full_name", "name"],
   chatbot_knowledge: ["email", "phone", "full_name", "name"],
 };
@@ -70,8 +66,6 @@ export const PUBLISHED_ONLY_TABLES: ReadonlySet<string> = new Set([
   "industry_domains",
   "erp_modules",
   "solutions",
-  "pricing_plans",
-  "comparison_features",
   "faqs",
 ]);
 

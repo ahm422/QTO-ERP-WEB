@@ -11,11 +11,6 @@ Deletes are permanent from the admin panel. Contact your developer — recent co
 sometimes be restored from a database backup. In future, use the **Published** switch to
 hide things instead of deleting.
 
-**A visitor says the "Subscribe" button on pricing didn't work.**
-Check that the plan has its **Stripe price IDs** filled in on the **Pricing** screen, and
-that the price shown on the site matches the price set in Stripe. If unsure, ask whoever
-manages the Stripe account.
-
 **Someone didn't get the demo confirmation / invite email.**
 Ask them to check spam. Invite/reset links expire after **one hour** — send a new one.
 If emails are failing generally, your developer needs to check the email service.
@@ -63,9 +58,6 @@ tool). Keep it short and narrate what you're doing. Store it alongside this docu
 | **FAQ** | "Frequently asked questions" — an expandable question-and-answer list. |
 | **SEO title / description** | The title and summary search engines like Google show for the page. |
 | **Sort order** | The position of an item in a list on the public site; usually set by dragging. |
-| **Stripe** | The payment company that handles subscriptions and trials. Your site never sees card numbers. |
-| **Stripe price ID** | A code (starts with `price_`) that links one of your plans to its billing setup in Stripe. |
-| **Free trial** | 14 days at no charge; the customer still enters a card and is billed automatically afterwards unless they cancel. |
 | **Cloudflare** | The company whose network hosts the website, database, files, and email. |
 | **D1 / database** | Where all your editable content and leads are stored. |
 | **R2 / storage** | Where uploaded images and videos are kept. |

@@ -84,8 +84,8 @@ export default async function Blog({ searchParams }: PageProps) {
         description="Book a short walkthrough tailored to your team — or keep reading more insights."
         primaryLabel="Book a Demo"
         primaryHref="/demo"
-        secondaryLabel="See Pricing"
-        secondaryHref="/pricing"
+        secondaryLabel="Contact Us"
+        secondaryHref="/contact"
       />
     </>
   );

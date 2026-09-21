@@ -100,19 +100,6 @@ form's dropdown lists (countries, business types) and button/success text.
 
 ---
 
-## Manage pricing
-
-1. **Pricing** — for each plan: name, description, monthly and yearly price shown on the
-   site, feature list, the button label, and the **Stripe price IDs** (the codes that link a
-   plan to Stripe billing — get these from whoever manages the Stripe account).
-2. **Pricing page** — the banner heading/sub-heading and the FAQ section heading.
-3. **Comparison** — add/edit/reorder rows of the feature comparison table (one value each
-   for Starter, Growth, Enterprise).
-4. **FAQs → Pricing** — the pricing FAQ questions.
-
-> Prices shown on the site are display-only. The amount actually charged always comes from
-> Stripe, so the two must be kept in agreement.
-
 ---
 
 ## Upload a demo video
@@ -142,9 +129,9 @@ that you do **not** want in the public FAQ lists.
    for grouping in the dashboard.
 3. Leave **Enabled** on so the article is available to the chatbot. Turn it off to pause
    an article without deleting it.
-4. Save. These articles never appear on `/`, `/pricing`, or `/contact`.
+4. Save. These articles never appear on `/` or `/contact`.
 
-Public FAQ lists still use **FAQs** (Home / Pricing / Contact). Unpublishing an FAQ hides
+Public FAQ lists still use **FAQs** (Home / Contact). Unpublishing an FAQ hides
 it on the website; it is not a substitute for chatbot-only copy.
 
 ---
