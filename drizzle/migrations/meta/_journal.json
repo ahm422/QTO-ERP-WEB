@@ -120,6 +120,13 @@
       "when": 1788253513395,
       "tag": "0016_third_echo",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1789975285650,
+      "tag": "0017_natural_paladin",
+      "breakpoints": true
     }
   ]
 }

@@ -132,6 +132,23 @@ form's dropdown lists (countries, business types) and button/success text.
 
 ---
 
+## Chatbot knowledge (not shown on the public site)
+
+Use **Chatbot knowledge** (Shared in the sidebar) for answers the chatbot should know
+that you do **not** want in the public FAQ lists.
+
+1. Go to **Chatbot knowledge**.
+2. Add a **Title** and **Body** (what the bot should say). Optional **Category** is only
+   for grouping in the dashboard.
+3. Leave **Enabled** on so the article is available to the chatbot. Turn it off to pause
+   an article without deleting it.
+4. Save. These articles never appear on `/`, `/pricing`, or `/contact`.
+
+Public FAQ lists still use **FAQs** (Home / Pricing / Contact). Unpublishing an FAQ hides
+it on the website; it is not a substitute for chatbot-only copy.
+
+---
+
 ## Images — where they go
 
 When you upload an image in any admin screen, it's stored with the site and served from a

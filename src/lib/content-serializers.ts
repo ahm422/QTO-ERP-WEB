@@ -4,6 +4,7 @@ import {
   aboutValues,
   blogPosts,
   builtForCards,
+  chatbotKnowledge,
   comparisonFeatures,
   demoPageContent,
   erpModules,
@@ -110,6 +111,7 @@ type BuiltForCardRow = InferSelectModel<typeof builtForCards>;
 type HomeSectionRow = InferSelectModel<typeof homeSections>;
 type IndustryDomainRow = InferSelectModel<typeof industryDomains>;
 type FaqRow = InferSelectModel<typeof faqs>;
+type ChatbotKnowledgeRow = InferSelectModel<typeof chatbotKnowledge>;
 type FooterContentRow = InferSelectModel<typeof footerContent>;
 type DemoPageContentRow = InferSelectModel<typeof demoPageContent>;
 type PricingPageContentRow = InferSelectModel<typeof pricingPageContent>;
@@ -458,6 +460,20 @@ export function serializeFaq(row: FaqRow): FaqItem {
     answer: row.answer,
     category: row.category ?? null,
     sortOrder: row.sortOrder,
+  };
+}
+
+/** Admin DTO for bot-only knowledge. Never exposed on public content APIs. */
+export function serializeChatbotKnowledge(row: ChatbotKnowledgeRow) {
+  return {
+    id: row.id,
+    title: row.title,
+    body: row.body,
+    category: row.category ?? null,
+    sortOrder: row.sortOrder,
+    enabled: row.enabled,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
   };
 }
 

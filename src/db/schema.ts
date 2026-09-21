@@ -729,6 +729,36 @@ export const faqs = sqliteTable(
   ],
 );
 
+/**
+ * Bot-only knowledge articles. Never rendered on the public marketing site.
+ * Indexed by the chatbot Worker when `enabled` is true, independently of FAQ
+ * `published`.
+ */
+export const chatbotKnowledge = sqliteTable(
+  "chatbot_knowledge",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    category: text("category"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    index("chatbot_knowledge_enabled_idx").on(t.enabled),
+    index("chatbot_knowledge_sort_order_idx").on(t.sortOrder),
+  ],
+);
+
 export type FooterLink = {
   label: string;
   url: string;

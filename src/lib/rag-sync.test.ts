@@ -11,4 +11,5 @@ import { scheduleRagSync } from "./rag-sync";
 test("scheduleRagSync never throws without a Cloudflare context", async () => {
   await assert.doesNotReject(() => scheduleRagSync("faqs"));
   await assert.doesNotReject(() => scheduleRagSync("erp_modules"));
+  await assert.doesNotReject(() => scheduleRagSync("chatbot_knowledge"));
 });

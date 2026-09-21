@@ -17,6 +17,7 @@ import {
   HardHat,
   Factory,
   CircleHelp,
+  Bot,
   Megaphone,
   PanelBottom,
   CalendarCheck,
@@ -171,6 +172,11 @@ export const adminNavSections: AdminNavSection[] = [
         label: "Shared",
         items: [
           { href: "/admin/faqs", label: "FAQs", icon: CircleHelp },
+          {
+            href: "/admin/chatbot-knowledge",
+            label: "Chatbot knowledge",
+            icon: Bot,
+          },
           {
             href: "/admin/page-hero",
             label: "Page heroes",
@@ -434,6 +440,13 @@ const breadcrumbRoutes: Array<{
   {
     pattern: /^\/admin\/faqs$/,
     crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "FAQs" }],
+  },
+  {
+    pattern: /^\/admin\/chatbot-knowledge$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Chatbot knowledge" },
+    ],
   },
   {
     pattern: /^\/admin\/home-cta$/,

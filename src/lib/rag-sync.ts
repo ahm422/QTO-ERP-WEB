@@ -16,7 +16,9 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
  * The daily cron (`0 2 * * *`) remains as a reconciliation fallback.
  */
 
-/** The chatbot's allowlisted RAG tables. Keep in sync with chatbot/src/types/allowlist.ts. */
+/** The chatbot's allowlisted RAG tables. Keep in sync with chatbot/src/types/allowlist.ts.
+ *  `chatbot_knowledge` is included so admin writes trigger reindex; Worker
+ *  allowlisting of that table is owned by the chatbot project. */
 export type RagSyncTable =
   | "blog_posts"
   | "industry_domains"
@@ -27,7 +29,8 @@ export type RagSyncTable =
   | "solutions"
   | "pricing_plans"
   | "comparison_features"
-  | "faqs";
+  | "faqs"
+  | "chatbot_knowledge";
 
 /**
  * Light per-table throttle: coalesces several writes that happen within the

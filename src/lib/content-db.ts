@@ -6,6 +6,7 @@ import {
   aboutValues,
   blogPosts,
   builtForCards,
+  chatbotKnowledge,
   comparisonFeatures,
   contactChannels,
   contactPageContent,
@@ -94,6 +95,7 @@ import {
   serializeBlogDetail,
   serializeBlogSummary,
   serializeBuiltForCard,
+  serializeChatbotKnowledge,
   serializeComparisonRow,
   serializeDemoPageContent,
   serializeFaq,
@@ -174,6 +176,10 @@ import type {
   CreateFaqInput,
   UpdateFaqInput,
 } from "@/lib/validations/admin-faqs";
+import type {
+  CreateChatbotKnowledgeInput,
+  UpdateChatbotKnowledgeInput,
+} from "@/lib/validations/admin-chatbot-knowledge";
 import type { UpsertHomeFinalCtaInput } from "@/lib/validations/admin-home-cta";
 import type { UpsertFooterContentInput } from "@/lib/validations/admin-footer";
 import type { UpsertDemoPageContentInput } from "@/lib/validations/admin-demo-page";
@@ -1657,6 +1663,78 @@ export async function getFaqByIdAdmin(id: string) {
     .select()
     .from(faqs)
     .where(eq(faqs.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+// ─── Chatbot knowledge (bot-only, never on the public site) ───────────────────
+
+export async function listChatbotKnowledgeAdmin() {
+  const rows = await (await getDb())
+    .select()
+    .from(chatbotKnowledge)
+    .orderBy(asc(chatbotKnowledge.sortOrder));
+  return rows.map(serializeChatbotKnowledge);
+}
+
+export async function createChatbotKnowledgeAdmin(
+  data: CreateChatbotKnowledgeInput,
+) {
+  const db = await getDb();
+  let sortOrder = data.sortOrder;
+  if (sortOrder === undefined) {
+    const [result] = await db
+      .select({ maxSort: max(chatbotKnowledge.sortOrder) })
+      .from(chatbotKnowledge);
+    sortOrder = (result?.maxSort ?? -1) + 1;
+  }
+  const [row] = await db
+    .insert(chatbotKnowledge)
+    .values({
+      title: data.title,
+      body: data.body,
+      category: data.category ?? null,
+      enabled: data.enabled ?? true,
+      sortOrder,
+    })
+    .returning();
+  await scheduleRagSync("chatbot_knowledge");
+  return serializeChatbotKnowledge(row);
+}
+
+export async function updateChatbotKnowledgeAdmin(
+  id: string,
+  data: UpdateChatbotKnowledgeInput,
+) {
+  const [row] = await (await getDb())
+    .update(chatbotKnowledge)
+    .set(data)
+    .where(eq(chatbotKnowledge.id, id))
+    .returning();
+  if (row) await scheduleRagSync("chatbot_knowledge");
+  if (!row) return null;
+  return serializeChatbotKnowledge(row);
+}
+
+export async function deleteChatbotKnowledgeAdmin(id: string) {
+  const [existing] = await (await getDb())
+    .select({ id: chatbotKnowledge.id })
+    .from(chatbotKnowledge)
+    .where(eq(chatbotKnowledge.id, id))
+    .limit(1);
+  if (!existing) return false;
+  await (await getDb())
+    .delete(chatbotKnowledge)
+    .where(eq(chatbotKnowledge.id, id));
+  await scheduleRagSync("chatbot_knowledge");
+  return true;
+}
+
+export async function getChatbotKnowledgeByIdAdmin(id: string) {
+  const [row] = await (await getDb())
+    .select()
+    .from(chatbotKnowledge)
+    .where(eq(chatbotKnowledge.id, id))
     .limit(1);
   return row ?? null;
 }
