@@ -63,7 +63,7 @@ and [`../docs/technical/api-reference.md`](../docs/technical/api-reference.md).
 
 ## Where the data comes from
 
-All content comes from the production D1 database, and only from these **10
+All content comes from the production D1 database, and only from these **11
 allowed tables**:
 
 | Table | What it contributes |
@@ -78,6 +78,7 @@ allowed tables**:
 | `pricing_plans` | Plan names, prices, and features |
 | `comparison_features` | Plan comparison details |
 | `faqs` | Frequently asked questions and answers |
+| `chatbot_knowledge` | Articles written in the dashboard for the bot (only rows with `enabled = 1`) |
 
 No other tables are read or indexed. Sensitive tables (users, tokens, inquiries,
 subscribers, subscriptions, etc.) are never touched.
@@ -140,7 +141,7 @@ Defaults live in `src/config/index.ts` and can be overridden with Wrangler
 - **Admin auth** — `POST /index` requires `CHATBOT_ADMIN_TOKEN` (constant-time
   compare); missing/wrong → `401`, unset secret → `503`.
 - **Company-only scope** — answers are limited to QTO ERP topics.
-- **Allowlisted D1 tables** — only the 10 tables above can ever be read.
+- **Allowlisted D1 tables** — only the 11 tables above can ever be read.
 - **Prompt-injection protection** — attempts to override instructions, request
   hidden context, or extract internal reasoning are rejected before retrieval.
 - **Input limit** — messages longer than 2000 characters are rejected (HTTP 413).
@@ -317,7 +318,7 @@ Other routes:
 
 ## Known limitations
 
-- **Content coverage** — the bot only knows what exists in the 10 allowed
+- **Content coverage** — the bot only knows what exists in the 11 allowed
   tables. Topics without published content get a safe "unavailable" response.
 - **Phrasing sensitivity** — retrieval quality can vary with how a question is
   worded; some phrasings retrieve the right content more reliably than others.

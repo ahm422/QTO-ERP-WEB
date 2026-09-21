@@ -156,6 +156,17 @@ export interface ContactSupportContentRow {
   [key: string]: unknown;
 }
 
+/** Dashboard-managed articles. Gated by `enabled`, not `published`. */
+export interface ChatbotKnowledgeRow {
+  id: string;
+  title: string;
+  body: string;
+  category?: string | null;
+  enabled: number | boolean;
+  updated_at?: Date | string | null;
+  [key: string]: unknown;
+}
+
 export type AnyRow =
   | ErpModuleRow
   | SolutionRow
@@ -166,7 +177,8 @@ export type AnyRow =
   | IndustryDomainRow
   | AboutStoryRow
   | DemoPageContentRow
-  | ContactSupportContentRow;
+  | ContactSupportContentRow
+  | ChatbotKnowledgeRow;
 
 // ---------------------------------------------------------------------------
 // Query helpers — each function issues one fixed, table-specific SELECT.
@@ -217,6 +229,7 @@ export async function fetchAllAllowedRecords(
     ["about_story", "SELECT * FROM about_story"],
     ["demo_page_content", "SELECT * FROM demo_page_content"],
     ["contact_support_content", "SELECT * FROM contact_support_content"],
+    ["chatbot_knowledge", "SELECT * FROM chatbot_knowledge WHERE enabled = 1"],
   ];
 
   for (const [table, sql] of queries) {

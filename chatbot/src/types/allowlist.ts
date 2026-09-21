@@ -24,6 +24,7 @@ export const RAG_ALLOWED_TABLES: readonly string[] = [
   "pricing_plans",
   "comparison_features",
   "faqs",
+  "chatbot_knowledge",
 ] as const;
 
 export type RagAllowedTable = (typeof RAG_ALLOWED_TABLES)[number];
@@ -60,6 +61,7 @@ export const EXCLUDED_COLUMNS: Readonly<Record<string, readonly string[]>> = {
   pricing_plans: ["stripe_price_id_monthly", "stripe_price_id_yearly", "email", "phone", "full_name", "name"],
   comparison_features: ["email", "phone", "full_name", "name"],
   faqs: ["email", "phone", "full_name", "name"],
+  chatbot_knowledge: ["email", "phone", "full_name", "name"],
 };
 
 /** Which tables carry a `published` flag that must be true to be indexed. */

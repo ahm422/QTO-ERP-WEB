@@ -5,10 +5,17 @@ import { RAG_ALLOWED_TABLES, EXCLUDED_COLUMNS, PUBLISHED_ONLY_TABLES } from "../
 import { buildVectorId, parseVectorId, approxTokens } from "../types/core.ts";
 
 describe("allowlist", () => {
-  test("all 10 configured RAG tables are allowed", () => {
+  test("all 11 configured RAG tables are allowed", () => {
+    assert.equal(RAG_ALLOWED_TABLES.length, 11);
     for (const table of RAG_ALLOWED_TABLES) {
       assert.equal(isRagAllowedTable(table), true, `expected ${table} to be allowed`);
     }
+  });
+
+  test("chatbot_knowledge is allowed, gated by enabled (not published-only)", () => {
+    assert.equal(isRagAllowedTable("chatbot_knowledge"), true);
+    assert.equal(PUBLISHED_ONLY_TABLES.has("chatbot_knowledge"), false);
+    assert.deepEqual(EXCLUDED_COLUMNS.chatbot_knowledge, ["email", "phone", "full_name", "name"]);
   });
 
   test("PII tables are NOT allowed", () => {

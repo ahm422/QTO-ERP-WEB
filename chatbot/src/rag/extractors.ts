@@ -23,6 +23,7 @@ import type {
   AboutStoryRow,
   DemoPageContentRow,
   ContactSupportContentRow,
+  ChatbotKnowledgeRow,
 } from "../lib/d1_reader.ts";
 
 export interface Document {
@@ -286,6 +287,34 @@ export function extractContactSupportContent(records: unknown[]): Document[] {
   return docs;
 }
 
+/**
+ * Dashboard-managed knowledge articles. Disabled rows produce no documents, so
+ * a stale Vectorize hit for a disabled article resolves to "missing" instead of
+ * being answered from.
+ */
+export function extractChatbotKnowledge(records: unknown[]): Document[] {
+  const docs: Document[] = [];
+  for (const raw of records) {
+    const r = raw as ChatbotKnowledgeRow;
+    if (!r.enabled || (r.enabled as unknown) === "0") continue;
+    const title = clean(r.title);
+    if (!title) continue;
+    const category = clean(r.category);
+    // Keep paragraph breaks in the body so the chunker can split on them.
+    const body = (typeof r.body === "string" && /<[a-zA-Z/]/.test(r.body) ? stripHtml(r.body) : asText(r.body))
+      .replace(/[ \t]+/g, " ")
+      .replace(/ ?\n ?/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+    if (!body) continue;
+    docs.push({
+      document_type: "chatbot_knowledge",
+      text: `Chatbot knowledge — ${title}${category ? ` / ${category}` : ""}\n${body}`,
+    });
+  }
+  return docs;
+}
+
 export function extractAll(bundle: RecordsBundle): Document[] {
   return [
     ...extractErpModules(bundle.erp_modules ?? []),
@@ -298,6 +327,7 @@ export function extractAll(bundle: RecordsBundle): Document[] {
     ...extractAboutStory(bundle.about_story ?? []),
     ...extractDemoPageContent(bundle.demo_page_content ?? []),
     ...extractContactSupportContent(bundle.contact_support_content ?? []),
+    ...extractChatbotKnowledge(bundle.chatbot_knowledge ?? []),
   ];
 }
 
@@ -327,6 +357,8 @@ export function extractSingleRecord(table: string, raw: unknown): Document[] {
       return extractDemoPageContent([raw]);
     case "contact_support_content":
       return extractContactSupportContent([raw]);
+    case "chatbot_knowledge":
+      return extractChatbotKnowledge([raw]);
     default:
       return [];
   }
