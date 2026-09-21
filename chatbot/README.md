@@ -63,15 +63,7 @@ and [`../docs/technical/api-reference.md`](../docs/technical/api-reference.md).
 
 ## Where the data comes from
 
-<<<<<<< HEAD
-All content comes from the production D1 database, and only from these **11
-=======
-<<<<<<< HEAD
-All content comes from the production D1 database, and only from these **8
-=======
-All content comes from the production D1 database, and only from these **11
->>>>>>> c0ae169 (Modified Rag)
->>>>>>> c5e69d3 (Modified Rag)
+All content comes from the production D1 database, and only from these **9
 allowed tables**:
 
 | Table | What it contributes |
@@ -147,15 +139,7 @@ Defaults live in `src/config/index.ts` and can be overridden with Wrangler
 - **Admin auth** — `POST /index` requires `CHATBOT_ADMIN_TOKEN` (constant-time
   compare); missing/wrong → `401`, unset secret → `503`.
 - **Company-only scope** — answers are limited to QTO ERP topics.
-<<<<<<< HEAD
-- **Allowlisted D1 tables** — only the 11 tables above can ever be read.
-=======
-<<<<<<< HEAD
-- **Allowlisted D1 tables** — only the 8 tables above can ever be read.
-=======
-- **Allowlisted D1 tables** — only the 11 tables above can ever be read.
->>>>>>> c0ae169 (Modified Rag)
->>>>>>> c5e69d3 (Modified Rag)
+- **Allowlisted D1 tables** — only the 9 tables above can ever be read.
 - **Prompt-injection protection** — attempts to override instructions, request
   hidden context, or extract internal reasoning are rejected before retrieval.
 - **Input limit** — messages longer than 2000 characters are rejected (HTTP 413).
@@ -332,15 +316,7 @@ Other routes:
 
 ## Known limitations
 
-<<<<<<< HEAD
-- **Content coverage** — the bot only knows what exists in the 11 allowed
-=======
-<<<<<<< HEAD
-- **Content coverage** — the bot only knows what exists in the 8 allowed
-=======
-- **Content coverage** — the bot only knows what exists in the 11 allowed
->>>>>>> c0ae169 (Modified Rag)
->>>>>>> c5e69d3 (Modified Rag)
+- **Content coverage** — the bot only knows what exists in the 9 allowed
   tables. Topics without published content get a safe "unavailable" response.
 - **Phrasing sensitivity** — retrieval quality can vary with how a question is
   worded; some phrasings retrieve the right content more reliably than others.
