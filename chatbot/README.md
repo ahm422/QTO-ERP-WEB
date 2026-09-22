@@ -327,6 +327,9 @@ Other routes:
   batch, so an absolute score threshold is a coarse signal rather than a strict
   relevance measure.
 - **No web browsing** — out-of-date or external information is never fetched.
+- **Staging is not deployable yet** — `env.staging` in `wrangler.jsonc` is
+  missing its D1/Vectorize/AI bindings and there's no dedicated staging D1 or
+  Vectorize index provisioned. See the note under Deploy.
 
 ---
 
@@ -340,13 +343,30 @@ npm run typecheck   # TypeScript check
 npm test            # unit tests (mocked; no production calls)
 npm run build       # tsc --noEmit
 
-npm run dev         # local Wrangler dev server
+npm run dev         # local Wrangler dev server (default wrangler.jsonc: real production D1 + Vectorize, remote)
 npm run deploy      # deploy the Worker
 ```
 
 Tests use mocked bindings and never touch production data.
 
-To exercise `/chat` locally the way the Next.js BFF will call it, run `npx wrangler dev --port 8788 --ip 127.0.0.1` (see the web app's `docs/technical/local-development.md`) and set a matching `CHATBOT_PROXY_SECRET` in `.dev.vars`.
+To exercise `/chat` locally the way the Next.js BFF will call it, run `npx wrangler dev --port 8788 --ip 127.0.0.1` (see the web app's `docs/technical/local-development.md`) and set a matching `CHATBOT_PROXY_SECRET` in `.dev.vars`. With the default `wrangler.jsonc` this reads/writes the **real production** D1 and Vectorize index remotely (D1 access is read-only from this Worker, so that's safe; reindexing is not, since it writes real embeddings into the production index).
+
+### Fully local, isolated dev (`wrangler.dev.jsonc`)
+
+To test without touching anything in production, run with the local-only config instead:
+
+```bash
+npx wrangler dev --config wrangler.dev.jsonc --port 8788 --ip 127.0.0.1 \
+  --persist-to ../.wrangler/state
+```
+
+This simulates D1 and `CHATBOT_SYNC_STATE` (KV) locally and points Vectorize at
+the separate `qto-erp-chatbot-vectors-dev` index; Workers AI is always remote
+(it cannot be simulated). `--persist-to ../.wrangler/state` points it at the
+same local D1 the web app's `npm run dev` uses (see `next.config.mjs`), so rows
+added through the local admin panel are visible to the chatbot here — without
+it, this config's local D1 is an empty database of its own, independent from
+the web app's. Never deploy with `wrangler.dev.jsonc`.
 
 ---
 
@@ -359,11 +379,23 @@ npm run deploy              # -> qto-erp-chatbot
 wrangler secret put CHATBOT_PROXY_SECRET
 wrangler secret put CHATBOT_ADMIN_TOKEN
 
-# Staging
+# Staging (currently broken — see note below)
 npm run deploy:staging      # -> qto-erp-chatbot-staging
 wrangler secret put CHATBOT_PROXY_SECRET --env staging
 wrangler secret put CHATBOT_ADMIN_TOKEN --env staging
 ```
+
+> **`env.staging` is currently incomplete.** Wrangler does not inherit
+> top-level `d1_databases` / `vectorize` / `ai` into a named environment — they
+> must be repeated under `env.staging` in `wrangler.jsonc`, and currently
+> aren't. Deploying to staging today ships a Worker with **no** D1, Vectorize,
+> or AI binding at all (every request fails). There is also no dedicated
+> staging D1 database or Vectorize index provisioned for the chatbot yet — the
+> top-level `d1_databases` entry points at `qto-erp-db-production`, not a
+> staging database. Fix before relying on `deploy:staging`: add `d1_databases`
+> (pointing at a real staging D1), `vectorize` (a dedicated staging index —
+> never reuse the production index), and `ai` under `env.staging`, then set the
+> two secrets above.
 
 `CHATBOT_PROXY_SECRET` must be set as a Worker **secret** (never `vars`) in every deployed environment, and must match the value configured as a secret on the Next.js web Worker (`qto-erp-web` / `qto-erp-web-staging`). Deploy the chatbot Worker **before** the web Worker, since the web Worker's `CHATBOT` service binding target must already exist.
 
