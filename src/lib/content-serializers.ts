@@ -4,7 +4,7 @@ import {
   aboutValues,
   blogPosts,
   builtForCards,
-  comparisonFeatures,
+  chatbotKnowledge,
   demoPageContent,
   erpModules,
   faqs,
@@ -13,8 +13,6 @@ import {
   homeSections,
   homeStats,
   industryDomains,
-  pricingPageContent,
-  pricingPlans,
   pageHeroContent,
   solutions,
   trustedLogos,
@@ -26,7 +24,6 @@ import type {
   SolutionSummary,
   BlogPostDetail,
   BlogPostSummary,
-  ComparisonRow,
   HomeHero,
   HeroOrbitModule,
   TrustedLogo,
@@ -37,13 +34,11 @@ import type {
   FaqItem,
   FooterContent,
   DemoPageContent,
-  PricingPageContent,
   PageHeroContent,
   HomeFinalCta,
   AboutStory,
   AboutValue,
 } from "@/types/content";
-import type { PricingPlan as PricingPlanPublic } from "@/types/pricingPlan";
 import { mediaUrl } from "@/lib/media";
 import { ensureHtmlContent } from "@/lib/sanitize-html";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "@/lib/demo-page-defaults";
@@ -101,8 +96,6 @@ function serializeAboutContents(
 }
 type Solution = InferSelectModel<typeof solutions>;
 type BlogPost = InferSelectModel<typeof blogPosts>;
-type ComparisonFeature = InferSelectModel<typeof comparisonFeatures>;
-type PricingPlan = InferSelectModel<typeof pricingPlans>;
 type HomeHeroRow = InferSelectModel<typeof homeHero>;
 type TrustedLogoRow = InferSelectModel<typeof trustedLogos>;
 type HomeStatRow = InferSelectModel<typeof homeStats>;
@@ -110,9 +103,9 @@ type BuiltForCardRow = InferSelectModel<typeof builtForCards>;
 type HomeSectionRow = InferSelectModel<typeof homeSections>;
 type IndustryDomainRow = InferSelectModel<typeof industryDomains>;
 type FaqRow = InferSelectModel<typeof faqs>;
+type ChatbotKnowledgeRow = InferSelectModel<typeof chatbotKnowledge>;
 type FooterContentRow = InferSelectModel<typeof footerContent>;
 type DemoPageContentRow = InferSelectModel<typeof demoPageContent>;
-type PricingPageContentRow = InferSelectModel<typeof pricingPageContent>;
 type PageHeroContentRow = InferSelectModel<typeof pageHeroContent>;
 type AboutStoryRow = InferSelectModel<typeof aboutStory>;
 type AboutValueRow = InferSelectModel<typeof aboutValues>;
@@ -361,28 +354,6 @@ export function serializeAdminBlogPost(
   };
 }
 
-export function serializeComparisonRow(r: ComparisonFeature): ComparisonRow {
-  return {
-    feature: r.feature,
-    starter: r.starter,
-    growth: r.growth,
-    enterprise: r.enterprise,
-  };
-}
-
-export function serializePricingPlan(p: PricingPlan): PricingPlanPublic {
-  return {
-    slug: p.slug,
-    name: p.name,
-    monthlyPrice: p.monthlyPriceDisplay,
-    yearlyPrice: p.yearlyPriceDisplay,
-    description: p.description,
-    popular: p.popular,
-    features: p.features,
-    cta: p.cta,
-  };
-}
-
 export function serializeTrustedLogo(row: TrustedLogoRow): TrustedLogo {
   return {
     id: row.id,
@@ -461,6 +432,20 @@ export function serializeFaq(row: FaqRow): FaqItem {
   };
 }
 
+/** Admin DTO for bot-only knowledge. Never exposed on public content APIs. */
+export function serializeChatbotKnowledge(row: ChatbotKnowledgeRow) {
+  return {
+    id: row.id,
+    title: row.title,
+    body: row.body,
+    category: row.category ?? null,
+    sortOrder: row.sortOrder,
+    enabled: row.enabled,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
 export function serializeFooterContent(row: FooterContentRow): FooterContent {
   return {
     brandBlurb: row.brandBlurb,
@@ -508,18 +493,6 @@ export function serializeDemoPageContent(
         ...row.formFieldOptions.placeholders,
       },
     },
-  };
-}
-
-export function serializePricingPageContent(
-  row: PricingPageContentRow,
-): PricingPageContent {
-  return {
-    heroBadge: row.heroBadge,
-    heroTitle: row.heroTitle,
-    heroSubtitle: row.heroSubtitle,
-    faqTag: row.faqTag,
-    faqTitle: row.faqTitle,
   };
 }
 

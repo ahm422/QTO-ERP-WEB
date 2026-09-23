@@ -57,10 +57,10 @@ async function main() {
       if (!res || res.status() >= 400) throw new Error(`status ${res?.status()}`);
     });
 
-    await check("desktop: Pricing nav", async () => {
+    await check("desktop: Contact nav", async () => {
       await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
-      await page.locator('nav a[href="/pricing"]').first().click();
-      await page.waitForURL("**/pricing**", { timeout: 15000 });
+      await page.locator('nav a[href="/contact"], footer a[href="/contact"]').first().click();
+      await page.waitForURL("**/contact**", { timeout: 15000 });
     });
 
     await check("desktop: Demo CTA path", async () => {
@@ -81,12 +81,6 @@ async function main() {
         timeout: 60000,
       });
       if (!res || res.status() >= 400) throw new Error(`status ${res?.status()}`);
-    });
-
-    await check("desktop: pricing checkout entry", async () => {
-      await page.goto(`${BASE}/pricing`, { waitUntil: "networkidle" });
-      const cta = page.locator("a,button").filter({ hasText: /start|contact|get|trial/i }).first();
-      if ((await cta.count()) === 0) throw new Error("no pricing CTA");
     });
 
     await check("footer: All Apps link", async () => {

@@ -1,0 +1,27 @@
+{
+  // LOCAL DEV ONLY — never deploy with this file.
+  // D1 + KV are simulated locally (no `remote`), Vectorize points at the
+  // separate *-dev index, Workers AI is always remote (cannot be simulated).
+  // Production D1 / Vectorize are NOT touched.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "qto-erp-chatbot-local",
+  "account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-03",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {},
+  "kv_namespaces": [
+    { "binding": "CHATBOT_SYNC_STATE", "id": "local-chatbot-sync-state" }
+  ],
+  "vectorize": [
+    { "binding": "VECTORIZE", "index_name": "qto-erp-chatbot-vectors-dev", "remote": true }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "qto-erp-db-production",
+      "database_id": "YOUR_D1_DATABASE_ID"
+    }
+  ],
+  "ai": { "binding": "AI", "remote": true }
+}

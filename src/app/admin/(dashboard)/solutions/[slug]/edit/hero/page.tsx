@@ -138,13 +138,13 @@ export default function SolutionHeroPage() {
             />
             <TextField
               label="Secondary CTA label"
-              placeholder="See Pricing"
+              placeholder="Contact Us"
               value={form.heroSecondaryCtaLabel}
               onChange={(v) => patch({ heroSecondaryCtaLabel: v })}
             />
             <TextField
               label="Secondary CTA link"
-              placeholder="/pricing"
+              placeholder="/contact"
               value={form.heroSecondaryCtaHref}
               onChange={(v) => patch({ heroSecondaryCtaHref: v })}
             />

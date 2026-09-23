@@ -9,19 +9,14 @@ import {
   ExternalLink,
   ArrowRight,
   Sparkles,
-  Briefcase,
-  TrendingUp,
   BookOpen,
   Info,
   Mail,
-  Clock,
-  Building2,
-  DollarSign,
-  FolderKanban,
 } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { MarketingButton } from "@/components/ui/marketing-button";
 import { getModuleIcon } from "@/lib/icon-map";
+import { getSolutionIcon } from "@/lib/solution-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { QTO_DEV_URL } from "@/lib/constants";
@@ -46,81 +41,26 @@ function buildNavApps(modules: ModuleDetail[]) {
 const navItems = [
   { label: "Platform", href: "/allApps", hasMega: true },
   { label: "Solutions", href: "#", hasDropdown: true },
-  { label: "Pricing", href: "/pricing" },
   { label: "Resources", href: "#", hasDropdown: true },
 ];
 
-function buildSolutionsItems(
-  solutions: SolutionDetail[],
-  modules: ModuleDetail[],
-) {
-  const solutionUseCases = (slug: string) =>
-    solutions.find((s) => s.slug === slug)?.useCases ?? [];
-  const moduleUseCases = (slug: string) =>
-    modules.find((m) => m.slug === slug)?.useCases ?? [];
-
-  return [
-    {
-      slug: "hr-teams",
-      label: "Attendance",
-      href: "/solution/hr-teams",
-      shortDescription: "Streamline people operations",
-      description:
-        "Centralize HR workflows with attendance tracking, performance management, and compliance.",
-      icon: Clock,
-      useCases: solutionUseCases("hr-teams"),
-    },
-    {
-      slug: "project-teams",
-      label: "HRMS",
-      href: "/solution/project-teams",
-      shortDescription: "Deliver projects on time",
-      description:
-        "Manage projects end-to-end with planning, tracking, and resource allocation tools.",
-      icon: Briefcase,
-      useCases: solutionUseCases("project-teams"),
-    },
-    {
-      slug: "business-owners",
-      label: "PM",
-      href: "/solution/owners",
-      shortDescription: "Scale with confidence",
-      description:
-        "Unified platform for operations, people, projects, and financials across your organization.",
-      icon: TrendingUp,
-      useCases: solutionUseCases("owners"),
-    },
-    {
-      slug: "crms",
-      label: "CRM",
-      href: "/erp/crms",
-      shortDescription: "Track leads and manage deals",
-      description:
-        "Manage leads, generate proposals, estimate projects, and track deals from inquiry to completion.",
-      icon: Building2,
-      useCases: moduleUseCases("crms"),
-    },
-    {
-      slug: "salary",
-      label: "Salary",
-      href: "/erp/salary",
-      shortDescription: "Automate payroll (Coming Soon)",
-      description:
-        "Automate payroll processing, manage salary structures, and streamline approvals seamlessly.",
-      icon: DollarSign,
-      useCases: moduleUseCases("salary"),
-    },
-    {
-      slug: "finance",
-      label: "Finance",
-      href: "/erp/finance",
-      shortDescription: "Manage finances (Coming Soon)",
-      description:
-        "Track accounts, manage budgets, and generate financial reports efficiently.",
-      icon: FolderKanban,
-      useCases: moduleUseCases("finance"),
-    },
-  ];
+/** Builds the Solutions menu from the published CMS solutions (already sorted by sortOrder). */
+function buildSolutionsItems(solutions: SolutionDetail[]) {
+  return solutions.map((sol) => {
+    const href = `/solution/${sol.slug}`;
+    return {
+      slug: sol.slug,
+      label: sol.title,
+      href,
+      shortDescription: sol.audience,
+      description: sol.heroSubheadline,
+      icon: getSolutionIcon(sol.slug),
+      useCases: (sol.useCases ?? []).map((uc) => ({
+        label: uc.industry,
+        href: `${href}?industry=${encodeURIComponent(uc.slug)}`,
+      })),
+    };
+  });
 }
 
 type PublicNavResource = {
@@ -196,8 +136,8 @@ export default function NavbarV3({
 }: NavbarProps) {
   const apps = useMemo(() => buildNavApps(modules), [modules]);
   const solutionsItems = useMemo(
-    () => buildSolutionsItems(solutions, modules),
-    [solutions, modules],
+    () => buildSolutionsItems(solutions),
+    [solutions],
   );
   const resourceItems = useMemo(
     () =>
@@ -215,7 +155,7 @@ export default function NavbarV3({
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [hoveredApp, setHoveredApp] = useState<string>(modules[0]?.slug ?? "");
   const [hoveredSolution, setHoveredSolution] = useState<string>(
-    "hr-teams",
+    solutions[0]?.slug ?? "",
   );
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
@@ -672,7 +612,8 @@ export default function NavbarV3({
 
                 {/* Solutions Dropdown — tabbed */}
                 {item.label === "Solutions" &&
-                  activeDropdown === "Solutions" && (
+                  activeDropdown === "Solutions" &&
+                  currentSol && (
                     <motion.div
                       variants={megaMenuVariants}
                       initial="initial"
@@ -750,19 +691,15 @@ export default function NavbarV3({
                                   transition={{ duration: 0.15 }}
                                   className="relative z-10 space-y-0.5"
                                 >
-                                  {(currentSol.useCases ?? []).slice(0, 4).map((useCase, idx) => (
+                                  {currentSol.useCases.slice(0, 4).map((useCase) => (
                                     <Link
-                                      key={`${hoveredSolution}-${idx}`}
-                                      href={currentSol.href}
+                                      key={useCase.href}
+                                      href={useCase.href}
                                       onClick={() => setActiveDropdown(null)}
                                       className={menuListRow}
                                     >
                                       <span className="font-medium text-foreground">
-                                        {"industry" in useCase
-                                          ? useCase.industry
-                                          : "title" in useCase
-                                            ? useCase.title
-                                            : "Use Case"}
+                                        {useCase.label}
                                       </span>
                                       <ArrowRight className="size-3.5 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:text-accent group-hover:opacity-100" />
                                     </Link>
@@ -818,7 +755,8 @@ export default function NavbarV3({
                             for every team
                           </p>
                           <Link
-                            href="/allApps"
+                            href="/solutions"
+                            onClick={() => setActiveDropdown(null)}
                             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/70 bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent/40 hover:text-accent"
                           >
                             Explore all <ArrowRight className="size-3.5" />
@@ -1012,9 +950,11 @@ export default function NavbarV3({
                     );
                   })}
 
-                  <p className="px-2 pb-2 pt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Solutions
-                  </p>
+                  {solutionsItems.length > 0 && (
+                    <p className="px-2 pb-2 pt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                      Solutions
+                    </p>
+                  )}
                   {solutionsItems.map((s, idx) => {
                     const Icon = s.icon;
                     return (
@@ -1103,25 +1043,6 @@ export default function NavbarV3({
                       </motion.div>
                     );
                   })}
-
-                  <p className="px-2 pb-2 pt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    More
-                  </p>
-                  <Link
-                    href="/pricing"
-                    className="group flex items-center gap-3.5 rounded-xl p-3 transition-colors hover:bg-muted/60"
-                  >
-                    <div className="flex size-11 items-center justify-center rounded-xl bg-linear-to-br from-accent to-accent-dark text-accent-foreground shadow-md">
-                      <DollarSign className="size-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-foreground">Pricing</p>
-                      <p className="text-sm text-muted-foreground">
-                        Plans & pricing
-                      </p>
-                    </div>
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-accent" />
-                  </Link>
                 </div>
 
                 {ctaVisible && (

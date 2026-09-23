@@ -18,8 +18,8 @@ export const HOME_HERO_DEFAULTS: HomeHero = {
   ],
   primaryCtaLabel: "Book a Demo",
   primaryCtaUrl: "/demo",
-  secondaryCtaLabel: "See Pricing",
-  secondaryCtaUrl: "/pricing",
+  secondaryCtaLabel: "Contact Us",
+  secondaryCtaUrl: "/contact",
   poweredByText: "A product by QTO Dev",
   poweredByUrl: QTO_DEV_URL,
 };

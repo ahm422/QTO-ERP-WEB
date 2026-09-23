@@ -138,7 +138,7 @@ export default function SolutionCtaSeoPage() {
               />
               <TextField
                 label="Secondary button link"
-                placeholder="/pricing"
+                placeholder="/contact"
                 value={form.ctaSecondaryHref}
                 onChange={(v) => patch({ ctaSecondaryHref: v })}
               />

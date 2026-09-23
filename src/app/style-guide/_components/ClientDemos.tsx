@@ -22,10 +22,6 @@ const FormInputDemo = dynamic(
   () => import("./MarketingDnaDemos").then((m) => m.FormInputDemo),
   { ssr: false, loading: () => <DemoSkeleton /> }
 );
-const BillingToggleDemo = dynamic(
-  () => import("./MarketingDnaDemos").then((m) => m.BillingToggleDemo),
-  { ssr: false, loading: () => <DemoSkeleton /> }
-);
 const BoardTypographyDemo = dynamic(
   () => import("./MarketingDnaDemos").then((m) => m.BoardTypographyDemo),
   { ssr: false, loading: () => <DemoSkeleton className="min-h-[16rem]" /> }
@@ -67,14 +63,6 @@ const EcosystemTabsDemo = dynamic(
   () => import("./MarketingDnaDemos").then((m) => m.EcosystemTabsDemo),
   { ssr: false, loading: () => <DemoSkeleton className="min-h-[16rem]" /> }
 );
-const PlanCardDemo = dynamic(
-  () => import("./MarketingDnaDemos").then((m) => m.PlanCardDemo),
-  { ssr: false, loading: () => <DemoSkeleton className="min-h-[20rem]" /> }
-);
-const ComparisonTableDemo = dynamic(
-  () => import("./MarketingDnaDemos").then((m) => m.ComparisonTableDemo),
-  { ssr: false, loading: () => <DemoSkeleton /> }
-);
 const IndustryCardDemo = dynamic(
   () => import("./MarketingDnaDemos").then((m) => m.IndustryCardDemo),
   { ssr: false, loading: () => <DemoSkeleton /> }
@@ -105,7 +93,6 @@ export {
   MarketingCardsDemo,
   FeatureCardBoardDemo,
   FormInputDemo,
-  BillingToggleDemo,
   BoardTypographyDemo,
   StatsDemo,
   SelectorPanelDemo,
@@ -116,8 +103,6 @@ export {
   BuiltForSectionDemo,
   IntegratedModulesGridDemo,
   EcosystemTabsDemo,
-  PlanCardDemo,
-  ComparisonTableDemo,
   IndustryCardDemo,
   BadgeBoardDemo,
   StepCardDemo,

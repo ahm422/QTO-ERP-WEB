@@ -36,7 +36,6 @@ const ROUTES = [
   { slug: "allApps", path: "/allApps", expectShell: true },
   { slug: "erp-attendance", path: "/erp/attendance", expectShell: true },
   { slug: "solution-hr-teams", path: "/solution/hr-teams", expectShell: true },
-  { slug: "pricing", path: "/pricing", expectShell: true },
   { slug: "about", path: "/about", expectShell: true },
   { slug: "blog", path: "/blog", expectShell: true },
   { slug: "blog-post", path: "/blog/why-growing-teams-need-erp", expectShell: true },

@@ -6,9 +6,7 @@ import {
   Boxes,
   Layers,
   FileText,
-  DollarSign,
   Video,
-  Table2,
   Settings2,
   Link2,
   Sparkles,
@@ -17,10 +15,10 @@ import {
   HardHat,
   Factory,
   CircleHelp,
+  Bot,
   Megaphone,
   PanelBottom,
   CalendarCheck,
-  Tags,
   LayoutTemplate,
   Building2,
   Users,
@@ -135,15 +133,6 @@ export const adminNavSections: AdminNavSection[] = [
         ],
       },
       {
-        id: "pricing",
-        label: "Pricing",
-        items: [
-          { href: "/admin/pricing-page", label: "Pricing page", icon: Tags },
-          { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
-          { href: "/admin/comparison", label: "Comparison", icon: Table2 },
-        ],
-      },
-      {
         id: "demo",
         label: "Demo",
         items: [
@@ -171,6 +160,11 @@ export const adminNavSections: AdminNavSection[] = [
         label: "Shared",
         items: [
           { href: "/admin/faqs", label: "FAQs", icon: CircleHelp },
+          {
+            href: "/admin/chatbot-knowledge",
+            label: "Chatbot knowledge",
+            icon: Bot,
+          },
           {
             href: "/admin/page-hero",
             label: "Page heroes",
@@ -277,14 +271,6 @@ const breadcrumbRoutes: Array<{
     ],
   },
   {
-    pattern: /^\/admin\/pricing\/[^/]+\/edit$/,
-    crumbs: [
-      { label: "QTO ERP", href: "/admin" },
-      { label: "Pricing", href: "/admin/pricing" },
-      { label: "Edit plan" },
-    ],
-  },
-  {
     pattern: /^\/admin\/demo-requests$/,
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
@@ -361,17 +347,6 @@ const breadcrumbRoutes: Array<{
     crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "About page" }],
   },
   {
-    pattern: /^\/admin\/pricing$/,
-    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Pricing" }],
-  },
-  {
-    pattern: /^\/admin\/pricing-page$/,
-    crumbs: [
-      { label: "QTO ERP", href: "/admin" },
-      { label: "Pricing page" },
-    ],
-  },
-  {
     pattern: /^\/admin\/demo-videos$/,
     crumbs: [
       { label: "QTO ERP", href: "/admin" },
@@ -384,10 +359,6 @@ const breadcrumbRoutes: Array<{
       { label: "QTO ERP", href: "/admin" },
       { label: "Demo page" },
     ],
-  },
-  {
-    pattern: /^\/admin\/comparison$/,
-    crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "Comparison" }],
   },
   {
     pattern: /^\/admin\/site-settings$/,
@@ -434,6 +405,13 @@ const breadcrumbRoutes: Array<{
   {
     pattern: /^\/admin\/faqs$/,
     crumbs: [{ label: "QTO ERP", href: "/admin" }, { label: "FAQs" }],
+  },
+  {
+    pattern: /^\/admin\/chatbot-knowledge$/,
+    crumbs: [
+      { label: "QTO ERP", href: "/admin" },
+      { label: "Chatbot knowledge" },
+    ],
   },
   {
     pattern: /^\/admin\/home-cta$/,

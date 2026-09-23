@@ -10,8 +10,8 @@ import { getFadeInUp, viewportOnce } from '@/lib/motion';
 const defaultHeadline = 'Ready to Transform Your Operations?';
 const defaultPrimaryLabel = 'Book a Demo';
 const defaultPrimaryHref = '/demo';
-const defaultSecondaryLabel = 'See Pricing';
-const defaultSecondaryHref = '/pricing';
+const defaultSecondaryLabel = 'Contact Us';
+const defaultSecondaryHref = '/contact';
 
 export interface CTASectionProps {
   headline?: string;

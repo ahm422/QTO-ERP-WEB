@@ -37,8 +37,8 @@ export const SOLUTION_PAGE_DEFAULTS: SolutionPageDefaults = {
   heroCaptionTemplate: "Unified workflows for {title}",
   heroPrimaryCtaLabel: "Request a Demo",
   heroPrimaryCtaHref: "/demo",
-  heroSecondaryCtaLabel: "See Pricing",
-  heroSecondaryCtaHref: "/pricing",
+  heroSecondaryCtaLabel: "Contact Us",
+  heroSecondaryCtaHref: "/contact",
   tabsIntroTag: "Capabilities",
   tabsIntroTitle: "Explore the solution",
   tabsIntroDescription:
@@ -53,11 +53,11 @@ export const SOLUTION_PAGE_DEFAULTS: SolutionPageDefaults = {
   ctaEyebrow: "Build with us",
   ctaHeadline: "Ready to Transform Your Operations?",
   ctaDescription:
-    "Request a walkthrough tailored to this solution — or compare plans.",
+    "Request a walkthrough tailored to this solution — or get in touch.",
   ctaPrimaryLabel: "Book a Demo",
   ctaPrimaryHref: "/demo",
-  ctaSecondaryLabel: "See Pricing",
-  ctaSecondaryHref: "/pricing",
+  ctaSecondaryLabel: "Contact Us",
+  ctaSecondaryHref: "/contact",
 };
 
 /** Replace the `{title}` token in a template string. */

@@ -19,7 +19,7 @@ to set a new one. The link expires after **one hour**.
 
 *[Screenshot: admin dashboard with sidebar]*
 
-- **Left sidebar** — the menu, grouped by area (Leads, Website content, Pages, Pricing,
+- **Left sidebar** — the menu, grouped by area (Leads, Website content, Pages,
   Administration). On a phone or small screen the sidebar collapses into a menu button.
 - **Main area** — the current screen (a list, a form, or the dashboard).
 - **Top of most screens** — a title, a short description, and any "New / Add" button.
@@ -41,17 +41,14 @@ posts), the most recent demo requests, and quick links to common actions.
 | **Blog** | Write, edit, publish, and delete blog posts |
 | **Page heroes** | The top banner (eyebrow, title, subtitle) for Blog, About and Contact |
 | **About** | The About page — Hero, Story, Values, and closing CTA tabs |
-| **Pricing** | Plan names, prices, features, and payment IDs |
-| **Pricing page** | The Pricing page's banner and FAQ heading |
 | **Demo videos** | Upload and publish videos used on module pages |
 | **Demo page** | The "Book a demo" page — hero, process steps, form options |
-| **Comparison** | Rows of the pricing comparison table |
 | **Home hero** | The home page's main headline and the rotating module graphic |
 | **Trusted logos** | The "Trusted by" logo row on the home page |
 | **Home stats** | The statistics strip on the home page |
 | **Built for** | The "Built for" audience cards on the home page |
 | **Industry domains** | The "Connected ecosystem" list on the home page |
-| **FAQs** | Shared FAQ lists for the Home, Pricing and Contact pages |
+| **FAQs** | Shared FAQ lists for the Home and Contact pages |
 | **Home CTA** | The closing call-to-action banner on the home page |
 | **Footer** | The site-wide footer: blurb, link columns, newsletter text |
 | **Site settings** | Global settings such as the logo and header button *(Admin/Super Admin only)* |

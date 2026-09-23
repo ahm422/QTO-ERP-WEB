@@ -1,0 +1,61 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "qto-erp-chatbot",
+  "account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-03",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  },
+  "vars": {},
+  "triggers": {
+    "crons": [
+      "0 2 * * *"
+    ]
+  },
+  "env": {
+    "staging": {
+      "name": "qto-erp-chatbot-staging",
+      "triggers": {
+        "crons": [
+          "0 2 * * *"
+        ]
+      },
+      "kv_namespaces": [
+        {
+          "binding": "CHATBOT_SYNC_STATE",
+          "id": "YOUR_KV_NAMESPACE_ID"
+        }
+      ]
+    }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "CHATBOT_SYNC_STATE",
+      "id": "YOUR_KV_NAMESPACE_ID"
+    }
+  ],
+  "vectorize": [
+    {
+      "binding": "VECTORIZE",
+      "index_name": "qto-erp-chatbot-vectors",
+      "remote": true
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "qto-erp-db-production",
+      "database_id": "YOUR_D1_DATABASE_ID",
+      "remote": true
+    }
+  ],
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  }
+}

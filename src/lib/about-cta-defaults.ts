@@ -11,5 +11,5 @@ export const ABOUT_FINAL_CTA_DEFAULTS: HomeFinalCta = {
   description:
     "We're building the modern ERP growing teams love — let's talk.",
   primaryCta: { label: "Book a Demo", url: "/demo" },
-  secondaryCta: { label: "See Pricing", url: "/pricing" },
+  secondaryCta: { label: "Contact Us", url: "/contact" },
 };

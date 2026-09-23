@@ -1,7 +1,5 @@
 import { apps } from "../src/lib/apps";
 import { solutions } from "../src/lib/solutions";
-import { comparisonFeatures } from "../src/lib/pricing";
-import { stripePriceIdsFromEnv } from "../src/lib/stripe-prices";
 import { SITE_SETTING_DEFAULTS } from "../src/lib/site-settings";
 import { QTO_DEV_URL } from "../src/lib/constants";
 import {
@@ -9,7 +7,6 @@ import {
   aboutValues,
   blogPosts,
   builtForCards,
-  comparisonFeatures as comparisonFeaturesTable,
   contactChannels,
   contactPageContent,
   contactSupportContent,
@@ -23,8 +20,6 @@ import {
   industryDomains,
   navResources,
   pageHeroContent,
-  pricingPageContent,
-  pricingPlans,
   siteSettings,
   solutions as solutionsTable,
   trustedLogos,
@@ -41,10 +36,8 @@ import {
   CONTACT_FAQS_DEFAULTS,
   FAQ_PAGE_KEY_CONTACT,
   FAQ_PAGE_KEY_HOME,
-  FAQ_PAGE_KEY_PRICING,
   FAQ_SECTION_DEFAULT,
   HOME_FAQS_DEFAULTS,
-  PRICING_FAQS_DEFAULTS,
 } from "../src/lib/faqs-defaults";
 import {
   CONTACT_CHANNELS_DEFAULTS,
@@ -65,7 +58,6 @@ import { ABOUT_STORY_DEFAULTS } from "../src/lib/about-story-defaults";
 import { ABOUT_VALUES_DEFAULTS } from "../src/lib/about-values-defaults";
 import { FOOTER_CONTENT_DEFAULTS } from "../src/lib/footer-defaults";
 import { DEMO_PAGE_CONTENT_DEFAULTS } from "../src/lib/demo-page-defaults";
-import { PRICING_PAGE_CONTENT_DEFAULTS } from "../src/lib/pricing-page-defaults";
 import {
   PAGE_HERO_DEFAULTS,
   PAGE_HERO_KEYS,
@@ -86,88 +78,6 @@ function toModuleImageKey(path: string | undefined): string | null {
   if (match) return `module-images/${match[1]}`;
   if (path.startsWith("/")) return null;
   return path;
-}
-
-const PRICING_PLANS_SEED = [
-  {
-    slug: "starter",
-    name: "Starter",
-    description:
-      "For small teams getting started with workforce management.",
-    monthlyPriceDisplay: 29,
-    yearlyPriceDisplay: 24,
-    popular: false,
-    features: [
-      "Up to 25 employees",
-      "Attendance & Time tracking",
-      "Basic leave management",
-      "Email support",
-      "Mobile app access",
-      "Standard reports",
-    ],
-    cta: "Start Free Trial",
-    sortOrder: 0,
-  },
-  {
-    slug: "growth",
-    name: "Growth",
-    description: "For growing teams that need HRM and project tools.",
-    monthlyPriceDisplay: 79,
-    yearlyPriceDisplay: 66,
-    popular: true,
-    features: [
-      "Up to 200 employees",
-      "All Starter features",
-      "Full HRM module",
-      "Project Management",
-      "Performance reviews",
-      "Priority support",
-      "Custom fields & workflows",
-      "API access",
-    ],
-    cta: "Start Free Trial",
-    sortOrder: 1,
-  },
-  {
-    slug: "enterprise",
-    name: "Enterprise",
-    description: "For large organizations with advanced needs.",
-    monthlyPriceDisplay: 149,
-    yearlyPriceDisplay: 124,
-    popular: false,
-    features: [
-      "Unlimited employees",
-      "All Growth features",
-      "Custom integrations",
-      "Dedicated account manager",
-      "SLA & uptime guarantee",
-      "SSO & advanced security",
-      "On-premise option",
-      "Custom training",
-      "Multi-entity support",
-    ],
-    cta: "Contact Sales",
-    sortOrder: 2,
-  },
-] as const;
-
-function stripePriceIdsForSlug(slug: string) {
-  if (slug === "enterprise") {
-    return { stripePriceIdMonthly: null, stripePriceIdYearly: null };
-  }
-
-  const { monthly, yearly } = stripePriceIdsFromEnv(slug);
-
-  if (!monthly || !yearly) {
-    console.warn(
-      `[seed] Missing Stripe price IDs for "${slug}" — set STRIPE_PRICE_* env vars for checkout.`,
-    );
-  }
-
-  return {
-    stripePriceIdMonthly: monthly,
-    stripePriceIdYearly: yearly,
-  };
 }
 
 const SLUG_ICON_KEYS: Record<string, string> = {
@@ -327,51 +237,6 @@ export async function seedContent(db: ScriptDb, authorId: string) {
       });
   }
   console.log(`Seeded ${solutions.length} solutions`);
-
-  for (let i = 0; i < comparisonFeatures.length; i++) {
-    const row = comparisonFeatures[i];
-    const data = {
-      feature: row.feature,
-      starter: row.starter,
-      growth: row.growth,
-      enterprise: row.enterprise,
-      sortOrder: i,
-      published: true,
-    };
-    await db
-      .insert(comparisonFeaturesTable)
-      .values(data)
-      .onConflictDoUpdate({
-        target: comparisonFeaturesTable.feature,
-        set: data,
-      });
-  }
-  console.log(`Seeded ${comparisonFeatures.length} comparison features`);
-
-  for (const plan of PRICING_PLANS_SEED) {
-    const priceIds = stripePriceIdsForSlug(plan.slug);
-    const data = {
-      slug: plan.slug,
-      name: plan.name,
-      description: plan.description,
-      monthlyPriceDisplay: plan.monthlyPriceDisplay,
-      yearlyPriceDisplay: plan.yearlyPriceDisplay,
-      popular: plan.popular,
-      features: [...plan.features],
-      cta: plan.cta,
-      sortOrder: plan.sortOrder,
-      published: true,
-      ...priceIds,
-    };
-    await db
-      .insert(pricingPlans)
-      .values(data)
-      .onConflictDoUpdate({
-        target: pricingPlans.slug,
-        set: data,
-      });
-  }
-  console.log(`Seeded ${PRICING_PLANS_SEED.length} pricing plans`);
 
   for (const post of BLOG_POSTS) {
     const data = {
@@ -672,19 +537,6 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     .onConflictDoNothing();
   console.log("Seeded demo page content");
 
-  await db
-    .insert(pricingPageContent)
-    .values({
-      id: PRICING_PAGE_CONTENT_DEFAULTS.id,
-      heroBadge: PRICING_PAGE_CONTENT_DEFAULTS.heroBadge,
-      heroTitle: PRICING_PAGE_CONTENT_DEFAULTS.heroTitle,
-      heroSubtitle: PRICING_PAGE_CONTENT_DEFAULTS.heroSubtitle,
-      faqTag: PRICING_PAGE_CONTENT_DEFAULTS.faqTag,
-      faqTitle: PRICING_PAGE_CONTENT_DEFAULTS.faqTitle,
-    })
-    .onConflictDoNothing();
-  console.log("Seeded pricing page content");
-
   for (const pageKey of PAGE_HERO_KEYS) {
     await db
       .insert(pageHeroContent)
@@ -743,27 +595,6 @@ export async function seedContent(db: ScriptDb, authorId: string) {
     })
     .onConflictDoNothing();
   console.log("Seeded about_final_cta site setting");
-
-  const [{ pricingFaqsCount }] = await db
-    .select({ pricingFaqsCount: count() })
-    .from(faqs)
-    .where(eq(faqs.pageKey, FAQ_PAGE_KEY_PRICING));
-  if ((pricingFaqsCount ?? 0) === 0) {
-    await db.insert(faqs).values(
-      PRICING_FAQS_DEFAULTS.map((faq) => ({
-        id: createId(),
-        pageKey: faq.pageKey,
-        question: faq.question,
-        answer: faq.answer,
-        category: faq.category,
-        sortOrder: faq.sortOrder,
-        published: faq.published,
-      })),
-    );
-    console.log(`Seeded ${PRICING_FAQS_DEFAULTS.length} pricing FAQs`);
-  } else {
-    console.log("Pricing FAQs already present — skip insert");
-  }
 
   await db
     .insert(contactSupportContent)
