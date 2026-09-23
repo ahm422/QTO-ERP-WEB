@@ -9,17 +9,14 @@ import {
   ExternalLink,
   ArrowRight,
   Sparkles,
-  Briefcase,
-  TrendingUp,
   BookOpen,
   Info,
   Mail,
-  DollarSign,
-  Users,
 } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { MarketingButton } from "@/components/ui/marketing-button";
 import { getModuleIcon } from "@/lib/icon-map";
+import { getSolutionIcon } from "@/lib/solution-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { QTO_DEV_URL } from "@/lib/constants";
@@ -47,13 +44,6 @@ const navItems = [
   { label: "Resources", href: "#", hasDropdown: true },
 ];
 
-/** Per-solution icon; unknown (newly added CMS) solutions fall back to Sparkles. */
-const SOLUTION_ICON_MAP: Record<string, LucideIcon> = {
-  "hr-teams": Users,
-  "project-teams": Briefcase,
-  owners: TrendingUp,
-};
-
 /** Builds the Solutions menu from the published CMS solutions (already sorted by sortOrder). */
 function buildSolutionsItems(solutions: SolutionDetail[]) {
   return solutions.map((sol) => {
@@ -64,7 +54,7 @@ function buildSolutionsItems(solutions: SolutionDetail[]) {
       href,
       shortDescription: sol.audience,
       description: sol.heroSubheadline,
-      icon: SOLUTION_ICON_MAP[sol.slug] ?? Sparkles,
+      icon: getSolutionIcon(sol.slug),
       useCases: (sol.useCases ?? []).map((uc) => ({
         label: uc.industry,
         href: `${href}?industry=${encodeURIComponent(uc.slug)}`,
@@ -765,7 +755,8 @@ export default function NavbarV3({
                             for every team
                           </p>
                           <Link
-                            href="/allApps"
+                            href="/solutions"
+                            onClick={() => setActiveDropdown(null)}
                             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/70 bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent/40 hover:text-accent"
                           >
                             Explore all <ArrowRight className="size-3.5" />
