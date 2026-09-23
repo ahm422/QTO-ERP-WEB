@@ -5,17 +5,8 @@ import { RAG_ALLOWED_TABLES, EXCLUDED_COLUMNS, PUBLISHED_ONLY_TABLES } from "../
 import { buildVectorId, parseVectorId, approxTokens } from "../types/core.ts";
 
 describe("allowlist", () => {
-<<<<<<< HEAD
-  test("all 11 configured RAG tables are allowed", () => {
-    assert.equal(RAG_ALLOWED_TABLES.length, 11);
-=======
-<<<<<<< HEAD
-  test("all 8 configured RAG tables are allowed", () => {
-=======
-  test("all 11 configured RAG tables are allowed", () => {
-    assert.equal(RAG_ALLOWED_TABLES.length, 11);
->>>>>>> c0ae169 (Modified Rag)
->>>>>>> c5e69d3 (Modified Rag)
+  test("all 9 configured RAG tables are allowed", () => {
+    assert.equal(RAG_ALLOWED_TABLES.length, 9);
     for (const table of RAG_ALLOWED_TABLES) {
       assert.equal(isRagAllowedTable(table), true, `expected ${table} to be allowed`);
     }
