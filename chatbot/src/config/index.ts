@@ -70,6 +70,18 @@ export const UNANSWERED_MESSAGE =
   "I'm not able to provide a reliable answer to that specific question.";
 export const OUT_OF_SCOPE_MESSAGE =
   "I can help with QTO ERP products, modules, solutions, industries, and company information. I can't provide assistance outside of that scope.";
+export const GREETING_MESSAGE = [
+  "Hi! I'm the QTO ERP assistant — the chatbot for QTO ERP. I can help you with:",
+  "",
+  "• ERP modules — what each module does, its features and use cases",
+  "• Solutions — which solution fits your business and the modules it includes",
+  "• Industries — how QTO ERP works for your industry or domain",
+  "• Company info — who we are and what we offer",
+  "• Demos & support — how to book a demo or get in touch with our team",
+  "• Articles & FAQs — answers from our blog and frequently asked questions",
+  "",
+  "What would you like to know?",
+].join("\n");
 
 // --- Effective config ---------------------------------------------------------
 export interface ChatbotConfig {

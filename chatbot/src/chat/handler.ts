@@ -10,7 +10,12 @@
  * reachable. No user input becomes a table name, SQL, index name, or namespace.
  * Internal errors and prompts are never exposed.
  */
-import { buildConfig, UNANSWERED_MESSAGE, OUT_OF_SCOPE_MESSAGE } from "../config/index.ts";
+import {
+  buildConfig,
+  UNANSWERED_MESSAGE,
+  OUT_OF_SCOPE_MESSAGE,
+  GREETING_MESSAGE,
+} from "../config/index.ts";
 import { InputRejectError, validateChatInput } from "../security/input-guards.ts";
 import { classifyMessage } from "../security/classifier.ts";
 import { guardOutput } from "../security/output-guard.ts";
@@ -116,6 +121,9 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
   }
   if (verdict === "out-of-scope") {
     return jsonResponse({ answer: OUT_OF_SCOPE_MESSAGE, sources: [] }, 200);
+  }
+  if (verdict === "greeting") {
+    return jsonResponse({ answer: GREETING_MESSAGE, sources: [] }, 200);
   }
 
   // 5. Retrieval -> resolution -> rerank -> generation

@@ -63,13 +63,44 @@ const OUT_OF_SCOPE_PATTERNS: RegExp[] = [
   /\b(news|headlines)\s+(about|on|regarding)\s+(politics|political|the election|the war)\b/i,
 ];
 
-export type Classification = "company" | "out-of-scope" | "injection";
+// Whole-message greetings / "who are you" questions. Anchored on both ends so a
+// greeting followed by a real question ("hi, what modules do you have?") still
+// goes through retrieval.
+const GREETING_PATTERN = new RegExp(
+  "^(?:" +
+    [
+      "(?:hi+|hello+|hey+|hiya|yo|howdy|greetings|hola|salam|salaam|as+alam+u?\\s*o?\\s*alaikum|aoa)(?:\\s+(?:there|bot|chatbot|assistant|team|all|everyone))?",
+      "good\\s+(?:morning|afternoon|evening|day)",
+      "how\\s+are\\s+you(?:\\s+doing)?",
+      "who\\s+are\\s+you",
+      "what\\s+are\\s+you",
+      "what\\s+(?:can|do)\\s+you\\s+do",
+      "how\\s+can\\s+you\\s+help(?:\\s+me)?",
+      "what\\s+can\\s+you\\s+help\\s+(?:me\\s+)?with",
+      "introduce\\s+yourself",
+      "help",
+    ].join("|") +
+    ")$",
+  "i",
+);
+
+export function isGreeting(message: string): boolean {
+  const normalized = String(message ?? "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return normalized.length > 0 && GREETING_PATTERN.test(normalized);
+}
+
+export type Classification = "company" | "out-of-scope" | "injection" | "greeting";
 
 export function classifyMessage(message: string): Classification {
   const m = String(message ?? "");
   for (const re of INJECTION_PATTERNS) {
     if (re.test(m)) return "injection";
   }
+  if (isGreeting(m)) return "greeting";
   for (const re of OUT_OF_SCOPE_PATTERNS) {
     if (re.test(m)) return "out-of-scope";
   }
