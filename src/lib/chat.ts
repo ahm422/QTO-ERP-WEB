@@ -17,6 +17,7 @@ const FORWARDED_IP_HEADERS = ["CF-Connecting-IP", "x-forwarded-for", "x-real-ip"
 
 export type ChatbotCallResult =
   | { ok: true; status: number; body: unknown; retryAfter: string | null }
+  | { ok: true; status: number; stream: ReadableStream<Uint8Array> }
   | { ok: false; reason: "no_transport" }
   | { ok: false; reason: "timeout" }
   | { ok: false; reason: "network"; error: unknown };
@@ -41,8 +42,19 @@ function forwardedIpHeaders(request: Request): Record<string, string> {
   return headers;
 }
 
-/** Calls the chatbot Worker's POST /chat with the visitor's message. */
-export async function callChatbot(request: Request, message: string): Promise<ChatbotCallResult> {
+/** Content type of the Worker's streamed (`stream: true`) answer. */
+export const CHAT_STREAM_CONTENT_TYPE = "application/x-ndjson";
+
+/**
+ * Calls the chatbot Worker's POST /chat with the visitor's message. With
+ * `stream`, a 200 NDJSON answer is returned as an unread body for the route to
+ * pass through; error statuses are still JSON and parsed as before.
+ */
+export async function callChatbot(
+  request: Request,
+  message: string,
+  { stream = false }: { stream?: boolean } = {},
+): Promise<ChatbotCallResult> {
   const secret = process.env.CHATBOT_PROXY_SECRET?.trim();
   const headers: Record<string, string> = {
     "content-type": "application/json",
@@ -50,7 +62,7 @@ export async function callChatbot(request: Request, message: string): Promise<Ch
   };
   if (secret) headers["X-Chatbot-Proxy-Secret"] = secret;
 
-  const body = JSON.stringify({ message });
+  const body = JSON.stringify(stream ? { message, stream: true } : { message });
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), WORKER_TIMEOUT_MS);
 
@@ -76,6 +88,16 @@ export async function callChatbot(request: Request, message: string): Promise<Ch
         body,
         signal: controller.signal,
       });
+    }
+
+    // The timeout bounds the wait for response headers; once the Worker is
+    // streaming, the body is bounded by its own output-token cap.
+    if (
+      response.status === 200 &&
+      response.body &&
+      (response.headers.get("content-type") ?? "").includes(CHAT_STREAM_CONTENT_TYPE)
+    ) {
+      return { ok: true, status: response.status, stream: response.body };
     }
 
     const retryAfter = response.headers.get("retry-after");

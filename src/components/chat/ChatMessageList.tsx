@@ -53,6 +53,7 @@ export default function ChatMessageList({ messages, pending, onStarterClick }: C
           className={cn("flex", message.role === "user" ? "justify-end" : "justify-start")}
         >
           <div
+            aria-busy={message.streaming || undefined}
             className={cn(
               "max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 text-sm",
               message.role === "user"
@@ -66,7 +67,7 @@ export default function ChatMessageList({ messages, pending, onStarterClick }: C
           </div>
         </div>
       ))}
-      {pending && (
+      {pending && !messages.some((message) => message.streaming) && (
         <div className="flex justify-start">
           <div
             className="flex items-center gap-1 rounded-xl border border-border bg-card px-3 py-2 text-sm text-muted-foreground"

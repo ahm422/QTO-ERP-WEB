@@ -23,6 +23,7 @@ import { retrieveCandidates } from "../rag/retriever.ts";
 import { rerankCandidates } from "../rag/reranker.ts";
 import { resolveSources } from "../rag/source-resolver.ts";
 import { generateAnswer, enforceMaxTokens } from "../rag/generator.ts";
+import { staticAnswerStream, streamAnswer } from "../rag/stream.ts";
 import {
   createRetrievalDiagnostics,
   summarizeDiagnostics,
@@ -104,6 +105,10 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
     return jsonResponse({ error: "Malformed request" }, 400);
   }
 
+  // Opt-in NDJSON streaming (see rag/stream.ts). Errors before generation
+  // starts are still plain JSON with the usual status codes.
+  const stream = (body as Record<string, unknown>).stream === true;
+
   let message: string;
   try {
     message = validateChatInput((body as Record<string, unknown>).message, config.maxInputChars);
@@ -120,22 +125,35 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
     return jsonResponse({ error: "Request rejected" }, 400);
   }
   if (verdict === "out-of-scope") {
+    if (stream) return staticAnswerStream(OUT_OF_SCOPE_MESSAGE);
     return jsonResponse({ answer: OUT_OF_SCOPE_MESSAGE, sources: [] }, 200);
   }
   if (verdict === "greeting") {
+    if (stream) return staticAnswerStream(GREETING_MESSAGE);
     return jsonResponse({ answer: GREETING_MESSAGE, sources: [] }, 200);
   }
 
   // 5. Retrieval -> resolution -> rerank -> generation
+  const finishDiagnostics = (outcome?: RetrievalOutcome) => {
+    if (!diagnostics) return undefined;
+    if (outcome) diagnostics.outcome = outcome;
+    const summary = summarizeDiagnostics(diagnostics);
+    console.log("retrieval_diagnostics", JSON.stringify(summary));
+    return summary;
+  };
   const respond = (
     payload: Record<string, unknown>,
     status = 200,
     outcome?: RetrievalOutcome,
   ): Response => {
-    if (!diagnostics) return jsonResponse(payload, status);
-    if (outcome) diagnostics.outcome = outcome;
-    const summary = summarizeDiagnostics(diagnostics);
-    console.log("retrieval_diagnostics", JSON.stringify(summary));
+    const summary = finishDiagnostics(outcome);
+    if (stream) {
+      return staticAnswerStream(payload.answer as string, {
+        sources: [],
+        ...(summary ? { diagnostics: summary } : {}),
+      });
+    }
+    if (!summary) return jsonResponse(payload, status);
     return jsonResponse({ ...payload, diagnostics: summary }, status);
   };
 
@@ -194,18 +212,34 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
       }));
     }
 
-    const rawAnswer = await generateAnswer(
-      env,
-      message,
-      reranked.map((entry) => ({
-        text: entry.text,
-        sourceTable: entry.sourceTable,
-        sourceId: entry.sourceId,
-        chunkId: entry.chunkId,
-        documentType: entry.documentType,
-      })),
-      config,
-    );
+    const generationSources = reranked.map((entry) => ({
+      text: entry.text,
+      sourceTable: entry.sourceTable,
+      sourceId: entry.sourceId,
+      chunkId: entry.chunkId,
+      documentType: entry.documentType,
+    }));
+    const responseSources = reranked.map((entry) => ({
+      source_table: entry.sourceTable,
+      source_id: entry.sourceId,
+      chunk_id: entry.chunkId,
+      document_type: entry.documentType,
+    }));
+
+    if (stream) {
+      return await streamAnswer(env, message, generationSources, config, (finalText) => {
+        const answered = finalText !== UNANSWERED_MESSAGE;
+        if (diagnostics) diagnostics.generatorAnswered = answered;
+        const summary = finishDiagnostics(answered ? "answered" : "unanswered");
+        return {
+          type: "done",
+          sources: answered ? responseSources : [],
+          ...(summary ? { diagnostics: summary } : {}),
+        };
+      });
+    }
+
+    const rawAnswer = await generateAnswer(env, message, generationSources, config);
 
     const guarded = guardOutput(rawAnswer);
     const limited = enforceMaxTokens(guarded.clean, config.maxOutputTokens);
@@ -221,12 +255,7 @@ export async function handleChat(request: Request, env: Env): Promise<Response> 
     return respond(
       {
         answer: limited.text,
-        sources: reranked.map((entry) => ({
-          source_table: entry.sourceTable,
-          source_id: entry.sourceId,
-          chunk_id: entry.chunkId,
-          document_type: entry.documentType,
-        })),
+        sources: responseSources,
       },
       200,
       "answered",

@@ -6,6 +6,7 @@ export const chatSchema = z.object({
     .trim()
     .min(1, "Message is required")
     .max(2000, "Messages can be at most 2000 characters"),
+  stream: z.boolean().optional(),
 });
 
 export type ChatInput = z.infer<typeof chatSchema>;
