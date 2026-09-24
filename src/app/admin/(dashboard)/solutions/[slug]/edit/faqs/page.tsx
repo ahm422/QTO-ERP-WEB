@@ -53,7 +53,7 @@ export default function SolutionFaqsPage() {
 
   return (
     <SectionShell
-      title="FAQs"
+      title="FAQ"
       description="Accordion questions. The whole block is hidden when there are none."
       viewHref={`/solution/${slug}`}
       loading={loading || !form}

@@ -2,6 +2,7 @@
 
 import {
   createElement,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -16,6 +17,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Images,
   UploadCloud,
   Video as VideoIcon,
   X,
@@ -39,7 +41,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Popover } from "radix-ui";
 import { toast } from "sonner";
-import { adminUpload } from "@/lib/admin-fetch";
+import { adminFetch, adminUpload } from "@/lib/admin-fetch";
 import {
   CMS_ICONS,
   CMS_ICON_KEYS,
@@ -47,6 +49,13 @@ import {
 } from "@/lib/cms-icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -413,10 +422,135 @@ async function uploadVideo(endpoint: string, file: File): Promise<string> {
   return data.objectKey;
 }
 
+const IMAGE_ACCEPT = "image/avif,image/png,image/webp,image/jpeg";
+const IMAGE_TYPES = new Set(IMAGE_ACCEPT.split(","));
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+/** Preview src for a stored path, absolute URL, or bare R2 key. */
+export function previewMediaSrc(value?: string | null): string {
+  if (!value) return "";
+  if (
+    value.startsWith("/") ||
+    value.startsWith("http://") ||
+    value.startsWith("https://") ||
+    value.startsWith("blob:")
+  ) {
+    return value;
+  }
+  return `/api/media/${value}`;
+}
+
+/**
+ * Value to persist from an ImageField callback. A blob preview becomes
+ * `/api/media/{key}`; a library pick keeps its `imageUrl`.
+ */
+export function storedImageFromPicker(key: string, url: string): string {
+  if (!key && !url) return "";
+  if (url.startsWith("blob:")) return key ? `/api/media/${key}` : "";
+  if (url) return url;
+  return key ? `/api/media/${key}` : "";
+}
+
+function imageFileError(file: File): string | null {
+  if (!IMAGE_TYPES.has(file.type)) {
+    return "Only AVIF, PNG, WebP, and JPEG images are allowed";
+  }
+  if (file.size > MAX_IMAGE_BYTES) return "Image must be under 5MB";
+  return null;
+}
+
+type MediaLibraryItem = {
+  objectKey: string;
+  imageUrl: string;
+  size: number;
+  uploaded: string;
+};
+
+function MediaLibraryDialog({
+  onOpenChange,
+  onSelect,
+}: {
+  onOpenChange: (open: boolean) => void;
+  onSelect: (objectKey: string, imageUrl: string) => void;
+}) {
+  const [items, setItems] = useState<MediaLibraryItem[] | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    void adminFetch<{ items: MediaLibraryItem[] }>("/api/admin/media")
+      .then((data) => {
+        if (!cancelled) setItems(data.items);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Failed to load images",
+          );
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <Dialog open onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[min(85vh,40rem)] max-w-3xl overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Choose an image</DialogTitle>
+          <DialogDescription>
+            Pick an image already in storage. This does not upload a new copy.
+          </DialogDescription>
+        </DialogHeader>
+        {error ? (
+          <p className="text-sm text-destructive">{error}</p>
+        ) : items === null ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" />
+            Loading images…
+          </div>
+        ) : items.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No images yet. Drop or browse to upload one.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {items.map((item) => (
+              <button
+                key={item.objectKey}
+                type="button"
+                className="overflow-hidden rounded-lg border border-border text-left transition-colors hover:border-accent"
+                onClick={() => {
+                  onSelect(item.objectKey, item.imageUrl);
+                  onOpenChange(false);
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.imageUrl}
+                  alt=""
+                  className="aspect-video w-full object-cover bg-muted"
+                />
+                <span className="block truncate px-2 py-1.5 font-mono text-[11px] text-muted-foreground">
+                  {item.objectKey}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 /**
  * Image field storing an R2 object key. `previewUrl` is a resolved public URL
  * for the current value (from the serializer); after a new upload a local
  * object-URL preview is shown until the section is saved.
+ *
+ * `library` adds drag-and-drop and a picker of existing uploads. Module editors
+ * leave it off.
  */
 export function ImageField({
   label,
@@ -425,6 +559,7 @@ export function ImageField({
   previewUrl,
   uploadEndpoint,
   onChange,
+  library = false,
 }: {
   label: string;
   hint?: string;
@@ -432,42 +567,164 @@ export function ImageField({
   previewUrl?: string;
   uploadEndpoint: string;
   onChange: (key: string, url: string) => void;
+  library?: boolean;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const hasImage = Boolean(objectKey || previewUrl);
+
+  const handleFile = async (file: File | undefined) => {
+    if (!file || busy) return;
+    const rejected = imageFileError(file);
+    if (rejected) {
+      toast.error(rejected);
+      return;
+    }
+    setBusy(true);
+    try {
+      const key = await uploadImage(uploadEndpoint, file);
+      onChange(key, URL.createObjectURL(file));
+      toast.success("Image uploaded — save the section to apply");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!library) {
+    return (
+      <Field label={label} hint={hint} full>
+        <div className="flex items-center gap-4 rounded-lg border border-border bg-card p-3">
+          <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-muted">
+            {previewUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={previewUrl} alt="" className="size-full object-cover" />
+            ) : (
+              <UploadCloud className="size-6 text-muted-foreground" />
+            )}
+          </div>
+          <div className="flex flex-col items-start gap-1.5">
+            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted">
+              <UploadCloud className="size-4" />
+              {objectKey || previewUrl ? "Replace image" : "Upload image"}
+              <input
+                type="file"
+                accept={IMAGE_ACCEPT}
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (!file) return;
+                  try {
+                    const key = await uploadImage(uploadEndpoint, file);
+                    onChange(key, URL.createObjectURL(file));
+                    toast.success("Image uploaded — save the section to apply");
+                  } catch (err) {
+                    toast.error(
+                      err instanceof Error ? err.message : "Upload failed",
+                    );
+                  }
+                }}
+              />
+            </label>
+            {objectKey ? (
+              <button
+                type="button"
+                className="text-xs text-muted-foreground hover:text-destructive"
+                onClick={() => onChange("", "")}
+              >
+                Remove image
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </Field>
+    );
+  }
+
   return (
     <Field label={label} hint={hint} full>
-      <div className="flex items-center gap-4 rounded-lg border border-border bg-card p-3">
-        <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-muted">
-          {previewUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={previewUrl} alt="" className="size-full object-cover" />
-          ) : (
-            <UploadCloud className="size-6 text-muted-foreground" />
-          )}
+      <div className="space-y-3 rounded-lg border border-border bg-card p-3">
+        <div className="flex items-start gap-4">
+          <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-muted">
+            {previewUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={previewUrl} alt="" className="size-full object-cover" />
+            ) : (
+              <UploadCloud className="size-6 text-muted-foreground" />
+            )}
+          </div>
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => !busy && inputRef.current?.click()}
+            onKeyDown={(e) => {
+              if ((e.key === "Enter" || e.key === " ") && !busy) {
+                e.preventDefault();
+                inputRef.current?.click();
+              }
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragActive(true);
+            }}
+            onDragLeave={() => setDragActive(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragActive(false);
+              void handleFile(e.dataTransfer.files?.[0]);
+            }}
+            className={cn(
+              "flex min-h-24 flex-1 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md border-2 border-dashed px-4 py-4 text-center text-sm transition-colors",
+              dragActive
+                ? "border-accent bg-accent/5 text-accent"
+                : "border-border text-muted-foreground hover:border-accent hover:text-accent",
+              busy && "pointer-events-none opacity-70",
+            )}
+          >
+            {busy ? (
+              <>
+                <Loader2 className="size-5 animate-spin" />
+                <span>Uploading…</span>
+              </>
+            ) : (
+              <>
+                <UploadCloud className="size-5" />
+                <span>
+                  {hasImage
+                    ? "Drop a new image or click to replace"
+                    : "Drop an image here or click to browse"}
+                </span>
+              </>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col items-start gap-1.5">
-          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted">
-            <UploadCloud className="size-4" />
-            {objectKey || previewUrl ? "Replace image" : "Upload image"}
-            <input
-              type="file"
-              accept="image/avif,image/png,image/webp,image/jpeg"
-              className="hidden"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                try {
-                  const key = await uploadImage(uploadEndpoint, file);
-                  onChange(key, URL.createObjectURL(file));
-                  toast.success("Image uploaded — save the section to apply");
-                } catch (err) {
-                  toast.error(
-                    err instanceof Error ? err.message : "Upload failed",
-                  );
-                }
-              }}
-            />
-          </label>
-          {objectKey ? (
+
+        <input
+          ref={inputRef}
+          type="file"
+          accept={IMAGE_ACCEPT}
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            void handleFile(file);
+          }}
+        />
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
+            onClick={() => setLibraryOpen(true)}
+          >
+            <Images className="size-4" />
+            Choose from library
+          </button>
+          {hasImage ? (
             <button
               type="button"
               className="text-xs text-muted-foreground hover:text-destructive"
@@ -477,6 +734,16 @@ export function ImageField({
             </button>
           ) : null}
         </div>
+
+        {libraryOpen ? (
+          <MediaLibraryDialog
+            onOpenChange={setLibraryOpen}
+            onSelect={(key, url) => {
+              onChange(key, url);
+              setLibraryOpen(false);
+            }}
+          />
+        ) : null}
       </div>
     </Field>
   );

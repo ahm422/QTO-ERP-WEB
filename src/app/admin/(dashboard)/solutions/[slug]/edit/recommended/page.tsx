@@ -72,7 +72,7 @@ export default function SolutionRecommendedPage() {
 
   return (
     <SectionShell
-      title="Recommended modules"
+      title="Recommended Modules"
       description="The header and module cards shown near the bottom of the page."
       viewHref={`/solution/${slug}`}
       loading={loading || !form}

@@ -104,6 +104,7 @@ export default function SolutionHeroPage() {
           />
           <ImageField
             label="Hero image (optional)"
+            library
             objectKey={form.heroImageKey}
             previewUrl={form.heroImageUrl}
             uploadEndpoint="/api/admin/solutions/upload"

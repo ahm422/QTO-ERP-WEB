@@ -244,6 +244,19 @@ export function serializeSolutionSummary(s: Solution): SolutionSummary {
   };
 }
 
+function serializeSolutionUseCases(
+  useCases: Solution["useCases"],
+): SolutionDetail["useCases"] {
+  if (!useCases) return undefined;
+  return useCases.map((useCase) => ({
+    ...useCase,
+    features: useCase.features?.map((feature) => ({
+      ...feature,
+      imageUrl: resolveMediaPath(feature.imageUrl),
+    })),
+  }));
+}
+
 export function serializeSolutionDetail(s: Solution): SolutionDetail {
   const d = SOLUTION_PAGE_DEFAULTS;
   return {
@@ -252,7 +265,7 @@ export function serializeSolutionDetail(s: Solution): SolutionDetail {
     recommendedModules: s.recommendedModules,
     testimonial: s.testimonial,
     solutionFaqs: s.solutionFaqs,
-    useCases: s.useCases ?? undefined,
+    useCases: serializeSolutionUseCases(s.useCases),
     // ── CMS page-copy, merged over SOLUTION_PAGE_DEFAULTS (Phase 2). ──
     heroEyebrow: s.heroEyebrow ?? d.heroEyebrow,
     heroImage: resolveMediaPath(s.heroImage) ?? null,
@@ -268,7 +281,8 @@ export function serializeSolutionDetail(s: Solution): SolutionDetail {
     tabsIntroTag: s.tabsIntroTag ?? d.tabsIntroTag,
     tabsIntroTitle: s.tabsIntroTitle ?? d.tabsIntroTitle,
     tabsIntroDescription: s.tabsIntroDescription ?? d.tabsIntroDescription,
-    tabImageFallback: s.tabImageFallback ?? d.tabImageFallback,
+    tabImageFallback:
+      resolveMediaPath(s.tabImageFallback) ?? d.tabImageFallback,
     recommendedTag: s.recommendedTag ?? d.recommendedTag,
     recommendedTitle: s.recommendedTitle ?? d.recommendedTitle,
     recommendedDescription:

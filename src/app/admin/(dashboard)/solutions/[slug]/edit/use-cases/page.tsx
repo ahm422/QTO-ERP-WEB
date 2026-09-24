@@ -8,10 +8,13 @@ import {
 } from "@/components/admin/section-editor/useAdminResource";
 import { SectionShell } from "@/components/admin/section-editor/SectionShell";
 import {
+  ImageField,
   RepeatableList,
   StringListField,
   TextAreaField,
   TextField,
+  previewMediaSrc,
+  storedImageFromPicker,
 } from "@/components/admin/section-editor/fields";
 import type {
   SolutionUseCase,
@@ -56,12 +59,18 @@ export default function SolutionUseCasesPage() {
             .map((s) => s.trim())
             .filter(Boolean),
           subNav: (u.subNav ?? []).map((s) => s.trim()).filter(Boolean),
-          features: (u.features ?? []).map((f) => ({
-            tag: f.tag.trim(),
-            title: f.title.trim(),
-            desc: f.desc.trim(),
-            imageUrl: f.imageUrl || undefined,
-          })),
+          features: (u.features ?? []).map((f) => {
+            const imageUrl = f.imageUrl?.trim();
+            const next: SolutionUseCaseFeature = {
+              ...f,
+              tag: f.tag.trim(),
+              title: f.title.trim(),
+              desc: f.desc.trim(),
+            };
+            if (imageUrl) next.imageUrl = imageUrl;
+            else delete next.imageUrl;
+            return next;
+          }),
         })),
       },
       "Use cases saved",
@@ -70,7 +79,7 @@ export default function SolutionUseCasesPage() {
 
   return (
     <SectionShell
-      title="Use cases"
+      title="Use Cases"
       description="Per-industry variants. Each drives the '?industry=' deep-link, the capability tabs and the checklist in the hero."
       viewHref={`/solution/${slug}`}
       loading={loading || !form}
@@ -150,10 +159,16 @@ export default function SolutionUseCasesPage() {
                       value={f.desc}
                       onChange={(v) => updateF({ desc: v })}
                     />
-                    <TextField
-                      label="Image URL / media key (optional)"
-                      value={f.imageUrl ?? ""}
-                      onChange={(v) => updateF({ imageUrl: v })}
+                    <ImageField
+                      label="Image"
+                      library
+                      objectKey={f.imageUrl ?? ""}
+                      previewUrl={previewMediaSrc(f.imageUrl)}
+                      uploadEndpoint="/api/admin/solutions/upload"
+                      onChange={(key, url) => {
+                        const stored = storedImageFromPicker(key, url);
+                        updateF({ imageUrl: stored || undefined });
+                      }}
                     />
                   </>
                 )}

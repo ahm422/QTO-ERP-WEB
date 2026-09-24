@@ -51,7 +51,7 @@ export default function SolutionBasicsPage() {
 
   return (
     <SectionShell
-      title="Basics"
+      title="Base"
       description="Identity and listing placement."
       viewHref={`/solution/${slug}`}
       loading={loading || !form}
