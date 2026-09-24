@@ -4,14 +4,13 @@ import { type ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import {
-  AlertTriangle,
   ArrowLeft,
   Boxes,
   Briefcase,
   ExternalLink,
   HelpCircle,
   LayoutGrid,
-  Quote,
+  PanelsTopLeft,
   Sparkles,
   Target,
   type LucideIcon,
@@ -21,14 +20,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const SECTIONS: [string, string, LucideIcon][] = [
-  ["basics", "Basics", LayoutGrid],
+  ["basics", "Base", LayoutGrid],
   ["hero", "Hero", Sparkles],
-  ["problems", "Problems", AlertTriangle],
-  ["use-cases", "Use cases", Briefcase],
-  ["recommended", "Recommended modules", Boxes],
-  ["testimonial", "Testimonial", Quote],
-  ["faqs", "FAQs", HelpCircle],
-  ["cta-seo", "Tabs, CTA & SEO", Target],
+  ["use-cases", "Use Cases", Briefcase],
+  ["recommended", "Recommended Modules", Boxes],
+  ["faqs", "FAQ", HelpCircle],
+  ["tabs", "Tabs", PanelsTopLeft],
+  ["cta", "CTA", Target],
 ];
 
 export default function SolutionEditLayout({

@@ -2528,6 +2528,7 @@ export async function getSolutionAdminBySlug(slug: string) {
     heroPrimaryCtaHref: row.heroPrimaryCtaHref,
     heroSecondaryCtaLabel: row.heroSecondaryCtaLabel,
     heroSecondaryCtaHref: row.heroSecondaryCtaHref,
+    useCases: row.useCases ?? undefined,
     tabsIntroTag: row.tabsIntroTag,
     tabsIntroTitle: row.tabsIntroTitle,
     tabsIntroDescription: row.tabsIntroDescription,

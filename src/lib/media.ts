@@ -39,6 +39,16 @@ const ALLOWED_KEY_PREFIXES = [
   "solution-images/",
 ] as const;
 
+/** Image prefixes listed by the admin media library. Videos are excluded. */
+export const IMAGE_KEY_PREFIXES = [
+  "solution-images/",
+  "module-images/",
+  "blog-images/",
+  "blog-covers/",
+  "trusted-logos/",
+  "about-story/",
+] as const;
+
 export function isAllowedMediaKey(key: string): boolean {
   if (!key || key.includes("..")) return false;
   return ALLOWED_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
