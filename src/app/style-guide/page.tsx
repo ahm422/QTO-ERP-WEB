@@ -30,7 +30,7 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Board-labeled roles — hex via tokens only (docs/technical/design-tokens.md). */
+/** Board-labeled roles — hex via tokens only. */
 const BOARD_PALETTE = [
   {
     role: "Background",

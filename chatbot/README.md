@@ -56,8 +56,7 @@ and small metadata used for search — never a copy of the database.
 
 Public frontend integration is done: the Next.js marketing site talks to this
 Worker only through a same-origin `POST /api/chat` route, never directly from
-the browser. See [`../docs/technical/architecture.md`](../docs/technical/architecture.md)
-and [`../docs/technical/api-reference.md`](../docs/technical/api-reference.md).
+the browser.
 
 ---
 
@@ -244,9 +243,7 @@ AI/Vectorize/D1 call. This Worker is never called directly from a browser —
 the only intended caller is the Next.js site's same-origin `POST /api/chat`
 route (`src/app/api/chat/route.ts` in the web app), which holds the shared
 secret as a Worker secret and forwards the visitor's IP so this Worker's
-per-IP rate limiting still keys per client. See
-[`../docs/technical/architecture.md`](../docs/technical/architecture.md) for
-the full request path.
+per-IP rate limiting still keys per client.
 
 ### `POST /index`
 
@@ -346,7 +343,7 @@ npm run deploy      # deploy the Worker
 
 Tests use mocked bindings and never touch production data.
 
-To exercise `/chat` locally the way the Next.js BFF will call it, run `npx wrangler dev --port 8788 --ip 127.0.0.1` (see the web app's `docs/technical/local-development.md`) and set a matching `CHATBOT_PROXY_SECRET` in `.dev.vars`. With the default `wrangler.jsonc` this reads/writes the **real production** D1 and Vectorize index remotely (D1 access is read-only from this Worker, so that's safe; reindexing is not, since it writes real embeddings into the production index).
+To exercise `/chat` locally the way the Next.js BFF will call it, run `npx wrangler dev --port 8788 --ip 127.0.0.1` and set a matching `CHATBOT_PROXY_SECRET` in `.dev.vars`. With the default `wrangler.jsonc` this reads/writes the **real production** D1 and Vectorize index remotely (D1 access is read-only from this Worker, so that's safe; reindexing is not, since it writes real embeddings into the production index).
 
 ### Fully local, isolated dev (`wrangler.dev.jsonc`)
 

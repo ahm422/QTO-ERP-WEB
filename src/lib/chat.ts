@@ -3,7 +3,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 /**
  * BFF for the isolated `qto-erp-chatbot` Worker. The browser never calls the
  * Worker directly — only this module does, from the same-origin
- * `POST /api/chat` route. See docs/technical/architecture.md.
+ * `POST /api/chat` route.
  *
  * Transport, in order of preference:
  *   1. Cloudflare service binding `CHATBOT` (production, staging, `npm run dev:workers`)

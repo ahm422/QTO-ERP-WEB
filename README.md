@@ -1,86 +1,76 @@
 # QTO ERP Web
 
-Next.js marketing site and admin panel deployed on **Cloudflare Workers** (OpenNext + D1 + R2).
+Marketing website and content-managed admin panel for **QTO ERP**, built with Next.js and
+deployed on **Cloudflare Workers** via OpenNext.
 
-## Documentation
+## Features
 
-Full documentation lives in [`docs/`](docs/README.md), split into
-[`docs/technical/`](docs/technical/README.md) (for developers) and
-[`docs/non-technical/`](docs/non-technical/README.md) (for the client and staff).
+- Marketing site: ERP modules, solutions, industries, pricing, blog, FAQs, demo requests
+- Admin panel (`/admin`) with role-based access: CMS for pages, modules, solutions, blog,
+  media library, leads, subscribers and staff users
+- Custom JWT access/refresh authentication with invites and password reset
+- Transactional email via Cloudflare Email Sending
+- Media storage on Cloudflare R2
+- RAG chatbot served by a separate Worker (`chatbot/`) using Workers AI, Vectorize, D1 and KV
 
-| Topic | Doc |
-|-------|-----|
-| Architecture overview | [docs/technical/architecture.md](docs/technical/architecture.md) |
-| Project / folder structure | [docs/technical/project-structure.md](docs/technical/project-structure.md) |
-| Database schema & ERD | [docs/technical/database-schema.md](docs/technical/database-schema.md) |
-| API reference | [docs/technical/api-reference.md](docs/technical/api-reference.md) |
-| Environment variables | [docs/technical/environment-variables.md](docs/technical/environment-variables.md) |
-| Third-party services & ownership | [docs/technical/third-party-services.md](docs/technical/third-party-services.md) |
-| Known issues & tech debt | [docs/technical/known-issues-and-tech-debt.md](docs/technical/known-issues-and-tech-debt.md) |
-| Local development | [docs/technical/local-development.md](docs/technical/local-development.md) |
-| Database (Drizzle + D1) | [docs/technical/database.md](docs/technical/database.md) |
-| Media storage (R2) | [docs/technical/storage.md](docs/technical/storage.md) |
-| Deployment (Workers, CI/CD) | [docs/technical/deployment-cloudflare.md](docs/technical/deployment-cloudflare.md) |
-| E2E testing checklist | [docs/technical/testing-cloudflare.md](docs/technical/testing-cloudflare.md) |
-| Admin panel | [docs/technical/admin.md](docs/technical/admin.md) |
-| Email (Cloudflare Email Sending) | [docs/technical/email.md](docs/technical/email.md) |
-| Content APIs | [docs/technical/content-api.md](docs/technical/content-api.md) |
-| Stripe payments | [docs/technical/payments.md](docs/technical/payments.md) |
+## Tech stack
 
-## Quick start
+Next.js (App Router) · TypeScript · Tailwind CSS · Drizzle ORM · Cloudflare D1 / R2 / KV /
+Vectorize / Workers AI · OpenNext for Cloudflare · Stripe
+
+## Project layout
+
+```
+src/app/        routes: public site, /admin dashboard, /api handlers
+src/components/ UI components
+src/db/         Drizzle schema
+src/lib/        auth, validation, email, storage, chat proxy helpers
+drizzle/        SQL migrations for D1
+scripts/        seeding, admin creation, verification scripts
+chatbot/        standalone RAG chatbot Worker (see chatbot/README.md)
+docs/           user guides for site editors (docs/non-technical/)
+```
+
+## Local setup
 
 ```bash
 npm install
 cp .env.example .env
-# Edit .env: JWT_ACCESS_SECRET, JWT_REFRESH_PEPPER, AUTH_URL, ADMIN_*, EMAIL_FROM, ADMIN_NOTIFICATION_EMAIL, STRIPE_*
-# For transactional email via Cloudflare, prefer: npm run dev:workers (EMAIL binding)
-
-# For wrangler dev (dev:workers / preview) — create .dev.vars (gitignored) with the same
-# secrets plus NEXTJS_ENV=development. Use AUTH_URL=http://localhost:8787 for dev:workers.
+# Fill in JWT_ACCESS_SECRET, JWT_REFRESH_PEPPER, AUTH_URL, ADMIN_EMAIL, ADMIN_PASSWORD, ...
+# For `npm run dev:workers`, create .dev.vars (gitignored) with the same secrets.
 
 npm run db:migrate:local
 npm run db:seed
-npm run dev                    # fast UI/API on :3000 (D1 only)
-# npm run dev:workers          # full bindings on :8787 (D1 + R2 + ISR)
+npm run dev            # http://localhost:3000
 ```
 
-Admin login: [http://localhost:3000/admin/login](http://localhost:3000/admin/login) (or `:8787` when using `dev:workers`).
-
-Optional: `npm run stripe:check` to verify Stripe price IDs.
-
-## Development commands
+Admin login: <http://localhost:3000/admin/login>
 
 | Script | Port | Use when |
 |--------|------|----------|
-| `npm run dev` | 3000 | Daily UI/API work (D1 via `initOpenNextCloudflareForDev`) |
-| `npm run dev:workers` | 8787 | Media uploads, ISR, full production binding parity |
-| `npm run preview` | 8787 | One-shot smoke after OpenNext build |
+| `npm run dev` | 3000 | Daily UI/API work against local D1 |
+| `npm run dev:workers` | 8787 | Full Worker bindings (R2, ISR, email) |
+| `npm run preview` | 8787 | Smoke test of the OpenNext build |
+| `npm run test:unit` | — | Unit tests |
+| `npm run lint` | — | ESLint |
 
-## Deploy
+## Deployment
 
-Production and staging deploy via Jenkins (`main` → production, `staging` → staging) or manually:
+1. Create the Cloudflare resources (D1 databases, R2 bucket, KV namespaces) in your account.
+2. Replace the placeholders in `wrangler.jsonc` and `chatbot/wrangler.jsonc`
+   (`YOUR_CLOUDFLARE_ACCOUNT_ID`, `YOUR_D1_DATABASE_ID`, `YOUR_KV_NAMESPACE_ID`,
+   `your-subdomain.workers.dev`).
+3. Set secrets with `wrangler secret put <NAME> [--env staging]`
+   (`JWT_ACCESS_SECRET`, `JWT_REFRESH_PEPPER`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+   `CHATBOT_PROXY_SECRET`, ...).
+4. Apply migrations and deploy:
 
 ```bash
-npm run deploy:staging   # staging Worker
-npm run deploy           # production Worker
+npm run db:migrate:remote
+npm run deploy           # production
+npm run deploy:staging   # staging
 ```
 
-See [docs/technical/deployment-cloudflare.md](docs/technical/deployment-cloudflare.md) for secrets, migrations, and DNS cutover.
+## Documentation
 
-### Runtime environment (deployed Workers)
-
-The deployed Worker reads these at request time. Non-secrets live in `wrangler.jsonc` `vars`
-(per env); secrets are set with `wrangler secret put <NAME> [--env staging]` and must **not** be
-kept as plaintext build variables.
-
-| Variable | Where | Notes |
-|----------|-------|-------|
-| `AUTH_URL` | `wrangler.jsonc` vars | Absolute site base (also used for sitemap URLs) |
-| `EMAIL_FROM` | `wrangler.jsonc` vars | `QTO ERP <noreply@qtoerp.com>` |
-| `ADMIN_NOTIFICATION_EMAIL` | `wrangler.jsonc` vars | |
-| `STRIPE_PRICE_{STARTER,GROWTH}_{MONTHLY,YEARLY}` | `wrangler.jsonc` vars | Price IDs (`price_…`) |
-| `JWT_ACCESS_SECRET` | Worker secret | `openssl rand -base64 32` |
-| `JWT_REFRESH_PEPPER` | Worker secret | `openssl rand -base64 32` |
-| `STRIPE_SECRET_KEY` | Worker secret | Required for checkout routes |
-| `STRIPE_WEBHOOK_SECRET` | Worker secret | Required for `/api/webhooks/stripe` |
-| `RESEND_API_KEY` | Worker secret | Only if `EMAIL_PROVIDER=resend` (legacy fallback) |
+Guides for people running the site day to day are in [`docs/non-technical/`](docs/non-technical/README.md).
